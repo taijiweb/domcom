@@ -49,8 +49,8 @@ onTaskDone = (done) -> (err, stats) ->
 
 # need live reload , so does not use webpack-dev-server
 task 'webpack-dist', (done) ->
-  entry = './src/client/web-app'
-  config = makeConfig(entry, 'app.js')
+  entry = './src/index'
+  config = makeConfig(entry, 'domcom.js', {path:'dist', libraryTarget:'umd', library:'dc'})
   webpackCompiler = webpack(config)
   webpackCompiler.run onTaskDone(done)
 

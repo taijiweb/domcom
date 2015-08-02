@@ -9,7 +9,9 @@ exports.makeConfig = makeConfig = (entry, filename, options={}) ->
       path: path.join(__dirname, options.path or 'app/public'),
       filename: filename
       pathinfo: options.pathinfo or true
-      publicPath: options.publicPath or "/assets/",
+      publicPath: options.publicPath or "/assets/"
+      library: options.library
+      libraryTarget:options.libraryTarget
     resolve: {extensions: ['', '.coffee', '.js']}
     externals: { chai: "chai"}
     node: {fs: "empty"}

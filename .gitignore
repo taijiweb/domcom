@@ -1,13 +1,4 @@
-/node_modules/*
-!/node_modules/bind-expression
-!/node_modules/peasy
-!/node_modules/tiiji
-!/node_modules/tjutil
-!/node_modules/tj-operator
-!/node_modules/node-net
-!/node_modules/job-flow
-!/node_modules/task-flow
-node_modules/*/node_modules
+node_modules
 
 bower_components
 
