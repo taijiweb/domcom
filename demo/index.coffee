@@ -12,5 +12,5 @@ demoSum = require 'domcom/demo/demo-sum'
 demoTextModel = require 'domcom/demo/demo-text-model'
 
 window.onload = ->
-  demoDisplayDomEditor()
+  demoCounter()
 
