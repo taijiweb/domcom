@@ -15,22 +15,6 @@ mochaPhantomJS = require('gulp-mocha-phantomjs')
 
 xtask = ->
 
-do ->
-  # set gulp target
-  #argv.target = 'web'
-  #argv.target = 'nw'
-  if argv.d then argv.debug = true
-  if argv.p then argv.production = true
-  if argv.debug then argv.env = 'debug'
-  if argv.stage then argv.env = 'stage'
-  if argv.production then argv.env = 'production'
-  if argv.w then argv.web = true
-  if argv.n then argv.nw = true
-  if argv.t then argv.test = true
-  if argv.web and argv.nw and not argv.target then argv.target = 'web'
-  else if not argv.web and not argv.nw and not argv.target then argv.target = 'web'
-  console.log 'gulp target: '+argv.target
-
 task = gulp.task.bind(gulp)
 
 src = gulp.src.bind(gulp)
