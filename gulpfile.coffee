@@ -44,27 +44,43 @@ onTaskDone = (done) -> (err, stats) ->
   if err then console.log('Error', err)
   #else  console.log(stats.toString())
   logTime("finished 'webpack'")
-  done and done()
+  #done and done()
   return
+
+webpack = require("webpack")
+ClosureCompilerPlugin = require('webpack-closure-compiler')
 
 # need live reload , so does not use webpack-dev-server
 task 'webpack-dist', (done) ->
+  env = process.env.NODE_ENV
   entry = './src/index'
   config = makeConfig(entry, 'domcom.js', {path:'dist', libraryTarget:'umd', library:'dc'})
   webpackCompiler = webpack(config)
   webpackCompiler.run onTaskDone(done)
+  process.env.NODE_ENV = 'production'
+  #plugins = [new webpack.optimize.UglifyJsPlugin({minimize: true})]
+  plugins = [new ClosureCompilerPlugin()]
+  config = makeConfig(entry, 'domcom.min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
+  webpackCompiler = webpack(config)
+  webpackCompiler.run onTaskDone(done)
+  process.env.NODE_ENV = env
+
+webServerPlugins = [
+  new webpack.HotModuleReplacementPlugin()
+  new webpack.NoErrorsPlugin()
+]
 
 task 'webpack-server-test', (done) ->
   entry = ["webpack/hot/dev-server", './test/mocha-phantomjs-index']
-  makeWebpackDevServer(entry, 'mocha-phantomjs-index.js')
+  makeWebpackDevServer(entry, 'mocha-phantomjs-index.js', {port:8080, plugins:webServerPlugins})
 
 task 'webpack-server-demo', (done) ->
   entry = ["webpack/hot/dev-server", './demo/index']
-  makeWebpackDevServer(entry, 'demo-index.js', {port:8082})
+  makeWebpackDevServer(entry, 'demo-index.js', {port:8082, plugins:webServerPlugins})
 
 task 'webpack-server-todomvc', (done) ->
   entry = ["webpack/hot/dev-server", './demo/todomvc/app']
-  makeWebpackDevServer(entry, 'todomvc.js', {port:8086})
+  makeWebpackDevServer(entry, 'todomvc.js', {port:8086, plugins:webServerPlugins})
 
 task 'build', (callback) ->
   runSequence 'clean', 'webpack-dist', callback

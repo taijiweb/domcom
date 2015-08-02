@@ -8,7 +8,7 @@ exports.makeConfig = makeConfig = (entry, filename, options={}) ->
     output:
       path: path.join(__dirname, options.path or 'app/public'),
       filename: filename
-      pathinfo: options.pathinfo or true
+      pathinfo: if options.pathinfo? then options.pathinfo else true
       publicPath: options.publicPath or "/assets/"
       library: options.library
       libraryTarget:options.libraryTarget
@@ -22,10 +22,7 @@ exports.makeConfig = makeConfig = (entry, filename, options={}) ->
         { test: /\.css$/, loader: "style!css" },
         { test: /\.coffee$/, loader: 'coffee' }
       ]
-    plugins: [
-      new webpack.HotModuleReplacementPlugin()
-      new webpack.NoErrorsPlugin()
-    ]
+    plugins: options.plugins or []
     #devtool: '#eval-source-map'
     #debug: true
     quiet:true
@@ -35,7 +32,6 @@ exports.makeConfig = makeConfig = (entry, filename, options={}) ->
       noInfo: true,
       hot: true,
       inline: true
-
 
 WebpackDevServer = require("webpack-dev-server")
 exports.makeWebpackDevServer = (entry, filename, options={}) ->
