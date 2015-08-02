@@ -63,7 +63,7 @@ task 'webpack-server-demo', (done) ->
   makeWebpackDevServer(entry, 'demo-index.js', {port:8082})
 
 task 'webpack-server-todomvc', (done) ->
-  entry = ["webpack/hot/dev-server", 'domcom/demo/todomvc/app']
+  entry = ["webpack/hot/dev-server", './demo/todomvc/app']
   makeWebpackDevServer(entry, 'todomvc.js', {port:8086})
 
 task 'build', (callback) ->
