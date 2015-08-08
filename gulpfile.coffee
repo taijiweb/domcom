@@ -90,6 +90,22 @@ task 'webpack-server', ->
   makeWebpackDevServer(["webpack/hot/dev-server", './demo/index'], 'demo-index.js', {port:8082, plugins:webServerPlugins})
   makeWebpackDevServer(["webpack/hot/dev-server", './demo/todomvc/todomvc'], 'todomvc.js', {port:8086, plugins:webServerPlugins})
 
+release = require('gulp-github-release');
+
+release = require('gulp-github-release')
+task 'release', ->
+  src('./dist/*.*').pipe(release({
+    token: 'token',                     # or you can set an env var called GITHUB_TOKEN instead
+    owner: 'taijiweb',                    # if missing, it will be extracted from manifest (the repository.url field)
+    repo: 'domcom',            # if missing, it will be extracted from manifest (the repository.url field)
+    tag: 'v0.0.1',                      # if missing, the version will be extracted from manifest and prepended by a 'v'
+    name: 'domcom v1.0.0',     # if missing, it will be the same as the tag
+    notes: 'the web framework to provide dom component',                # if missing it will be left undefined
+    draft: false,                       # if missing it's false
+    prerelease: false,                  # if missing it's false
+    manifest: require('./package.json') # package.json from which default values will be extracted if they're missing
+  }))
+
 task 'dev', (callback) -> runSequence 'clean', 'webpack-dev', callback
 task 'dist', (callback) -> runSequence 'clean', 'webpack-dist', 'coffee', callback
 task 'default', ['webpack-server']
