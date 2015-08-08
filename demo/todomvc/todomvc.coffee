@@ -125,7 +125,7 @@ todoEditArea = section({id:"main", directives:show(-> todos.length)}
     checked: -> !!allChecked()
     onclick: markAll
   })
-  label({"htmlFor":"toggle-all"}, "Mark all as complete")
+  label({"for":"toggle-all"}, "Mark all as complete")
   ul({id:"todo-list"}, todoItems)
   footer({id:"footer", directives:show(-> todos.length)},
     span({id:"todo-count"}, strong(remainingCount), pluralize(remainingCount, ' item'), ' left')
@@ -149,9 +149,6 @@ view = section({id:"todoapp"},
   todoEditArea
   todoFooter
 )
-
-#view = ul({id:"todo-list"}, todoItems)
-#view = label({"for":"toggle-all"}, "Mark all as complete")
 
 # run the app
 module.exports = window.runTodoMvc = ->

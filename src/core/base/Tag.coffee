@@ -74,6 +74,7 @@ module.exports = class Tag extends BaseComponent
         if @addEventProp(key, value) then activePropertiesCount++
       else
         if specialPropSet[key] then specials[key] = value
+        else if key=='for' then props['htmlFor'] = value
         else props[key] = value
         activePropertiesCount++
     @activePropertiesCount = activePropertiesCount
