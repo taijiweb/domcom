@@ -1,0 +1,204 @@
+<h2 id="domcom-api">domcom API</h2>
+<ul>
+<li><code>{...} = window.dc</code></li>
+<li><code>{...} = dc = require(&#39;domcom&#39;)</code></li>
+</ul>
+<h3 id="-">模块</h3>
+<h4 id="src-core-">src/core/</h4>
+<h5 id="basecomponent">BaseComponent</h5>
+<p> List, Tag, Text, Comment, Html, DomNode, DomNodeList</p>
+<ul>
+<li><p><code>new List(children, options)</code></p>
+</li>
+<li><p><code>new Tag(tagName, attrs, children, options)</code></p>
+</li>
+<li><p><code>new Text(text, options)</code></p>
+</li>
+<li><p><code>new Comment(text, options)</code></p>
+</li>
+<li><p><code>new Html(text, options)</code></p>
+<p>没有完全实现并且未经测试，目前请不要使用这个部件</p>
+</li>
+<li><p><code>new DomNode(node, options)</code></p>
+<p>没有完全实现并且未经测试，目前请不要使用这个部件</p>
+</li>
+<li><p><code>new DomNodeList(nodeList, options)</code></p>
+<p>没有完全实现并且未经测试，目前请不要使用这个部件</p>
+</li>
+</ul>
+<h5 id="transformcomponent">TransformComponent</h5>
+<p>If, Case, Func, Repeat</p>
+<ul>
+<li><p><code>new If(test, then_, else_, options)</code></p>
+</li>
+<li><p><code>new Case(test, map, options)</code></p>
+</li>
+<li><p><code>new Func(fn, options)</code></p>
+</li>
+<li><p><code>new Repeat(items, ((item, index, list, component) -&gt; ...), options)</code></p>
+<p>  todo: 支持将object作为items参数，使用如下的标签：</p>
+<p>  <code>new Repeat(obj, ((value, key, list, component) -&gt; ...), options)</code></p>
+</li>
+</ul>
+<h4 id="src-core-instantiate-coffee">src/core/instantiate.coffee</h4>
+<p> tag, txt, comment, if<em>, case</em>, func, list, repeat</p>
+<p> tag(tagName, attrs, children...)</p>
+<p> txt(attrs, text, options)</p>
+<p> txt(text, options)</p>
+<p> comment(text, options)</p>
+<p> if<em>(attrs, test, then</em>, else_, options)</p>
+<p> if<em>(test, then</em>, else_, options)</p>
+<p> case<em>(attrs, map, else</em>, options)</p>
+<p> case<em>(map, else</em>, options)</p>
+<p> list(attrs, children...)</p>
+<p> list(children...)</p>
+<p> repeat(attrs, items, ((item, index, items, component) -&gt; ...), options)</p>
+<p> repeat(items, ((item, index, items, component) -&gt; ...), options)</p>
+<h4 id="src-core-tag-coffee">src/core/tag.coffee</h4>
+<h5 id="-tag-tagname-attrs-children-"><code>tag(tagName, attrs, children...)</code></h5>
+<p>例：<code>tag(&#39;a&#39;, {href:&#39;http://www.google.com&#39;})</code>, <code>tag(&#39;img&#39;, {src:&#39;path/to/pic.png&#39;})</code></p>
+<h5 id="tags">tags</h5>
+<p>a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl
+dt em fieldset form h1 h2 h3 h4 h5 h6 head html hr i img input ins kbd label legend li link map meta noscript object
+ol optgroup option p param pre q samp script select small span strong style sub sup
+table tbody td textarea tfoot th thead title tr tt ul var header footer section</p>
+<p>例：<code>div({style:{display:&quot;block&quot;}}, h1(&#39;a heading&#39;), ul(li(1), li(-&gt;x)))</code></p>
+<p>上例等同于<code>tag(&#39;div&#39;, {style:{display:&quot;block&quot;}}, tag(&#39;h1&#39;, {}, &#39;a heading&#39;), ul(li(1), li(-&gt;x)))</code></p>
+<h5 id="input-tags">input tags</h5>
+<ul>
+<li><p>input(type, attrs, value)</p>
+<p>  例：<code>input(&#39;text&#39;, attrs, value)</code></p>
+<p>  上例等同于 <code>tag(&#39;input&#39;, {type: type, value: value, ...attrs})</code></p>
+</li>
+<li><p>shortcuts</p>
+<p>  text, textarea, checkbox, radio, date, email, number</p>
+<p>  例：<code>text(attrs, value)</code> ，等同于<code>input(&#39;text&#39;, attrs, value)</code></p>
+<p> 注意，<code>text(x)</code> 等同于<code>new Tag(&#39;input&#39;, {type:&quot;text&quot;, value:x})</code>；它不同于上文中的<code>txt</code>，<code>txt(x)</code>等同于<code>new Text(x)</code></p>
+</li>
+</ul>
+<h4 id="src-core-property-coffee">src/core/property.coffee</h4>
+<ul>
+<li><p><code>extendAttrs(attrs, obj)</code></p>
+<p>  扩展部件的属性集对象</p>
+<p>  <code>attrs</code>: 待扩展的属性集, 如果是null或undefined, 将创建一个新的空对象</p>
+<p>  <code>obj</code>: 用来覆盖或增强属性集特性的对象</p>
+</li>
+<li><p><code>extendEventValue(props, prop, value, before)</code></p>
+<p>  <code>props</code>: 部件的events特性</p>
+<p>  <code>prop</code>: 事件名, 如<code>&quot;click&quot;</code>, <code>&quot;onclick&quot;</code>等等</p>
+<p>  <code>value</code>: 事件处理函数或者处理函数的数组</p>
+<p>  <code>before</code>: 如果是javascript任何可以为真的值则value将被添加或连接到原事件处理器数组之前, 否则将被添加或连接到之前。默认为假。</p>
+</li>
+<li><p><code>classFn(items...)</code></p>
+<p>  递归的说，<code>items</code>中的项可以是className的川, 或者是classFn产生的函数, 或者是项的集合</p>
+</li>
+<li><p><code>styleFrom(value)</code></p>
+<p>  <code>value</code>: 形如&quot;stylePropName:value; ...&quot;的style字符串, 或者形如&quot;stylePropName:value&quot;的项的数组, 可包含空白字符, 或则形如[stylePropName, value]的项的数组</p>
+</li>
+</ul>
+<h3 id="src-core-directives-">src/core/directives/</h3>
+<h4 id="-">指令</h4>
+<pre><code>指令是个函数，该函数以部件做参数，返回新部件。
+
+指令只可以用于Tag部件
+
+用法：`someTag(/*attrs=*/{..., directives:directive, ...}, children...)`
+</code></pre><h4 id="-">指令生成器</h4>
+<p>   指令生成器是个返回函数的函数，返回的函数可以被用作指令。</p>
+<pre><code>用法：`someTag(/*attrs=*/{..., directives:directiveGenerator(...),  ...}, children...)`
+</code></pre><h5 id="domcom-">domcom内建指令生成器模块</h5>
+<p>model.coffee, bind.coffee, show-hide.coffee, blink.coffee, splitter.coffee, options.coffee</p>
+<h6 id="-">内建指令生成器</h6>
+<p>model, bind, show, hide, blink, splitter, options</p>
+<ul>
+<li>model(m)</li>
+<li>bind(m)</li>
+<li>show(test, display)</li>
+<li>hide(test, display)</li>
+<li>blink(delay)</li>
+<li>splitter(direction)</li>
+<li><p>options(items)
+只能配合&quot;select&quot;标签部件使用</p>
+<p>用法：<code>select({..., directives: options(items...)}, ...)</code></p>
+</li>
+</ul>
+<h4 id="-">示例</h4>
+<pre><code>{input, model, bibind} = require(&#39;domcom&#39;)
+obj = {a:1}
+a = bibind(obj, &#39;a&#39;)
+comp = text({type:&#39;text&#39;, directives:model(a)})
+</code></pre><h4 id="src-core-builtins-">src/core/builtins/</h4>
+<p> combo, comboEdit, dialog, arrow, accordion</p>
+<h3 id="-">部件类</h3>
+<h5 id="component">Component</h5>
+<ul>
+<li><p>Component.mount</p>
+<p>   someComponent.mount(mountNode, beforeNode)</p>
+</li>
+<li><p>Component.unmount</p>
+<p>  someComponent.unmount()</p>
+</li>
+<li><p>Component.create</p>
+<p>  someComponent.create()</p>
+</li>
+<li><p>Component.render</p>
+<p>  someComponent.render()</p>
+</li>
+<li><p>Compnent.remove</p>
+<p>  someComponent.remove()</p>
+</li>
+<li><p>Component.update</p>
+<p>  <code>someComponent.update()</code></p>
+</li>
+<li><p>Component.beforeMount</p>
+<p>  <code>someComponent.beforeMount(fns...)</code></p>
+</li>
+<li><p>Component.afterMount</p>
+<p>  someComponent.beforeMount(fns...)</p>
+</li>
+<li><p>Component.unbindBeforeMount</p>
+<p>  <code>someComponent.unbindBeforeMount(fns...)</code></p>
+</li>
+<li><p>Component.unbindAfterUnmount</p>
+<p>  <code>someComponent.unbindAfterUnmount(fns...)</code></p>
+</li>
+<li><p>setOptions</p>
+<p>  <code>someComponent.setOptions(options)</code></p>
+</li>
+</ul>
+<h5 id="tag">Tag</h5>
+<ul>
+<li><p>Tag.bind</p>
+<p>  <code>someTag.bind(eventName, handlers...)</code></p>
+</li>
+<li><p>Tag.unbind</p>
+<p>  <code>someTag.unbind(eventName, handlers...)</code></p>
+</li>
+<li><p>Tag.prop</p>
+<p>  <code>someTag.prop(prop, value)</code></p>
+<p>  <code>prop</code>: 如果参数个数是1，则<code>prop</code>为特性名，此时函数返回部件对应的node的该特性名的值，或者为包含特性与值的集合的object，函数将扩展部件的特性集，如果参数个数为2， 则本方法将设置部件的<code>prop</code>特性为（<code>value``someTag.props[prop]=value</code>）。</p>
+<p>  <code>value</code>: undefined,或者被设置的特性的值，可以是函数。如果是函数，部件对应的dom node的<code>prop</code>特性（<code>someTag.node[prop]</code>)将在每次更新的时候与该函数的值动态保持一致。</p>
+</li>
+<li><p>Tag.addClass</p>
+<p>  <code>someTag.addClass(items...)</code></p>
+</li>
+<li><p>Tag.removeClass</p>
+<p>  <code>someTag.removeClass(classes...)</code></p>
+</li>
+</ul>
+<ul>
+<li><p>Tag.css</p>
+<p>  <code>someTag.css(prop, value)</code>
+  如果参数个数是1，则<code>prop</code>为特性名，此时本方法返回部件的style中<code>prop</code>的值（<code>someTag.style[prop]</code>），或者为包含特性与值的集合的object，本方法将扩展部件的style的特性集；如果参数个数为2， 则本方法将设置部件的style的<code>prop</code>特性（<code>someTag.style[prop]=value</code>）。
+  <code>prop</code>: 特性名，或者包含特性与值的集合的object，函数将扩展部件的style的特性集
+  <code>value</code>: undefined，或者为部件的style的<code>prop</code>特性的值。<code>value</code>可以是函数。如果是函数，部件对应的dom node的style的<code>prop</code>特性（<code>someTag.node.style[prop]</code>)将在每次更新的时候与该函数的值动态保持一致。</p>
+</li>
+<li><p>Tag.show</p>
+<p>  <code>someTag.show(display)</code></p>
+</li>
+</ul>
+<ul>
+<li><p>Tag.hide</p>
+<p>  <code>someTag.hide()</code></p>
+</li>
+</ul>

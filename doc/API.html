@@ -1,0 +1,154 @@
+<h2 id="api">API</h2>
+<ul>
+<li>window.dc</li>
+<li>{...} = dc = require(&#39;domcom&#39;)</li>
+</ul>
+<h3 id="modules">modules</h3>
+<h4 id="src-core-">src/core/:</h4>
+<h5 id="basecomponent">BaseComponent</h5>
+<p> List, Tag, Text, Comment, Html, DomNode, DomNodeList</p>
+<h5 id="transformcomponent">TransformComponent</h5>
+<p> If, Case, Repeat</p>
+<h4 id="src-core-instantiate-coffee">src/core/instantiate.coffee</h4>
+<p> tag, txt, comment, if<em>, case</em>, func, list_, repeat</p>
+<h4 id="src-core-tag-coffee">src/core/tag.coffee</h4>
+<h5 id="-tag-tagname-attrs-children-"><code>tag(tagName, attrs, children...)</code></h5>
+<p>e.g. <code>tag(&#39;a&#39;, {href:&#39;http://www.google.com&#39;})</code>, <code>tag(&#39;img&#39;, {src:&#39;path/to/pic.png&#39;})</code></p>
+<h5 id="tags">tags</h5>
+<p>a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl
+dt em fieldset form h1 h2 h3 h4 h5 h6 head html hr i img input ins kbd label legend li link map meta noscript object
+ol optgroup option p param pre q samp script select small span strong style sub sup
+table tbody td textarea tfoot th thead title tr tt ul var header footer section</p>
+<p>e.g.: <code>div({style:{display:&quot;block&quot;}}, h1(&#39;a heading&#39;), ul(li(1), li(-&gt;x)))</code></p>
+<p>the sample above is the same as <code>tag(&#39;div&#39;, {style:{display:&quot;block&quot;}}, tag(&#39;h1&#39;, {}, &#39;a heading&#39;), ul(li(1), li(-&gt;x)))</code></p>
+<h5 id="input-tags">input tags</h5>
+<ul>
+<li><p>input(type, attrs, value)</p>
+<p>  e.g. <code>input(&#39;text&#39;, attrs, value)</code> is the same as <code>tag(&#39;input&#39;, {type: type, value: value, ...attrs})</code></p>
+</li>
+<li><p>shortcuts</p>
+<p>  text, textarea, checkbox, radio, date, email, number</p>
+<p>  e.g. <code>text(attrs, value)</code> is the same as <code>input(&#39;text&#39;, attrs, value)</code></p>
+</li>
+</ul>
+<h4 id="src-core-property-coffee">src/core/property.coffee</h4>
+<ul>
+<li><p><code>extendAttrs(attrs, obj)</code></p>
+<p>  extend the attributes for the component</p>
+<p>  <code>attrs</code>: the attributes object to be extended, if it is null or undefined, a new object will be created</p>
+<p>  <code>obj</code>: will override or augment the attrs&#39; property</p>
+</li>
+<li><p><code>extendEventValue(props, prop, value, before)</code></p>
+<p>  <code>props</code>: the events object of the component</p>
+<p>  <code>prop</code>: the eventName, e.g. <code>&quot;click&quot;</code>, <code>&quot;onclick&quot;</code>, etc</p>
+<p>  <code>value</code>: the event handler function or an array of handler function</p>
+<p>  <code>before</code>: if true, the value will be unshifted or concatenated before the original event handlers array, otherwise will be pushed or cancatenated after it. The default is false.</p>
+</li>
+<li><p><code>classFn(items...)</code></p>
+<p>  item in <code>items</code> can be the className string, a classFn function, or an array of the item, recursively</p>
+</li>
+<li><p><code>styleFrom(value)</code></p>
+<p>  <code>value</code>: a style string like &quot;stylePropName:value; ...&quot;, or an array of string like &quot;stylePropName:value&quot;, and the spaces are allowed, or an array of [stylePropName, value]</p>
+</li>
+</ul>
+<h3 id="src-core-directives-">src/core/directives/</h3>
+<h4 id="directive">directive</h4>
+<pre><code>a directive is just a function, which receives a component, and return a component
+
+The directives can only be used upon Tag component
+
+usage: `someTag(/*attrs=*/{..., directives:directive, ...}, children...)`
+</code></pre><h4 id="directive-generator">directive generator</h4>
+<pre><code>a directive generator is just a function which generate a function, and the generated function can be used as directives
+
+usage: `someTag(/*attrs=*/{..., directives:directiveGenerator(...),  ...}, children...)`
+</code></pre><h5 id="builtin-directive-geneator-modules">builtin directive geneator modules</h5>
+<p>model.coffee, bind.coffee, show-hide.coffee, blink.coffee, splitter.coffee, options.coffee</p>
+<h6 id="generators">generators</h6>
+<p>model, bind, show, hide, blink, splitter, options</p>
+<ul>
+<li>model(m)</li>
+<li>bind(m)</li>
+<li>show(test, display)</li>
+<li>hide(test, display)</li>
+<li>blink(delay)</li>
+<li>splitter(direction)</li>
+<li><p>options(items)
+can only be used with &quot;select&quot; tag</p>
+<p>usage: <code>select({..., directives: options(items...)}, ...)</code></p>
+</li>
+</ul>
+<h4 id="samples">samples</h4>
+<pre><code>{input, model, bibind} = require(&#39;domcom&#39;)
+obj = {a:1}
+a = bibind(obj, &#39;a&#39;)
+comp = text({type:&#39;text&#39;, directives:model(a)})
+</code></pre><h4 id="src-core-builtins-">src/core/builtins/</h4>
+<p> combo, comboEdit, dialog, arrow, accordion</p>
+<h3 id="classes">classes</h3>
+<h5 id="component">Component</h5>
+<ul>
+<li><p>Component.mount</p>
+<p>   someComponent.mount(mountNode, beforeNode)</p>
+</li>
+<li><p>Component.unmount</p>
+<p>  someComponent.unmount()</p>
+</li>
+<li><p>Component.create</p>
+<p>  someComponent.create()</p>
+</li>
+<li><p>Component.render</p>
+<p>  someComponent.render()</p>
+</li>
+<li><p>Compnent.remove</p>
+<p>  someComponent.remove()</p>
+</li>
+<li><p>Component.update</p>
+<p>  someComponent.update()</p>
+</li>
+<li><p>Component.beforeMount</p>
+<p>  someComponent.beforeMount(fns...)</p>
+</li>
+<li><p>Component.afterMount</p>
+<p>  someComponent.beforeMount(fns...)</p>
+</li>
+<li><p>Component.unbindBeforeMount</p>
+<p>  someComponent.unbindBeforeMount(fns...)</p>
+</li>
+<li><p>Component.unbindAfterUnmount</p>
+<p>  someComponent.unbindAfterUnmount(fns...)</p>
+</li>
+<li><p>setOptions</p>
+<p>  someComponent.setOptions(options)</p>
+</li>
+</ul>
+<h5 id="tag">Tag</h5>
+<ul>
+<li><p>Tag.bind</p>
+<p>  someTag.bind(eventName, handlers...)</p>
+</li>
+<li><p>Tag.unbind</p>
+<p>  someTag.unbind(eventName, handlers...)</p>
+</li>
+<li><p>Tag.prop</p>
+<p>  someTag.prop(prop, value)</p>
+<p>  <code>prop</code>: if arguments.length is 1, then prop should be the property name</p>
+</li>
+<li><p>Tag.addClass</p>
+<p>  someTag.addClass(items...)</p>
+</li>
+<li><p>Tag.removeClass</p>
+<p>  someTag.removeClass(classes...)</p>
+</li>
+</ul>
+<ul>
+<li><p>Tag.css</p>
+<p>  someTag.css(prop, value)</p>
+</li>
+<li><p>Tag.show</p>
+<p>  someTag.show(display)</p>
+</li>
+<li><p>Tag.hide</p>
+<p>  someTag.hide()</p>
+</li>
+</ul>

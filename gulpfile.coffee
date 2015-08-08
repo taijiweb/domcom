@@ -1,95 +1,15 @@
-path = require('path')
 gulp = require('gulp')
-gutil = require 'gulp-util'
-
-minimist = require('minimist')
-argv = minimist(process.argv.slice(2))
-
-runSequence = require('run-sequence')
-
-changed = require('gulp-changed')
-cache = require('gulp-cached')
-plumber = require('gulp-plumber')
-
 del = require('del')
 
-mocha = require('gulp-mocha')
-mochaPhantomJS = require('gulp-mocha-phantomjs')
-
-xtask = ->
-
 task = gulp.task.bind(gulp)
-
 src = gulp.src.bind(gulp)
-from = (source, options={dest:'app', cache:'cache'}) ->
-  options.dest ?= 'app'
-  options.cache ?= 'cache'
-  src(source).pipe(changed(options.dest)).pipe(cache(options.cache)).pipe(plumber())
-
 dest = gulp.dest.bind(gulp)
 
-FromStream = from('').constructor
-FromStream::to = (dst) -> @pipe(dest(dst))
-FromStream::pipelog = (obj, log=gutil.log) -> @pipe(obj).on('error', log)
+task 'clean', (cb) -> del(['doc'], cb)
 
-task 'clean', (cb) -> del(['dist', 'lib'], cb)
+markdown = require('gulp-markdown')
+task 'markdown', (cb) ->
+  src(['./src/**/*.md']).pipe(markdown({})).pipe(dest('./doc'))
+  src(['./index.md']).pipe(markdown({})).pipe(dest('.'))
 
-logTime = (msg) ->
-  t = new Date()
-  console.log("[#{t.getHours()}:#{t.getMinutes()}:#{t.getSeconds()}]: "+msg)
-
-coffee = require 'gulp-coffee'
-
-task 'coffee', (cb) ->
-  from(['./src/**/*.coffee'], {cache:'coffee'}).pipelog(coffee({bare: true})).pipe(dest('./lib'))
-
-webpack = require 'webpack'
-{makeConfig, makeWebpackDevServer} = require './webpack.config'
-
-onTaskDone = () -> (err, stats) ->
-  if err then console.log('Error', err)
-  #else  console.log(stats.toString())
-  logTime("finished 'webpack'")
-  #done and done()
-  return
-
-webpack = require("webpack")
-ClosureCompilerPlugin = require('webpack-closure-compiler')
-
-webpackDistribute = (mode) ->
-  plugins = [new webpack.optimize.UglifyJsPlugin({minimize: true})]
-  #plugins = [new ClosureCompilerPlugin()]
-  config = makeConfig('./src/index', 'domcom.min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc'})
-  webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone()
-  pathinfo = mode=='dev'
-  if mode=='dev' then plugins = []
-  config = makeConfig('./src/index', 'domcom.js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
-  webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone()
-  config = makeConfig('./test/mocha-phantomjs-index', 'mocha-phantomjs-index.js', {path:'dist', pathinfo:pathinfo, plugins})
-  webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone()
-  config = makeConfig('./demo/index', 'demo-index.js', {path:'dist', pathinfo:pathinfo, plugins})
-  webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone()
-  config = makeConfig('./demo/todomvc/todomvc', 'todomvc.js', {path:'dist', pathinfo:pathinfo, plugins})
-  webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone()
-
-task 'webpack-dist', () -> webpackDistribute('dist')
-task 'webpack-dev', () -> webpackDistribute('dev')
-
-task 'webpack-server', ->
-  webServerPlugins = [
-    new webpack.HotModuleReplacementPlugin()
-    new webpack.NoErrorsPlugin()
-  ]
-  makeWebpackDevServer(["webpack/hot/dev-server", './src/index'], 'domcom.js', {port:8084, inline:true, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './test/mocha-phantomjs-index'], 'mocha-phantomjs-index.js', {port:8080, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './demo/index'], 'demo-index.js', {port:8082, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './demo/todomvc/todomvc'], 'todomvc.js', {port:8086, plugins:webServerPlugins})
-
-task 'dev', (callback) -> runSequence 'clean', 'webpack-dev', callback
-task 'dist', (callback) -> runSequence 'clean', 'webpack-dist', 'coffee', callback
-task 'default', ['webpack-server']
+task 'default', ['clean', 'markdown']
