@@ -5,7 +5,7 @@ bindings, sibind
 classFn
 Component, list, func, if_
 a, p, span, text, li, div, checkbox
-model, show, hide, splitter, options} = require 'domcom/src/index'
+model, show, hide, splitter, options} = dc
 
 describe 'properties ', ->
   describe "classFn", ->

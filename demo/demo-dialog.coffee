@@ -1,4 +1,4 @@
-{dialog, div} = require('domcom/src/index')
+{dialog, div} = dc
 
 module.exports = ->
   onOk = ->
@@ -9,4 +9,4 @@ module.exports = ->
       showClose:true
     },
     div({class:'message'}, 'a message', div({onclick:onOk}, 'OK')))
-  dlg.open()
+  #dlg.open()

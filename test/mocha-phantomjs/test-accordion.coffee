@@ -4,7 +4,7 @@
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func, repeat
 accordionGroup, accordion
-a, p, span, text, div} = require('domcom/src/index')
+a, p, span, text, div} = dc
 
 describe 'accordion', ->
   it  'should create and update accordion group', ->

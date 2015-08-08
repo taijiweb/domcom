@@ -1,9 +1,9 @@
 {bibind
 accordion
 repeat
-div, span} = require 'domcom/src/index'
+div, span} = dc
 
-module.exports = demoAccordion = ->
+module.exports = ->
   groups = [
     {heading:'group1', items: 'a b c'.split(' ')}
     {heading:'group2', items: 'd e f'.split(' ')}
@@ -22,4 +22,4 @@ module.exports = demoAccordion = ->
     )
     [groupAttrs, group.heading, content, groupOptions]
   comp = accordion(Object.create(null), accordionGroupList, {closeOthers:true})
-  comp.mount()
+  #comp.mount()

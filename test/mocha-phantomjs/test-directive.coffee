@@ -7,7 +7,7 @@
 Component, list, func, if_, repeat
 a, div, p, span, text, select, input
 model, show, hide, splitter, options
-bindings, bibind} = require 'domcom/src/index'
+bindings, bibind} = dc
 
 {$a, $b, _a, _b} = bindings({a: 1, b: 2})
 

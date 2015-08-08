@@ -10,7 +10,7 @@ readyFnList = []
 
 globalDcId = 1
 
-module.exports = window.dc = dc = (element, options={}) ->
+module.exports = dc = (element, options={}) ->
   if typeof element == 'string'
     if options.noCache then querySelectorComponent(element, options.all)
     else componentCache[element] or componentCache[element] = querySelectorComponent(selector, options.all)

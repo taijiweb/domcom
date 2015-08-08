@@ -2,7 +2,7 @@
 ###
 {expect, iit, idescribe, nit, ndescribe, rtimeout, rinterval} = require('./helper')
 
-{isComponent} = dc = require 'domcom/src/index'
+{isComponent} = dc
 
 ndescribe "test dc", ->
   describe 'dc(document)', ->

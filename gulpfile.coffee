@@ -2,6 +2,9 @@ path = require('path')
 gulp = require('gulp')
 gutil = require 'gulp-util'
 
+minimist = require('minimist')
+argv = minimist(process.argv.slice(2))
+
 runSequence = require('run-sequence')
 
 changed = require('gulp-changed')
@@ -29,18 +32,21 @@ FromStream = from('').constructor
 FromStream::to = (dst) -> @pipe(dest(dst))
 FromStream::pipelog = (obj, log=gutil.log) -> @pipe(obj).on('error', log)
 
-task 'clean', (cb) ->
-  delFiles = ['dist']
-  del(delFiles, cb)
+task 'clean', (cb) -> del(['dist', 'lib'], cb)
 
 logTime = (msg) ->
   t = new Date()
   console.log("[#{t.getHours()}:#{t.getMinutes()}:#{t.getSeconds()}]: "+msg)
 
+coffee = require 'gulp-coffee'
+
+task 'coffee', (cb) ->
+  from(['./src/**/*.coffee'], {cache:'coffee'}).pipelog(coffee({bare: true})).pipe(dest('./lib'))
+
 webpack = require 'webpack'
 {makeConfig, makeWebpackDevServer} = require './webpack.config'
 
-onTaskDone = (done) -> (err, stats) ->
+onTaskDone = () -> (err, stats) ->
   if err then console.log('Error', err)
   #else  console.log(stats.toString())
   logTime("finished 'webpack'")
@@ -50,44 +56,40 @@ onTaskDone = (done) -> (err, stats) ->
 webpack = require("webpack")
 ClosureCompilerPlugin = require('webpack-closure-compiler')
 
-# need live reload , so does not use webpack-dev-server
-task 'webpack-dist', (done) ->
-  env = process.env.NODE_ENV
-  entry = './src/index'
-  config = makeConfig(entry, 'domcom.js', {path:'dist', libraryTarget:'umd', library:'dc'})
+webpackDistribute = (mode) ->
+  plugins = [new webpack.optimize.UglifyJsPlugin({minimize: true})]
+  #plugins = [new ClosureCompilerPlugin()]
+  config = makeConfig('./src/index', 'domcom.min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc'})
   webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone(done)
-  process.env.NODE_ENV = 'production'
-  #plugins = [new webpack.optimize.UglifyJsPlugin({minimize: true})]
-  plugins = [new ClosureCompilerPlugin()]
-  config = makeConfig(entry, 'domcom.min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
+  webpackCompiler.run onTaskDone()
+  pathinfo = mode=='dev'
+  if mode=='dev' then plugins = []
+  config = makeConfig('./src/index', 'domcom.js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
   webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone(done)
-  process.env.NODE_ENV = env
+  webpackCompiler.run onTaskDone()
+  config = makeConfig('./test/mocha-phantomjs-index', 'mocha-phantomjs-index.js', {path:'dist', pathinfo:pathinfo, plugins})
+  webpackCompiler = webpack(config)
+  webpackCompiler.run onTaskDone()
+  config = makeConfig('./demo/index', 'demo-index.js', {path:'dist', pathinfo:pathinfo, plugins})
+  webpackCompiler = webpack(config)
+  webpackCompiler.run onTaskDone()
+  config = makeConfig('./demo/todomvc/todomvc', 'todomvc.js', {path:'dist', pathinfo:pathinfo, plugins})
+  webpackCompiler = webpack(config)
+  webpackCompiler.run onTaskDone()
 
-webServerPlugins = [
-  new webpack.HotModuleReplacementPlugin()
-  new webpack.NoErrorsPlugin()
-]
+task 'webpack-dist', () -> webpackDistribute('dist')
+task 'webpack-dev', () -> webpackDistribute('dev')
 
-task 'webpack-server-test', (done) ->
-  entry = ["webpack/hot/dev-server", './test/mocha-phantomjs-index']
-  makeWebpackDevServer(entry, 'mocha-phantomjs-index.js', {port:8080, plugins:webServerPlugins})
+task 'webpack-server', ->
+  webServerPlugins = [
+    new webpack.HotModuleReplacementPlugin()
+    new webpack.NoErrorsPlugin()
+  ]
+  makeWebpackDevServer(["webpack/hot/dev-server", './src/index'], 'domcom.js', {port:8084, inline:true, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './test/mocha-phantomjs-index'], 'mocha-phantomjs-index.js', {port:8080, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './demo/index'], 'demo-index.js', {port:8082, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './demo/todomvc/todomvc'], 'todomvc.js', {port:8086, plugins:webServerPlugins})
 
-task 'webpack-server-demo', (done) ->
-  entry = ["webpack/hot/dev-server", './demo/index']
-  makeWebpackDevServer(entry, 'demo-index.js', {port:8082, plugins:webServerPlugins})
-
-task 'webpack-server-todomvc', (done) ->
-  entry = ["webpack/hot/dev-server", './demo/todomvc/app']
-  makeWebpackDevServer(entry, 'todomvc.js', {port:8086, plugins:webServerPlugins})
-
-task 'build', (callback) ->
-  runSequence 'clean', 'webpack-dist', callback
-  return
-
-task 'build-watch', (callback) ->
-  runSequence 'clean', ['webpack-server-test', 'webpack-server-demo', 'webpack-server-todomvc'], callback
-  return
-
-task 'default', ['build-watch']
+task 'dev', (callback) -> runSequence 'clean', 'webpack-dev', callback
+task 'dist', (callback) -> runSequence 'clean', 'webpack-dist', 'coffee', callback
+task 'default', ['webpack-server']

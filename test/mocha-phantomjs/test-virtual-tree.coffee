@@ -9,7 +9,7 @@ Tag, Text, List, txt, list
 p, div,
 classFn, styleFrom,
 VirtualNode
-} = dc = require 'domcom/src/index'
+} = dc
 
 {$a, $b, _a, _b} = bindings({a: 1, b: 2})
 

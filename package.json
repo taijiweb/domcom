@@ -16,6 +16,7 @@
     "gulp-coffee": "~2.2.0",
     "gulp-mocha": "~1.1.0",
     "gulp-copy": "0.0.2",
+    "minimist": "1.1.0",
     "run-sequence": "~1.0.2",
     "chai": "~1.9.1",
     "gulp-mocha-phantomjs": "~0.5.3",

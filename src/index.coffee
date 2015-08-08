@@ -1,4 +1,4 @@
-module.exports = dc = require './dc'
+window.dc = module.exports = dc = require './dc'
 
 dc.extend = extend = require './extend'
 

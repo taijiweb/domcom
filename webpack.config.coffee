@@ -3,6 +3,7 @@ path = require('path')
 webpack = require("webpack")
 
 exports.makeConfig = makeConfig = (entry, filename, options={}) ->
+  #console.log JSON.stringify options
   config =
     entry: entry
     output:
@@ -35,7 +36,7 @@ exports.makeConfig = makeConfig = (entry, filename, options={}) ->
 
 WebpackDevServer = require("webpack-dev-server")
 exports.makeWebpackDevServer = (entry, filename, options={}) ->
-  compilerConfig = makeConfig(entry, filename)
+  compilerConfig = makeConfig(entry, filename, options)
   webpackCompiler = webpack(compilerConfig)
   serverConfig =
     contentBase: "http://localhost/",
