@@ -95,11 +95,11 @@ release = require('gulp-github-release');
 release = require('gulp-github-release')
 task 'release', ->
   src('./dist/*.*').pipe(release({
-    token: 'token',                     # or you can set an env var called GITHUB_TOKEN instead
+    token: '623bced92b33d0f08ebc9d54e041edd805183706',  # or you can set an env var called GITHUB_TOKEN instead
     owner: 'taijiweb',                    # if missing, it will be extracted from manifest (the repository.url field)
     repo: 'domcom',            # if missing, it will be extracted from manifest (the repository.url field)
     tag: 'v0.0.1',                      # if missing, the version will be extracted from manifest and prepended by a 'v'
-    name: 'domcom v1.0.0',     # if missing, it will be the same as the tag
+    name: 'domcom v0.0.1',     # if missing, it will be the same as the tag
     notes: 'the web framework to provide dom component',                # if missing it will be left undefined
     draft: false,                       # if missing it's false
     prerelease: false,                  # if missing it's false
