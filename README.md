@@ -16,6 +16,8 @@ the web framework to provide dom component
 * the root of the component may be multiple dom elements
 
 ## Sample
+There is some [basic samples](path/to/basic/samples), and a [todoMVC implementation](path/to/basic/samples). The code below give a taste of domcom:
+
     # coffee-script
     {bindings, list, text, p} = require 'domcom'
     demoSum = ->
