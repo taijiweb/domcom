@@ -17,6 +17,7 @@ exports.demoMap = demoMap =
   splitter: require 'domcom/demo/demo-splitter'
   sum: require 'domcom/demo/demo-sum'
   'text model': require 'domcom/demo/demo-text-model'
+  'auto width edit': require 'domcom/demo/demo-auto-width-edit'
 
 current = 'accordion'
 currentComp = demoMap[current]()

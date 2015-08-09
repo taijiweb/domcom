@@ -1,8 +1,8 @@
 {list, input, select, extendAttrs} = require '../core'
 {model, options} = require '../directives'
 
+# this is not finished and not tested
 module.exports = (attrs, modelValue, valueList) ->
-  # this is not finished and not tested
   if modelValue
     attrs = extendAttrs(attrs, {directives:[model(modelValue), options(valueList)]})
   else attrs = extendAttrs({directives:(options(valueList))})
