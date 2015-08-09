@@ -19,10 +19,10 @@ exports.demoMap = demoMap =
   'text model': require 'domcom/demo/demo-text-model'
   'auto width edit': require 'domcom/demo/demo-auto-width-edit'
 
-current = 'accordion'
-currentComp = demoMap[current]()
 
-exports.runDomComDemo = window.runDomComDemo = ->
+exports.runDemo = runDemo = (demoMap, initItem='accordion') ->
+  current = initItem
+  currentComp = demoMap[current]()
   demoSelect = select({
     directives: options(Object.keys(demoMap))
     value: 'accordion'
@@ -35,4 +35,7 @@ exports.runDomComDemo = window.runDomComDemo = ->
   })
   demoSelect.mount()
   currentComp.mount()
+
+exports.runDomComDemo = window.runDomComDemo = ->
+  runDemo demoMap, 'accordion'
 

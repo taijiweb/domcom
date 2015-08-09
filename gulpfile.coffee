@@ -59,7 +59,7 @@ ClosureCompilerPlugin = require('webpack-closure-compiler')
 webpackDistribute = (mode) ->
   plugins = [new webpack.optimize.UglifyJsPlugin({minimize: true})]
   #plugins = [new ClosureCompilerPlugin()]
-  config = makeConfig('./src/index', 'domcom.min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc'})
+  config = makeConfig('./src/index', 'domcom.min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
   webpackCompiler = webpack(config)
   webpackCompiler.run onTaskDone()
   pathinfo = mode=='dev'
@@ -98,8 +98,8 @@ task 'release', ->
     token: '623bced92b33d0f08ebc9d54e041edd805183706',  # or you can set an env var called GITHUB_TOKEN instead
     owner: 'taijiweb',                    # if missing, it will be extracted from manifest (the repository.url field)
     repo: 'domcom',            # if missing, it will be extracted from manifest (the repository.url field)
-    tag: 'v0.0.1',                      # if missing, the version will be extracted from manifest and prepended by a 'v'
-    name: 'domcom v0.0.1',     # if missing, it will be the same as the tag
+    tag: 'v0.0.2',                      # if missing, the version will be extracted from manifest and prepended by a 'v'
+    name: 'domcom v0.0.2',     # if missing, it will be the same as the tag
     notes: 'the web framework to provide dom component',                # if missing it will be left undefined
     draft: false,                       # if missing it's false
     prerelease: false,                  # if missing it's false
