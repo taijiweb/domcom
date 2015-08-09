@@ -51,7 +51,7 @@ exports.inputAttrs = inputAttrs = {
     'z-index': '10',
     width: -> Math.max(Math.floor(editWidth)+40, 48)+'px'
     whiteSpace: 'nowrap'}
-  onkeydown: -> exports.inputKeyFn()
+  onkeydown: (event, comp) -> (exports.inputKeyFn.bind(@))(event, comp)
 }
 
 exports.makeComponent = ->

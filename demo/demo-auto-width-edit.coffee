@@ -1,4 +1,4 @@
 {autoWidthEdit} = dc
 
-exports.demoAutoWidthEdit = ->
+module.exports = ->
   comp = autoWidthEdit.makeComponent()
