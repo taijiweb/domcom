@@ -1,7 +1,5 @@
 #{Value} = require 'bind-expression'
-{Tag, List} = require '../base'
-{repeat, txt} = require '../instantiate'
-{option} = require '../tag'
+{Tag, List, repeat, txt, option} = require '../core'
 
 # options directive， used for select tag
 module.exports = (exp, attrs) -> (comp) ->

@@ -1,10 +1,6 @@
-{classFn} = require '../property'
-{pairListDict} = require '../../util'
-# to avoid loop dependency, do not require below at the head of this file
-#  '../base' -> '../directive' -> './directives' -> this file
-{Component} = require('../base')
-{div, span} = require '../tag'
-{show} = require '../directives'
+{pairListDict} = require '../util'
+{classFn, Component, div, span} = require '../core'
+{show} = require './show-hide'
 
 #splitter
 module.exports = (direction) -> (comp) ->

@@ -29,7 +29,13 @@ There is some [basic samples](path/to/basic/samples), and a [todoMVC implementat
     demSum()
 
 ## get start
-`npm install domcom`, and `<script src="path/to/domcom.js"/>` or `<script src="path/to/domcom.min.js"/>`,
+`npm install domcom`
+
+`<script src="path/to/domcom.js"/>`
+
+or
+
+`<script src="path/to/domcom.min.js"/>`
 
 
 ## LICENSE

@@ -1,7 +1,4 @@
-{Component} = require('../base')
-{list} = require '../instantiate'
-tags = require '../tag'
-{div} = tags
+{Component, list, div}  = require '../core'
 
 globalID = 0
 

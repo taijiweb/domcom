@@ -1,4 +1,4 @@
-{extendEventValue} = require '../property'
+{extendEventValue} = require '../core'
 
 # model directive
 module.exports = (exp, event) -> (comp) ->

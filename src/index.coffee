@@ -6,6 +6,8 @@ extend(dc,
 
   # component
   require('./core'),
+  require('./directives')
+  require('./builtins')
 
   # utilities
   require('./util'),

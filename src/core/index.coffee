@@ -5,6 +5,4 @@ module.exports = exports  = extend({},
   require('./instantiate')
   require('./tag')
   require('./property')
-  require('./directives')
-  require('./builtins')
 )

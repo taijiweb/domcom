@@ -1,7 +1,5 @@
-{list} = require '../instantiate'
-{input, span, div} = require '../tag'
+{list, input, span, div, extendAttrs} = require '../core'
 {model, show} = require '../directives'
-{extendAttrs} = require '../property'
 
 exports.combobox = combobox = (attrs, modelValue, valueList, direction) ->
   showingItems = false

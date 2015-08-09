@@ -1,7 +1,5 @@
-{list} = require '../instantiate'
-{input, select} = require '../tag'
+{list, input, select, extendAttrs} = require '../core'
 {model, options} = require '../directives'
-{extendAttrs} = require '../property'
 
 module.exports = (attrs, modelValue, valueList) ->
   # this is not finished and not tested

@@ -1,4 +1,4 @@
-{styleDisplayOfShow} = require '../property'
+{styleDisplayOfShow} = require '../core'
 
 ### @param test - paramenter expression for directive
 ###
