@@ -10,18 +10,22 @@ List = require './List'
 {funcString, newLine} = require '../../util'
 
 module.exports = class Tag extends BaseComponent
-  constructor: (tagName, attrs, children, options) ->
+  constructor: (tagName, attrs={}, children, options) ->
     @tagName = tagName = tagName.toLowerCase()
     @namespace = attrs.namespace
     delete attrs.namespace
     if !@namespace
       if tagName=='svg' then @namespace = "http://www.w3.org/2000/svg"
       else if tagName=='math' then @namespace = "http://www.w3.org/1998/Math/MathML"
+    @attrs = attrs
     @isTag = true
     super(options)
     @children = new List(children, {})
-    @processAttrs(attrs)
+
+  init: ->
+    @processAttrs(@attrs)
     @processDirectives()
+    @children.init()
 
   clone: (options=@options) ->
     children = for child in @children.children then child.clone()
@@ -46,8 +50,8 @@ module.exports = class Tag extends BaseComponent
       comp = directive(comp)
     comp
 
-  processAttrs: (attrs={}) ->
-    @attrs = attrs
+  processAttrs: ->
+    attrs = @attrs
     @directives = attrs.directives
     delete @attrs.directives
     activePropertiesCount = 0
@@ -99,57 +103,6 @@ module.exports = class Tag extends BaseComponent
       vtree
 
   isActive: -> !@node or @activePropertiesCount or @hasLifeTimeEvent()
-
-  renderProperties: ->
-    activePropertiesCount = @activePropertiesCount
-    if !activePropertiesCount then return
-    {node, className, cacheProps, props, cacheStyle, style, cacheEvents, events, cacheSpecials, specials} = @
-
-    if className.needUpdate
-      cacheClassName = @cacheClassName
-      classes = className()
-      if classes!=cacheClassName then node.className = classes
-      if !className.needUpdate then activePropertiesCount--
-      @cacheClassName = classes
-
-    for prop, value of props
-      if typeof value == 'function'
-        value = value()
-      else
-        delete props[prop]
-        activePropertiesCount--
-      if !value? then value = ''
-      value!=cacheProps[prop] and node[prop] = value
-
-    elementStyle = node.style
-    for prop, value of style
-      if typeof value == 'function'
-        value = value()
-      else
-        delete style[prop]
-        activePropertiesCount--
-      if !value? then value = ''
-      value!=cacheStyle[prop] and elementStyle[prop] = value
-    if !cacheStyle.oldDisplay? and (display=elementStyle.display) and display!='none'
-      cacheStyle.oldDisplay = display
-
-    for prop, value of events
-      delete events[prop]
-      cacheEvents[prop] = value
-      activePropertiesCount--
-      node[prop] = eventHandlerFromArray(value, node, @)
-
-    for prop, value of specials
-      if typeof value == 'function' then value = value()
-      else
-        delete props[prop]
-        activePropertiesCount--
-      if !value? then value = ''
-      value!=cacheProps[prop] and spercialPropSet[prop](@, cacheProps[prop], value)
-
-    @activePropertiesCount = activePropertiesCount
-
-    return
 
   css: (prop, value) ->
     # for performance: use cacheStyle to avoid accessing dom

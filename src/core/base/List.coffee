@@ -20,6 +20,10 @@ module.exports = exports = class List extends BaseComponent
     super(options)
     return
 
+  init: ->
+    for child in @children then child.init()
+    return
+
   clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
 
   setParentNode: (node) ->

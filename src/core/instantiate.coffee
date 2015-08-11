@@ -41,7 +41,8 @@ exports.clone = (attrs, src, options) ->
 
 exports.if_ = (attrs, test, then_, else_, options) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new If(test, then_, else_, options)])
-  else new If(attrs, test, then_, else_)
+  else
+    new If(attrs, test, then_, else_)
 
 exports.case_ = (attrs, test, map, else_, options) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Case(test, map, else_, options)])

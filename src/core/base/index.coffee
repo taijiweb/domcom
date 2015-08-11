@@ -1,7 +1,7 @@
 module.exports =
   isComponent: require './isComponent'
   toComponent: require './toComponent'
-  Component: require './component'
+  Component: require './Component'
   BaseComponent: require './BaseComponent'
   List: require './List'
   DomNodeList: require './DomNodeList'

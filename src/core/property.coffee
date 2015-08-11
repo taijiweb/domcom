@@ -10,31 +10,44 @@ exports.extendEventValue = extendEventValue = (props, prop, value, before) ->
   if before then props[prop] = value.concat(oldValue)
   else props[prop] = oldValue.concat(value)
 
-exports.extendAttrs = (attrs, obj) ->
-  attrs = attrs or Object.create(null)
-  attrs.className = classFn([attrs.class, attrs.className])
-  delete attrs.class
-  obj = obj or Object.create(null)
-  for key, value of obj
-    if key=='style'
-      attrs.style = attrs.style or Object.create(null)
-      extend attrs.style, value
-    else if key=='className' or key=='class'
-      attrs.className = classFn([attrs.className, value])
-    else if key=='directives'
-      if !obj.directives then continue
-      else if !attrs.directives
-        attrs.directives = obj.directives
-        continue
-      else if attrs.directives not instanceof Array
+exports.extendAttrs = (attrs, obj, options={}) ->
+  if !obj then return attrs
+  else if !attrs then return obj
+  objClass = classFn([obj.class, obj.className])
+  if options.replaceClass then attrs.className = objClass
+  else
+    attrs.className = classFn([attrs.class, attrs.className])
+    delete attrs.class
+    attrs.className = classFn([attrs.className, objClass])
+  if obj.style then extend styleFrom(attrs.style), obj.style
+  if options.replaceDirectives
+    attrs.directives = obj.directives
+  else if obj.directives
+    if !attrs.directives
+      attrs.directives = obj.directives
+    else
+      if attrs.directives not instanceof Array
         attrs.directives = [attrs.directives]
       if value not instanceof Array
         attrs.directives.push value
       else attrs.directives.push.apply attrs.directives, value
-    else if key[..1]=='on'
-      extendEventValue(attrs, key, value)
+  for key, value of obj
+    if key[..1]=='on'
+      if options['replace_'+key] or options.replaceEvents then attrs[key] = value
+      else extendEventValue(attrs, key, value)
     else attrs[key] = value
   attrs
+
+overAttrs = (attrs, obj) ->
+  if !obj
+    attrs = extend(Object.create(null), attrs)
+    if attrs.style then attrs.style = extend({}, styleFrom(attrs.style))
+    attrs
+  else if !attrs then obj
+  else
+    for key, value of attrs
+      if !obj[key]? then obj[key] = value
+    obj
 
 exports.classFn = classFn = (items...) ->
   classMap = Object.create(null)
@@ -112,6 +125,7 @@ exports.styleFrom = (value) ->
       else [key, value] = item
       result[key] = value
     result
+  else if value not instanceof Object then Object.create(null)
   else value
 
 exports.updateProp = (prop, value, cache, element) ->

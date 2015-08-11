@@ -9,6 +9,8 @@ module.exports = class DomNode extends Tag
     @namespace = node.namespace
     @isTag = true
     BaseComponent.constructor.call(@, options)
+
+  init: ->
     @processAttrs(attrs)
     @cacheDomProperties()
     @processDirectives()

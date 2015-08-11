@@ -35,6 +35,7 @@ describe 'properties ', ->
     it 'should get class property in component', ->
       active = true
       comp = div({class:{a:1, b:-> active}})
+      comp.init()
       expect(comp.className()).to.equal 'a b'
       comp.className = classFn {a:1, b:-> active} # need be assign again before the call before affected the className and its needUpdate
       expect(comp.className.needUpdate).to.equal true

@@ -2,6 +2,7 @@ BaseComponent = require './BaseComponent'
 DomNode = require './DomNode'
 {newLine} = require '../../util'
 
+# unfinished
 module.exports = exports = class DomNodeList extends BaseComponent
   constructor: (@children, options) ->
     if children.length==0 then children.push new Text('')
@@ -11,6 +12,10 @@ module.exports = exports = class DomNodeList extends BaseComponent
       child.container = @
       child.index = i
     super(options)
+    return
+
+  init: ->
+    for child in @child then child.init()
     return
 
   setParentNode: (node) ->

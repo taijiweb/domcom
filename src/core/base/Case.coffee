@@ -3,11 +3,27 @@ TransformComponent = require './TransformComponent'
 {funcString, newLine} = require '../../util'
 
 module.exports = class Case extends TransformComponent
-  constructor: (test, map, else_, options) ->
+  constructor: (test, map, else_, options={}) ->
     super(options)
+
+    if typeof test != 'function'
+      if map.hasOwnPoperty(test) then return toComponent(map[key])
+      else return toComponent(else_)
+
+    if options.convertToIf
+      for key, value of map
+        else_ = If((->test()==key), value, else_)
+      return else_
+
     for key, value of map
       map[key] = toComponent(value) #.inside(@, @)
     else_ = toComponent(else_) #.inside(@, @)
+
+    @init = ->
+      for key, value of map
+        value.init()
+      else_.init()
+
     if typeof test == 'function'
       @getVirtualTree = =>
         content = (map[test()] or else_)

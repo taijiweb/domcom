@@ -4,11 +4,10 @@
 ###
 showHide = (needShow) -> (test, showDisplay) ->
   (comp) ->
-    display = comp.style.display
-    if !display? then comp.activePropertiesCount++
+    style = comp.attrs.style
+    display = style.display
     if typeof display == 'function' then display = display()
-    comp.cacheStyle.oldDisplay = display or ''
-    comp.style.display = ->
+    style.display = ->
       if typeof test == 'function' then testValue = !!test()
       else testValue = !!test
       comp.styleDisplayOfShow(testValue==needShow, showDisplay)

@@ -13,6 +13,8 @@ module.exports = class Component
     @options = null
     @id = componentId++
 
+  init: ->
+
   setOptions: (@options) -> @
 
   beforeMount: (fns...) ->
@@ -75,10 +77,13 @@ module.exports = class Component
     @
 
   render: ->
-    if !@vtree then @vtree = @getVirtualTree()
+    if !@vtree
+      @init()
+      @vtree = @getVirtualTree()
     @vtree.render()
 
   create: ->
+    @init()
     @vtree = @getVirtualTree()
     @vtree.render()
 
