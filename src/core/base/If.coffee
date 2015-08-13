@@ -34,36 +34,32 @@ maybeIf = (test, then_, else_, options) ->
 
 module.exports = class If extends TransformComponent
   constructor: (test, then_, else_, options) ->
+    then_ = toComponent(then_)
+    else_ = toComponent(else_)
+
+    if typeof test != 'function'
+      return if test then then_ else else_
+
     super(options)
 
-    @then_ = then_ = toComponent(then_) #.inside(@, @)
-    @else_ = else_ = toComponent(else_) #.inside(@, @)
+    initialized = false
 
-    @init = -> then_.init(); else_.init()
+    @init = -> if !initialized then initialized = true; then_.init(); else_.init()
 
-    if typeof test == 'function'
-      @getVirtualTree = =>
-        content = if test() then then_ else else_
-        vtree = content.getVirtualTree()
-        vtree.vtreeRootComponent = @
-        vtree.srcComponents.unshift([@, null])
-        @vtree = vtree
-      @setParentNode = (node) ->
-        @parentNode = node
-        then_.setParentNode node
-        else_.setParentNode node
-    else
-      content = if test then then_ else else_
-      @getVirtualTree = ->
-        vtree = content.getVirtualTree()
-        vtree.srcComponents.unshift([@, null])
-        @vtree = vtree
-      @setParentNode = (node) ->
-        @parentNode = node
-        content.setParentNode node
-    @clone = (options) -> (new If(test, then_.clone(), else_clone(), options or @options)).copyLifeCallback(@)
-
-
+    @createVirtualTree = =>
+      transformerInfo = {}
+      if test()
+        content = then_
+        transformer.thenCreated = true
+      else
+        content = else_
+        transformer.elseCreated = true
+      vtree = content.createVirtualTree()
+      vtree.transformerRoot = @
+      vtree.transformerInfo = transformerInfo
+      vtree.transformerInfoStack.push(transformerInfo)
+      vtree.transformers.unshift([@, null])
+      vtree
 
     @toString = (indent=0, noNewLine='') ->
       newLine(indent, noNewLine)+'<if '+funcString(test)+'>' + then_.toString(indent+2) + else_.toString(indent+2)+newLine('</if>', indent)

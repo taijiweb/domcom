@@ -20,29 +20,23 @@ module.exports = class Case extends TransformComponent
     else_ = toComponent(else_) #.inside(@, @)
 
     @init = ->
+      if @initialized then return @
+      @initialized = true
       for key, value of map
         value.init()
       else_.init()
+      @
 
-    if typeof test == 'function'
-      @getVirtualTree = =>
-        content = (map[test()] or else_)
-        vtree = content.getVirtualTree()
-        vtree.vtreeRootComponent = @
-        vtree.srcComponents.unshift([@, null])
-        @vtree = vtree
-      @setParentNode = (node) ->
-        @parentNode = node
-        for _, value of map then map[key].setParentNode.node
-        else_.setParentNode node
-    else
-      content = (map[test] or else_)
+    @getVirtualTree = =>
+      content = (map[test()] or else_)
       vtree = content.getVirtualTree()
+      vtree.vtreeRootComponent = @
       vtree.srcComponents.unshift([@, null])
-      @getVirtualTree = -> vtree
-      @setParentNode = (node) ->
-        @parentNode = node
-        content.setParentNode node
+      @vtree = vtree
+    @setParentNode = (node) ->
+      @parentNode = node
+      for _, value of map then map[key].setParentNode.node
+      else_.setParentNode node
 
     @clone = (options) ->
       cloneMap = Object.create(null)
