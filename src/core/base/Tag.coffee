@@ -19,6 +19,7 @@ module.exports = class Tag extends BaseComponent
       else if tagName=='math' then @namespace = "http://www.w3.org/1998/Math/MathML"
     @attrs = attrs
     @isTag = true
+    @intialized = false
     super(options)
     @children = new List(children, {})
 
@@ -26,19 +27,12 @@ module.exports = class Tag extends BaseComponent
     @processAttrs(@attrs)
     @processDirectives()
     @children.init()
+    @initialized = true
 
   clone: (options=@options) ->
     children = for child in @children.children then child.clone()
     result = new Tag(@tagName, Object.create(null), children, options or @options)
-    result.cacheProps = @cacheProps
-    result.props = @props
-    result.cacheStyle = @cacheStyle
-    result.style = @style
-    result.cacheEvents = @cacheEvents
-    result.events = @events
-    result.cacheSpecials = @cacheSpecials
-    result.specials = @specials
-    result.activePropertiesCount = @activePropertiesCount
+    result.attrs = cloneObject(@attrs)
     result.copyLifeCallback(@)
 
   processDirectives: ->
@@ -52,36 +46,23 @@ module.exports = class Tag extends BaseComponent
 
   processAttrs: ->
     attrs = @attrs
-    @directives = attrs.directives
-    delete @attrs.directives
-    activePropertiesCount = 0
     @className = classFn(attrs.className, attrs.class)
     delete attrs.className
-    delete attrs.class
-    if @className.needUpdate then activePropertiesCount++
-    @cacheClassName = ''
     @props = props = Object.create(null)
-    @cacheProps = Object.create(null)
-    style = styleFrom(attrs.style)
-    if typeof style != 'object'
-      style = Object.create(null)
-    else activePropertiesCount += Object.keys(style).length
-    @style = style
-    delete attrs.style
-    @cacheStyle = Object.create(null)
-    @cacheEvents = Object.create(null)
+    @style = styleFrom(attrs.style)
     @events = Object.create(null)
     @specials = specials = Object.create(null)
-    @cacheSpecials = Object.create(null)
+    @directives = []
     for key, value of attrs
-      if key[..1]=='on'
-        if @addEventProp(key, value) then activePropertiesCount++
+      if key[0]=='$'
+        @directives.push(Component.directiveRegistry[key.slice(1).apply(null, value)])
+      else if key[0]=='_'
+        specials[key.slice(1)] = value
+      else if key[..1]=='on'
+        @addEventProp(key, value)
       else
-        if specialPropSet[key] then specials[key] = value
-        else if key=='for' then props['htmlFor'] = value
+        if key=='for' then props['htmlFor'] = value
         else props[key] = value
-        activePropertiesCount++
-    @activePropertiesCount = activePropertiesCount
     return
 
   getChildren: -> @children

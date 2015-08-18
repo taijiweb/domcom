@@ -6,21 +6,14 @@ exports.pairListDict = (list...) ->
   while i<len then result[list[i]] = list[i+1]; i += 2
   result
 
-exports.sibind = exports.si = sibind = (model, key) -> -> model[key]
+exports.sibind = (model, key) -> -> model[key]
 
-exports.bibind = exports.bi = bibind = (model, key) ->
+exports.bibind = (model, key) ->
   fn = (value) ->
     if !arguments.length then model[key]
     else model[key] = value
   fn.setable = true
   fn
-
-exports.bindings =  (model) ->
-  result = Object.create(null)
-  for key of model
-    result['$'+key] = bibind(model, key)
-    result['_'+key] = sibind(model, key)
-  result
 
 exports.listToDict = (list...) ->
   if list.length==1 then list = list[0]

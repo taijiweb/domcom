@@ -1,11 +1,23 @@
 VirtualList = require './VirtualList'
 VirtualNoop = require './VirtualNoop'
 VirtualNode = require './VirtualNode'
+{styleFrom, specialPropSet} = require '../property'
 
 module.exports = class VirtualTag extends VirtualNode
 
   constructor: (@baseComponent, @children) ->
     super
+    @tagName = baseComponent.tagName
+    @namespace = baseComponent.namespace
+    @className = baseComponent.className
+    @props = cloneObject(baseComponent.props)
+    @cacheProps = Object.create(null)
+    @style = cloneObject(baseComponent.style)
+    @cacheStyle = Object.create(null)
+    @events = cloneObject(baseComponent.events)
+    @cacheEvents = Object.create(null)
+    @events = Object.create(null)
+    @specials = cloneObject(baseComponent.specials)
     @vtreeRootComponent = null
     @
 
@@ -107,5 +119,3 @@ module.exports = class VirtualTag extends VirtualNode
         value!=cacheProps[prop] and spercialPropSet[prop](@, cacheProps[prop], value)
 
   replaceProperties: (vtree) ->
-
-  return

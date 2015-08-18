@@ -12,12 +12,12 @@ module.exports = class Case extends TransformComponent
 
     if options.convertToIf
       for key, value of map
-        else_ = If((->test()==key), value, else_)
+        else_ = new  If((->test()==key), value, else_)
       return else_
 
     for key, value of map
-      map[key] = toComponent(value) #.inside(@, @)
-    else_ = toComponent(else_) #.inside(@, @)
+      map[key] = toComponent(value)
+    else_ = toComponent(else_)
 
     @init = ->
       if @initialized then return @
@@ -33,6 +33,7 @@ module.exports = class Case extends TransformComponent
       vtree.vtreeRootComponent = @
       vtree.srcComponents.unshift([@, null])
       @vtree = vtree
+
     @setParentNode = (node) ->
       @parentNode = node
       for _, value of map then map[key].setParentNode.node

@@ -117,7 +117,7 @@ describe 'properties ', ->
           clearInterval handle
       handle = setInterval(styleFn, 5)
 
-  it 'bidirectional bound checkbox', ->
+  iit 'bidirectional bound checkbox', ->
     model1 = {a: 1, b: 2}
     {$a, $b, _a, _b} = bindings(model1)
     cbx = checkbox({value:"toggle me", checked:$a})
