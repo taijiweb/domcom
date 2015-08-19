@@ -46,7 +46,7 @@ module.exports = exports = class List extends BaseComponent
         vtree = child.getVirtualTree()
         vtree.srcComponents.unshift([@, i])
         if vtree.isNoop then node[i] = child.node
-        else children.push vtree.vtreeId
+        else children.push vtree
       if !children.length then children = null
       @vtree = new VirtualList(@, children)
 

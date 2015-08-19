@@ -148,9 +148,11 @@ exports.eventHandlerFromArray = (callbackList, node, component) ->
       event.stopPropagation()
     return
 
-exports.specialPropSet = {
-  left:1, top:1, width:1, height:1, right:1, bottom:1,
-  scrollTop:1, scrollHeight:1, scrollWidth:1, scrollRight:1, scrollBottom:1,
-  pageTop:1, pageLeft:1, pageHeight:1, pageRight:1, pageBottom:1,
-  clientTop:1, clientLeft:1, clientWidth:1, clientHeight:1, clientRight:1, clientBottom:1
+exports._specialProperties = _specialProperties = {
 }
+
+# special property handler: (vtree, prop, value) ->
+#  if arguments.length == 2 then return the computed value of vtree's prop
+#  else if arguments == 3 then set the computed value of vtree's porp
+#  else error
+exports.registerSpecial = (key, handler) -> _specialProperties[key] = handler

@@ -1,7 +1,7 @@
+{cloneObject} = require '../../util'
 VirtualList = require './VirtualList'
-VirtualNoop = require './VirtualNoop'
 VirtualNode = require './VirtualNode'
-{styleFrom, specialPropSet} = require '../property'
+{styleFrom, _specialProperties, eventHandlerFromArray} = require '../property'
 
 module.exports = class VirtualTag extends VirtualNode
 
@@ -11,27 +11,28 @@ module.exports = class VirtualTag extends VirtualNode
     @namespace = baseComponent.namespace
     @className = baseComponent.className
     @props = cloneObject(baseComponent.props)
-    @cacheProps = Object.create(null)
     @style = cloneObject(baseComponent.style)
-    @cacheStyle = Object.create(null)
     @events = cloneObject(baseComponent.events)
-    @cacheEvents = Object.create(null)
-    @events = Object.create(null)
     @specials = cloneObject(baseComponent.specials)
     @vtreeRootComponent = null
     @
 
+  setParentNode: (node) ->
+    @parentNode = node
+    @children.setParentNode(@node)
+    return
+
   isActive: -> @baseComponent.activePropertiesCount or @vtreeRootComponent or @children
 
   createDom: ->
-    {children} = @
-    @node = node =
+    {children, baseComponent} = @
+    baseComponent.node = @node = node =
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
-    @createProperties()
     children.setParentNode(node)
+    @createProperties()
     children.createDom()
-    @isPlaceHolder = !baseComponent.activePropertiesCount and !@vtreeRootComponent and !@hasMountCallback()
+    @isPlaceHolder = !(@className or @props or @style or @specials) and !@vtreeRootComponent and !@hasMountCallback()
     if children and children.isNoop then children = null
     @isNoop = @isPlaceHolder and !children
     @children = children
@@ -51,9 +52,9 @@ module.exports = class VirtualTag extends VirtualNode
     {node, props, style, events, specials} = @
 
     @cacheClassName = node.className = @className()
-    if !className.needUpdate then delete @className
+    if !@className.needUpdate then delete @className
 
-    @cacheProps = Object.create(null)
+    @cacheProps = cacheProps = Object.create(null)
     active = false
 
     for prop, value of props
@@ -62,10 +63,10 @@ module.exports = class VirtualTag extends VirtualNode
         active = true
       else delete props[prop]
       if !value? then value = ''
-      node[prop] = value
+      cacheProps[prop] = node[prop] = value
     if !active then delete @props
 
-    @cacheStyls = Object.create(null)
+    @cacheStyles = cacheStyles = Object.create(null)
     active = false
     elementStyle = node.style
     for prop, value of style
@@ -74,14 +75,15 @@ module.exports = class VirtualTag extends VirtualNode
         active = true
       else delete style[prop]
       if !value? then value = ''
-      elementStyle[prop] = value
+      cacheStyles[prop] = elementStyle[prop] = value
     if !active then delete @styles
 
+    @cacheEvents = cacheEvents = Object.create(null)
     for prop, value of events
       delete events[prop]
-      node[prop] = eventHandlerFromArray(value, node, @)
+      cacheEvents[prop] = node[prop] = eventHandlerFromArray(value, node, @)
 
-    @cacheStyls = Object.create(null)
+    @cacheSpecials = Object.create(null)
     active = false
     for prop, value of specials
       if typeof value == 'function'
@@ -89,13 +91,13 @@ module.exports = class VirtualTag extends VirtualNode
         active = true
       else delete props[prop]
       if !value? then value = ''
-      spercialPropSet[prop](@, null, value)
+      spercialPropSet[prop](@, prop, value)
     if !active then delete @specials
 
     return
 
   updateProperties: ->
-    {node, className, props, style, events, specials} = @
+    {node, className, props, style, specials} = @
 
     if className and (classes=className())!=@cacheClassName
       @cacheClassName = node.className = classes

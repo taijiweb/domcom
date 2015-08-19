@@ -104,6 +104,3 @@ module.exports = class Component
     @beforeMountCallbackList = srcComponent.beforeMountCallbackList
     @afterUnmountCallbackList = srcComponent.afterUnmountCallbackList
     @
-
-
-extend Component::, require '../../emitter'

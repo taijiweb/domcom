@@ -1,5 +1,4 @@
 VirtualNode = require './VirtualNode'
-VirtualNoop = require './VirtualNoop'
 
 module.exports = class VirtualText extends VirtualNode
   constructor: (@baseComponent) ->
@@ -8,6 +7,10 @@ module.exports = class VirtualText extends VirtualNode
     @node = null
 
   isActive: -> @text or @vtreeRootComponent
+
+  setParentNode: (node) ->
+    @parentNode = node
+    return
 
   processText: ->
     text = @text

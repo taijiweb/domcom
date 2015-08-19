@@ -56,15 +56,21 @@ onTaskDone = () -> (err, stats) ->
 webpack = require("webpack")
 ClosureCompilerPlugin = require('webpack-closure-compiler')
 
+domcomEntry = {
+  'domcom': './src/index',
+  'domcom-addon': './src/domcom-addon'
+  'domcom-full': './scr/domcom-full'
+}
+
 webpackDistribute = (mode) ->
   plugins = [new webpack.optimize.UglifyJsPlugin({minimize: true})]
   #plugins = [new ClosureCompilerPlugin()]
-  config = makeConfig('./src/index', 'domcom.min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
+  config = makeConfig(domcomEntry, '[name].min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
   webpackCompiler = webpack(config)
   webpackCompiler.run onTaskDone()
   pathinfo = mode=='dev'
   if mode=='dev' then plugins = []
-  config = makeConfig('./src/index', 'domcom.js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
+  config = makeConfig(domcomEntry, '[name].js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
   webpackCompiler = webpack(config)
   webpackCompiler.run onTaskDone()
   config = makeConfig('./test/mocha-phantomjs-index', 'mocha-phantomjs-index.js', {path:'dist', pathinfo:pathinfo, plugins})
@@ -85,10 +91,12 @@ task 'webpack-server', ->
     new webpack.HotModuleReplacementPlugin()
     new webpack.NoErrorsPlugin()
   ]
-  makeWebpackDevServer(["webpack/hot/dev-server", './src/index'], 'domcom.js', {port:8084, inline:true, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './test/mocha-phantomjs-index'], 'mocha-phantomjs-index.js', {port:8080, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './demo/index'], 'demo-index.js', {port:8082, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './demo/todomvc/todomvc'], 'todomvc.js', {port:8086, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './src/index'], 'domcom.js', {port:8083, inline:true, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './src/domcom-addon'], 'domcom-addon.js', {port:8084, inline:true, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './src/domcom-full'], 'domcom-full.js', {port:8085, inline:true, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './test/mocha-phantomjs-index'], 'mocha-phantomjs-index.js', {port:8088, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './demo/index'], 'demo-index.js', {port:8089, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './demo/todomvc/todomvc'], 'todomvc.js', {port:8087, plugins:webServerPlugins})
 
 release = require('gulp-github-release');
 

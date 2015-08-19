@@ -7,4 +7,3 @@ module.exports =
   VirtualText: require './VirtualText'
   VirtualComment: require './VirtualComment'
   VirtualHtml: require './VirtualHtml'
-  VirtualNoop: require './VirtualNoop'

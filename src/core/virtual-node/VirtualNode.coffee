@@ -1,12 +1,9 @@
 {insertNode} = require '../../dom-util'
 {newLine} = require '../../util'
-{vtreeMap} = VirtualNode = require './VirtualNode'
 
 module.exports = class VirtualNode
   constructor: ->
     @srcComponents = []
-    @vtreeId = VirtualNode.globalVtreeId++
-    vtreeMap[@vtreeId] = @
 
   clone: -> new @constructor(@baseComponent)
 
@@ -49,7 +46,7 @@ module.exports = class VirtualNode
       if @children.executeUnmountCallback then @children.executeUnmountCallback()
       else
         for child in @children
-          vtreeMap[child].executeUnmountCallback()
+          child.executeUnmountCallback()
     @
 
   hasMountCallback: ->
@@ -63,6 +60,3 @@ module.exports = class VirtualNode
     s = newLine(indent, noNewLine)
     s += '@'+@baseComponent.toString(indent, true)
     s
-
-VirtualNode.globalVtreeId = 1
-VirtualNode.vtreeMap = vtreeMap = {}

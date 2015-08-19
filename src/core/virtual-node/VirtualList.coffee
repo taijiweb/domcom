@@ -1,4 +1,4 @@
-{vtreeMap} = VirtualNode = require './VirtualNode'
+VirtualNode = require './VirtualNode'
 
 module.exports = class VirtualList extends VirtualNode
   constructor: (@baseComponent, children) ->
@@ -8,11 +8,16 @@ module.exports = class VirtualList extends VirtualNode
     else
       myChildren = []
       for child in children
-        myChildren.push child.vtreeId or child
+        myChildren.push child
       @children = myChildren
     @
 
   isActive: -> @vtreeRootComponent or @children
+
+  setParentNode: (node) ->
+    @parentNode = node
+    for child in @children then child.setParentNode(node)
+    return
 
   createDom: ->
     baseComponent = @baseComponent
@@ -31,7 +36,6 @@ module.exports = class VirtualList extends VirtualNode
   renderChildrenDom: () ->
     children = []
     for child in @children
-      child = vtreeMap[child]
       vtree = child.render()
       if vtree.isNoop then continue
       else if vtree.isPlaceHolder
@@ -41,8 +45,8 @@ module.exports = class VirtualList extends VirtualNode
           if vtree.children
             if vtree.children.isPlaceHolder
               children.push.apply children, vtree.children.children
-            else children.push vtree.children.vtreeId
-      else children.push vtree.vtreeId
+            else children.push vtree.children
+      else children.push vtree
     @isPlaceHolder = !@vtreeRootComponent and !@hasMountCallback()
     if !children.length
       @children = null

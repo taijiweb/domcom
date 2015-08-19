@@ -1,13 +1,19 @@
 extend = require '../../extend'
 {insertNode} = require '../../dom-util'
-{classFn, styleFrom, updateProp, eventHandlerFromArray, specialPropSet} = require '../property'
-{checkContainer} = require '../../util'
+{classFn, styleFrom, updateProp, _specialProperties} = require '../property'
+{cloneObject} = require '../../util'
 
 BaseComponent = require './BaseComponent'
 List = require './List'
 {VirtualTag} = require '../virtual-node'
 
 {funcString, newLine} = require '../../util'
+
+directiveRegistry = Object.create(null)
+
+# directiveGenerator: (...) -> (component) -> component
+exports.registerDirective = (directiveName, directiveGenerator) ->
+  directiveRegistry[directiveName] = directiveGenerator
 
 module.exports = class Tag extends BaseComponent
   constructor: (tagName, attrs={}, children, options) ->
@@ -55,7 +61,10 @@ module.exports = class Tag extends BaseComponent
     @directives = []
     for key, value of attrs
       if key[0]=='$'
-        @directives.push(Component.directiveRegistry[key.slice(1).apply(null, value)])
+        # $directiveName: generator arguments list
+        generator = directiveRegistry[key.slice(1)]
+        if value instanceof Array then @directives.push(generator.apply(null, value))
+        else @directives.push(generator.apply(null, [value]))
       else if key[0]=='_'
         specials[key.slice(1)] = value
       else if key[..1]=='on'
@@ -66,11 +75,6 @@ module.exports = class Tag extends BaseComponent
     return
 
   getChildren: -> @children
-
-  setParentNode: (node) ->
-    @parentNode = node
-    @children.setParentNode(@node)
-    return
 
   firstNode: -> @node
 
@@ -116,18 +120,9 @@ module.exports = class Tag extends BaseComponent
 
   addEventProp: (prop, value) ->
     if prop[...2]!='on' then prop = 'on'+prop
-    if cacheCallbackList=@cacheEvents[prop]
-      if typeof value=='function' then cacheCallbackList.push value
-      else cacheCallbackList.push.apply(cacheCallbackList, value)
-      return
     if typeof value == 'function' then value = [value]
-    if node=@node
-      if nodeFn=node[prop] then value.unshift(nodeFn)
-      @cacheEvents[prop] = value
-      node[prop] = eventHandlerFromArray(value, node, @)
-    else
-      @events[prop] = value
-      true # indicate that it need increment activePropertiesCount
+    @events[prop] = value
+    @
 
   unbind: (eventName, handlers...) ->
     if eventName[..1]!='on' then eventName = 'on'+eventName

@@ -1,5 +1,11 @@
 exports.isArray = (exp) -> Object.prototype.toString.call(exp) == '[object Array]'
 
+exports.cloneObject = (obj) ->
+  result = Object.create(null)
+  for key of obj
+    result[key] = obj[key]
+  result
+
 exports.pairListDict = (list...) ->
   if list.length==1 then list = list[0]
   len = list.length; i = 0; result = Object.create(null)

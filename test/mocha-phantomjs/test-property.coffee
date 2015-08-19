@@ -1,7 +1,7 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
 {util
-bindings, sibind
+sibind, bibind
 classFn
 Component, list, func, if_
 a, p, span, text, li, div, checkbox
@@ -61,10 +61,10 @@ describe 'properties ', ->
       comp.node.click()
       expect(x).to.equal(2)
 
-    it 'multiple handlers for one event', ->
-      {$a} = bindings(x={a:2})
+    iit 'multiple handlers for one event', ->
+      $a = bibind(x={a:2}, 'a')
       spy1 = sinon.spy()
-      comp = text({onchange:spy1, directives:model($a)})
+      comp = text({onchange:spy1, $model:$a})
       comp.mount()
       comp.node.value = 2
       comp.node.onchange()
@@ -72,7 +72,7 @@ describe 'properties ', ->
       expect(x.a).to.equal '2'
 
     it 'multiple handlers for one event, with bound value', ->
-      {$a} = bindings(x={a:1})
+      {$a} = bibind(x={a:1}, 'a')
       spy1 = sinon.spy()
       comp = text({onchange:spy1}, $a)
       comp.mount()
@@ -117,11 +117,12 @@ describe 'properties ', ->
           clearInterval handle
       handle = setInterval(styleFn, 5)
 
-  iit 'bidirectional bound checkbox', ->
-    model1 = {a: 1, b: 2}
-    {$a, $b, _a, _b} = bindings(model1)
-    cbx = checkbox({value:"toggle me", checked:$a})
+  it 'bidirectional bound checkbox', ->
+    model1 = {a: 1}
+    bb = bibind(model1, 'a')
+    cbx = checkbox({value:"toggle me", checked:bb})
     cbx.mount('#demo')
+    expect(cbx.node.onchange).to.be.defined
     cbx.node.checked = true
-#    cbx.node.onchange() # element.change is undefined
-#    expect(model1.a).to.equal 'true'
+    cbx.node.onchange() # element.change is undefined
+    expect(model1.a).to.equal 'true'
