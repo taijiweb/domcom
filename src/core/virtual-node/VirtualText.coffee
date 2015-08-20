@@ -8,9 +8,7 @@ module.exports = class VirtualText extends VirtualNode
 
   isActive: -> @text or @vtreeRootComponent
 
-  setParentNode: (node) ->
-    @parentNode = node
-    return
+  setParentNode: (node) -> @baseComponent.parentNode = node
 
   processText: ->
     text = @text

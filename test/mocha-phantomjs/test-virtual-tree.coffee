@@ -56,7 +56,7 @@ describe "test virtual  tree ", ->
       comp.mount()
       expect(comp.vtree.isNoop).to.equal true
 
-  describe 'process   creatDom',  ->
+  describe 'process creatDom',  ->
     it 'should creatDom of p(1)', ->
       comp = p(1)
       vtree = comp.getVirtualTree()
@@ -78,7 +78,6 @@ describe "test virtual  tree ", ->
       expect(comp.node.innerHTML).to.equal '<p><p>1</p></p>'
       expect(comp.vtree.isNoop).to.equal false
       expect(comp.vtree.isPlaceHolder).to.equal true
-      expect(comp.vtree.children.children[0]).to.equal t.vtree.vtreeId
 
     it 'should createDom Text with text is  0', ->
       n = new Text(0)

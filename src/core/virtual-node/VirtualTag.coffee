@@ -17,10 +17,8 @@ module.exports = class VirtualTag extends VirtualNode
     @vtreeRootComponent = null
     @
 
-  setParentNode: (node) ->
-    @parentNode = node
-    @children.setParentNode(@node)
-    return
+  setParentNode: (node) -> @baseComponent.parentNode = node
+
 
   isActive: -> @baseComponent.activePropertiesCount or @vtreeRootComponent or @children
 
@@ -49,10 +47,12 @@ module.exports = class VirtualTag extends VirtualNode
     @
 
   createProperties: ->
-    {node, props, style, events, specials} = @
+    {className, node, props, style, events, specials} = @
 
-    @cacheClassName = node.className = @className()
-    if !@className.needUpdate then delete @className
+    classValue = className()
+    @cacheClassName = classValue
+    if classValue then node.className = classValue
+    if !className.needUpdate then delete @className
 
     @cacheProps = cacheProps = Object.create(null)
     active = false
