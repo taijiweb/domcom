@@ -35,7 +35,6 @@ describe "test virtual  tree ", ->
       vtree = d.getVirtualTree()
       expect(vtree.baseComponent).to.equal d
       expect(vtree.children.children.length).to.equal 1
-      expect(VirtualNode.vtreeMap[vtree.children.children[0]].baseComponent).to.equal p1
       d.vtree = null # otherwise d.mount() will do d.update(), not d.create()
       d.mount()
       vtree = d.getVirtualTree()
@@ -95,7 +94,6 @@ describe "test virtual  tree ", ->
 
     it 'should createDom  tag with attribute', ->
       p = new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [])
-      p.init()
       p.getVirtualTree()
       p.vtree.createDom()
       expect(p.node.className).to.equal 'some class'
@@ -103,14 +101,12 @@ describe "test virtual  tree ", ->
 
     it 'process sibind as value', ->
       comp = new Tag('input', {type:'text', value:  _a}, [new Text(_a)])
-      comp.init()
       comp.getVirtualTree()
       comp.vtree.createDom()
       expect(comp.node.value).to.equal '1'
 
     it 'tag shoud have children', ->
       comp = new Tag('p', {}, [new Text(1), new Text(2)])
-      comp.init()
       expect(comp.children.children.length).to.equal 2
       comp.getVirtualTree()
       comp.vtree.createDom()
@@ -118,28 +114,24 @@ describe "test virtual  tree ", ->
 
     it 'should create  tag with children', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')])])
-      comp.init()
       comp.getVirtualTree()
       comp.vtree.createDom()
       expect(comp.node.getElementsByTagName('span').length).to.equal 1
 
     it 'should createDom tag 2', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')])])
-      comp.init()
       comp.getVirtualTree()
       comp.vtree.createDom()
       expect(comp.node.className).to.equal 'some class'
 
     it 'should createDom for tag with children', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')]), new Text(->)])
-      comp.init()
       comp.getVirtualTree()
       comp.vtree.createDom()
       expect(comp.node.className).to.equal 'some class'
 
     it 'should createDom list with  children', ->
       comp =  new List([new Tag('span',  {}, [new Text('adf')]), new Text(-> undefined)])
-      comp.init()
       comp.getVirtualTree()
       comp.vtree.createDom()
       expect(comp.node[0].tagName).to.equal 'SPAN'

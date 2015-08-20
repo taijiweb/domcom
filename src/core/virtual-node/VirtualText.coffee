@@ -20,6 +20,6 @@ module.exports = class VirtualText extends VirtualNode
       @isNoop = !@vtreeRootComponent and !@hasMountCallback()
     text
 
-  createDom: -> @node = document.createTextNode(@processText()); @
+  createDom: -> @baseComponent.node = @node = document.createTextNode(@processText()); @
 
   updateDom: -> @text? and @node.textContent = @processText(); @

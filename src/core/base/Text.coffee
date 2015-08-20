@@ -11,8 +11,6 @@ module.exports = class Text extends BaseComponent
 
   VirtualNodeClass: VirtualText
 
-  init: ->
-
   firstNode: -> @node
 
   getVirtualTree: ->

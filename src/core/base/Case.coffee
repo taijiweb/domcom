@@ -19,14 +19,6 @@ module.exports = class Case extends TransformComponent
       map[key] = toComponent(value)
     else_ = toComponent(else_)
 
-    @init = ->
-      if @initialized then return @
-      @initialized = true
-      for key, value of map
-        value.init()
-      else_.init()
-      @
-
     @getVirtualTree = =>
       content = (map[test()] or else_)
       vtree = content.getVirtualTree()

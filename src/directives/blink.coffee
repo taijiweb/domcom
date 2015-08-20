@@ -1,5 +1,6 @@
-# blink
-module.exports = (interval) -> (comp) ->
+{registerDirective} = require './register'
+
+registerDirective 'blink', (interval) -> (comp) ->
   if !interval? then interval = 500
   timer = null
   comp.beforeMount (vtree) -> -> timer = setInterval (-> visible = !visible), interval
@@ -8,4 +9,4 @@ module.exports = (interval) -> (comp) ->
   @attrs.style.visibility = ->
     if visible then 'visible'
     else 'hidden'
-  comp
+  return

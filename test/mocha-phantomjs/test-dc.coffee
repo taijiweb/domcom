@@ -4,7 +4,7 @@
 
 {isComponent} = dc
 
-ndescribe "test dc", ->
+describe "test dc", ->
   describe 'dc(document)', ->
     it 'dc(document) should be Component', ->
       expect(!!isComponent(dc(document))).to.equal true

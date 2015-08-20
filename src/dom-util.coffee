@@ -60,3 +60,7 @@ createUpdateHtml = ->
       parentNode.appendChild(node)
     else parentNode = node
   node
+
+exports.getInputValueProp = (type)  ->
+  if type=='checkbox' then return 'checked'
+  else return 'value'

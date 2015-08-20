@@ -1,7 +1,8 @@
 {extend} = dc
 
+require('./directives')
+
 extend(dc,
-  require('./directives')
   require('./builtins')
   require('./addon-util')
 )

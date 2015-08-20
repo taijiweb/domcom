@@ -66,7 +66,7 @@ module.exports = class VirtualTag extends VirtualNode
       cacheProps[prop] = node[prop] = value
     if !active then delete @props
 
-    @cacheStyles = cacheStyles = Object.create(null)
+    @cacheStyle = cacheStyle = Object.create(null)
     active = false
     elementStyle = node.style
     for prop, value of style
@@ -75,8 +75,8 @@ module.exports = class VirtualTag extends VirtualNode
         active = true
       else delete style[prop]
       if !value? then value = ''
-      cacheStyles[prop] = elementStyle[prop] = value
-    if !active then delete @styles
+      cacheStyle[prop] = elementStyle[prop] = value
+    if !active then delete @style
 
     @cacheEvents = cacheEvents = Object.create(null)
     for prop, value of events
@@ -110,12 +110,13 @@ module.exports = class VirtualTag extends VirtualNode
 
     elementStyle = node.style
     if style
+      {cacheStyle} = @
       for prop, value of style
         if !( value = value())? then value = ''
         value!=cacheStyle[prop] and elementStyle[prop] = value
 
     if specials
-      {cacheProps} = @
+      {cacheSpecials} = @
       for prop, value of specials
         if !( value = value())? then value = ''
         value!=cacheProps[prop] and spercialPropSet[prop](@, cacheProps[prop], value)

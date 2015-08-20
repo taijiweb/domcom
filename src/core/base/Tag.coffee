@@ -8,12 +8,7 @@ List = require './List'
 {VirtualTag} = require '../virtual-node'
 
 {funcString, newLine} = require '../../util'
-
-directiveRegistry = Object.create(null)
-
-# directiveGenerator: (...) -> (component) -> component
-exports.registerDirective = (directiveName, directiveGenerator) ->
-  directiveRegistry[directiveName] = directiveGenerator
+{_directiveRegistry} = require '../../directives/register'
 
 module.exports = class Tag extends BaseComponent
   constructor: (tagName, attrs={}, children, options) ->
@@ -29,26 +24,30 @@ module.exports = class Tag extends BaseComponent
     super(options)
     @children = new List(children, {})
 
-  init: ->
-    @processAttrs(@attrs)
-    @processDirectives()
-    @children.init()
-    @initialized = true
-
   clone: (options=@options) ->
     children = for child in @children.children then child.clone()
     result = new Tag(@tagName, Object.create(null), children, options or @options)
     result.attrs = cloneObject(@attrs)
     result.copyLifeCallback(@)
 
+  init: ->
+    if @initialized then return @
+    @processDirectives()
+    @processAttrs(@attrs)
+    #@children.init()
+    @initialized = true
+    return
+
+  # directives always return the component it self
   processDirectives: ->
-    directives = @directives
-    if !directives then return @
-    if typeof directives == 'function' then return directives(@)
-    comp = @
-    for directive in directives
-      comp = directive(comp)
-    comp
+    for key, value of @attrs
+      if key[0]=='$'
+        # $directiveName: generator arguments list
+        generator = _directiveRegistry[key.slice(1)]
+        if value instanceof Array then handler = generator.apply(null, value)
+        else handler = generator.apply(null, [value])
+        handler(@)
+    return
 
   processAttrs: ->
     attrs = @attrs
@@ -58,13 +57,9 @@ module.exports = class Tag extends BaseComponent
     @style = styleFrom(attrs.style)
     @events = Object.create(null)
     @specials = specials = Object.create(null)
-    @directives = []
+    @directives = directives = []
     for key, value of attrs
-      if key[0]=='$'
-        # $directiveName: generator arguments list
-        generator = directiveRegistry[key.slice(1)]
-        if value instanceof Array then @directives.push(generator.apply(null, value))
-        else @directives.push(generator.apply(null, [value]))
+      if key[0]=='$' then continue
       else if key[0]=='_'
         specials[key.slice(1)] = value
       else if key[..1]=='on'
@@ -72,6 +67,7 @@ module.exports = class Tag extends BaseComponent
       else
         if key=='for' then props['htmlFor'] = value
         else props[key] = value
+    if !directives.length then delete @directives
     return
 
   getChildren: -> @children
@@ -80,10 +76,10 @@ module.exports = class Tag extends BaseComponent
 
   getVirtualTree: ->
     if vtree=@vtree
-      # vtree.children = @initChildrenVirtualTree()
       vtree.srcComponents = []
       vtree
     else
+      @init()
       @vtree = vtree = new VirtualTag(@, @children.getVirtualTree())
       vtree
 
@@ -207,13 +203,14 @@ module.exports = class Tag extends BaseComponent
 
   toString: (indent=0, noNewLine) ->
     s = newLine("<#{@tagName}", indent, noNewLine)
-    for key, value of @props
-      s += ' '+key+'='+funcString(value)
-    if Object.keys(@style).length
-      s += ' style={'
-      for key, value of  @style
-        s += ' '+key+'='+funcString(value)
-      s += '}'
+    for key, value of @attrs
+      if key=='style'
+        if Object.keys(value).length
+          s += ' style={'
+          for key, value of  value
+            s += ' '+key+'='+funcString(value)
+          s += '}'
+      else s += ' '+key+'='+funcString(value)
     s += '>'
     for child in @children.children
       s += child.toString(indent+2)

@@ -11,4 +11,6 @@ extend(dc,
   require('./util'),
   require('./constant')
 
+  require('./directives/register')
+
 )

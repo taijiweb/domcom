@@ -7,8 +7,6 @@ module.exports = class Func extends TransformComponent
     super(options)
     content = null
 
-    @init = ->
-
     @getVirtualTree = =>
       @content = content = toComponent(func()) #.inside(@, @)
       content.setParentNode @parentNode

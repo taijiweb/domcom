@@ -1,9 +1,9 @@
 {pairListDict} = require '../util'
 {classFn, Component, div, span} = require '../core'
-{show} = require './show-hide'
 
-#splitter
-module.exports = (direction) -> (comp) ->
+{registerDirective} = require './register'
+
+registerDirective 'splitter',  (direction) -> (comp) ->
 
   attrs = comp.attrs
   direction = direction or 'vertical'
@@ -84,4 +84,4 @@ module.exports = (direction) -> (comp) ->
       pos = w-minBWidth
     comp.update()
 
-  comp
+  return

@@ -1,7 +1,11 @@
 {extendEventValue} = require '../core'
+{getInputValueProp} = require '../dom-util'
 
-# model directive
-module.exports = (exp, eventName) -> (comp) ->
-  comp.attrs.value = exp
-  extendEventValue comp.attrs, eventName or 'onchange', (-> exp(@value)), 'before'
-  comp
+{registerDirective} = require './register'
+
+registerDirective 'model',  (exp, eventName) -> (comp) ->
+  {attrs} = comp
+  prop = getInputValueProp(attrs.type)
+  attrs[prop] = exp
+  extendEventValue attrs, eventName or 'onchange', (-> exp(@[prop])), 'before'
+  return

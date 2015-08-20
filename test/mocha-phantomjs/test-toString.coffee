@@ -12,15 +12,14 @@ describe 'toString', ->
   it 'should toString list of if(tag)', ->
     x = 0
     comp = list(t1=text({onchange: -> x = parseInt(@value); comp.update()}, x), pIf=if_((->x), div(1), div(2)))
-    comp.init()
-    #console.log(comp.toString())
-    expect(comp.toString()).to.equal '\n<List>\n  <input type="text" value=0>\n    ""</input>\n  <if fn:x>\n    <div>\n      1</div>\n    <div>\n      2</div>\n  </if>\n</List>'
+    console.log(comp.toString())
+    expect(comp.toString()).to.equal  '\n<List>\n  <input type="text" onchange=fn:x = parseInt(this.value);\n\t        return comp.update() value=0>\n    ""</input>\n  {"listeners":{},"parentNode":null,"node":null,"options":{},"id":10}\n</List>'
 
   it 'should toString  tag with props', ->
     x = 0
     comp = div({value:1}, 1)
-    comp.init()
-    #console.log(comp.toString())
+    #comp.init()
+    console.log(comp.toString())
     expect(comp.toString()).to.equal '\n<div value=1>\n  1</div>'
 
   it 'should toString', ->

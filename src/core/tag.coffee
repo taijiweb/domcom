@@ -2,6 +2,7 @@ extend = require '../extend'
 
 {tag} = require('./instantiate')
 {extendEventValue} = require './property'
+{getInputValueProp} = require '../dom-util'
 
 tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl"+
     " dt em fieldset form h1 h2 h3 h4 h5 h6 head html hr i img input ins kbd label legend li link map meta noscript object"+
@@ -15,10 +16,6 @@ for tagName in tagNames
 
 inputTypes = 'text textarea checkbox radio date email number'.split(' ')
 
-getInputProp = (type)  ->
-  if type=='checkbox' then return 'checked'
-  else return 'value'
-
 input = exports.input = (type, attrs, value) ->
   if typeof type == 'object'
     value = attrs
@@ -26,7 +23,7 @@ input = exports.input = (type, attrs, value) ->
     type = 'text'
   attrs = extend({type:type}, attrs)
   if value?
-    attrs[getInputProp(type)] = value
+    attrs[getInputValueProp(type)] = value
     if value.setable then extendEventValue attrs, 'onchange', ((event, comp) -> value(@value)), 'before'
   tag('input', attrs)
 

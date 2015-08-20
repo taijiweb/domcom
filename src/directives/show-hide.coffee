@@ -1,4 +1,4 @@
-{styleDisplayOfShow} = require '../core'
+{registerDirective} = require './register'
 
 ### @param test - paramenter expression for directive
 ###
@@ -11,7 +11,7 @@ showHide = (needShow) -> (test, showDisplay) ->
       if typeof test == 'function' then testValue = !!test()
       else testValue = !!test
       comp.styleDisplayOfShow(testValue==needShow, showDisplay)
-    comp
-    
-exports.show = showHide(true)
-exports.hide = showHide(false)
+    return
+
+registerDirective 'show',  showHide(true)
+registerDirective 'hide',   showHide(false)

@@ -14,6 +14,8 @@ module.exports = class VirtualList extends VirtualNode
 
   isActive: -> @vtreeRootComponent or @children
 
+  firstNode: -> @children[0].firstNode()
+
   setParentNode: (node) ->
     @parentNode = node
     for child in @children then child.setParentNode(node)

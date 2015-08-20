@@ -1,3 +1,5 @@
+{sibind, bibind} = dc
+
 exports.bindings =  (model) ->
   result = Object.create(null)
   for key of model
