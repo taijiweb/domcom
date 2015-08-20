@@ -2,7 +2,7 @@
 #require('./mocha-phantomjs/test-toString')
 #require('./mocha-phantomjs/test-dc')
 require('./mocha-phantomjs/test-virtual-tree')
-#require('./mocha-phantomjs/test-component')
+require('./mocha-phantomjs/test-component')
 #require('./mocha-phantomjs/test-directive')
 #require('./mocha-phantomjs/test-if-case-func')
 #require('./mocha-phantomjs/test-list-repeat')

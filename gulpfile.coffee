@@ -13,9 +13,6 @@ plumber = require('gulp-plumber')
 
 del = require('del')
 
-mocha = require('gulp-mocha')
-mochaPhantomJS = require('gulp-mocha-phantomjs')
-
 xtask = ->
 
 task = gulp.task.bind(gulp)
@@ -73,7 +70,7 @@ webpackDistribute = (mode) ->
   config = makeConfig(domcomEntry, '[name].js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
   webpackCompiler = webpack(config)
   webpackCompiler.run onTaskDone()
-  config = makeConfig('./test/mocha-phantomjs-index', 'mocha-phantomjs-index.js', {path:'dist', pathinfo:pathinfo, plugins})
+  config = makeConfig('./test/mocha-index', 'mocha-index.js', {path:'dist', pathinfo:pathinfo, plugins})
   webpackCompiler = webpack(config)
   webpackCompiler.run onTaskDone()
   config = makeConfig('./demo/index', 'demo-index.js', {path:'dist', pathinfo:pathinfo, plugins})
@@ -94,7 +91,7 @@ task 'webpack-server', ->
   makeWebpackDevServer(["webpack/hot/dev-server", './src/index'], 'domcom.js', {port:8083, inline:true, plugins:webServerPlugins})
   makeWebpackDevServer(["webpack/hot/dev-server", './src/domcom-addon'], 'domcom-addon.js', {port:8084, inline:true, plugins:webServerPlugins})
   makeWebpackDevServer(["webpack/hot/dev-server", './src/domcom-full'], 'domcom-full.js', {port:8085, inline:true, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './test/mocha-phantomjs-index'], 'mocha-phantomjs-index.js', {port:8088, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './test/mocha-index'], 'mocha-index.js', {port:8088, plugins:webServerPlugins})
   makeWebpackDevServer(["webpack/hot/dev-server", './demo/index'], 'demo-index.js', {port:8089, plugins:webServerPlugins})
   makeWebpackDevServer(["webpack/hot/dev-server", './demo/todomvc/todomvc'], 'todomvc.js', {port:8087, plugins:webServerPlugins})
 
