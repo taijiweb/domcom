@@ -3,9 +3,11 @@
 
 {registerDirective} = require './register'
 
-registerDirective 'model',  (exp, eventName) -> (comp) ->
+module.bindingorts = model = (binding, eventName) -> (comp) ->
   {attrs} = comp
   prop = getInputValueProp(attrs.type)
-  attrs[prop] = exp
-  extendEventValue attrs, eventName or 'onchange', (-> exp(@[prop])), 'before'
+  attrs[prop] = binding
+  extendEventValue attrs, eventName or 'onchange', (-> binding(@[prop])), 'before'
   return
+
+registerDirective 'model',  model

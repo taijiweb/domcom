@@ -6,7 +6,7 @@
 {
 Component, list, func, if_, repeat
 a, div, p, span, text, select, input
-model, show, hide, splitter, options
+show, hide, splitter
 bindings, bibind} = dc
 
 {$a, $b, _a, _b} = bindings({a: 1, b: 2})
@@ -15,7 +15,7 @@ describe 'directives', ->
 
   describe 'model ', ->
     it 'should process model  directive', ->
-      comp = text({directives:model($a)})
+      comp = text({$model:$a})
       comp.mount()
       comp.node.value = '2'
       comp.node.onchange()
@@ -25,19 +25,19 @@ describe 'directives', ->
       x = 0
       modelValue = bibind({}, 'x')
       # comp = input({ onmouseenter: -> x = 1})
-      comp = input({ directives: model(modelValue), onmouseenter: -> x = 1})
+      comp = input({$model:modelValue, onmouseenter: -> x = 1})
       comp.mount()
       comp.node.onmouseenter()
       expect(x).to.equal 1
 
   describe 'show', ->
     it 'should process show directive', ->
-      comp = div({directives:show(true)})
+      comp = div({$show:true})
       comp.mount()
       expect(comp.node.style.display).to.equal 'block'
 
     it 'should process show directive with non block display', ->
-      comp = div({style:{display:"inline"}, directives:show(true)})
+      comp = div({style:{display:"inline"}, show:true})
       #comp.init()
 #      x = comp.styleDisplayOfShow(false)
 #      expect(x).to.equal 'none'
@@ -53,7 +53,7 @@ describe 'directives', ->
 
     it  'should process show directive with function value', ->
       a = true
-      comp = div({directives:show(-> a)})
+      comp = div({$show:-> a})
       comp.mount()
       expect(comp.node.style.display).to.equal 'block'
       a = false
@@ -61,7 +61,7 @@ describe 'directives', ->
       expect(comp.node.style.display).to.equal 'none'
 
     it 'should process hide directive', ->
-      comp = div({directives:hide(true)}, div(1))
+      comp = div({$hide:true}, div(1))
       comp.mount()
       expect(comp.node.style.display).to.equal 'none'
     it 'should process hide directive with false value', ->
@@ -77,6 +77,6 @@ describe 'directives', ->
 
   describe 'select options', ->
     it 'should constructor select with options', ->
-      comp = select({directives:options([1,2])})
+      comp = select({$options:[[1,2]]})
       comp.mount()
       expect(comp.node.innerHTML).to.match /<option>1/

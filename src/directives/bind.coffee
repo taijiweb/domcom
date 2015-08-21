@@ -1,8 +1,9 @@
 {registerDirective} = require './register'
 {getInputValueProp} = require '../dom-util'
 
-registerDirective 'bind', (value) -> (comp) ->
+module.exports = bind = (binding) -> (comp) ->
   {attrs} = comp
-  attrs[getInputValueProp(attrs.type)] = value
+  attrs[getInputValueProp(attrs.type)] = binding
   return
 
+registerDirective 'bind', bind

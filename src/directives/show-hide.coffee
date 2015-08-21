@@ -13,5 +13,8 @@ showHide = (needShow) -> (test, showDisplay) ->
       comp.styleDisplayOfShow(testValue==needShow, showDisplay)
     return
 
-registerDirective 'show',  showHide(true)
-registerDirective 'hide',   showHide(false)
+exports.show = show = showHide(true)
+registerDirective 'show', show
+
+exports.hide = hide = showHide(false)
+registerDirective 'hide', hide

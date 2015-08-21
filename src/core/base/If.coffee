@@ -42,7 +42,19 @@ module.exports = class If extends TransformComponent
 
     super(options)
 
-    initialized = false
+    @getVirtualTree = ->
+      content = if test() then then_ else else_
+      vtree = content.getVirtualTree()
+      vtree.vtreeRootComponent = @
+      vtree.srcComponents.unshift([@, null])
+      @vtree = vtree
+
+    @setParentNode = (node) ->
+      @parentNode = node
+      then_.setParentNode node
+      else_.setParentNode node
+
+    @clone = (options) -> (new If(test, then_.clone(), else_clone(), options or @options)).copyLifeCallback(@)
 
     @init = -> if !initialized then initialized = true; then_.init(); else_.init()
 

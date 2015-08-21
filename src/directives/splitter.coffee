@@ -3,7 +3,7 @@
 
 {registerDirective} = require './register'
 
-registerDirective 'splitter',  (direction) -> (comp) ->
+module.exports = splitter = (direction) -> (comp) ->
 
   attrs = comp.attrs
   direction = direction or 'vertical'
@@ -36,7 +36,7 @@ registerDirective 'splitter',  (direction) -> (comp) ->
     onmouseover: -> arrowAHovering = true; comp.update()
     onmouseleave: -> arrowAHovering = false; comp.update()
     onclick: (e) -> pos = minAWidth; comp.update()
-    directives:show(-> pos > minAWidth)
+    $show: -> pos > minAWidth
   }
   arrowBHovering = false
   arrawBAttr =  {
@@ -46,7 +46,7 @@ registerDirective 'splitter',  (direction) -> (comp) ->
     onmouseover: -> arrowBHovering = true; comp.update()
     onmouseleave: -> arrowBHovering = false; comp.update()
     onclick: (e) -> pos = getSize()-minBWidth; comp.update()
-    directives:show(-> getSize()-pos>minBWidth)
+    $show: -> getSize()-pos>minBWidth
   }
   arrowA = div(arrawAAttr)
   arrowB = div(arrawBAttr)
@@ -85,3 +85,5 @@ registerDirective 'splitter',  (direction) -> (comp) ->
     comp.update()
 
   return
+
+registerDirective 'splitter', splitter

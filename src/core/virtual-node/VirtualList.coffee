@@ -17,6 +17,8 @@ module.exports = class VirtualList extends VirtualNode
   firstNode: -> @children[0].firstNode()
 
   setParentNode: (node) ->
+    @baseComponent.parentNode = node
+    if !@children then return
     for child in @children then child.setParentNode(node)
     return
 

@@ -1,6 +1,6 @@
 {registerDirective} = require './register'
 
-registerDirective 'blink', (interval) -> (comp) ->
+module.exports = blink = (interval) -> (comp) ->
   if !interval? then interval = 500
   timer = null
   comp.beforeMount (vtree) -> -> timer = setInterval (-> visible = !visible), interval
@@ -10,3 +10,5 @@ registerDirective 'blink', (interval) -> (comp) ->
     if visible then 'visible'
     else 'hidden'
   return
+
+registerDirective 'blink', blink

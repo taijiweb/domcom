@@ -18,12 +18,10 @@ module.exports = class VirtualNode
           vtree.srcComponents.unshift(vtreeRootComponent.listIndex)
         if vtree.baseComponent!=oldBaseComponent
           oldBaseComponent.remove()
+          vtree.baseComponent.parentNode = oldBaseComponent.parentNode
           if !vtree.node then creating = true; replacing = true
       else vtree = @
-    if creating or replacing
-      for [src, _] in vtree.srcComponents.concat([[vtree.baseComponent]])
-        if src.mountCallbackList
-          for cb in src.mountCallbackList then cb()
+    if creating or replacing then vtree.executeMountCallback()
     if creating then vtree.createDom()
     else if !vtree.isNoop then vtree.updateDom()
     vtree.attachNode()
@@ -37,6 +35,11 @@ module.exports = class VirtualNode
       if index? then container.node[index] = node
       else container.node = node
     node
+
+  executeMountCallback: ->
+    for [src, _] in @srcComponents.concat([[@baseComponent]])
+      if src.mountCallbackList
+        for cb in src.mountCallbackList then cb()
 
   executeUnmountCallback: ->
     for [src, _] in @srcComponents.concat([[@baseComponent]])

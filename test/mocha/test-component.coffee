@@ -2,7 +2,6 @@
 
 {bindings, bibind
 classFn, styleFrom
-model, show
 Tag, Text, List
 Component, list, func, if_, txt
 a, p, span, text, li, div, button, input} = dc
@@ -215,6 +214,24 @@ describe "component  ", ->
       comp.update()
       expect(comp.node.innerHTML).to.equal '12'
 
+    it 'p(->12) ', ->
+      comp = p(->12)
+      comp.mount()
+      expect(comp.node.innerHTML).to.equal '12'
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '12'
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '12'
+
+    it 'func(->12) ', ->
+      comp = func(->12)
+      comp.mount()
+      expect(comp.node.textContent).to.equal '12'
+      comp.update()
+      expect(comp.node.textContent).to.equal '12'
+      comp.update()
+      expect(comp.node.textContent).to.equal '12'
+
   describe 'demo', ->
     describe 'test for sum', ->
       it 'should construct and create components', ->
@@ -245,8 +262,7 @@ describe "component  ", ->
 
       it 'should process event property of child component with model directive', ->
         x = 0
-        modelValue = bibind({}, 'x')
-        comp = div({}, c0=input({ directives: model(modelValue), onmouseenter: -> x = 1}), div({}, 'wawa'))
+        comp = div({}, c0=input({ $model:bibind({}, 'x'), onmouseenter: -> x = 1}), div({}, 'wawa'))
         comp.mount()
         c0.node.onmouseenter()
         expect(x).to.equal 1

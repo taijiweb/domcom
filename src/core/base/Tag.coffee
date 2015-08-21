@@ -91,6 +91,7 @@ module.exports = class Tag extends BaseComponent
     if arguments.length==1
       if typeof prop == 'string' then return @cacheStyle[prop]
       else
+        assertNotInitialized()
         style = @style
         for key, v of prop
           if !style[key]?
@@ -99,6 +100,7 @@ module.exports = class Tag extends BaseComponent
           if !v? then v = ''
           style[key] = v
     else if arguments.length==2
+      assertNotInitialized()
       style = @style
       if !style[prop]?
         @activePropertiesCount++
@@ -109,31 +111,33 @@ module.exports = class Tag extends BaseComponent
 
   bind: (eventName, handlers...) ->
     if eventName[..1]!='on' then eventName = 'on'+eventName
-    if @addEventProp(eventName, handlers)
-      @activePropertiesCount++
-      if vtree=@vtree then vtree.isNoop = vtree.isPlaceHolder = false
-    @
+    @addEventProp(eventName, handlers)
 
   addEventProp: (prop, value) ->
+    assertNotInitialized()
     if prop[...2]!='on' then prop = 'on'+prop
+    {attrs} = @
     if typeof value == 'function' then value = [value]
-    @events[prop] = value
+    if !attrs[prop] then attrs[prop] = value
+    else if typeof value == 'function' then attrs[prop] = [attrs[prop]].concat(value)
+    else attrs[prop].push.apply(attrs[prop], value)
     @
 
   unbind: (eventName, handlers...) ->
+    assertNotInitialized()
     if eventName[..1]!='on' then eventName = 'on'+eventName
-    eventHandlers = @events[eventName]
+    eventHandlers = @attrs[eventName]
     if !eventHandlers then return @
     for h in handlers
       index = eventHandlers.indexOf(h)
       if index>=0 then eventHandlers.splice(index, 1)
-    if !eventHandlers.length
-      events = @events
-      if @node then delete @node[eventName]
-      else @activePropertiesCount--
     @
 
+  assertNotInitialized: ->
+    if @initialized then throw new Error('Component is initialized, do not allowed to be modified any more: '+@toString())
+
   addClass: (items...) ->
+    assertNotInitialized()
     if !@className
       @className = classFn(items)
       @activePropertiesCount--
@@ -146,6 +150,7 @@ module.exports = class Tag extends BaseComponent
     this
 
   removeClass: (classes...) ->
+    assertNotInitialized()
     if !@className then return this
     needUpdate = @className.needUpdate
     @className.removeClass(classes...)
@@ -155,12 +160,14 @@ module.exports = class Tag extends BaseComponent
     this
 
   show: (display) ->
+    assertNotInitialized()
     if !@style.display
       @activePropertiesCount++
       if vtree=@vtree then vtree.isNoop = vtree.isPlaceHolder = false
     @style.display = @styleDisplayOfShow(true, display)
 
   hide: ->
+    assertNotInitialized()
     if !@style.display
       @activePropertiesCount++
       if vtree=@vtree then vtree.isNoop = vtree.isPlaceHolder = false

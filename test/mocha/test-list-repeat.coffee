@@ -1,6 +1,7 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
 {bindings
+isComponent
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func, repeat
 accordionGroup, accordion
@@ -12,7 +13,7 @@ describe 'list, repeat', ->
   describe 'List', ->
     it 'all of item in list should be  component', ->
       comp = list([1, 2])
-      expect(comp.children[0]).to.be.an.instanceof(Component)
+      expect(!!isComponent(comp.children[0])).to.equal(true)
 
     it 'should create list component', ->
       comp =  list([span(['adf'])])
@@ -100,9 +101,9 @@ describe 'list, repeat', ->
       text1 = null
       comp = new Tag('div', {}, [repeat1=repeat([1], (item) -> text1 = txt(x))])
       comp.create()
+      expect(comp.node.innerHTML).to.equal '1'
       x = 2
       comp.update()
-      expect(repeat1.node.parentNode).to.equal(comp.node)
       expect(text1.node.textContent).to.equal('2')
       expect(repeat1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '2'

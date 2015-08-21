@@ -11,26 +11,16 @@ module.exports = class DomNode extends Tag
     BaseComponent.constructor.call(@, options)
 
   init: ->
-    @processAttrs(attrs)
-    @cacheDomProperties()
+    if @initialized then return
     @processDirectives()
-
-  cacheDomProperties: ->
-    {node, cacheProps, props, cacheStyle, style, events, cacheSpecials, specials} = @
-    @cacheClassName = node.className
-    for prop, value of props
-      cachePros[prop] = node[prop]
-    nodeStyle = node.style
-    for prop, value of style
-      cacheStyle[prop] = nodeStyle(node, prop)
-    for key, value of specials
-      cacheSpecials[key] = @getSpecialProp(key)
-    @cacheClassName = node.className
-    @
+    @processAttrs(attrs)
+    @initialized = true
 
   getVirtualTree: ->
     if @vtree then @vtree
-    else @vtree = @_vtree = new VirtualDomNode(@, [])
+    else
+      @init()
+      @vtree = @_vtree = new VirtualDomNode(@, [])
 
   css: (prop, value) ->
     # for performance: use cacheStyle to avoid accessing dom

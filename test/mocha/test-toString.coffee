@@ -18,13 +18,11 @@ describe 'toString', ->
   it 'should toString  tag with props', ->
     x = 0
     comp = div({value:1}, 1)
-    #comp.init()
     console.log(comp.toString())
     expect(comp.toString()).to.equal '\n<div value=1>\n  1</div>'
 
   it 'should toString', ->
     comp = case_((-> x), {1:p(1), 2:p(2), 3:p(3)}, 'others')
-    comp.init()
-    #console.log(comp.toString())
+    console.log(comp.toString())
     expect(comp.toString()).to.equal '\n<Case fn:x>\n  1: <p>\n    1</p>\n  2: <p>\n    2</p>\n  3: <p>\n    3</p>\n  "others"\n</Case>'
 

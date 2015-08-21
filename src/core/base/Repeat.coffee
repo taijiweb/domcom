@@ -5,14 +5,14 @@ List = require './List'
 {funcString, newLine} = require '../../util'
 
 module.exports = class Repeat extends TransformComponent
-  constructor: (list, itemFn, options) ->
+  constructor: (list, itemFn, options={}) ->
     super(options)
 
     if typeof list != 'function' and !isArray(list)
       throw new Error 'children for List should be array like or a function'
     if typeof list != 'function'
       items = list
-      if !item or typeof(items)!='object' then throw new Error 'Repeat Component need an array or object'
+      if !items or typeof(items)!='object' then throw new Error 'Repeat Component need an array or object'
 
     # object: (value, key) -> (-1, 0, 1)
     # array: (item) -> (-1, 0, 1)
@@ -26,7 +26,7 @@ module.exports = class Repeat extends TransformComponent
     @getVirtualTree = =>
       if typeof list == 'function'
         items = list()
-        if !item or typeof(items)!='object' then throw new Error 'Repeat Component need an array or object'
+        if !items or typeof(items)!='object' then throw new Error 'Repeat Component need an array or object'
       children = []
       if isArray(items)
         if sortFunction then items.sort(sortFunction)

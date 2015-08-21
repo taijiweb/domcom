@@ -11,7 +11,7 @@ a, p, span, text, div} = dc
 describe 'if, case, func', ->
 
   describe 'If', ->
-    it 'should getVirtualTree  of if_(->x, txt(1), txt(2))', ->
+    it 'should getVirtualTree of if_(->x, txt(1), txt(2))', ->
       x = 0
       comp = if_((-> x), txt(1), txt(2))
       comp.mount()
