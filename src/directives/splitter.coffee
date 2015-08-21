@@ -84,6 +84,6 @@ module.exports = splitter = (direction) -> (comp) ->
       pos = w-minBWidth
     comp.update()
 
-  return
+  comp
 
 registerDirective 'splitter', splitter

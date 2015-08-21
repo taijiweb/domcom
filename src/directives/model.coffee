@@ -8,6 +8,6 @@ module.bindingorts = model = (binding, eventName) -> (comp) ->
   prop = getInputValueProp(attrs.type)
   attrs[prop] = binding
   extendEventValue attrs, eventName or 'onchange', (-> binding(@[prop])), 'before'
-  return
+  comp
 
 registerDirective 'model',  model

@@ -1,4 +1,4 @@
-{isArray} = require '../util'
+{isArray, cloneObject} = require '../util'
 extend = require '../extend'
 
 exports.extendEventValue = extendEventValue = (props, prop, value, before) ->
@@ -125,8 +125,8 @@ exports.styleFrom = (value) ->
       else [key, value] = item
       result[key] = value
     result
-  else if value not instanceof Object then Object.create(null)
-  else value
+  else if value and typeof value != 'object' then Object.create(null)
+  else cloneObject(value)
 
 exports.updateProp = (prop, value, cache, element) ->
   if typeof value == 'function'

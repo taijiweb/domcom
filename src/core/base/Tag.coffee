@@ -55,7 +55,7 @@ module.exports = class Tag extends BaseComponent
     delete attrs.className
     @props = props = Object.create(null)
     @style = styleFrom(attrs.style)
-    @events = Object.create(null)
+    @events = events = Object.create(null)
     @specials = specials = Object.create(null)
     @directives = directives = []
     for key, value of attrs
@@ -63,7 +63,9 @@ module.exports = class Tag extends BaseComponent
       else if key[0]=='_'
         specials[key.slice(1)] = value
       else if key[..1]=='on'
-        @addEventProp(key, value)
+        if typeof value == 'function'
+          events[key] = [value]
+        else events[key] = value
       else
         if key=='for' then props['htmlFor'] = value
         else props[key] = value
@@ -86,51 +88,48 @@ module.exports = class Tag extends BaseComponent
   isActive: -> !@node or @activePropertiesCount or @hasLifeTimeEvent()
 
   css: (prop, value) ->
-    # for performance: use cacheStyle to avoid accessing dom
-    if arguments.length==0 then return @cacheStyle
+    {attrs} = @
+    if arguments.length==0 then return attrs.style
     if arguments.length==1
-      if typeof prop == 'string' then return @cacheStyle[prop]
+      if typeof prop == 'string' then return style and style[prop]
       else
-        assertNotInitialized()
-        style = @style
+        @assertNotInitialized()
+        style = attrs.style or (attrs.style = Object.create(null))
         for key, v of prop
-          if !style[key]?
-            @activePropertiesCount++
-            if vtree=@vtree then vtree.isNoop = vtree.isPlaceHolder = false
-          if !v? then v = ''
           style[key] = v
     else if arguments.length==2
-      assertNotInitialized()
-      style = @style
-      if !style[prop]?
-        @activePropertiesCount++
-        if vtree=@vtree then vtree.isNoop = vtree.isPlaceHolder = false
-      if !value? then value = ''
+      @assertNotInitialized()
+      style = attrs or (attrs.style = Object.create(null))
       style[prop] = value
     this
 
-  bind: (eventName, handlers...) ->
-    if eventName[..1]!='on' then eventName = 'on'+eventName
-    @addEventProp(eventName, handlers)
+  bind: (eventNames, handler) ->
+    @assertNotInitialized()
+    names = eventNames.split('\s+')
+    for name in names then @addEventProp(name, handler)
+    return
 
-  addEventProp: (prop, value) ->
-    assertNotInitialized()
+  addEventProp: (prop, handler) ->
     if prop[...2]!='on' then prop = 'on'+prop
     {attrs} = @
-    if typeof value == 'function' then value = [value]
-    if !attrs[prop] then attrs[prop] = value
-    else if typeof value == 'function' then attrs[prop] = [attrs[prop]].concat(value)
-    else attrs[prop].push.apply(attrs[prop], value)
+    if typeof handlers == 'function' then handler = [handler]
+    if !attrs[prop] then attrs[prop] = handler
+    else if typeof handler == 'function' then attrs[prop] = [attrs[prop]].concat(handler)
+    else attrs[prop].push.apply(attrs[prop], handler)
     @
 
-  unbind: (eventName, handlers...) ->
-    assertNotInitialized()
+  unbind: (eventNames, handler) ->
+    @assertNotInitialized()
+    names = eventNames.split('\s+')
+    for name in names then @removeEventHandlers(name, handler)
+    return
+
+  removeEventHandlers: (eventName, handler) ->
     if eventName[..1]!='on' then eventName = 'on'+eventName
     eventHandlers = @attrs[eventName]
     if !eventHandlers then return @
-    for h in handlers
-      index = eventHandlers.indexOf(h)
-      if index>=0 then eventHandlers.splice(index, 1)
+    index = eventHandlers.indexOf(handler)
+    if index>=0 then eventHandlers.splice(index, 1)
     @
 
   assertNotInitialized: ->
@@ -159,28 +158,28 @@ module.exports = class Tag extends BaseComponent
       if vtree=@vtree then vtree.isNoop = vtree.isPlaceHolder = false
     this
 
-  show: (display) ->
+  show: (test, display) ->
     assertNotInitialized()
-    if !@style.display
-      @activePropertiesCount++
-      if vtree=@vtree then vtree.isNoop = vtree.isPlaceHolder = false
-    @style.display = @styleDisplayOfShow(true, display)
+    @showHide(true, test, display)
 
-  hide: ->
+  hide: (test, display) ->
     assertNotInitialized()
-    if !@style.display
-      @activePropertiesCount++
-      if vtree=@vtree then vtree.isNoop = vtree.isPlaceHolder = false
-    @style.display = !@styleDisplayOfShow(false)
+    @showHide(false, test, display)
 
-  styleDisplayOfShow: (status, display) ->
-    if status
-      cacheStyle = @cacheStyle
-      oldDisplay = @cacheStyle.oldDisplay
-      if display then display
-      else if oldDisplay then oldDisplay
-      else 'block'
-    else 'none'
+  showHide: (showHide, showing, display) ->
+    {attrs} = @
+    style = attrs.style = attrs.style or Object.create(null)
+    oldDisplay = style.display
+    if typeof oldDisplay == 'function' then oldDisplay = oldDisplay()
+    style.display = ->
+      if (if typeof showing == 'function' then !!showing() else !!showing)==showHide
+        if display
+          if typeof display == 'function' then display()
+          else display
+        else if oldDisplay? and oldDisplay!='none' then oldDisplay
+        else oldDisplay = 'block'
+      else 'none'
+    @
 
   top: ->
     elm = @node

@@ -38,16 +38,11 @@ describe 'directives', ->
 
     it 'should process show directive with non block display', ->
       comp = div({style:{display:"inline"}, show:true})
-      #comp.init()
-#      x = comp.styleDisplayOfShow(false)
-#      expect(x).to.equal 'none'
-#      x = comp.styleDisplayOfShow(true)
-#      expect(x).to.equal 'inline'
       comp.mount()
       expect(comp.node.style.display).to.equal 'inline'
 
     it 'should process show directive with false value', ->
-      comp = div({directives:show(false)}, div(1))
+      comp = div({$show:false}, div(1))
       comp.mount()
       expect(comp.node.style.display).to.equal 'none'
 

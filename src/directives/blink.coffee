@@ -9,6 +9,6 @@ module.exports = blink = (interval) -> (comp) ->
   @attrs.style.visibility = ->
     if visible then 'visible'
     else 'hidden'
-  return
+  comp
 
 registerDirective 'blink', blink

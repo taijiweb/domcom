@@ -4,6 +4,6 @@
 module.exports = bind = (binding) -> (comp) ->
   {attrs} = comp
   attrs[getInputValueProp(attrs.type)] = binding
-  return
+  comp
 
 registerDirective 'bind', bind

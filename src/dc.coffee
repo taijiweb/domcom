@@ -2,7 +2,8 @@
  *
  * @param element
 ###
-{Component, DomNode, DomNodeList} = require './core'
+DomNode = require './DomNode'
+{Component} = require './core'
 {requestAnimationFrame} = require  './dom-util'
 
 componentCache = {}
@@ -12,8 +13,8 @@ globalDcId = 1
 
 module.exports = dc = (element, options={}) ->
   if typeof element == 'string'
-    if options.noCache then querySelectorComponent(element, options.all)
-    else componentCache[element] or componentCache[element] = querySelectorComponent(selector, options.all)
+    if options.noCache then querySelector(element, options.all)
+    else componentCache[element] or componentCache[element] = querySelector(element, options.all)
   else if element instanceof Node
     if options.noCache then new DomNode(element)
     else
@@ -21,11 +22,11 @@ module.exports = dc = (element, options={}) ->
       else
         element.dcId = globalDcId++
         componentCache[element.dcId] = new DomNode(element)
-  else if element instanceof Component then element
+  else if element instanceof DomNode then element
   else throw new Error('error type for dc')
 
-querySelectorComponent = (selector, all) ->
-  if all then new DomNodeList(document.querySelectorAll(selector))
+querySelector = (selector, all) ->
+  if all then new DomNode(document.querySelectorAll(selector))
   else new DomNode(document.querySelector(selector))
 
 dc.ready = (fn) -> readyFnList.push fn
