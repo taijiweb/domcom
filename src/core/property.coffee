@@ -151,8 +151,8 @@ exports.eventHandlerFromArray = (callbackList, node, component) ->
 exports._specialProperties = _specialProperties = {
 }
 
-# special property handler: (vtree, prop, value) ->
-#  if arguments.length == 2 then return the computed value of vtree's prop
-#  else if arguments == 3 then set the computed value of vtree's porp
+# special property handler: (baseComponent, prop, value) ->
+#  if arguments.length == 2 then return the computed value of baseComponent's prop
+#  else if arguments == 3 then set the computed value of baseComponent's porp
 #  else error
 exports.registerSpecial = (key, handler) -> _specialProperties[key] = handler

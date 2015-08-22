@@ -11,11 +11,19 @@ a, p, span, text, div} = dc
 describe 'if, case, func', ->
 
   describe 'If', ->
-    it 'should getVirtualTree of if_(->x, txt(1), txt(2))', ->
+    it 'should getBaseComponent of if_(->x, txt(1), txt(2))', ->
       x = 0
       comp = if_((-> x), txt(1), txt(2))
       comp.mount()
+      expect(comp.node.textContent).to.equal '2'
       comp.update()
+      expect(comp.node.textContent).to.equal '2'
+      x = 1
+      comp.update()
+      expect(comp.node.textContent).to.equal '1'
+      x = 0
+      comp.update()
+      expect(comp.node.textContent).to.equal '2'
 
     it 'should render If component', ->
       x = 0
@@ -68,6 +76,7 @@ describe 'if, case, func', ->
       x = 1
       comp.update()
       expect(pIf.node.innerHTML).to.equal '1'
+      expect(comp.node[0].innerHTML).to.equal '1'
       expect(demo2Node.innerHTML).to.equal '<p>1</p><p>3</p>'
 
     it 'should create and render embedded if', ->
@@ -111,7 +120,7 @@ describe 'if, case, func', ->
       expect(pIf.node.innerHTML).to.equal '2'
 
   describe 'Case', ->
-    it 'should create    and render case_', ->
+    it 'should create and render case_', ->
       x = 0
       comp = case_((-> x), {1:p(1), 2:p(2), 3:p(3)}, 'others')
       comp.mount()
@@ -122,6 +131,15 @@ describe 'if, case, func', ->
       expect(comp.node.innerHTML).to.equal '1'
 
   describe 'Func', ->
+    it 'func(->12) ', ->
+      comp = func(->12)
+      comp.mount()
+      expect(comp.node.textContent).to.equal '12'
+      comp.update()
+      expect(comp.node.textContent).to.equal '12'
+      comp.update()
+      expect(comp.node.textContent).to.equal '12'
+
     it 'p(-> a))', ->
       a = 1
       comp = p(-> a)
@@ -170,7 +188,7 @@ describe 'if, case, func', ->
 
     it 'should process tag with function', ->
       comp = p( txt(-> 1))
-      expect(comp.children.children[0]).to.be.instanceof Text
+      expect(comp.children).to.be.instanceof Text
       comp.mount()
       expect(comp.node.innerHTML).to.equal '1'
 

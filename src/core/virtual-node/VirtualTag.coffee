@@ -30,6 +30,7 @@ module.exports = class VirtualTag extends VirtualNode
     children.setParentNode(node)
     @createProperties()
     children.createDom()
+    children.attachNode()
     @isPlaceHolder = !(@className or @props or @style or @specials) and !@vtreeRootComponent and !@hasMountCallback()
     if children and children.isNoop then children = null
     @isNoop = @isPlaceHolder and !children
@@ -39,7 +40,7 @@ module.exports = class VirtualTag extends VirtualNode
   updateDom: ->
     {baseComponent, children} = @
     @updateProperties()
-    children and !children.isNoop and children.render()
+    children and !children.isNoop and children.update()
     @isPlaceHolder = !baseComponent.activePropertiesCount and !@vtreeRootComponent and !@hasMountCallback()
     if children and children.isNoop then children = null
     @isNoop = @isPlaceHolder and !children
@@ -121,4 +122,4 @@ module.exports = class VirtualTag extends VirtualNode
         if !( value = value())? then value = ''
         value!=cacheProps[prop] and spercialPropSet[prop](@, cacheProps[prop], value)
 
-  replaceProperties: (vtree) ->
+  replaceProperties: (baseComponent) ->

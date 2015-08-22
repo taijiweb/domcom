@@ -1,7 +1,7 @@
 require('./test-property')
 require('./test-toString')
 require('./test-dc')
-require('./test-virtual-tree')
+require('./test-base-component')
 require('./test-component')
 require('./test-directive')
 require('./test-if-case-func')

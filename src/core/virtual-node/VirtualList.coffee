@@ -14,7 +14,7 @@ module.exports = class VirtualList extends VirtualNode
 
   isActive: -> @vtreeRootComponent or @children
 
-  firstNode: -> @children[0].firstNode()
+  firstDomNode: -> @children[0].firstDomNode()
 
   setParentNode: (node) ->
     @baseComponent.parentNode = node
@@ -27,29 +27,29 @@ module.exports = class VirtualList extends VirtualNode
     @node = baseComponent.node
     if children = @children
       node = baseComponent.node
-      @renderChildrenDom()
+      @renderChildrenDom('create')
       for child, i in baseComponent.children
         node[i] = child.node
     @
 
   updateDom: ->
-    if @children then @renderChildrenDom()
+    if @children then @renderChildrenDom('update')
     @
 
-  renderChildrenDom: () ->
+  renderChildrenDom: (method) ->
     children = []
     for child in @children
-      vtree = child.render()
-      if vtree.isNoop then continue
-      else if vtree.isPlaceHolder
-        if vtree.children instanceof Array
-          children.push.apply children, vtree.children
+      baseComponent = child[method]()
+      if baseComponent.isNoop then continue
+      else if baseComponent.isPlaceHolder
+        if baseComponent.children instanceof Array
+          children.push.apply children, baseComponent.children
         else # VirtualTag
-          if vtree.children
-            if vtree.children.isPlaceHolder
-              children.push.apply children, vtree.children.children
-            else children.push vtree.children
-      else children.push vtree
+          if baseComponent.children
+            if baseComponent.children.isPlaceHolder
+              children.push.apply children, baseComponent.children.children
+            else children.push baseComponent.children
+      else children.push baseComponent
     @isPlaceHolder = !@vtreeRootComponent and !@hasMountCallback()
     if !children.length
       @children = null

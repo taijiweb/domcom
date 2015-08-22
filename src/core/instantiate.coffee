@@ -1,6 +1,7 @@
 {Component, toComponent, isComponent,
+Nothing
 Tag, Text, Comment,
-Ref #, Clone,
+#Ref, Clone,
 If, Case, Func, List, Repeat} = require './base'
 
 isAttrs = (item) ->
@@ -31,9 +32,13 @@ exports.nstag = (tagName, namespace, args...) ->
   [attrs, children] = attrsChildren(args)
   new Tag(tagName, attrs, toTagChildren(children), namespace)
 
-exports.ref = (attrs, src, options) ->
-  if isAttrs(attrs) then new Tag('div', attrs, [new Ref(src, options)])
-  else new Ref(attrs, src)
+exports.nothing = (attrs, options) ->
+  if isAttrs(attrs) then new Tag('div', attrs, new Nothing(), options)
+  else new Nothing()
+
+#exports.ref = (attrs, src, options) ->
+#  if isAttrs(attrs) then new Tag('div', attrs, [new Ref(src, options)])
+#  else new Ref(attrs, src)
 
 exports.clone = (attrs, src, options) ->
   if isAttrs(attrs) then new Tag('div', attrs, [toComponent(src).clone(options)])
@@ -67,7 +72,10 @@ exports.list = list = (attrs, lst...) ->
     if lst.length==1 then toComponent(lst[0])
     else new List(lst)
 
-###* @param itemFn - function (item, index, list, component) { ... }
+###*
+  @param
+    itemFn - function (item, index, list, component) { ... }
+    itemFn - function (value, key, index, hash, component) { ... }
 ###
 exports.repeat = (attrs, list, itemFn, options) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Repeat(list, itemFn, options)])

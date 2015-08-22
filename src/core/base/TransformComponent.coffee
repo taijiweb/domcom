@@ -7,8 +7,15 @@ module.exports = class TransformComponent extends Component
     @options = options or {}
     return
 
-  setParentNode: (node) ->
-    @parentNode = node
-    @content and @content.setParentNode(node)
+  firstDomNode: -> @baseComponent and @baseComponent.firstDomNode()
 
-  firstNode: -> @content.firstNode()
+  getBaseComponent: ->
+    @oldBaseComponent = @baseComponent
+    content = @getContentComponent()
+    content.container = @
+    content.listIndex = null
+    baseComponent = content.getBaseComponent()
+    if @mountCallbackList then baseComponent.mountCallbackComponentList.unshift @
+    if @unmountCallbackList then baseComponent.unmountCallbackComponentList.push @
+    baseComponent
+

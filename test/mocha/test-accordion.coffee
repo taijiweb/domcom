@@ -35,7 +35,6 @@ describe 'accordion', ->
     comp = accordion({}, [[{}, 'group head', txt(1), {}]], {})
     comp.mount()
     expect(comp.node.innerHTML).to.equal s='<div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><div class="accordion-toggle"><span>group head</span></div></h4></div><div class="panel-collapse" style="display: none;"><div class="panel-body">1</div></div></div>'
-    #expect(comp.node.innerHTML).to.equal s='<div>1</div>'
     comp.update()
     expect(comp.node.innerHTML).to.equal s
 

@@ -5,19 +5,8 @@ TransformComponent = require './TransformComponent'
 module.exports = class Func extends TransformComponent
   constructor: (func, options) ->
     super(options)
-    content = null
 
-    @getVirtualTree = =>
-      @content = content = toComponent(func()) #.inside(@, @)
-      content.setParentNode @parentNode
-      vtree = content.getVirtualTree()
-      vtree.vtreeRootComponent = @
-      vtree.srcComponents.unshift([@, null])
-      @vtree = vtree
-
-    @setParentNode = (node) ->
-      @parentNode = node
-      content and content.setParentNode node
+    @getContentComponent = -> toComponent(func())
 
     @clone = (options) -> (new Func((-> toComponent(func()).clone()), options or @options)).copyLifeCallback(@)
 

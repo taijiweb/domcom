@@ -1,6 +1,6 @@
 extend = require '../../extend'
 
-{normalizeDomElement, removeNode} = require '../../dom-util'
+{normalizeDomElement} = require '../../dom-util'
 
 componentId = 1
 mountList = []
@@ -8,6 +8,7 @@ mountList = []
 module.exports = class Component
   constructor: ->
     @listeners = {}
+    @baseComponent = null
     @parentNode = null
     @node = null
     @options = null
@@ -27,8 +28,8 @@ module.exports = class Component
       else cbs.splice(index, 1)
     if !cbs.length
       @mountCallbackList = null
-      if @vtree instanceof LifeTimeEvent
-        @vtree = null
+      if @baseComponent instanceof LifeTimeEvent
+        @baseComponent = null
     @
 
   afterUnmount: (fns...) ->
@@ -43,25 +44,24 @@ module.exports = class Component
       else cbs.splice(index, 1)
     if !cbs.length
       @unmountCallbackList = null
-      if @vtree instanceof LifeTimeEvent
-        @vtree = null
+      if @baseComponent instanceof LifeTimeEvent
+        @baseComponent = null
     @
 
-  setParentNode: (node) -> @parentNode = node; @
+  setParentNode: (node) -> @parentNode = node
 
-  nextNode: ->
+  nextDomNode: ->
     container = @container
     if !container then return @_nextNode
-    index = @index
-    if !index? then container.nextNode()
-    else
-      siblings = container.children
-      len = siblings.length
-      while index<len-1
-        if node=siblings[index+1].firstNode() then return node
-        index++
-      if container.tagName then return
-      else container.nextNode()
+    index = @listIndex
+    if !index? then return container.nextDomNode()
+    siblings = container.children
+    len = siblings.length
+    while index<len-1
+      if node=siblings[index+1].firstDomNode() then return node
+      index++
+    if container.tagName then return
+    else container.nextDomNode()
 
   mount: (mountNode, beforeNode) ->
     @mountNode = normalizeDomElement(mountNode)
@@ -75,25 +75,29 @@ module.exports = class Component
     @
 
   render: ->
-    if !@vtree
-      # @init() # called by Tag.getVirtualTree only
-      @vtree = @getVirtualTree()
-    @vtree.render()
+    @baseComponent = baseComponent = @getBaseComponent()
+    oldBaseComponent = @oldBaseComponent
+    if oldBaseComponent and baseComponent!=oldBaseComponent
+      oldBaseComponent.remove(@parentNode)
+      baseComponent.executeMountCallback()
+      if !baseComponent.node then baseComponent.createDom()
+      else if !baseComponent.isNoop then baseComponent.updateDom()
+      baseComponent.attachNode(@parentNode)
+    else if !baseComponent.node
+      baseComponent.executeMountCallback()
+      baseComponent.createDom()
+      baseComponent.attachNode(@parentNode)
+    else
+      if @mounting then baseComponent.executeMountCallback()
+      if !baseComponent.isNoop then baseComponent.updateDom()
+      if @mounting then baseComponent.attachNode()
 
-  create: ->
-    @init()
-    @vtree = @getVirtualTree()
-    @vtree.render()
+  create: -> @render()
 
-  update: -> @vtree.render()
+  update: -> @render()
 
   unmount: ->
     @remove()
-    @
-
-  remove: ->
-    removeNode(@parentNode, @node)
-    @vtree.executeUnmountCallback()
     @
 
   hasLifeTimeEvent: -> false

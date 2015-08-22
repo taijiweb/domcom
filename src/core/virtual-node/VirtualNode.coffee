@@ -3,46 +3,46 @@
 
 module.exports = class VirtualNode
   constructor: ->
-    @srcComponents = []
+    @componentChain = []
 
   clone: -> new @constructor(@baseComponent)
 
-  render: ->
-    if !@node then creating = true; vtree = @
-    else
-      vtreeRootComponent = @vtreeRootComponent
-      if vtreeRootComponent
-        oldBaseComponent = @baseComponent
-        vtree = vtreeRootComponent.getVirtualTree()
-        if vtreeRootComponent.listIndex
-          vtree.srcComponents.unshift(vtreeRootComponent.listIndex)
-        if vtree.baseComponent!=oldBaseComponent
-          oldBaseComponent.remove()
-          vtree.baseComponent.parentNode = oldBaseComponent.parentNode
-          if !vtree.node then creating = true; replacing = true
-      else vtree = @
-    if creating or replacing then vtree.executeMountCallback()
-    if creating then vtree.createDom()
-    else if !vtree.isNoop then vtree.updateDom()
-    vtree.attachNode()
-    vtree
+  create: ->
+    @executeMountCallback()
+    @createDom()
+    @attachNode()
+    @
+
+  update: ->
+    {replacingBaseComponent} = @
+    if replacingBaseComponent and @!=replaceingVTree
+      oldBaseComponent = replacingBaseComponent.baseComponent
+      if @baseComponent!=oldBaseComponent
+        oldBaseComponent.remove()
+        @baseComponent.parentNode = oldBaseComponent.parentNode
+        if !@node then @create()
+        else
+          @executeMountCallback()
+          if !@isNoop then @updateDom()
+          @attachNode()
+    if !@isNoop then @updateDom()
 
   attachNode: ->
     {baseComponent, node} = @
     baseParentNode = baseComponent.parentNode
-    insertNode(baseParentNode, node, baseComponent.nextNode())
-    for [container, index] in @srcComponents
+    insertNode(baseParentNode, node, baseComponent.nextDomNode())
+    for [container, index] in @componentChain
       if index? then container.node[index] = node
       else container.node = node
     node
 
   executeMountCallback: ->
-    for [src, _] in @srcComponents.concat([[@baseComponent]])
+    for [src, _] in @componentChain.concat([[@baseComponent]])
       if src.mountCallbackList
         for cb in src.mountCallbackList then cb()
 
   executeUnmountCallback: ->
-    for [src, _] in @srcComponents.concat([[@baseComponent]])
+    for [src, _] in @componentChain.concat([[@baseComponent]])
       if src.unmountCallbackList
         for cb in src.unmountCallbackList then cb()
     if @children
@@ -55,7 +55,7 @@ module.exports = class VirtualNode
   hasMountCallback: ->
     baseComponent = @baseComponent
     if baseComponent.mountCallbackList or baseComponent.unmountCallbackList then return true
-    for [src, _] in @srcComponents
+    for [src, _] in @componentChain
       if src.unmountCallbackList or src.unmountCallbackList then return true
     false
 

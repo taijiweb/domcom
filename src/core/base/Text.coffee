@@ -1,6 +1,4 @@
 BaseComponent = require './BaseComponent'
-{insertNode} = require '../../dom-util'
-{VirtualNode, VirtualText} = require '../virtual-node'
 {funcString, newLine} = require '../../util'
 
 module.exports = class Text extends BaseComponent
@@ -9,18 +7,20 @@ module.exports = class Text extends BaseComponent
     @text = text
     super(options)
 
-  VirtualNodeClass: VirtualText
+  firstDomNode: -> @node
 
-  firstNode: -> @node
+  processText: ->
+    text = @text
+    if typeof text == 'function' then text = text()
+    else
+      @text = null
+      @isNoop = !@mountCallbackComponentList.length
+    text
 
-  getVirtualTree: ->
-    if vtree = @vtree
-      vtree.srcComponents = []
-      vtree
-    else @vtree = @_vtree = new @VirtualNodeClass(@)
+  createDom: -> @node = document.createTextNode(@processText()); @
+
+  updateDom: -> @text? and @node.textContent = @processText(); @
 
   clone: (options) -> (new @constructor(@text, options)).copyLifeCallback(@)
 
   toString: (indent=2, noNewLine) -> newLine(funcString(@text), indent, noNewLine)
-
-module.exports.VirtualText = VirtualText

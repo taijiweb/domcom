@@ -3,6 +3,7 @@ module.exports =
   toComponent: require './toComponent'
   Component: require './Component'
   BaseComponent: require './BaseComponent'
+  Nothing: require './Nothing'
   List: require './List'
   Tag: require './Tag'
   Text: require './Text'

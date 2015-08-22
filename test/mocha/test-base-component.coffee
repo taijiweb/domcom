@@ -5,6 +5,7 @@
 
 {
 bindings,
+Nothing
 Tag, Text, List, txt, list
 p, div,
 classFn, styleFrom,
@@ -13,124 +14,123 @@ VirtualNode
 
 {$a, $b, _a, _b} = bindings({a: 1, b: 2})
 
-describe "test virtual  tree ", ->
-  describe 'initVirtualTree', ->
-    it 'should have getVirtualTree of List', ->
+describe "test base component", ->
+  describe 'getBaseComponent', ->
+    it 'should have getBaseComponent of List', ->
       comp = list([1, 2])
-      vtree = comp.getVirtualTree()
-      expect(vtree.baseComponent.isList).to.equal true
-      expect(vtree.children.length).to.equal 2
+      baseComponent = comp.getBaseComponent()
+      expect(baseComponent.isList).to.equal true
+      expect(baseComponent.children.length).to.equal 2
 
     it 'should have correct children', ->
       comp = p(0)
-      vtree = comp.getVirtualTree()
-      expect(vtree.children.baseComponent.isList).to.equal true
-      expect(vtree.children.children.length).to.equal 1
+      baseComponent = comp.getBaseComponent()
+      expect(baseComponent.children.text).to.equal 0
 
-  describe 'process getVirtualTree of Tag',  ->
+  describe 'process getBaseComponent of Tag',  ->
 
-    it 'should getVirtualTree of two tags', ->
+    it 'should getBaseComponent of two tags', ->
       p1 = new Tag('p', Object.create(null), [])
       d = new Tag('div', Object.create(null), [p1])
-      vtree = d.getVirtualTree()
-      expect(vtree.baseComponent).to.equal d
-      expect(vtree.children.children.length).to.equal 1
-      d.vtree = null # otherwise d.mount() will do d.update(), not d.create()
+      baseComponent = d.getBaseComponent()
+      expect(baseComponent).to.equal d
+      expect(baseComponent.children).to.be.instanceof Tag
+      d.baseComponent = null # otherwise d.mount() will do d.update()
       d.mount()
-      vtree = d.getVirtualTree()
+      baseComponent = d.getBaseComponent()
+      expect(baseComponent.baseComponent).to.equal d
 
-    it 'should process tag with  nonempty child tag ', ->
+    it 'should process tag with nonempty child tag', ->
       d = new Tag('div',{}, [p1 = new Tag('p', {fakeProp: ->}, [])])
       d.mount()
-      vtree = d.getVirtualTree()
-      expect(vtree.baseComponent).to.equal d
+      baseComponent = d.getBaseComponent()
+      expect(baseComponent).to.equal d
 
     it 'should process tag with mulit level nonempty child tag', ->
       d = div(div(p1=p({fakeProp: ->})))
       d.mount()
-      vtree = d.getVirtualTree()
-      expect(vtree.baseComponent).to.equal d
+      baseComponent = d.getBaseComponent()
+      expect(baseComponent).to.equal d
 
-    it 'should set Text.vtree to VirtualNoop', ->
+    it 'should set Text.baseComponent to VirtualNoop', ->
       comp = txt(1)
       comp.mount()
-      expect(comp.vtree.isNoop).to.equal true
+      expect(comp.isNoop).to.equal true
 
   describe 'process creatDom',  ->
     it 'should creatDom of p(1)', ->
       comp = p(1)
-      vtree = comp.getVirtualTree()
-      vtree.createDom()
+      baseComponent = comp.getBaseComponent()
+      baseComponent.createDom()
       expect(comp.node.innerHTML).to.equal '1'
-      expect(comp.vtree.isNoop).to.equal true
+      expect(baseComponent.isNoop).to.equal true
 
     it 'should creatDom of p(->1)', ->
       comp = p(-> 1)
-      vtree = comp.getVirtualTree()
-      vtree.createDom()
+      baseComponent = comp.getBaseComponent()
+      baseComponent.createDom()
       expect(comp.node.innerHTML).to.equal '1'
-      expect(comp.vtree.isNoop).to.equal false
+      expect(!!baseComponent.isNoop).to.equal false
 
     it 'should creatDom of p(p(p(t=txt(->1))))', ->
       comp = p(p(p(t=txt(->1))))
-      vtree = comp.getVirtualTree()
-      vtree.createDom()
+      baseComponent = comp.getBaseComponent()
+      baseComponent.createDom()
       expect(comp.node.innerHTML).to.equal '<p><p>1</p></p>'
-      expect(comp.vtree.isNoop).to.equal false
-      expect(comp.vtree.isPlaceHolder).to.equal true
+      expect(!!baseComponent.isNoop).to.equal false
 
     it 'should createDom Text with text is  0', ->
       n = new Text(0)
-      n.getVirtualTree()
-      n.vtree.createDom()
+      baseComponent = n.getBaseComponent()
+      baseComponent.createDom()
       expect(n.node.textContent).to.equal '0'
 
     it 'should createDom tag',  ->
       p = new Tag('p', {}, [])
-      p.getVirtualTree()
-      p.vtree.createDom()
-      expect(p.vtree.node.tagName).to.equal 'P'
+      baseComponent = p.getBaseComponent()
+      baseComponent.createDom()
+      expect(baseComponent.node.tagName).to.equal 'P'
 
     it 'should createDom  tag with attribute', ->
       p = new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [])
-      p.getVirtualTree()
-      p.vtree.createDom()
+      baseComponent = p.getBaseComponent()
+      baseComponent.createDom()
       expect(p.node.className).to.equal 'some class'
       expect(p.node.getAttribute('className')).to.equal null
 
     it 'process sibind as value', ->
       comp = new Tag('input', {type:'text', value:  _a}, [new Text(_a)])
-      comp.getVirtualTree()
-      comp.vtree.createDom()
+      baseComponent = comp.getBaseComponent()
+      baseComponent.createDom()
       expect(comp.node.value).to.equal '1'
 
     it 'tag shoud have children', ->
       comp = new Tag('p', {}, [new Text(1), new Text(2)])
       expect(comp.children.children.length).to.equal 2
-      comp.getVirtualTree()
-      comp.vtree.createDom()
+      baseComponent = comp.getBaseComponent()
+      baseComponent.createDom()
       expect(comp.node.childNodes.length).to.equal 2
 
     it 'should create  tag with children', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')])])
-      comp.getVirtualTree()
-      comp.vtree.createDom()
+      baseComponent = comp.getBaseComponent()
+      baseComponent.createDom()
       expect(comp.node.getElementsByTagName('span').length).to.equal 1
 
     it 'should createDom tag 2', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')])])
-      comp.getVirtualTree()
-      comp.vtree.createDom()
+      baseComponent = comp.getBaseComponent()
+      baseComponent.createDom()
       expect(comp.node.className).to.equal 'some class'
 
     it 'should createDom for tag with children', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')]), new Text(->)])
-      comp.getVirtualTree()
-      comp.vtree.createDom()
+      baseComponent = comp.getBaseComponent()
+      baseComponent.createDom()
       expect(comp.node.className).to.equal 'some class'
 
-    it 'should createDom list with  children', ->
+    it 'should createDom list with children', ->
       comp =  new List([new Tag('span',  {}, [new Text('adf')]), new Text(-> undefined)])
-      comp.getVirtualTree()
-      comp.vtree.createDom()
+      baseComponent = comp.getBaseComponent()
+      baseComponent.createDom()
       expect(comp.node[0].tagName).to.equal 'SPAN'

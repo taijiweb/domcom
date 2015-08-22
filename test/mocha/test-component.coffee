@@ -17,16 +17,16 @@ describe "component  ", ->
     it 'should construct component', ->
       p1 = new Tag('p', {}, [])
       d = new Tag('div', {}, [p1])
-      expect(d.children.children[0]).to.equal p1
+      expect(d.children).to.equal p1
 
     it 'tag shoud have children 1', ->
       comp = new Tag('span', {}, [new Text('adf')])
-      expect(comp.children.children.length).to.equal 1
+      expect(comp.children.text).to.equal 'adf'
 
     it 'tag shoud have children 2', ->
       span1 = new Tag('span', {}, [new Text('adf')])
       comp = new Tag('div', {className:classFn('some class'), style:styleFrom("width:1px;")}, [span1])
-      expect(comp.children.children[0]).to.equal span1
+      expect(comp.children).to.equal span1
 
   describe 'component.append', ->
     # Now components have the api for appending, etc...
@@ -95,7 +95,7 @@ describe "component  ", ->
       comp =  div button({id:"search-ok", type:"submit", onclick:spy})
       comp.mount()
       expect(spy.called).to.equal false
-      comp.children.children[0].node.onclick()
+      comp.children.node.onclick()
       expect(spy.called).to.equal true
 
     it 'should create tag with attribute', ->
@@ -114,11 +114,11 @@ describe "component  ", ->
 
     it 'component shoud have children 2', ->
       comp = span('adf')
-      expect(comp.children.children.length).to.equal 1
+      expect(comp.children.text).to.equal 'adf'
 
     it 'should create tag with children', ->
       comp =  p({className:'some class', style:"width:1px;"}, span1=span(['adf']))
-      expect(comp.children.children[0]).to.equal span1
+      expect(comp.children).to.equal span1
       comp.mount()
       expect(comp.node.getElementsByTagName('span').length).to.equal 1
 
@@ -190,30 +190,6 @@ describe "component  ", ->
       comp.mount()
       comp.remove()
 
-  describe 'list', ->
-    it 'list(txt(->12))', ->
-      comp = list(txt(->12))
-      comp.mount()
-      comp.update()
-      comp.update()
-      comp.update()
-      expect(comp.node.textContent).to.equal '12'
-
-    it 'list(p(txt(->12))) ', ->
-      comp = list(p(txt(->12)))
-      comp.mount()
-      comp.update()
-      comp.update()
-      comp.update()
-      expect(comp.node.innerHTML).to.equal '12'
-
-    it 'list(p(->12)) ', ->
-      comp = list(p(->12))
-      comp.mount()
-      comp.update()
-      comp.update()
-      expect(comp.node.innerHTML).to.equal '12'
-
     it 'p(->12) ', ->
       comp = p(->12)
       comp.mount()
@@ -222,15 +198,6 @@ describe "component  ", ->
       expect(comp.node.innerHTML).to.equal '12'
       comp.update()
       expect(comp.node.innerHTML).to.equal '12'
-
-    it 'func(->12) ', ->
-      comp = func(->12)
-      comp.mount()
-      expect(comp.node.textContent).to.equal '12'
-      comp.update()
-      expect(comp.node.textContent).to.equal '12'
-      comp.update()
-      expect(comp.node.textContent).to.equal '12'
 
   describe 'demo', ->
     describe 'test for sum', ->

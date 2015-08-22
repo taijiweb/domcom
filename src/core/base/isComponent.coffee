@@ -1,1 +1,1 @@
-module.exports = (x) -> x and x.getVirtualTree
+module.exports = (x) -> x and x.getBaseComponent

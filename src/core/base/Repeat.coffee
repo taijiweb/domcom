@@ -23,7 +23,7 @@ module.exports = class Repeat extends TransformComponent
 
     cacheComponents = Object.create(null)
 
-    @getVirtualTree = =>
+    @getContentComponent = =>
       if typeof list == 'function'
         items = list()
         if !items or typeof(items)!='object' then throw new Error 'Repeat Component need an array or object'
@@ -41,12 +41,7 @@ module.exports = class Repeat extends TransformComponent
           if keyFunction then child = @cacheComponents[keyFunction(value, key, index)] or toComponent(itemFn(value, key, index, itemList, @))
           child = toComponent(itemFn(value, key, itemList, @))
           children.push child
-      @content = content = new List(children)
-      @parentNode and content.setParentNode @parentNode
-      vtree = content.getVirtualTree()
-      vtree.vtreeRootComponent = @
-      vtree.srcComponents.unshift([@, null])
-      @vtree = vtree
+      new List(children)
 
     @clone = (options) ->
       (new Repeat(list, ((item, index, list, comp) -> itemFn(item, index, list, comp).clone()), options or @options)).copyLifeCallback(@)

@@ -46,12 +46,36 @@ describe 'list, repeat', ->
       expect(comp.node.fakeProp).to.equal 3
       expect(comp.node.childNodes[1].textContent).to.equal '3'
 
+  describe 'list', ->
+    it 'list(txt(->12))', ->
+      comp = list(txt(->12))
+      comp.mount()
+      comp.update()
+      comp.update()
+      comp.update()
+      expect(comp.node.textContent).to.equal '12'
+
+    it 'list(p(txt(->12))) ', ->
+      comp = list(p(txt(->12)))
+      comp.mount()
+      comp.update()
+      comp.update()
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '12'
+
+    it 'list(p(->12)) ', ->
+      comp = list(p(->12))
+      comp.mount()
+      comp.update()
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '12'
+
   describe 'Repeat', ->
     it  'should create  repeat component', ->
       comp = repeat(lst = ['repeat', 'simple'], (item, i) -> p(item))
       comp.mount()
       expect(comp.node).to.be.instanceof Array
-      #expect(comp.node[0]).to.be.instanceof Element
+      expect(comp.node[0]).to.be.instanceof Element
 
     it 'should mount and render repeat  component',  ->
       document.getElementById('demo').innerHTML = ''
@@ -68,7 +92,7 @@ describe 'list, repeat', ->
       expect(comp.node[2].innerHTML).to.equal '5'
       lst.length = 0
       comp.update()
-      # List Component never be empty, if length is 0, then generate txt('')
+      #List Component never be empty, if length is 0, then generate [txt('')]
       expect(comp.node.length).to.equal 1
 
     it 'should process immutable template in repeat component', ->
