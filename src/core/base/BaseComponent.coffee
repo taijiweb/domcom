@@ -22,7 +22,8 @@ module.exports = class BaseComponent extends Component
     return
 
   remove: (parentNode) ->
-    removeNode(parentNode, @node)
+    if @node # Nothing.node is null
+      removeNode(parentNode, @node)
     @executeUnmountCallback()
     @
 

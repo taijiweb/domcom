@@ -97,7 +97,7 @@ module.exports = class Component
   update: -> @render()
 
   unmount: ->
-    @remove()
+    @baseComponent.remove(@parentNode)
     @
 
   hasLifeTimeEvent: -> false

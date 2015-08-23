@@ -1,4 +1,4 @@
-{splitter, div} = dc
+{div} = dc
 
 module.exports = ->
 #  comp = div({style:{height:'100%', width:'100%'}, directives:splitter('vertical')},
@@ -18,9 +18,9 @@ module.exports = ->
 #    div({directives:splitter('vertical'), style:{'background-color':"grey", height:'100%'}},
 #      div(2), div(3)
 #    ))
-  comp = div({directives:splitter('vertical'), style:{height:'100%',width:'100%'}},
+  comp = div({$splitter: 'vertical', style:{height:'100%',width:'100%'}},
     div({style:{'background-color':"blue", width:'100%'}}, 1),
-    div({directives:splitter('horizontal'), style:{'background-color':"grey", width:'100%'}},
+    div({$splitter:'horizontal', style:{'background-color':"grey", width:'100%'}},
       div(2), div(3)
     ))
   #comp.mount()

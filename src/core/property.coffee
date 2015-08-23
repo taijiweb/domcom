@@ -38,7 +38,7 @@ exports.extendAttrs = (attrs, obj, options={}) ->
     else attrs[key] = value
   attrs
 
-overAttrs = (attrs, obj) ->
+exports.overAttrs = (attrs, obj) ->
   if !obj
     attrs = extend(Object.create(null), attrs)
     if attrs.style then attrs.style = extend({}, styleFrom(attrs.style))
@@ -105,7 +105,7 @@ exports.classFn = classFn = (items...) ->
   fn.extend = (items...) -> extendClassMap(items)
   fn
 
-exports.styleFrom = (value) ->
+exports.styleFrom = styleFrom = (value) ->
   if typeof value == 'string'
     result = Object.create(null)
     value = value.trim().split(/\s*;\s*/)

@@ -13,7 +13,7 @@ exports.combobox = combobox = (attrs, modelValue, valueList, direction) ->
   }
   comp = div(attrs,
     input({
-      directives: model(modelValue),
+      $model:modelValue
       onmouseenter:(-> showingItems = true; comp.update())}),
     div({style:{display: -> if showingItems then 'block' else 'none'}}, opts)
   )

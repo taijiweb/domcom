@@ -25,7 +25,7 @@ exports.AutoWidthEdit = class AutoWidthEdit extends Tag
       editWidth = testSubject.node.getBoundingClientRect().width
       @update()
       node.focus()
-    @inputAttrs =
+    _inputAttrs =
       style:
         position: 'absolute',
         'z-index': '10',
@@ -34,7 +34,7 @@ exports.AutoWidthEdit = class AutoWidthEdit extends Tag
       onkeydown: (event, comp) -> inputKeyFn(event, comp)
     @inputComp = text(overAttrs _inputAttrs, inputAttrs)
     contextEditAttrs = overAttrs {onclick: (event, comp) -> @focus()}, contextEditAttrs
-    super('div', contextEditAttrs, [@inputComp, @testSubject])
+    super('div', contextEditAttrs, [@inputComp, testSubject])
 
 exports.autoWidthEdit = (contextEditAttrs, inputAttrs, inputKeyFn) ->
   new AutoWidthEdit(contextEditAttrs, inputAttrs, inputKeyFn)

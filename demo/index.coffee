@@ -24,7 +24,7 @@ exports.runDemo = runDemo = (demoMap, initItem='accordion') ->
   current = initItem
   currentComp = demoMap[current]()
   demoSelect = select({
-    directives: options(Object.keys(demoMap))
+    $options: [Object.keys(demoMap)]
     value: 'accordion'
     onchange: ->
       if @value!=current

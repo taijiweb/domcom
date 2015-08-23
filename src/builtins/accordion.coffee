@@ -22,13 +22,6 @@ module.exports = exports = accordion = (attrs, accordionGroupList, options) ->
       accordionGroup(groupAttrs, heading, content, groupOptions)
     )
   )
-#  div(repeat(accordionGroupList, (group, index) ->
-#    [groupAttrs, heading, content, groupOptions] = group
-#    div(content)))
-
-#  repeat(accordionGroupList, (group, index) ->
-#    [groupAttrs, heading, content, groupOptions] = group
-#    div(content))
 
 exports.accordionGroup = accordionGroup = (attrs, heading, content, options) ->
   div({class:"panel panel-default"},
@@ -43,7 +36,5 @@ exports.accordionGroup = accordionGroup = (attrs, heading, content, options) ->
       div({class:"panel-body"}, content)
     )
   )
-
-  #div(content)
 
 exports.accordion = accordion
