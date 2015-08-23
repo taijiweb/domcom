@@ -1,7 +1,6 @@
-{bindings, si, bi,
+{bindings, sibind, bibind,
 section, h1, header, form, text, checkbox, div, ul, li, p, a, label, button, footer, strong, span
 repeat, txt
-show
 extend} = dc
 
 # store
@@ -109,7 +108,7 @@ todoItems = repeat(getTodos, (todo, index) ->
     )
     form({submit:->save(todos)}
       text({
-        className:"edit", trim:"false", value:si(todo, "title"),
+        className:"edit", trim:"false", value:sibind(todo, "title"),
         onblur:(-> todo.title = @value; save(todos); editingTodo = null; view.update()),
         onfocus:(-> todo == editingTodo)
         onkeyup: onEscapeFn(-> revertEdits(todo))
@@ -118,7 +117,7 @@ todoItems = repeat(getTodos, (todo, index) ->
   )
 )
 
-todoEditArea = section({id:"main", directives:show(-> todos.length)}
+todoEditArea = section({id:"main", $show: -> todos.length}
   checkbox({
     id: "toggle-all",
     className:"toggle",
@@ -127,14 +126,14 @@ todoEditArea = section({id:"main", directives:show(-> todos.length)}
   })
   label({"for":"toggle-all"}, "Mark all as complete")
   ul({id:"todo-list"}, todoItems)
-  footer({id:"footer", directives:show(-> todos.length)},
+  footer({id:"footer", $show:(-> todos.length)},
     span({id:"todo-count"}, strong(remainingCount), pluralize(remainingCount, ' item'), ' left')
     ul({id:"filters"}
       li(a({className:{selected: viewStatusHash == ''}, href:"#/all"}, "All"))
       li(a({className:{selected: viewStatusHash == 'active'}, href:"#/active"}, "Active"))
       li(a({className:{selected: viewStatusHash == 'completed'}, href:"#/completed"}, "Completed"))
     )
-    button({id:"clear-completed", onclick:clearCompletedTodos, directives: show(completedCount) }, txt(-> "Clear completed: "+completedCount()))
+    button({id:"clear-completed", onclick:clearCompletedTodos, $show:(completedCount) }, txt(-> "Clear completed: "+completedCount()))
   )
 )
 
