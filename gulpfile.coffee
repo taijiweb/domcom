@@ -43,11 +43,10 @@ task 'coffee', (cb) ->
 webpack = require 'webpack'
 {makeConfig, makeWebpackDevServer} = require './webpack.config'
 
-onTaskDone = () -> (err, stats) ->
+onTaskDone = -> (err, stats) ->
   if err then console.log('Error', err)
-  #else  console.log(stats.toString())
+  else console.log(stats.toString())
   logTime("finished 'webpack'")
-  #done and done()
   return
 
 webpack = require("webpack")
@@ -56,29 +55,30 @@ ClosureCompilerPlugin = require('webpack-closure-compiler')
 domcomEntry = {
   'domcom': './src/index',
   'domcom-addon': './src/domcom-addon'
-  'domcom-full': './scr/domcom-full'
 }
+# if put them together, domcom-full will fail to use the index.coffee and domcom-addon.coffee
+domcomFullEntry = {
+  'domcom-full': './src/domcom-full'
+}
+
+runWebPack = (entry, filename, options) ->
+  config = makeConfig(entry, filename, options)
+  webpackCompiler = webpack(config)
+  webpackCompiler.run onTaskDone()
 
 webpackDistribute = (mode) ->
   plugins = [new webpack.optimize.UglifyJsPlugin({minimize: true})]
   #plugins = [new ClosureCompilerPlugin()]
-  config = makeConfig(domcomEntry, '[name].min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
-  webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone()
+  runWebPack(domcomEntry, '[name].min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
+  runWebPack(domcomFullEntry, '[name].min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
   pathinfo = mode=='dev'
   if mode=='dev' then plugins = []
-  config = makeConfig(domcomEntry, '[name].js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
-  webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone()
-  config = makeConfig('./test/mocha/index', 'mocha-index.js', {path:'dist', pathinfo:pathinfo, plugins})
-  webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone()
-  config = makeConfig('./demo/index', 'demo-index.js', {path:'dist', pathinfo:pathinfo, plugins})
-  webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone()
-  config = makeConfig('./demo/todomvc/todomvc', 'todomvc.js', {path:'dist', pathinfo:pathinfo, plugins})
-  webpackCompiler = webpack(config)
-  webpackCompiler.run onTaskDone()
+  runWebPack(domcomEntry, '[name].js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
+  runWebPack(domcomFullEntry, '[name].js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
+  runWebPack('./test/mocha/index', 'mocha-index.js', {path:'dist', pathinfo:pathinfo, plugins})
+  runWebPack('./demo/index', 'demo-index.js', {path:'dist', pathinfo:pathinfo, plugins})
+  runWebPack('./demo/todomvc/todomvc', 'todomvc.js', {path:'dist', pathinfo:pathinfo, plugins})
+
 
 task 'webpack-dist', () -> webpackDistribute('dist')
 task 'webpack-dev', () -> webpackDistribute('dev')

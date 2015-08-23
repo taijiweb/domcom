@@ -1,5 +1,4 @@
-{list, input, select, extendAttrs} = require '../core'
-{model, options} = require '../directives'
+{list, input, select, extendAttrs} = dc
 
 # this is not finished and not tested
 module.exports = (attrs, modelValue, valueList) ->

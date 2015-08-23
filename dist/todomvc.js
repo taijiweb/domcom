@@ -1,1 +1,350 @@
-!function(t){function e(o){if(n[o])return n[o].exports;var c=n[o]={exports:{},id:o,loaded:!1};return t[o].call(c.exports,c,c.exports,e),c.loaded=!0,c.exports}var n={};return e.m=t,e.c=n,e.p="/assets/",e(0)}([function(t,e){var n,o,c,r,i,u,d,l,a,f,s,p,m,h,g,v,b,x,k,w,N,C,y,O,S,I,M,T,j,A,J,z,D,E,L,P,V,W,q,B,F,G,H,K,Q,R,U,X,Y;r=dc.bindings,P=dc.si,c=dc.bi,D=dc.section,b=dc.h1,x=dc.header,g=dc.form,q=dc.text,u=dc.checkbox,a=dc.div,U=dc.ul,w=dc.li,O=dc.p,n=dc.a,k=dc.label,i=dc.button,h=dc.footer,W=dc.strong,V=dc.span,T=dc.repeat,R=dc.txt,L=dc.show,p=dc.extend,m=function(){return JSON.parse(localStorage.getItem("dc")||"[]").filter(function(t){return t})},J=function(t){return localStorage.setItem("dc",JSON.stringify(t.filter(function(t){return t})))},K=[],Y=null,s=null,y=null,A=null,z=!1,v=function(){return"active"===Y?K.filter(function(t){return t&&!t.completed}):"completed"===Y?K.filter(function(t){return t&&t.completed}):K.filter(function(t){return t})},I=function(){return K.filter(function(t){return!t.completed}).length},l=function(){return K.length-I()},o=function(){return!I()},C=function(t){return function(e){return 27===e.keyCode||27===e.which?t():void 0}},S=function(t,e){return R("function"==typeof t?function(){return t()>1?e+"s":e}:t>1?e+"s":e)},Q=function(t){return t.completed=!t.completed,J(K),X.update()},N=function(){var t,e,n,c,r;for(t=o()?!1:!0,e=!1,c=0,r=K.length;r>c;c++)n=K[c],n.completed!==t&&(n.completed=t,e=!0);return e?(J(K),X.update()):void 0},f=function(t){return s=t,y=p({},t),X.update()},M=function(t){var e;return e=K.indexOf(t),K.splice(e,1),J(K),X.update()},j=function(t){return K[K.indexOf(t)]=y,X.update()},d=function(){var t,e;for(e=!1,t=K.length-1;t>=0;)K[t].completed&&(K.splice(t),e=!0),t--;return e?(J(K),X.update()):void 0},E=function(t){return Y=t.split("/")[1]||"",X.update()},G=x({id:"header"},b("todos"),g({id:"todo-form"},q({id:"new-todo",placeholder:"What needs to be done?",disable:function(){return z},onchange:function(){return this.value?(K.push({title:this.value,completed:!1}),J(K),X.update()):void 0},autofocus:!0}))),H=T(v,function(t,e){return window.todoItemComp=w({className:{completed:function(){return t.completed},editing:function(){return t===s}}},a({"class":"view"},u({className:"toggle",checked:function(){return t&&t.completed},onchange:function(){return Q(t)}}),k({ondblclick:function(){return f(t)}},function(){return t&&t.title}),i({className:"destroy",onclick:function(){return M(t)}})),g({submit:function(){return J(K)}},q({className:"edit",trim:"false",value:P(t,"title"),onblur:function(){return t.title=this.value,J(K),s=null,X.update()},onfocus:function(){return t===s},onkeyup:C(function(){return j(t)})})))}),B=D({id:"main",directives:L(function(){return K.length})},u({id:"toggle-all",className:"toggle",checked:function(){return!!o()},onclick:N}),k({"for":"toggle-all"},"Mark all as complete"),U({id:"todo-list"},H),h({id:"footer",directives:L(function(){return K.length})},V({id:"todo-count"},W(I),S(I," item")," left"),U({id:"filters"},w(n({className:{selected:""===Y},href:"#/all"},"All")),w(n({className:{selected:"active"===Y},href:"#/active"},"Active")),w(n({className:{selected:"completed"===Y},href:"#/completed"},"Completed"))),i({id:"clear-completed",onclick:d,directives:L(l)},R(function(){return"Clear completed: "+l()})))),F=h({id:"info"},O("Double-click to edit a todo"),O("Created by ",n({href:"http://github.com/taijiweb/domcom"}," Caoxingming(Tiijizhenren, simeon.chaos@gmail.com)")),O("Part of ",n({href:"http://todomvc.com"}," TodoMVC"))),X=D({id:"todoapp"},G,B,F),t.exports=window.runTodoMvc=function(){return K=m(),X.mount("#todo-app"),E(document.location.hash),window.addEventListener("hashchange",function(){return E(document.location.hash),X.update()})}}]);
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "/assets/";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/*!*************************************!*\
+  !*** ./demo/todomvc/todomvc.coffee ***!
+  \*************************************/
+/***/ function(module, exports) {
+
+	var a, allChecked, bi, bindings, button, checkbox, clearCompletedTodos, completedCount, div, editTodo, editingTodo, extend, fetch, footer, form, getTodos, h1, header, label, li, markAll, onEscapeFn, originalTodo, p, pluralize, remainingCount, removeTodo, repeat, revertEdits, reverted, save, saving, section, setView, show, si, span, strong, text, todoEditArea, todoFooter, todoHeader, todoItems, todos, toggleCompleted, txt, ul, view, viewStatusHash;
+
+	bindings = dc.bindings, si = dc.si, bi = dc.bi, section = dc.section, h1 = dc.h1, header = dc.header, form = dc.form, text = dc.text, checkbox = dc.checkbox, div = dc.div, ul = dc.ul, li = dc.li, p = dc.p, a = dc.a, label = dc.label, button = dc.button, footer = dc.footer, strong = dc.strong, span = dc.span, repeat = dc.repeat, txt = dc.txt, show = dc.show, extend = dc.extend;
+
+	fetch = function() {
+	  return (JSON.parse(localStorage.getItem('dc') || '[]')).filter(function(todo) {
+	    return todo;
+	  });
+	};
+
+	save = function(todos) {
+	  return localStorage.setItem('dc', JSON.stringify(todos.filter(function(todo) {
+	    return todo;
+	  })));
+	};
+
+	todos = [];
+
+	viewStatusHash = null;
+
+	editingTodo = null;
+
+	originalTodo = null;
+
+	reverted = null;
+
+	saving = false;
+
+	getTodos = function() {
+	  if (viewStatusHash === 'active') {
+	    return todos.filter(function(todo) {
+	      return todo && !todo.completed;
+	    });
+	  } else if (viewStatusHash === 'completed') {
+	    return todos.filter(function(todo) {
+	      return todo && todo.completed;
+	    });
+	  } else {
+	    return todos.filter(function(todo) {
+	      return todo;
+	    });
+	  }
+	};
+
+	remainingCount = function() {
+	  return todos.filter(function(todo) {
+	    return !todo.completed;
+	  }).length;
+	};
+
+	completedCount = function() {
+	  return todos.length - remainingCount();
+	};
+
+	allChecked = function() {
+	  return !remainingCount();
+	};
+
+	onEscapeFn = function(fn) {
+	  return function(event) {
+	    if (event.keyCode === 27 || event.which === 27) {
+	      return fn();
+	    }
+	  };
+	};
+
+	pluralize = function(test, item) {
+	  if (typeof test === 'function') {
+	    return txt(function() {
+	      if (test() > 1) {
+	        return item + 's';
+	      } else {
+	        return item;
+	      }
+	    });
+	  } else if (test > 1) {
+	    return txt(item + 's');
+	  } else {
+	    return txt(item);
+	  }
+	};
+
+	toggleCompleted = function(todo) {
+	  todo.completed = !todo.completed;
+	  save(todos);
+	  return view.update();
+	};
+
+	markAll = function() {
+	  var completed, needUpdate, todo, _i, _len;
+	  if (allChecked()) {
+	    completed = false;
+	  } else {
+	    completed = true;
+	  }
+	  needUpdate = false;
+	  for (_i = 0, _len = todos.length; _i < _len; _i++) {
+	    todo = todos[_i];
+	    if (todo.completed !== completed) {
+	      todo.completed = completed;
+	      needUpdate = true;
+	    }
+	  }
+	  if (needUpdate) {
+	    save(todos);
+	    return view.update();
+	  }
+	};
+
+	editTodo = function(todo) {
+	  editingTodo = todo;
+	  originalTodo = extend({}, todo);
+	  return view.update();
+	};
+
+	removeTodo = function(todo) {
+	  var index;
+	  index = todos.indexOf(todo);
+	  todos.splice(index, 1);
+	  save(todos);
+	  return view.update();
+	};
+
+	revertEdits = function(todo) {
+	  todos[todos.indexOf(todo)] = originalTodo;
+	  return view.update();
+	};
+
+	clearCompletedTodos = function() {
+	  var i, needUpdate;
+	  needUpdate = false;
+	  i = todos.length - 1;
+	  while (i >= 0) {
+	    if (todos[i].completed) {
+	      todos.splice(i);
+	      needUpdate = true;
+	    }
+	    i--;
+	  }
+	  if (needUpdate) {
+	    save(todos);
+	    return view.update();
+	  }
+	};
+
+	setView = function(locationHash) {
+	  viewStatusHash = locationHash.split('/')[1] || '';
+	  return view.update();
+	};
+
+	todoHeader = header({
+	  id: "header"
+	}, h1("todos"), form({
+	  id: "todo-form"
+	}, text({
+	  id: "new-todo",
+	  placeholder: "What needs to be done?",
+	  disable: function() {
+	    return saving;
+	  },
+	  onchange: function() {
+	    if (!this.value) {
+	      return;
+	    }
+	    todos.push({
+	      title: this.value,
+	      completed: false
+	    });
+	    save(todos);
+	    return view.update();
+	  },
+	  autofocus: true
+	})));
+
+	todoItems = repeat(getTodos, function(todo, index) {
+	  return window.todoItemComp = li({
+	    className: {
+	      completed: (function() {
+	        return todo.completed;
+	      }),
+	      editing: function() {
+	        return todo === editingTodo;
+	      }
+	    }
+	  }, div({
+	    "class": "view"
+	  }, checkbox({
+	    className: "toggle",
+	    checked: (function() {
+	      return todo && todo.completed;
+	    }),
+	    onchange: (function() {
+	      return toggleCompleted(todo);
+	    })
+	  }), label({
+	    ondblclick: (function() {
+	      return editTodo(todo);
+	    })
+	  }, (function() {
+	    return todo && todo.title;
+	  })), button({
+	    className: "destroy",
+	    onclick: (function() {
+	      return removeTodo(todo);
+	    })
+	  })), form({
+	    submit: function() {
+	      return save(todos);
+	    }
+	  }, text({
+	    className: "edit",
+	    trim: "false",
+	    value: si(todo, "title"),
+	    onblur: (function() {
+	      todo.title = this.value;
+	      save(todos);
+	      editingTodo = null;
+	      return view.update();
+	    }),
+	    onfocus: (function() {
+	      return todo === editingTodo;
+	    }),
+	    onkeyup: onEscapeFn(function() {
+	      return revertEdits(todo);
+	    })
+	  })));
+	});
+
+	todoEditArea = section({
+	  id: "main",
+	  directives: show(function() {
+	    return todos.length;
+	  })
+	}, checkbox({
+	  id: "toggle-all",
+	  className: "toggle",
+	  checked: function() {
+	    return !!allChecked();
+	  },
+	  onclick: markAll
+	}), label({
+	  "for": "toggle-all"
+	}, "Mark all as complete"), ul({
+	  id: "todo-list"
+	}, todoItems), footer({
+	  id: "footer",
+	  directives: show(function() {
+	    return todos.length;
+	  })
+	}, span({
+	  id: "todo-count"
+	}, strong(remainingCount), pluralize(remainingCount, ' item'), ' left'), ul({
+	  id: "filters"
+	}, li(a({
+	  className: {
+	    selected: viewStatusHash === ''
+	  },
+	  href: "#/all"
+	}, "All")), li(a({
+	  className: {
+	    selected: viewStatusHash === 'active'
+	  },
+	  href: "#/active"
+	}, "Active")), li(a({
+	  className: {
+	    selected: viewStatusHash === 'completed'
+	  },
+	  href: "#/completed"
+	}, "Completed"))), button({
+	  id: "clear-completed",
+	  onclick: clearCompletedTodos,
+	  directives: show(completedCount)
+	}, txt(function() {
+	  return "Clear completed: " + completedCount();
+	}))));
+
+	todoFooter = footer({
+	  id: "info"
+	}, p("Double-click to edit a todo"), p('Created by ', a({
+	  href: "http://github.com/taijiweb/domcom"
+	}, ' Caoxingming(Tiijizhenren, simeon.chaos@gmail.com)')), p("Part of ", a({
+	  href: "http://todomvc.com"
+	}, " TodoMVC")));
+
+	view = section({
+	  id: "todoapp"
+	}, todoHeader, todoEditArea, todoFooter);
+
+	module.exports = window.runTodoMvc = function() {
+	  todos = fetch();
+	  view.mount('#todo-app');
+	  setView(document.location.hash);
+	  return window.addEventListener('hashchange', function() {
+	    setView(document.location.hash);
+	    return view.update();
+	  });
+	};
+
+
+/***/ }
+/******/ ]);

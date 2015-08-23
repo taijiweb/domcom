@@ -1,4 +1,3 @@
-{VirtualHtml} = require '../virtual-node'
 {funcString, newLine} = require '../../util'
 
 module.exports = class Html extends Text

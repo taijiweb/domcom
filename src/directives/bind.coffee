@@ -1,5 +1,5 @@
 {registerDirective} = require './register'
-{getInputValueProp} = require '../dom-util'
+{getInputValueProp} = dc
 
 module.exports = bind = (binding) -> (comp) ->
   {attrs} = comp

@@ -11,7 +11,7 @@ a, p, span, text, div} = dc
 describe 'ref, clone', ->
 
   describe 'Ref', ->
-    it 'should throw error while  constucting conflicted component without ref: if_((-> x), t1=txt(1), Ref(t1))', ->
+    it 'should throw error while constucting conflicted component without ref: if_((-> x), t1=txt(1), Ref(t1))', ->
       t1 = txt(1)
       #expect(-> list(p(t1), if_(1, t1, t1))).to.throw Error
       expect(-> list(p(t1), if_(1, t1, t1))).to.not.throw Error

@@ -1,4 +1,4 @@
-{div, text, overAttrs, Tag} = require '../core'
+{div, text, overAttrs, Tag} = dc
 
 exports.AutoWidthEdit = class AutoWidthEdit extends Tag
   constructor: (contextEditAttrs, inputAttrs, inputKeyFn=@inputKeyFn) ->

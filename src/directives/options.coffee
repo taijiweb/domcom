@@ -1,4 +1,4 @@
-{Tag, List, repeat, txt, option} = require '../core'
+{Tag, List, repeat, txt, option} = dc
 
 {registerDirective} = require './register'
 

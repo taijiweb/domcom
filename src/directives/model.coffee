@@ -1,5 +1,4 @@
-{extendEventValue} = require '../core'
-{getInputValueProp} = require '../dom-util'
+{extendEventValue, getInputValueProp} = dc
 
 {registerDirective} = require './register'
 

@@ -27,7 +27,7 @@ input = exports.input = (type, attrs, value) ->
     if value.setable then extendEventValue attrs, 'onchange', ((event, comp) -> value(@value)), 'before'
   tag('input', attrs)
 
-for type in 'text textarea checkbox radio date email number'.split(' ')
+for type in 'text checkbox radio date email tel number'.split(' ')
   do (type=type) -> exports[type] = (value, attrs) ->
     if typeof value =='object'
       temp = attrs

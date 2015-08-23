@@ -1,4 +1,4 @@
-{Component, list, div}  = require '../core'
+{Component, list, div}  = dc
 
 globalID = 0
 

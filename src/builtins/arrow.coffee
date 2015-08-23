@@ -1,4 +1,4 @@
-{div, extendAttrs} = require '../core'
+{div, extendAttrs} = dc
 
 reverseSide = {left:'right', right:'left', top:'bottom', bottom:'top'}
 

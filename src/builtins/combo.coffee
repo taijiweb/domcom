@@ -1,5 +1,4 @@
-{list, input, span, div, extendAttrs} = require '../core'
-{model, show} = require '../directives'
+{list, input, span, div, extendAttrs} = dc
 
 exports.combobox = combobox = (attrs, modelValue, valueList, direction) ->
   showingItems = false

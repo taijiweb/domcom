@@ -75,3 +75,4 @@ describe 'directives', ->
       comp = select({$options:[[1,2]]})
       comp.mount()
       expect(comp.node.innerHTML).to.match /<option>1/
+      expect(comp.node.innerHTML).to.equal '<option>1</option><option>2</option>'

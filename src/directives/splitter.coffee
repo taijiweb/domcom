@@ -1,5 +1,4 @@
-{pairListDict} = require '../util'
-{classFn, Component, div, span} = require '../core'
+{pairListDict, classFn, Component, div, span} = dc
 
 {registerDirective} = require './register'
 
