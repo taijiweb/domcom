@@ -215,6 +215,8 @@ module.exports = class Tag extends BaseComponent
     children.setParentNode node
     @createProperties()
     children.render(true) # need mounting
+    if compList=children.baseComponent.unmountCallbackComponentList
+      @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
     @isNoop = !@mountCallbackComponentList.length and children.isNoop
     @
 

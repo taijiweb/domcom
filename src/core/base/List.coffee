@@ -32,6 +32,8 @@ module.exports = exports = class List extends BaseComponent
       #child.parentNode = node
       child.render(true)
       node[i] = child.node
+      if compList=child.baseComponent.unmountCallbackComponentList
+        @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
     if !@mountCallbackComponentList.length
       for child in @children
         if !child.isNoop then return
