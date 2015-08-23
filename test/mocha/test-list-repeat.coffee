@@ -180,3 +180,31 @@ describe 'list, repeat', ->
       expect(repeat1.node.parentNode).to.equal(comp.node)
       expect(repeat2.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '2'
+
+    it  'should mount and update repeat', ->
+      comp = new Tag('span', {}, [repeat([1], (item) -> txt(1))])
+      comp.mount()
+      expect(comp.node.innerHTML).to.equal '1'
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '1'
+
+    it  'should update repeat with component as the item of list 1', ->
+      comp = repeat([txt(1)], (item) -> item)
+      comp.mount()
+      expect(comp.node[0].textContent).to.equal s='1'
+      comp.update()
+      expect(comp.node[0].textContent).to.equal '1'
+
+    it  'should update repeat with component as the item of list 2', ->
+      comp = div(repeat([txt(1)], (item) -> item))
+      comp.mount()
+      expect(comp.node.innerHTML).to.equal s='1'
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '1'
+
+    it  'should update repeat with component as the item of list 3', ->
+      comp = div(div(repeat([txt(1)], (item) -> item)))
+      comp.mount()
+      expect(comp.node.innerHTML).to.equal s='<div>1</div>'
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '<div>1</div>'

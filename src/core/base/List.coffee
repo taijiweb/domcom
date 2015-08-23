@@ -28,18 +28,21 @@ module.exports = exports = class List extends BaseComponent
 
   createDom: ->
     @node = node = []
-    for child in @children
-      child.render()
+    for child, i in @children
+      #child.parentNode = node
+      child.render(true)
+      node[i] = child.node
     if !@mountCallbackComponentList.length
       for child in @children
         if !child.isNoop then return
       @isNoop = true
     return
 
-  updateDom: ->
+  updateDom: (mounting) ->
     {node} = @
     for child, i in @children
-      child.render()
+      child.render(mounting)
+      node[i] = child.node
     return
 
   toString: (indent=0, noNewLine) ->

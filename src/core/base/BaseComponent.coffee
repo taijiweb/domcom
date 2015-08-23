@@ -15,8 +15,8 @@ module.exports = class BaseComponent extends Component
     self = this
     container = @container
     while container
-      if self.listIndex? then container.node[self.listIndex] = node
-      else container.node = node
+      # for child of list, always be set while createDom or updateDom
+      if !self.listIndex? then container.node = node
       self = container
       container = container.container
     return

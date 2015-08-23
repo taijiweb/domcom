@@ -214,11 +214,11 @@ module.exports = class Tag extends BaseComponent
       else document.createElement(@tagName)
     children.setParentNode node
     @createProperties()
-    children.render()
+    children.render(true) # need mounting
     @isNoop = !@mountCallbackComponentList.length and children.isNoop
     @
 
-  updateDom: ->
+  updateDom: (mounting) ->
     {children} = @
     @updateProperties()
     children.render()

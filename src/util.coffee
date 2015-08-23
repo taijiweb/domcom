@@ -48,10 +48,10 @@ exports.newLine = (str, indent, noNewLine) ->
 exports.funcString = (fn) ->
   if typeof fn != 'function'
     if !fn? then return 'null'
-    try return JSON.stringify(fn)
-    catch e then return fn.toString()
-#    if typeof fn == 'object' then return JSON.stringify(fn)
-#    else fn.toString()
+    if fn.getBaseComponent then return fn.toString()
+    else
+      try return JSON.stringify(fn)
+      catch e then return fn.toString()
   s = fn.toString()
   if s.slice(0, 12)=="function (){" then s = s.slice(12, s.length-1)
   else if s.slice(0, 13)=="function () {" then s = s.slice(13, s.length-1)

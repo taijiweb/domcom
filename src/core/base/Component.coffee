@@ -67,30 +67,30 @@ module.exports = class Component
     @mountNode = normalizeDomElement(mountNode)
     if @parentNode && @parentNode!=@mountNode
       @unmount()
-    @mounting = true
     @setParentNode @mountNode
     @_nextNode = beforeNode
-    @render()
-    @mounting = false
+    @render(true) # mounting = true
     @
 
-  render: ->
+  render: (mounting) ->
     @baseComponent = baseComponent = @getBaseComponent()
     oldBaseComponent = @oldBaseComponent
+#    {funcString} = dc
+#    s = funcString(baseComponent)
     if oldBaseComponent and baseComponent!=oldBaseComponent
       oldBaseComponent.remove(@parentNode)
       baseComponent.executeMountCallback()
       if !baseComponent.node then baseComponent.createDom()
-      else if !baseComponent.isNoop then baseComponent.updateDom()
+      else if !baseComponent.isNoop then baseComponent.updateDom(mounting)
       baseComponent.attachNode(@parentNode)
     else if !baseComponent.node
       baseComponent.executeMountCallback()
       baseComponent.createDom()
       baseComponent.attachNode(@parentNode)
     else
-      if @mounting then baseComponent.executeMountCallback()
-      if !baseComponent.isNoop then baseComponent.updateDom()
-      if @mounting then baseComponent.attachNode()
+      if mounting then baseComponent.executeMountCallback()
+      if !baseComponent.isNoop then baseComponent.updateDom(mounting)
+      if mounting then baseComponent.attachNode(@parentNode)
 
   create: -> @render()
 
