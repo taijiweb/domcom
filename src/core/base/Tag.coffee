@@ -19,8 +19,6 @@ module.exports = class Tag extends BaseComponent
       else if tagName=='math' then @namespace = "http://www.w3.org/1998/Math/MathML"
     @attrs = attrs
     @isTag = true
-    @processAttrs()
-    @processDirectives()
     if children instanceof Array
       if children.length==1
         @children = toComponent(children[0])
@@ -28,6 +26,7 @@ module.exports = class Tag extends BaseComponent
         @children = new Nothing()
       else @children = new List(children, {})
     else @children = toComponent(children)
+    @processAttrs()
     return
 
   processAttrs: ->
@@ -51,7 +50,7 @@ module.exports = class Tag extends BaseComponent
     @hasActiveSpecials = false
     @cacheSpecials = Object.create(null)
     @specials = specials = Object.create(null)
-    @directives = directives = []
+    directives = []
     for key, value of attrs
       if key[..1]=='on'
         if typeof value == 'function'
@@ -72,11 +71,7 @@ module.exports = class Tag extends BaseComponent
         @hasActiveProps = true
         props[attrToPropName(key)] = value
         @activePropertiesCount++
-    return
-
-  # directives always return the component itself
-  processDirectives: ->
-    for directive in @directives
+    for directive in directives
       directive(@)
     return
 
@@ -327,14 +322,14 @@ module.exports = class Tag extends BaseComponent
   toString: (indent=0, noNewLine) ->
     s = newLine("<#{@tagName}", indent, noNewLine)
     for key, value of @props then s += ' '+key+'='+funcString(value)
-    if @style
+    if @hasActiveStyle
       s += ' style={'
       for key, value of @style
         if typeof value =='string'
           s += value
         else for key, v of  value
           s += ' '+key+'='+funcString(v)
-        s += '}'
+      s += '}'
     s += '>'
     s += @children.toString(indent+2)
     s += newLine("</#{@tagName}>", indent+2, 'noNewLine')
