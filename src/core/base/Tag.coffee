@@ -13,7 +13,6 @@ module.exports = class Tag extends BaseComponent
     super(options)
     @tagName = tagName = tagName.toLowerCase()
     @namespace = attrs.namespace
-    delete attrs.namespace
     if !@namespace
       if tagName=='svg' then @namespace = "http://www.w3.org/2000/svg"
       else if tagName=='math' then @namespace = "http://www.w3.org/1998/Math/MathML"
@@ -34,7 +33,6 @@ module.exports = class Tag extends BaseComponent
     attrs = @attrs
     @cacheClassName = ""
     @className = classFn(attrs.className, attrs.class)
-    delete attrs.className
     @hasActiveProps = false
     @cacheProps = Object.create(null)
     @props = props = Object.create(null)
@@ -84,15 +82,18 @@ module.exports = class Tag extends BaseComponent
     @unmountCallbackComponentList = if @unmountCallbackList then [@] else []
     @
 
-  addActivity: (props, prop, type) ->
-    @['hasActive'+type] = true
-    if !props[prop] then @activePropertiesCount++
+  enableContainerComponent: ->
     container = @
     while container
       if container.isBaseComponent
         if container.isNoop then container.isNoop = false
         else break
       container = container.container
+
+  addActivity: (props, prop, type) ->
+    @['hasActive'+type] = true
+    if !props[prop] then @activePropertiesCount++
+    @enableContainerComponent()
     return
 
   prop: (args...) -> @_updateProp(@props, 'Props', args)
@@ -147,37 +148,20 @@ module.exports = class Tag extends BaseComponent
     @
 
   addClass: (items...) ->
-    if !@className
-      @className = classFn(items)
+    @className.extend(items)
+    if @className.needUpdate
       @activePropertiesCount++
-      container = @
-      while container.isBaseComponent
-        container.isNoop = false
-    else
-      needUpdate = @className.needUpdate
-      @className.extend(items)
-      if !needUpdate and @className.needUpdate
-        @activePropertiesCount++
-        container = @
-        while container.isBaseComponent
-          container.isNoop = false
-      #if baseComponent=@baseComponent then baseComponent.isNoop = baseComponent.isPlaceHolder = false
+      @enableContainerComponent()
     this
 
-  removeClass: (classes...) ->
-    if !@className then return this
-    needUpdate = @className.needUpdate
-    @className.removeClass(classes...)
-    if !needUpdate and @className.needUpdate
+  removeClass: (items...) ->
+    @className.removeClass(items...)
+    if @className.needUpdate
       @activePropertiesCount++
-      container = @
-      while container.isBaseComponent
-        container.isNoop = false
-      if baseComponent=@baseComponent then baseComponent.isNoop = baseComponent.isPlaceHolder = false
+      @enableContainerComponent()
     this
 
-  show: (test, display) ->
-    @showHide(true, test, display)
+  show: (test, display) -> @showHide(true, test, display)
 
   hide: (test, display) ->
     @showHide(false, test, display)
@@ -316,8 +300,7 @@ module.exports = class Tag extends BaseComponent
     return
 
   clone: (options=@options) ->
-    result = new Tag(@tagName, Object.create(null), @children.clone(), options or @options)
-    result.attrs = cloneObject(@attrs)
+    result = new Tag(@tagName, @attrs, @children.clone(), options or @options)
     result.copyLifeCallback(@)
 
   toString: (indent=0, noNewLine) ->
