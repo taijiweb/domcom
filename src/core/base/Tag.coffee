@@ -32,6 +32,7 @@ module.exports = class Tag extends BaseComponent
   processAttrs: ->
     @activePropertiesCount = 0
     attrs = @attrs
+    @cacheClassName = ""
     @className = classFn(attrs.className, attrs.class)
     delete attrs.className
     @hasActiveProps = false
