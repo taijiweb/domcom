@@ -2,12 +2,21 @@
 
 {util
 sibind, bibind
-classFn
+classFn, styleFrom, attrToPropName
 Component, list, func, if_
 a, p, span, text, li, div, checkbox
 model, show, hide, splitter, options} = dc
 
 describe 'properties ', ->
+  describe 'utilities', ->
+    it 'styleFrom ', ->
+      x = styleFrom("display:none; zIndex:100; backgroundColor:white;")
+      console.log(JSON.stringify(x))
+      expect(x).to.deep.equal {display:'none', zIndex:'100', backgroundColor:'white'}
+    it 'attrToPropName ', ->
+      x = attrToPropName("background-color")
+      expect(x).to.equal 'backgroundColor'
+
   describe "classFn", ->
     it 'get value of classFn', ->
       active = true

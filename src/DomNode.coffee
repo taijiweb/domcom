@@ -40,7 +40,7 @@ module.exports = class DomNode
     this
 
   bind: (eventNames, handler) ->
-    names = eventNames.split(/s+/)
+    names = eventNames.split(/\s+/)
     {node} = @
     for name in names
       if name[..1]=='on' then name = name[2...]
@@ -51,7 +51,7 @@ module.exports = class DomNode
     return
 
   unbind: (eventNames, handler) ->
-    names = eventNames.split(/s+/)
+    names = eventNames.split(/\s+/)
     {node} = @
     for name in names
       if name[..1]=='on' then name = name[2...]

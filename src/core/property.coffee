@@ -156,3 +156,15 @@ exports._specialProperties = _specialProperties = {
 #  else if arguments == 3 then set the computed value of baseComponent's porp
 #  else error
 exports.registerSpecial = (key, handler) -> _specialProperties[key] = handler
+
+attrPropNameMap = {'for':'htmlFor'}
+exports.attrToPropName = (name) ->
+  if newName=attrPropNameMap[name] then newName
+  pieces = name.split('-')
+  if pieces.length==1 then return name
+  i = 1
+  len = pieces.length
+  while i<len
+    pieces[i] = pieces[i][0].toUpperCase()+pieces[i][1...]
+    i++
+  pieces.join('')
