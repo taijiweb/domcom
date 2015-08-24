@@ -59,15 +59,268 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var dc, extend;
 
-	window.dc = module.exports = dc = __webpack_require__(/*! ./dc */ 2);
+	window.dc = module.exports = dc = __webpack_require__(/*! ./dc */ 1);
 
 	dc.extend = extend = __webpack_require__(/*! ./extend */ 5);
 
-	extend(dc, __webpack_require__(/*! ./core */ 4), __webpack_require__(/*! ./util */ 1), __webpack_require__(/*! ./constant */ 28), __webpack_require__(/*! ./directives/register */ 20));
+	extend(dc, __webpack_require__(/*! ./core */ 4), __webpack_require__(/*! ./dom-util */ 12), __webpack_require__(/*! ./util */ 3), __webpack_require__(/*! ./constant */ 28), __webpack_require__(/*! ./directives/register */ 20));
 
 
 /***/ },
 /* 1 */
+/*!***********************!*\
+  !*** ./src/dc.coffee ***!
+  \***********************/
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	/** @api dc(element) - dc component constructor
+	 *
+	 * @param element
+	 */
+	var Component, DomNode, componentCache, dc, globalDcId, querySelector, readyFnList, render, renderLoop, requestAnimationFrame;
+
+	DomNode = __webpack_require__(/*! ./DomNode */ 2);
+
+	Component = __webpack_require__(/*! ./core */ 4).Component;
+
+	requestAnimationFrame = __webpack_require__(/*! ./dom-util */ 12).requestAnimationFrame;
+
+	componentCache = {};
+
+	readyFnList = [];
+
+	globalDcId = 1;
+
+	module.exports = dc = function(element, options) {
+	  if (options == null) {
+	    options = {};
+	  }
+	  if (typeof element === 'string') {
+	    if (options.noCache) {
+	      return querySelector(element, options.all);
+	    } else {
+	      return componentCache[element] || (componentCache[element] = querySelector(element, options.all));
+	    }
+	  } else if (element instanceof Node) {
+	    if (options.noCache) {
+	      return new DomNode(element);
+	    } else {
+	      if (element.dcId) {
+	        return componentCache[element.dcId];
+	      } else {
+	        element.dcId = globalDcId++;
+	        return componentCache[element.dcId] = new DomNode(element);
+	      }
+	    }
+	  } else if (element instanceof DomNode) {
+	    return element;
+	  } else {
+	    throw new Error('error type for dc');
+	  }
+	};
+
+	querySelector = function(selector, all) {
+	  if (all) {
+	    return new DomNode(document.querySelectorAll(selector));
+	  } else {
+	    return new DomNode(document.querySelector(selector));
+	  }
+	};
+
+	dc.ready = function(fn) {
+	  return readyFnList.push(fn);
+	};
+
+	dc.onReady = function() {
+	  var fn, _i, _len;
+	  for (_i = 0, _len = readyFnList.length; _i < _len; _i++) {
+	    fn = readyFnList[_i];
+	    fn();
+	  }
+	};
+
+	dc.render = render = function() {
+	  var comp, _i, _len, _results;
+	  _results = [];
+	  for (_i = 0, _len = rootComponents.length; _i < _len; _i++) {
+	    comp = rootComponents[_i];
+	    _results.push(comp.update());
+	  }
+	  return _results;
+	};
+
+	dc.renderLoop = renderLoop = function() {
+	  requestAnimFrame(renderLoop);
+	  render();
+	};
+
+	document.dcId = globalDcId;
+
+	window.$document = componentCache[globalDcId] = new DomNode(document);
+
+	globalDcId++;
+
+	document.body.dcId = globalDcId;
+
+	window.$body = componentCache[globalDcId] = new DomNode(document.body);
+
+	globalDcId++;
+
+	document.addEventListener('DOMContentLoaded', dc.onReady, false);
+
+
+/***/ },
+/* 2 */
+/*!****************************!*\
+  !*** ./src/DomNode.coffee ***!
+  \****************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var DomNode, newLine, processProp;
+
+	newLine = __webpack_require__(/*! ./util */ 3).newLine;
+
+	processProp = function(props, cache, prop, value) {
+	  var p, _i, _len, _results;
+	  if (prop == null) {
+	    return props;
+	  }
+	  if (value == null) {
+	    if (typeof prop === 'string') {
+	      return props[prop];
+	    } else {
+	      _results = [];
+	      for (value = _i = 0, _len = prop.length; _i < _len; value = ++_i) {
+	        p = prop[value];
+	        if ((cacheProps[p] == null) || value !== cacheProps[p]) {
+	          _results.push(cacheProps[p] = props[p] = value);
+	        } else {
+	          _results.push(void 0);
+	        }
+	      }
+	      return _results;
+	    }
+	  } else {
+	    if ((cacheProps[prop] == null) || value !== cacheProps[prop]) {
+	      return cacheProps[prop] = this.node[prop] = value;
+	    }
+	  }
+	};
+
+	module.exports = DomNode = (function() {
+	  function DomNode(node) {
+	    var n;
+	    this.node = node;
+	    if (node instanceof Node) {
+	      this.cacheProps = Object.create(null);
+	      this.cacheStyle = Object.create(null);
+	    } else {
+	      this.cacheProps = (function() {
+	        var _i, _len, _ref, _results;
+	        _ref = this.node;
+	        _results = [];
+	        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	          n = _ref[_i];
+	          _results.push(Object.create(null));
+	        }
+	        return _results;
+	      }).call(this);
+	      this.cacheStyle = (function() {
+	        var _i, _len, _ref, _results;
+	        _ref = this.node;
+	        _results = [];
+	        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	          n = _ref[_i];
+	          _results.push(Object.create(null));
+	        }
+	        return _results;
+	      }).call(this);
+	    }
+	  }
+
+	  DomNode.prototype.prop = function(prop, value) {
+	    var i, n, node, _i, _len;
+	    node = this.node;
+	    if (node instanceof Node) {
+	      processProp(node, this.cacheProps, prop, value);
+	    } else {
+	      for (i = _i = 0, _len = node.length; _i < _len; i = ++_i) {
+	        n = node[i];
+	        processProp(n, this.cacheProps[i], prop, value);
+	      }
+	    }
+	    return this;
+	  };
+
+	  DomNode.prototype.css = function(prop, value) {
+	    var i, n, node, _i, _len;
+	    node = this.node;
+	    if (node instanceof Node) {
+	      processProp(node.style, this.cacheStyle, prop, value);
+	    } else {
+	      for (i = _i = 0, _len = node.length; _i < _len; i = ++_i) {
+	        n = node[i];
+	        processProp(n.style, this.cacheStyle[i], prop, value);
+	      }
+	    }
+	    return this;
+	  };
+
+	  DomNode.prototype.bind = function(eventNames, handler) {
+	    var n, name, names, node, _i, _j, _len, _len1;
+	    names = eventNames.split(/\s+/);
+	    node = this.node;
+	    for (_i = 0, _len = names.length; _i < _len; _i++) {
+	      name = names[_i];
+	      if (name.slice(0, 2) === 'on') {
+	        name = name.slice(2);
+	      }
+	      if (node instanceof Node) {
+	        node.addEventListener(name, handler);
+	      } else {
+	        for (_j = 0, _len1 = node.length; _j < _len1; _j++) {
+	          n = node[_j];
+	          n.addEventListener(name, handler);
+	        }
+	      }
+	    }
+	  };
+
+	  DomNode.prototype.unbind = function(eventNames, handler) {
+	    var n, name, names, node, _i, _j, _len, _len1;
+	    names = eventNames.split(/\s+/);
+	    node = this.node;
+	    for (_i = 0, _len = names.length; _i < _len; _i++) {
+	      name = names[_i];
+	      if (name.slice(0, 2) === 'on') {
+	        name = name.slice(2);
+	      }
+	      if (node instanceof Node) {
+	        node.removeEventListener(name, handler);
+	      } else {
+	        for (_j = 0, _len1 = node.length; _j < _len1; _j++) {
+	          n = node[_j];
+	          n.removeEventListener(name, handler);
+	        }
+	      }
+	    }
+	  };
+
+	  DomNode.prototype.toString = function(indent, noNewLine) {
+	    if (indent == null) {
+	      indent = 0;
+	    }
+	    return newLine(indent, noNewLine) + '<DomNode>' + newLine(this.node.toString(), indent + 2) + newLine('</DomNode>', indent);
+	  };
+
+	  return DomNode;
+
+	})();
+
+
+/***/ },
+/* 3 */
 /*!*************************!*\
   !*** ./src/util.coffee ***!
   \*************************/
@@ -178,11 +431,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (fn == null) {
 	      return 'null';
 	    }
-	    try {
-	      return JSON.stringify(fn);
-	    } catch (_error) {
-	      e = _error;
+	    if (fn.getBaseComponent) {
 	      return fn.toString();
+	    } else {
+	      try {
+	        return JSON.stringify(fn);
+	      } catch (_error) {
+	        e = _error;
+	        return fn.toString();
+	      }
 	    }
 	  }
 	  s = fn.toString();
@@ -202,259 +459,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  return 'fn:' + s;
 	};
-
-
-/***/ },
-/* 2 */
-/*!***********************!*\
-  !*** ./src/dc.coffee ***!
-  \***********************/
-/***/ function(module, exports, __webpack_require__) {
-
-	
-	/** @api dc(element) - dc component constructor
-	 *
-	 * @param element
-	 */
-	var Component, DomNode, componentCache, dc, globalDcId, querySelector, readyFnList, render, renderLoop, requestAnimationFrame;
-
-	DomNode = __webpack_require__(/*! ./DomNode */ 3);
-
-	Component = __webpack_require__(/*! ./core */ 4).Component;
-
-	requestAnimationFrame = __webpack_require__(/*! ./dom-util */ 12).requestAnimationFrame;
-
-	componentCache = {};
-
-	readyFnList = [];
-
-	globalDcId = 1;
-
-	module.exports = dc = function(element, options) {
-	  if (options == null) {
-	    options = {};
-	  }
-	  if (typeof element === 'string') {
-	    if (options.noCache) {
-	      return querySelector(element, options.all);
-	    } else {
-	      return componentCache[element] || (componentCache[element] = querySelector(element, options.all));
-	    }
-	  } else if (element instanceof Node) {
-	    if (options.noCache) {
-	      return new DomNode(element);
-	    } else {
-	      if (element.dcId) {
-	        return componentCache[element.dcId];
-	      } else {
-	        element.dcId = globalDcId++;
-	        return componentCache[element.dcId] = new DomNode(element);
-	      }
-	    }
-	  } else if (element instanceof DomNode) {
-	    return element;
-	  } else {
-	    throw new Error('error type for dc');
-	  }
-	};
-
-	querySelector = function(selector, all) {
-	  if (all) {
-	    return new DomNode(document.querySelectorAll(selector));
-	  } else {
-	    return new DomNode(document.querySelector(selector));
-	  }
-	};
-
-	dc.ready = function(fn) {
-	  return readyFnList.push(fn);
-	};
-
-	dc.onReady = function() {
-	  var fn, _i, _len;
-	  for (_i = 0, _len = readyFnList.length; _i < _len; _i++) {
-	    fn = readyFnList[_i];
-	    fn();
-	  }
-	};
-
-	dc.render = render = function() {
-	  var comp, _i, _len, _results;
-	  _results = [];
-	  for (_i = 0, _len = rootComponents.length; _i < _len; _i++) {
-	    comp = rootComponents[_i];
-	    _results.push(comp.update());
-	  }
-	  return _results;
-	};
-
-	dc.renderLoop = renderLoop = function() {
-	  requestAnimFrame(renderLoop);
-	  render();
-	};
-
-	document.dcId = globalDcId;
-
-	window.$document = componentCache[globalDcId] = new DomNode(document);
-
-	globalDcId++;
-
-	document.body.dcId = globalDcId;
-
-	window.$body = componentCache[globalDcId] = new DomNode(document.body);
-
-	globalDcId++;
-
-	document.addEventListener('DOMContentLoaded', dc.onReady, false);
-
-
-/***/ },
-/* 3 */
-/*!****************************!*\
-  !*** ./src/DomNode.coffee ***!
-  \****************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var DomNode, newLine, processProp;
-
-	newLine = __webpack_require__(/*! ./util */ 1).newLine;
-
-	processProp = function(props, cache, prop, value) {
-	  var p, _i, _len, _results;
-	  if (prop == null) {
-	    return props;
-	  }
-	  if (value == null) {
-	    if (typeof prop === 'string') {
-	      return props[prop];
-	    } else {
-	      _results = [];
-	      for (value = _i = 0, _len = prop.length; _i < _len; value = ++_i) {
-	        p = prop[value];
-	        if ((cacheProps[p] == null) || value !== cacheProps[p]) {
-	          _results.push(cacheProps[p] = props[p] = value);
-	        } else {
-	          _results.push(void 0);
-	        }
-	      }
-	      return _results;
-	    }
-	  } else {
-	    if ((cacheProps[prop] == null) || value !== cacheProps[prop]) {
-	      return cacheProps[prop] = this.node[prop] = value;
-	    }
-	  }
-	};
-
-	module.exports = DomNode = (function() {
-	  function DomNode(node) {
-	    var n;
-	    this.node = node;
-	    if (node instanceof Node) {
-	      this.cacheProps = Object.create(null);
-	      this.cacheStyle = Object.create(null);
-	    } else {
-	      this.cacheProps = (function() {
-	        var _i, _len, _ref, _results;
-	        _ref = this.node;
-	        _results = [];
-	        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	          n = _ref[_i];
-	          _results.push(Object.create(null));
-	        }
-	        return _results;
-	      }).call(this);
-	      this.cacheStyle = (function() {
-	        var _i, _len, _ref, _results;
-	        _ref = this.node;
-	        _results = [];
-	        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	          n = _ref[_i];
-	          _results.push(Object.create(null));
-	        }
-	        return _results;
-	      }).call(this);
-	    }
-	  }
-
-	  DomNode.prototype.prop = function(prop, value) {
-	    var i, n, node, _i, _len;
-	    node = this.node;
-	    if (node instanceof Node) {
-	      processProp(node, this.cacheProps, prop, value);
-	    } else {
-	      for (i = _i = 0, _len = node.length; _i < _len; i = ++_i) {
-	        n = node[i];
-	        processProp(n, this.cacheProps[i], prop, value);
-	      }
-	    }
-	    return this;
-	  };
-
-	  DomNode.prototype.css = function(prop, value) {
-	    var i, n, node, _i, _len;
-	    node = this.node;
-	    if (node instanceof Node) {
-	      processProp(node.style, this.cacheStyle, prop, value);
-	    } else {
-	      for (i = _i = 0, _len = node.length; _i < _len; i = ++_i) {
-	        n = node[i];
-	        processProp(n.style, this.cacheStyle[i], prop, value);
-	      }
-	    }
-	    return this;
-	  };
-
-	  DomNode.prototype.bind = function(eventNames, handler) {
-	    var n, name, names, node, _i, _j, _len, _len1;
-	    names = eventNames.split(/s+/);
-	    node = this.node;
-	    for (_i = 0, _len = names.length; _i < _len; _i++) {
-	      name = names[_i];
-	      if (name.slice(0, 2) === 'on') {
-	        name = name.slice(2);
-	      }
-	      if (node instanceof Node) {
-	        node.addEventListener(name, handler);
-	      } else {
-	        for (_j = 0, _len1 = node.length; _j < _len1; _j++) {
-	          n = node[_j];
-	          n.addEventListener(name, handler);
-	        }
-	      }
-	    }
-	  };
-
-	  DomNode.prototype.unbind = function(eventNames, handler) {
-	    var n, name, names, node, _i, _j, _len, _len1;
-	    names = eventNames.split(/s+/);
-	    node = this.node;
-	    for (_i = 0, _len = names.length; _i < _len; _i++) {
-	      name = names[_i];
-	      if (name.slice(0, 2) === 'on') {
-	        name = name.slice(2);
-	      }
-	      if (node instanceof Node) {
-	        node.removeEventListener(name, handler);
-	      } else {
-	        for (_j = 0, _len1 = node.length; _j < _len1; _j++) {
-	          n = node[_j];
-	          n.removeEventListener(name, handler);
-	        }
-	      }
-	    }
-	  };
-
-	  DomNode.prototype.toString = function(indent, noNewLine) {
-	    if (indent == null) {
-	      indent = 0;
-	    }
-	    return newLine(indent, noNewLine) + '<DomNode>' + newLine(this.node.toString(), indent + 2) + newLine('</DomNode>', indent);
-	  };
-
-	  return DomNode;
-
-	})();
 
 
 /***/ },
@@ -556,17 +560,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  isComponent: __webpack_require__(/*! ./isComponent */ 7),
 	  toComponent: __webpack_require__(/*! ./toComponent */ 8),
 	  Component: __webpack_require__(/*! ./Component */ 17),
-	  BaseComponent: __webpack_require__(/*! ./BaseComponent */ 14),
-	  Nothing: __webpack_require__(/*! ./Nothing */ 15),
+	  BaseComponent: __webpack_require__(/*! ./BaseComponent */ 10),
+	  Nothing: __webpack_require__(/*! ./Nothing */ 9),
 	  List: __webpack_require__(/*! ./List */ 16),
 	  Tag: __webpack_require__(/*! ./Tag */ 18),
 	  Text: __webpack_require__(/*! ./Text */ 13),
 	  Comment: __webpack_require__(/*! ./Comment */ 21),
 	  Html: __webpack_require__(/*! ./Html */ 22),
-	  TransformComponent: __webpack_require__(/*! ./TransformComponent */ 10),
+	  TransformComponent: __webpack_require__(/*! ./TransformComponent */ 15),
 	  If: __webpack_require__(/*! ./If */ 23),
 	  Case: __webpack_require__(/*! ./Case */ 24),
-	  Func: __webpack_require__(/*! ./Func */ 9),
+	  Func: __webpack_require__(/*! ./Func */ 14),
 	  Repeat: __webpack_require__(/*! ./Repeat */ 25)
 	};
 
@@ -600,17 +604,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = toComponent = function(x) {
 	  var Func, List, Nothing, e;
+	  Nothing = __webpack_require__(/*! ./Nothing */ 9);
 	  if (arguments.length !== 1) {
 	    throw new Error('toComponent: wrong arguments length');
 	  }
 	  if (isComponent(x)) {
 	    return x;
 	  } else if (typeof x === 'function') {
-	    Func = __webpack_require__(/*! ./Func */ 9);
+	    Func = __webpack_require__(/*! ./Func */ 14);
 	    return new Func(x);
 	  } else if (x instanceof Array) {
 	    if (x.length === 0) {
-	      Nothing = __webpack_require__(/*! ./Nothing */ 15);
 	      new Nothing();
 	    }
 	    if (x.length === 1) {
@@ -637,93 +641,124 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 9 */
-/*!***********************************!*\
-  !*** ./src/core/base/Func.coffee ***!
-  \***********************************/
+/*!**************************************!*\
+  !*** ./src/core/base/Nothing.coffee ***!
+  \**************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Func, TransformComponent, funcString, newLine, toComponent, _ref,
+	var BaseComponent, Nothing,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 8);
+	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 10);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 10);
+	module.exports = Nothing = (function(_super) {
+	  __extends(Nothing, _super);
 
-	_ref = __webpack_require__(/*! ../../util */ 1), funcString = _ref.funcString, newLine = _ref.newLine;
+	  function Nothing() {}
 
-	module.exports = Func = (function(_super) {
-	  __extends(Func, _super);
+	  Nothing.prototype.firstDomNode = function() {};
 
-	  function Func(func, options) {
-	    Func.__super__.constructor.call(this, options);
-	    this.getContentComponent = function() {
-	      return toComponent(func());
-	    };
-	    this.clone = function(options) {
-	      return (new Func((function() {
-	        return toComponent(func()).clone();
-	      }), options || this.options)).copyLifeCallback(this);
-	    };
-	    this.toString = function(indent, noNewLine) {
-	      if (indent == null) {
-	        indent = 2;
-	      }
-	      return newLine("<Func " + (funcString(func)) + "/>", indent, noNewLine);
-	    };
-	    this;
-	  }
+	  Nothing.prototype.createDom = function() {};
 
-	  return Func;
+	  Nothing.prototype.updateDom = function() {};
 
-	})(TransformComponent);
+	  Nothing.prototype.clone = function() {
+	    return new Nothing();
+	  };
+
+	  Nothing.prototype.toString = function(indent, noNewLine) {
+	    if (indent == null) {
+	      indent = 2;
+	    }
+	    return '<nothing/>';
+	  };
+
+	  return Nothing;
+
+	})(BaseComponent);
 
 
 /***/ },
 /* 10 */
-/*!*************************************************!*\
-  !*** ./src/core/base/TransformComponent.coffee ***!
-  \*************************************************/
+/*!********************************************!*\
+  !*** ./src/core/base/BaseComponent.coffee ***!
+  \********************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Component, TransformComponent, insertNode,
+	var BaseComponent, Component, insertNode, removeNode, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 	Component = __webpack_require__(/*! ./component */ 11);
 
-	insertNode = __webpack_require__(/*! ../../dom-util */ 12).insertNode;
+	_ref = __webpack_require__(/*! ../../dom-util */ 12), insertNode = _ref.insertNode, removeNode = _ref.removeNode;
 
-	module.exports = TransformComponent = (function(_super) {
-	  __extends(TransformComponent, _super);
+	module.exports = BaseComponent = (function(_super) {
+	  __extends(BaseComponent, _super);
 
-	  function TransformComponent(options) {
-	    TransformComponent.__super__.constructor.call(this, options);
-	    this.options = options || {};
-	    return;
+	  function BaseComponent(options) {
+	    BaseComponent.__super__.constructor.call(this, options);
 	  }
 
-	  TransformComponent.prototype.firstDomNode = function() {
-	    return this.baseComponent && this.baseComponent.firstDomNode();
+	  BaseComponent.prototype.getBaseComponent = function() {
+	    this.mountCallbackComponentList = this.mountCallbackList ? [this] : [];
+	    this.unmountCallbackComponentList = this.unmountCallbackList ? [this] : [];
+	    return this.oldBaseComponent = this;
 	  };
 
-	  TransformComponent.prototype.getBaseComponent = function() {
-	    var baseComponent, content;
-	    this.oldBaseComponent = this.baseComponent;
-	    content = this.getContentComponent();
-	    content.container = this;
-	    content.listIndex = null;
-	    baseComponent = content.getBaseComponent();
-	    if (this.mountCallbackList) {
-	      baseComponent.mountCallbackComponentList.unshift(this);
+	  BaseComponent.prototype.attachNode = function(parentNode) {
+	    var container, node, self;
+	    node = this.node;
+	    insertNode(parentNode, node, this.nextDomNode());
+	    self = this;
+	    container = this.container;
+	    while (container) {
+	      if (self.listIndex == null) {
+	        container.node = node;
+	      }
+	      self = container;
+	      container = container.container;
 	    }
-	    if (this.unmountCallbackList) {
-	      baseComponent.unmountCallbackComponentList.push(this);
-	    }
-	    return baseComponent;
 	  };
 
-	  return TransformComponent;
+	  BaseComponent.prototype.remove = function(parentNode) {
+	    if (this.node) {
+	      removeNode(parentNode, this.node);
+	    }
+	    this.executeUnmountCallback();
+	    return this;
+	  };
+
+	  BaseComponent.prototype.executeMountCallback = function() {
+	    var cb, component, _i, _j, _len, _len1, _ref1, _ref2;
+	    _ref1 = this.mountCallbackComponentList;
+	    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+	      component = _ref1[_i];
+	      _ref2 = component.mountCallbackList;
+	      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+	        cb = _ref2[_j];
+	        cb();
+	      }
+	    }
+	  };
+
+	  BaseComponent.prototype.executeUnmountCallback = function() {
+	    var cb, component, _i, _j, _len, _len1, _ref1, _ref2;
+	    _ref1 = this.unmountCallbackComponentList;
+	    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+	      component = _ref1[_i];
+	      _ref2 = component.unmountCallbackList;
+	      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+	        cb = _ref2[_j];
+	        cb();
+	      }
+	    }
+	  };
+
+	  BaseComponent.prototype.isBaseComponent = true;
+
+	  return BaseComponent;
 
 	})(Component);
 
@@ -853,15 +888,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (this.parentNode && this.parentNode !== this.mountNode) {
 	      this.unmount();
 	    }
-	    this.mounting = true;
 	    this.setParentNode(this.mountNode);
 	    this._nextNode = beforeNode;
-	    this.render();
-	    this.mounting = false;
+	    this.render(true);
 	    return this;
 	  };
 
-	  Component.prototype.render = function() {
+	  Component.prototype.render = function(mounting) {
 	    var baseComponent, oldBaseComponent;
 	    this.baseComponent = baseComponent = this.getBaseComponent();
 	    oldBaseComponent = this.oldBaseComponent;
@@ -871,7 +904,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!baseComponent.node) {
 	        baseComponent.createDom();
 	      } else if (!baseComponent.isNoop) {
-	        baseComponent.updateDom();
+	        baseComponent.updateDom(mounting);
 	      }
 	      return baseComponent.attachNode(this.parentNode);
 	    } else if (!baseComponent.node) {
@@ -879,14 +912,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      baseComponent.createDom();
 	      return baseComponent.attachNode(this.parentNode);
 	    } else {
-	      if (this.mounting) {
+	      if (mounting) {
 	        baseComponent.executeMountCallback();
 	      }
 	      if (!baseComponent.isNoop) {
-	        baseComponent.updateDom();
+	        baseComponent.updateDom(mounting);
 	      }
-	      if (this.mounting) {
-	        return baseComponent.attachNode();
+	      if (mounting) {
+	        return baseComponent.attachNode(this.parentNode);
 	      }
 	    }
 	  };
@@ -900,7 +933,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Component.prototype.unmount = function() {
-	    this.remove();
+	    this.baseComponent.remove(this.parentNode);
 	    return this;
 	  };
 
@@ -1030,8 +1063,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return node;
 	};
 
-	exports.getInputValueProp = function(type) {
-	  if (type === 'checkbox') {
+	exports.getBindProp = function(component) {
+	  var tagName;
+	  tagName = component.tagName;
+	  if (!tagName) {
+	    throw new Error('trying to bind wrong Component');
+	  }
+	  if (tagName === 'textarea' || tagName === 'select') {
+	    return 'value';
+	  } else if (component.attrs.type === 'checkbox') {
 	    return 'checked';
 	  } else {
 	    return 'value';
@@ -1050,9 +1090,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
+	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 10);
 
-	_ref = __webpack_require__(/*! ../../util */ 1), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(/*! ../../util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
 	module.exports = Text = (function(_super) {
 	  __extends(Text, _super);
@@ -1109,126 +1149,95 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 14 */
-/*!********************************************!*\
-  !*** ./src/core/base/BaseComponent.coffee ***!
-  \********************************************/
+/*!***********************************!*\
+  !*** ./src/core/base/Func.coffee ***!
+  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, Component, insertNode, removeNode, _ref,
+	var Func, TransformComponent, funcString, newLine, toComponent, _ref,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	toComponent = __webpack_require__(/*! ./toComponent */ 8);
+
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 15);
+
+	_ref = __webpack_require__(/*! ../../util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
+
+	module.exports = Func = (function(_super) {
+	  __extends(Func, _super);
+
+	  function Func(func, options) {
+	    Func.__super__.constructor.call(this, options);
+	    this.getContentComponent = function() {
+	      return toComponent(func());
+	    };
+	    this.clone = function(options) {
+	      return (new Func((function() {
+	        return toComponent(func()).clone();
+	      }), options || this.options)).copyLifeCallback(this);
+	    };
+	    this.toString = function(indent, noNewLine) {
+	      if (indent == null) {
+	        indent = 2;
+	      }
+	      return newLine("<Func " + (funcString(func)) + "/>", indent, noNewLine);
+	    };
+	    this;
+	  }
+
+	  return Func;
+
+	})(TransformComponent);
+
+
+/***/ },
+/* 15 */
+/*!*************************************************!*\
+  !*** ./src/core/base/TransformComponent.coffee ***!
+  \*************************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Component, TransformComponent, insertNode,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 	Component = __webpack_require__(/*! ./component */ 11);
 
-	_ref = __webpack_require__(/*! ../../dom-util */ 12), insertNode = _ref.insertNode, removeNode = _ref.removeNode;
+	insertNode = __webpack_require__(/*! ../../dom-util */ 12).insertNode;
 
-	module.exports = BaseComponent = (function(_super) {
-	  __extends(BaseComponent, _super);
+	module.exports = TransformComponent = (function(_super) {
+	  __extends(TransformComponent, _super);
 
-	  function BaseComponent(options) {
-	    BaseComponent.__super__.constructor.call(this, options);
+	  function TransformComponent(options) {
+	    TransformComponent.__super__.constructor.call(this, options);
+	    this.options = options || {};
+	    return;
 	  }
 
-	  BaseComponent.prototype.getBaseComponent = function() {
-	    this.mountCallbackComponentList = this.mountCallbackList ? [this] : [];
-	    this.unmountCallbackComponentList = this.unmountCallbackList ? [this] : [];
-	    return this.oldBaseComponent = this;
+	  TransformComponent.prototype.firstDomNode = function() {
+	    return this.baseComponent && this.baseComponent.firstDomNode();
 	  };
 
-	  BaseComponent.prototype.attachNode = function(parentNode) {
-	    var container, node, self;
-	    node = this.node;
-	    insertNode(parentNode, node, this.nextDomNode());
-	    self = this;
-	    container = this.container;
-	    while (container) {
-	      if (self.listIndex != null) {
-	        container.node[self.listIndex] = node;
-	      } else {
-	        container.node = node;
-	      }
-	      self = container;
-	      container = container.container;
+	  TransformComponent.prototype.getBaseComponent = function() {
+	    var baseComponent, content;
+	    this.oldBaseComponent = this.baseComponent;
+	    content = this.getContentComponent();
+	    content.container = this;
+	    content.listIndex = null;
+	    baseComponent = content.getBaseComponent();
+	    if (this.mountCallbackList) {
+	      baseComponent.mountCallbackComponentList.unshift(this);
 	    }
-	  };
-
-	  BaseComponent.prototype.remove = function(parentNode) {
-	    removeNode(parentNode, this.node);
-	    this.executeUnmountCallback();
-	    return this;
-	  };
-
-	  BaseComponent.prototype.executeMountCallback = function() {
-	    var cb, component, _i, _j, _len, _len1, _ref1, _ref2;
-	    _ref1 = this.mountCallbackComponentList;
-	    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	      component = _ref1[_i];
-	      _ref2 = component.mountCallbackList;
-	      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-	        cb = _ref2[_j];
-	        cb();
-	      }
+	    if (this.unmountCallbackList) {
+	      baseComponent.unmountCallbackComponentList.push(this);
 	    }
+	    return baseComponent;
 	  };
 
-	  BaseComponent.prototype.executeUnmountCallback = function() {
-	    var cb, component, _i, _j, _len, _len1, _ref1, _ref2;
-	    _ref1 = this.unmountCallbackComponentList;
-	    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	      component = _ref1[_i];
-	      _ref2 = component.unmountCallbackList;
-	      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-	        cb = _ref2[_j];
-	        cb();
-	      }
-	    }
-	  };
-
-	  BaseComponent.prototype.isBaseComponent = true;
-
-	  return BaseComponent;
+	  return TransformComponent;
 
 	})(Component);
-
-
-/***/ },
-/* 15 */
-/*!**************************************!*\
-  !*** ./src/core/base/Nothing.coffee ***!
-  \**************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var BaseComponent, Nothing,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
-
-	module.exports = Nothing = (function(_super) {
-	  __extends(Nothing, _super);
-
-	  function Nothing() {}
-
-	  Nothing.prototype.firstDomNode = function() {};
-
-	  Nothing.prototype.createDom = function() {};
-
-	  Nothing.prototype.updateDom = function() {};
-
-	  Nothing.prototype.clone = function() {
-	    return new Nothing();
-	  };
-
-	  Nothing.prototype.toString = function(indent, noNewLine) {
-	    if (indent == null) {
-	      indent = 2;
-	    }
-	    return '<nothing/>';
-	  };
-
-	  return Nothing;
-
-	})(BaseComponent);
 
 
 /***/ },
@@ -1244,13 +1253,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 8);
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
+	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 10);
 
 	Text = __webpack_require__(/*! ./Text */ 13);
 
-	checkContainer = __webpack_require__(/*! ../../util */ 1).checkContainer;
+	checkContainer = __webpack_require__(/*! ../../util */ 3).checkContainer;
 
-	newLine = __webpack_require__(/*! ../../util */ 1).newLine;
+	newLine = __webpack_require__(/*! ../../util */ 3).newLine;
 
 	module.exports = exports = List = (function(_super) {
 	  __extends(List, _super);
@@ -1303,12 +1312,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  List.prototype.createDom = function() {
-	    var child, node, _i, _j, _len, _len1, _ref, _ref1;
+	    var child, compList, i, node, _i, _j, _len, _len1, _ref, _ref1;
 	    this.node = node = [];
 	    _ref = this.children;
-	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	      child = _ref[_i];
-	      child.render();
+	    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+	      child = _ref[i];
+	      child.render(true);
+	      node[i] = child.node;
+	      if (compList = child.baseComponent.unmountCallbackComponentList) {
+	        this.unmountCallbackComponentList = compList.concat(this.unmountCallbackComponentList);
+	      }
 	    }
 	    if (!this.mountCallbackComponentList.length) {
 	      _ref1 = this.children;
@@ -1322,13 +1335,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
-	  List.prototype.updateDom = function() {
+	  List.prototype.updateDom = function(mounting) {
 	    var child, i, node, _i, _len, _ref;
 	    node = this.node;
 	    _ref = this.children;
 	    for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
 	      child = _ref[i];
-	      child.render();
+	      child.render(mounting);
+	      node[i] = child.node;
 	    }
 	  };
 
@@ -1476,15 +1490,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (this.parentNode && this.parentNode !== this.mountNode) {
 	      this.unmount();
 	    }
-	    this.mounting = true;
 	    this.setParentNode(this.mountNode);
 	    this._nextNode = beforeNode;
-	    this.render();
-	    this.mounting = false;
+	    this.render(true);
 	    return this;
 	  };
 
-	  Component.prototype.render = function() {
+	  Component.prototype.render = function(mounting) {
 	    var baseComponent, oldBaseComponent;
 	    this.baseComponent = baseComponent = this.getBaseComponent();
 	    oldBaseComponent = this.oldBaseComponent;
@@ -1494,7 +1506,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!baseComponent.node) {
 	        baseComponent.createDom();
 	      } else if (!baseComponent.isNoop) {
-	        baseComponent.updateDom();
+	        baseComponent.updateDom(mounting);
 	      }
 	      return baseComponent.attachNode(this.parentNode);
 	    } else if (!baseComponent.node) {
@@ -1502,14 +1514,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      baseComponent.createDom();
 	      return baseComponent.attachNode(this.parentNode);
 	    } else {
-	      if (this.mounting) {
+	      if (mounting) {
 	        baseComponent.executeMountCallback();
 	      }
 	      if (!baseComponent.isNoop) {
-	        baseComponent.updateDom();
+	        baseComponent.updateDom(mounting);
 	      }
-	      if (this.mounting) {
-	        return baseComponent.attachNode();
+	      if (mounting) {
+	        return baseComponent.attachNode(this.parentNode);
 	      }
 	    }
 	  };
@@ -1523,7 +1535,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Component.prototype.unmount = function() {
-	    this.remove();
+	    this.baseComponent.remove(this.parentNode);
 	    return this;
 	  };
 
@@ -1549,7 +1561,7 @@ return /******/ (function(modules) { // webpackBootstrap
   \**********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, List, Nothing, Tag, classFn, cloneObject, eventHandlerFromArray, extend, funcString, insertNode, newLine, styleFrom, toComponent, _directiveRegistry, _ref, _ref1,
+	var BaseComponent, List, Nothing, Tag, attrToPropName, classFn, cloneObject, eventHandlerFromArray, extend, funcString, insertNode, newLine, styleFrom, toComponent, _directiveRegistry, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
@@ -1558,17 +1570,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	insertNode = __webpack_require__(/*! ../../dom-util */ 12).insertNode;
 
-	_ref = __webpack_require__(/*! ../property */ 19), classFn = _ref.classFn, styleFrom = _ref.styleFrom, eventHandlerFromArray = _ref.eventHandlerFromArray;
+	_ref = __webpack_require__(/*! ../property */ 19), classFn = _ref.classFn, styleFrom = _ref.styleFrom, eventHandlerFromArray = _ref.eventHandlerFromArray, attrToPropName = _ref.attrToPropName;
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
+	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 10);
 
 	List = __webpack_require__(/*! ./List */ 16);
 
-	_ref1 = __webpack_require__(/*! ../../util */ 1), funcString = _ref1.funcString, newLine = _ref1.newLine, cloneObject = _ref1.cloneObject;
+	_ref1 = __webpack_require__(/*! ../../util */ 3), funcString = _ref1.funcString, newLine = _ref1.newLine, cloneObject = _ref1.cloneObject;
 
 	_directiveRegistry = __webpack_require__(/*! ../../directives/register */ 20)._directiveRegistry;
 
-	Nothing = __webpack_require__(/*! ./Nothing */ 15);
+	Nothing = __webpack_require__(/*! ./Nothing */ 9);
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 8);
 
@@ -1579,9 +1591,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (attrs == null) {
 	      attrs = {};
 	    }
+	    Tag.__super__.constructor.call(this, options);
 	    this.tagName = tagName = tagName.toLowerCase();
 	    this.namespace = attrs.namespace;
-	    delete attrs.namespace;
 	    if (!this.namespace) {
 	      if (tagName === 'svg') {
 	        this.namespace = "http://www.w3.org/2000/svg";
@@ -1591,8 +1603,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    this.attrs = attrs;
 	    this.isTag = true;
-	    this.initialized = false;
-	    Tag.__super__.constructor.call(this, options);
 	    if (children instanceof Array) {
 	      if (children.length === 1) {
 	        this.children = toComponent(children[0]);
@@ -1604,81 +1614,65 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	      this.children = toComponent(children);
 	    }
+	    this.processAttrs();
+	    return;
 	  }
 
-	  Tag.prototype.clone = function(options) {
-	    var result;
-	    if (options == null) {
-	      options = this.options;
+	  Tag.prototype.processAttrs = function() {
+	    var attrStyle, attrs, directive, directives, events, generator, handler, key, props, specials, style, value, _i, _len;
+	    this.activePropertiesCount = 0;
+	    attrs = this.attrs;
+	    this.cacheClassName = "";
+	    this.className = classFn(attrs.className, attrs["class"]);
+	    this.hasActiveProps = false;
+	    this.cacheProps = Object.create(null);
+	    this.props = props = Object.create(null);
+	    this.hasActiveStyle = false;
+	    this.cacheStyle = Object.create(null);
+	    this.style = style = Object.create(null);
+	    attrStyle = styleFrom(attrs.style);
+	    for (key in attrStyle) {
+	      this.hasActiveStyle = true;
+	      style[attrToPropName(key)] = attrStyle[key];
 	    }
-	    result = new Tag(this.tagName, Object.create(null), this.children.clone(), options || this.options);
-	    result.attrs = cloneObject(this.attrs);
-	    return result.copyLifeCallback(this);
-	  };
-
-	  Tag.prototype.init = function() {
-	    if (this.initialized) {
-	      return this;
-	    }
-	    this.processDirectives();
-	    this.processAttrs(this.attrs);
-	    this.initialized = true;
-	  };
-
-	  Tag.prototype.processDirectives = function() {
-	    var generator, handler, key, value, _ref2;
-	    _ref2 = this.attrs;
-	    for (key in _ref2) {
-	      value = _ref2[key];
-	      if (key[0] === '$') {
+	    this.hasActiveEvents = false;
+	    this.cacheEvents = Object.create(null);
+	    this.events = events = Object.create(null);
+	    this.hasActiveSpecials = false;
+	    this.cacheSpecials = Object.create(null);
+	    this.specials = specials = Object.create(null);
+	    directives = [];
+	    for (key in attrs) {
+	      value = attrs[key];
+	      if (key.slice(0, 2) === 'on') {
+	        if (typeof value === 'function') {
+	          events[key] = [value];
+	        } else {
+	          events[key] = value;
+	        }
+	        this.hasActiveEvents = true;
+	        this.activePropertiesCount++;
+	      } else if (key[0] === '$') {
 	        generator = _directiveRegistry[key.slice(1)];
 	        if (value instanceof Array) {
 	          handler = generator.apply(null, value);
 	        } else {
 	          handler = generator.apply(null, [value]);
 	        }
-	        handler(this);
-	      }
-	    }
-	  };
-
-	  Tag.prototype.processAttrs = function() {
-	    var attrs, directives, events, key, props, specials, value;
-	    attrs = this.attrs;
-	    this.className = classFn(attrs.className, attrs["class"]);
-	    delete attrs.className;
-	    this.props = props = Object.create(null);
-	    this.style = styleFrom(attrs.style);
-	    this.events = events = Object.create(null);
-	    this.specials = specials = Object.create(null);
-	    this.directives = directives = [];
-	    for (key in attrs) {
-	      value = attrs[key];
-	      if (key[0] === '$') {
-	        continue;
+	        directives.push(handler);
 	      } else if (key[0] === '_') {
+	        this.hasActiveSpecials = true;
 	        specials[key.slice(1)] = value;
-	      } else if (key.slice(0, 2) === 'on') {
-	        if (typeof value === 'function') {
-	          events[key] = [value];
-	        } else {
-	          events[key] = value;
-	        }
 	      } else {
-	        if (key === 'for') {
-	          props['htmlFor'] = value;
-	        } else {
-	          props[key] = value;
-	        }
+	        this.hasActiveProps = true;
+	        props[attrToPropName(key)] = value;
+	        this.activePropertiesCount++;
 	      }
 	    }
-	    if (!directives.length) {
-	      delete this.directives;
+	    for (_i = 0, _len = directives.length; _i < _len; _i++) {
+	      directive = directives[_i];
+	      directive(this);
 	    }
-	  };
-
-	  Tag.prototype.getChildren = function() {
-	    return this.children;
 	  };
 
 	  Tag.prototype.firstDomNode = function() {
@@ -1687,86 +1681,121 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  Tag.prototype.getBaseComponent = function() {
 	    this.oldBaseComponent = this;
-	    this.init();
 	    this.mountCallbackComponentList = this.mountCallbackList ? [this] : [];
 	    this.unmountCallbackComponentList = this.unmountCallbackList ? [this] : [];
 	    return this;
 	  };
 
-	  Tag.prototype.isActive = function() {
-	    return !this.node || this.activePropertiesCount || this.hasLifeTimeEvent();
-	  };
-
-	  Tag.prototype.css = function(prop, value) {
-	    var attrs, key, style, v;
-	    attrs = this.attrs;
-	    if (arguments.length === 0) {
-	      return attrs.style;
-	    }
-	    if (arguments.length === 1) {
-	      if (typeof prop === 'string') {
-	        return style && style[prop];
-	      } else {
-	        this.assertNotInitialized();
-	        style = attrs.style || (attrs.style = Object.create(null));
-	        for (key in prop) {
-	          v = prop[key];
-	          style[key] = v;
+	  Tag.prototype.enableContainerComponent = function() {
+	    var container, _results;
+	    container = this;
+	    _results = [];
+	    while (container) {
+	      if (container.isBaseComponent) {
+	        if (container.isNoop) {
+	          container.isNoop = false;
+	        } else {
+	          break;
 	        }
 	      }
-	    } else if (arguments.length === 2) {
-	      this.assertNotInitialized();
-	      style = attrs || (attrs.style = Object.create(null));
-	      style[prop] = value;
+	      _results.push(container = container.container);
+	    }
+	    return _results;
+	  };
+
+	  Tag.prototype.addActivity = function(props, prop, type) {
+	    this['hasActive' + type] = true;
+	    if (!props[prop]) {
+	      this.activePropertiesCount++;
+	    }
+	    this.enableContainerComponent();
+	  };
+
+	  Tag.prototype.prop = function() {
+	    var args;
+	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return this._updateProp(this.props, 'Props', args);
+	  };
+
+	  Tag.prototype.css = function() {
+	    var args;
+	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return this._updateProp(this.style, 'Style', args);
+	  };
+
+	  Tag.prototype._updateProp = function(props, type, args) {
+	    var key, prop, v, value;
+	    if (args.length === 0) {
+	      return props;
+	    }
+	    if (args.length === 1) {
+	      prop = args[0];
+	      if (typeof prop === 'string') {
+	        return props[prop];
+	      }
+	      for (key in prop) {
+	        v = prop[key];
+	        this.addActivity(props, key, type);
+	        props[key] = v;
+	      }
+	    } else if (args.length === 2) {
+	      prop = args[0], value = args[1];
+	      this.addActivity(props, prop, type);
+	      props[prop] = value;
 	    }
 	    return this;
 	  };
 
-	  Tag.prototype.bind = function(eventNames, handler) {
+	  Tag.prototype.bind = function(eventNames, handler, before) {
 	    var name, names, _i, _len;
-	    this.assertNotInitialized();
 	    names = eventNames.split('\s+');
 	    for (_i = 0, _len = names.length; _i < _len; _i++) {
 	      name = names[_i];
-	      this.addEventProp(name, handler);
+	      this._addEventProp(name, handler, before);
 	    }
 	  };
 
-	  Tag.prototype.addEventProp = function(prop, handler) {
-	    var attrs;
+	  Tag.prototype._addEventProp = function(prop, handler, before) {
+	    var events;
 	    if (prop.slice(0, 2) !== 'on') {
 	      prop = 'on' + prop;
 	    }
-	    attrs = this.attrs;
-	    if (typeof handlers === 'function') {
+	    events = this.events;
+	    if (typeof handler === 'function') {
 	      handler = [handler];
 	    }
-	    if (!attrs[prop]) {
-	      attrs[prop] = handler;
-	    } else if (typeof handler === 'function') {
-	      attrs[prop] = [attrs[prop]].concat(handler);
+	    if (!events[prop]) {
+	      this.addActivity(events, prop, 'Events');
+	      events[prop] = handler;
 	    } else {
-	      attrs[prop].push.apply(attrs[prop], handler);
+	      if (before) {
+	        events[prop] = handler.concat(events[prop]);
+	      } else {
+	        events[prop] = events[prop].concat(handler);
+	      }
 	    }
 	    return this;
 	  };
 
 	  Tag.prototype.unbind = function(eventNames, handler) {
 	    var name, names, _i, _len;
-	    this.assertNotInitialized();
 	    names = eventNames.split('\s+');
 	    for (_i = 0, _len = names.length; _i < _len; _i++) {
 	      name = names[_i];
-	      this.removeEventHandlers(name, handler);
+	      this._removeEventHandlers(name, handler);
 	    }
 	  };
 
-	  Tag.prototype.removeEventHandlers = function(eventName, handler) {
-	    var eventHandlers, index;
+	  Tag.prototype._removeEventHandlers = function(eventName, handler) {
+	    var eventHandlers, events, index;
+	    if (!this.hasActiveEvents) {
+	      return this;
+	    }
 	    if (eventName.slice(0, 2) !== 'on') {
 	      eventName = 'on' + eventName;
 	    }
-	    eventHandlers = this.attrs[eventName];
+	    events = this.events;
+	    eventHandlers = events[eventName];
 	    if (!eventHandlers) {
 	      return this;
 	    }
@@ -1774,72 +1803,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (index >= 0) {
 	      eventHandlers.splice(index, 1);
 	    }
+	    if (!eventHandlers.length) {
+	      delete events[eventName];
+	    }
 	    return this;
 	  };
 
-	  Tag.prototype.assertNotInitialized = function() {
-	    if (this.initialized) {
-	      throw new Error('Component is initialized, do not allowed to be modified any more: ' + this.toString());
-	    }
-	  };
-
 	  Tag.prototype.addClass = function() {
-	    var baseComponent, items, needUpdate;
+	    var items;
 	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    assertNotInitialized();
-	    if (!this.className) {
-	      this.className = classFn(items);
-	      this.activePropertiesCount--;
-	    } else {
-	      needUpdate = this.className.needUpdate;
-	      this.className.extend(items);
-	      if (!needUpdate && this.className.needUpdate) {
-	        this.activePropertiesCount++;
-	        if (baseComponent = this.baseComponent) {
-	          baseComponent.isNoop = baseComponent.isPlaceHolder = false;
-	        }
-	      }
+	    this.className.extend(items);
+	    if (this.className.needUpdate) {
+	      this.activePropertiesCount++;
+	      this.enableContainerComponent();
 	    }
 	    return this;
 	  };
 
 	  Tag.prototype.removeClass = function() {
-	    var baseComponent, classes, needUpdate, _ref2;
-	    classes = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    assertNotInitialized();
-	    if (!this.className) {
-	      return this;
-	    }
-	    needUpdate = this.className.needUpdate;
-	    (_ref2 = this.className).removeClass.apply(_ref2, classes);
-	    if (!needUpdate && this.className.needUpdate) {
+	    var items, _ref2;
+	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    (_ref2 = this.className).removeClass.apply(_ref2, items);
+	    if (this.className.needUpdate) {
 	      this.activePropertiesCount++;
-	      if (baseComponent = this.baseComponent) {
-	        baseComponent.isNoop = baseComponent.isPlaceHolder = false;
-	      }
+	      this.enableContainerComponent();
 	    }
 	    return this;
 	  };
 
 	  Tag.prototype.show = function(test, display) {
-	    assertNotInitialized();
 	    return this.showHide(true, test, display);
 	  };
 
 	  Tag.prototype.hide = function(test, display) {
-	    assertNotInitialized();
 	    return this.showHide(false, test, display);
 	  };
 
 	  Tag.prototype.showHide = function(showHide, showing, display) {
-	    var attrs, oldDisplay, style;
-	    attrs = this.attrs;
-	    style = attrs.style = attrs.style || Object.create(null);
+	    var oldDisplay, style;
+	    style = this.style;
 	    oldDisplay = style.display;
-	    if (typeof oldDisplay === 'function') {
-	      oldDisplay = oldDisplay();
+	    if (!oldDisplay) {
+	      this.addActivity(style, 'display', 'Style');
 	    }
 	    style.display = function() {
+	      var d;
 	      if ((typeof showing === 'function' ? !!showing() : !!showing) === showHide) {
 	        if (display) {
 	          if (typeof display === 'function') {
@@ -1847,8 +1855,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	          } else {
 	            return display;
 	          }
-	        } else if ((oldDisplay != null) && oldDisplay !== 'none') {
-	          return oldDisplay;
+	        } else if (oldDisplay != null) {
+	          if (typeof oldDisplay === 'function') {
+	            d = oldDisplay();
+	          } else {
+	            d = oldDisplay;
+	          }
+	          if (d !== 'none') {
+	            return d;
+	          } else {
+	            return 'block';
+	          }
 	        } else {
 	          return oldDisplay = 'block';
 	        }
@@ -1856,6 +1873,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return 'none';
 	      }
 	    };
+	    this.style = style;
 	    return this;
 	  };
 
@@ -1902,163 +1920,154 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Tag.prototype.getSpecialProp = function(prop) {};
 
 	  Tag.prototype.createDom = function() {
-	    var children, node;
+	    var children, compList, node;
 	    children = this.children;
 	    this.node = node = this.namespace ? document.createElementNS(this.namespace, this.tagName) : document.createElement(this.tagName);
 	    children.setParentNode(node);
-	    this.createProperties();
-	    children.render();
-	    this.isNoop = !this.mountCallbackComponentList.length && children.isNoop;
+	    this.updateProperties();
+	    children.render(true);
+	    if (compList = children.baseComponent.unmountCallbackComponentList) {
+	      this.unmountCallbackComponentList = compList.concat(this.unmountCallbackComponentList);
+	    }
+	    this.isNoop = !this.activePropertiesCount && !this.mountCallbackComponentList.length && children.isNoop;
 	    return this;
 	  };
 
-	  Tag.prototype.updateDom = function() {
+	  Tag.prototype.updateDom = function(mounting) {
 	    var children;
 	    children = this.children;
 	    this.updateProperties();
 	    children.render();
-	    this.isNoop = !this.mountCallbackComponentList.length && children.isNoop;
+	    this.isNoop = !this.activePropertiesCount && !this.mountCallbackComponentList.length && children.isNoop;
 	    return this;
 	  };
 
-	  Tag.prototype.createProperties = function() {
-	    var active, cacheEvents, cacheProps, cacheStyle, className, classValue, elementStyle, events, node, prop, props, specials, style, value;
-	    className = this.className, node = this.node, props = this.props, style = this.style, events = this.events, specials = this.specials;
-	    classValue = className();
-	    this.cacheClassName = classValue;
-	    if (classValue) {
-	      node.className = classValue;
-	    }
-	    if (!className.needUpdate) {
-	      delete this.className;
-	    }
-	    this.cacheProps = cacheProps = Object.create(null);
-	    active = false;
-	    for (prop in props) {
-	      value = props[prop];
-	      if (typeof value === 'function') {
-	        value = value();
-	        active = true;
-	      } else {
-	        delete props[prop];
-	      }
-	      if (value == null) {
-	        value = '';
-	      }
-	      cacheProps[prop] = node[prop] = value;
-	    }
-	    if (!active) {
-	      delete this.props;
-	    }
-	    this.cacheStyle = cacheStyle = Object.create(null);
-	    active = false;
-	    elementStyle = node.style;
-	    for (prop in style) {
-	      value = style[prop];
-	      if (typeof value === 'function') {
-	        value = value();
-	        active = true;
-	      } else {
-	        delete style[prop];
-	      }
-	      if (value == null) {
-	        value = '';
-	      }
-	      cacheStyle[prop] = elementStyle[prop] = value;
-	    }
-	    if (!active) {
-	      delete this.style;
-	    }
-	    this.cacheEvents = cacheEvents = Object.create(null);
-	    for (prop in events) {
-	      value = events[prop];
-	      delete events[prop];
-	      cacheEvents[prop] = node[prop] = eventHandlerFromArray(value, node, this);
-	    }
-	    this.cacheSpecials = Object.create(null);
-	    active = false;
-	    for (prop in specials) {
-	      value = specials[prop];
-	      if (typeof value === 'function') {
-	        value = value();
-	        active = true;
-	      } else {
-	        delete props[prop];
-	      }
-	      if (value == null) {
-	        value = '';
-	      }
-	      spercialPropSet[prop](this, prop, value);
-	    }
-	    if (!active) {
-	      delete this.specials;
-	    }
-	  };
-
 	  Tag.prototype.updateProperties = function() {
-	    var cacheProps, cacheSpecials, cacheStyle, className, classes, elementStyle, node, prop, props, specials, style, value, _results;
-	    node = this.node, className = this.className, props = this.props, style = this.style, specials = this.specials;
-	    if (className && (classes = className()) !== this.cacheClassName) {
-	      this.cacheClassName = node.className = classes;
+	    var active, activePropertiesCount, cacheEvents, cacheProps, cacheSpecials, cacheStyle, className, classValue, elementStyle, events, node, prop, props, specials, style, value;
+	    activePropertiesCount = this.activePropertiesCount;
+	    if (!activePropertiesCount) {
+	      return;
 	    }
-	    if (props) {
-	      cacheProps = this.cacheProps;
+	    node = this.node, className = this.className;
+	    if (className.needUpdate) {
+	      classValue = className();
+	      if (!classValue) {
+	        classValue = '';
+	      }
+	      if (classValue !== this.cacheClassName) {
+	        this.cacheClassName = node.className = classValue;
+	      }
+	      if (!className.needUpdate) {
+	        activePropertiesCount--;
+	      }
+	    }
+	    if (this.hasActiveProps) {
+	      props = this.props, cacheProps = this.cacheProps;
+	      active = false;
 	      for (prop in props) {
 	        value = props[prop];
-	        if ((value = value()) == null) {
+	        if (typeof value === 'function') {
+	          value = value();
+	          active = true;
+	        } else {
+	          delete props[prop];
+	          this.activePropertiesCount--;
+	        }
+	        if (value == null) {
 	          value = '';
 	        }
-	        value !== cacheProps[prop] && (node[prop] = value);
+	        cacheProps[prop] = node[prop] = value;
 	      }
+	      this.hasActiveProps = active;
 	    }
-	    elementStyle = node.style;
-	    if (style) {
-	      cacheStyle = this.cacheStyle;
+	    if (this.hasActiveStyle) {
+	      style = this.style, cacheStyle = this.cacheStyle;
+	      active = false;
+	      elementStyle = node.style;
 	      for (prop in style) {
 	        value = style[prop];
-	        if ((value = value()) == null) {
+	        if (typeof value === 'function') {
+	          value = value();
+	          active = true;
+	        } else {
+	          delete style[prop];
+	          this.activePropertiesCount--;
+	        }
+	        if (value == null) {
 	          value = '';
 	        }
-	        value !== cacheStyle[prop] && (elementStyle[prop] = value);
+	        cacheStyle[prop] = elementStyle[prop] = value;
+	      }
+	      this.hasActiveStyle = active;
+	    }
+	    if (this.hasActiveEvents) {
+	      events = this.events, cacheEvents = this.cacheEvents;
+	      for (prop in events) {
+	        value = events[prop];
+	        cacheEvents[prop] = events[prop];
+	        delete events[prop];
+	        node[prop] = eventHandlerFromArray(value, node, this);
+	        this.activePropertiesCount--;
 	      }
 	    }
-	    if (specials) {
-	      cacheSpecials = this.cacheSpecials;
-	      _results = [];
+	    this.hasActiveEvents = false;
+	    if (this.hasActiveSpecials) {
+	      specials = this.specials, cacheSpecials = this.cacheSpecials;
+	      active = false;
 	      for (prop in specials) {
 	        value = specials[prop];
-	        if ((value = value()) == null) {
+	        if (typeof value === 'function') {
+	          value = value();
+	          active = true;
+	        } else {
+	          delete props[prop];
+	          this.activePropertiesCount--;
+	        }
+	        if (value == null) {
 	          value = '';
 	        }
-	        _results.push(value !== cacheProps[prop] && spercialPropSet[prop](this, cacheProps[prop], value));
+	        spercialPropSet[prop](this, prop, value);
 	      }
-	      return _results;
+	      this.hasActiveSpecials = active;
 	    }
+	    this.activePropertiesCount = activePropertiesCount;
 	  };
 
-	  Tag.prototype.replaceProperties = function(baseComponent) {};
+	  Tag.prototype.clone = function(options) {
+	    var result;
+	    if (options == null) {
+	      options = this.options;
+	    }
+	    result = new Tag(this.tagName, this.attrs, this.children.clone(), options || this.options);
+	    return result.copyLifeCallback(this);
+	  };
 
 	  Tag.prototype.toString = function(indent, noNewLine) {
-	    var key, s, value, _ref2;
+	    var key, s, v, value, _ref2, _ref3;
 	    if (indent == null) {
 	      indent = 0;
 	    }
 	    s = newLine("<" + this.tagName, indent, noNewLine);
-	    _ref2 = this.attrs;
+	    _ref2 = this.props;
 	    for (key in _ref2) {
 	      value = _ref2[key];
-	      if (key === 'style') {
-	        if (Object.keys(value).length) {
-	          s += ' style={';
+	      s += ' ' + key + '=' + funcString(value);
+	    }
+	    if (this.hasActiveStyle) {
+	      s += ' style={';
+	      _ref3 = this.style;
+	      for (key in _ref3) {
+	        value = _ref3[key];
+	        if (typeof value === 'string') {
+	          s += value;
+	        } else {
 	          for (key in value) {
-	            value = value[key];
-	            s += ' ' + key + '=' + funcString(value);
+	            v = value[key];
+	            s += ' ' + key + '=' + funcString(v);
 	          }
-	          s += '}';
 	        }
-	      } else {
-	        s += ' ' + key + '=' + funcString(value);
 	      }
+	      s += '}';
 	    }
 	    s += '>';
 	    s += this.children.toString(indent + 2);
@@ -2077,10 +2086,10 @@ return /******/ (function(modules) { // webpackBootstrap
   \**********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var classFn, cloneObject, extend, extendEventValue, isArray, overAttrs, _ref, _specialProperties,
+	var attrPropNameMap, classFn, cloneObject, extend, extendEventValue, isArray, styleFrom, _ref, _specialProperties,
 	  __slice = [].slice;
 
-	_ref = __webpack_require__(/*! ../util */ 1), isArray = _ref.isArray, cloneObject = _ref.cloneObject;
+	_ref = __webpack_require__(/*! ../util */ 3), isArray = _ref.isArray, cloneObject = _ref.cloneObject;
 
 	extend = __webpack_require__(/*! ../extend */ 5);
 
@@ -2156,7 +2165,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return attrs;
 	};
 
-	overAttrs = function(attrs, obj) {
+	exports.overAttrs = function(attrs, obj) {
 	  var key, value;
 	  if (!obj) {
 	    attrs = extend(Object.create(null), attrs);
@@ -2279,7 +2288,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return fn;
 	};
 
-	exports.styleFrom = function(value) {
+	exports.styleFrom = styleFrom = function(value) {
 	  var item, key, result, v, _i, _j, _len, _len1, _ref1, _ref2;
 	  if (typeof value === 'string') {
 	    result = Object.create(null);
@@ -2359,6 +2368,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return _specialProperties[key] = handler;
 	};
 
+	attrPropNameMap = {
+	  'for': 'htmlFor'
+	};
+
+	exports.attrToPropName = function(name) {
+	  var i, len, newName, pieces;
+	  if (newName = attrPropNameMap[name]) {
+	    newName;
+	  }
+	  pieces = name.split('-');
+	  if (pieces.length === 1) {
+	    return name;
+	  }
+	  i = 1;
+	  len = pieces.length;
+	  while (i < len) {
+	    pieces[i] = pieces[i][0].toUpperCase() + pieces[i].slice(1);
+	    i++;
+	  }
+	  return pieces.join('');
+	};
+
 
 /***/ },
 /* 20 */
@@ -2387,7 +2418,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	_ref = __webpack_require__(/*! ../../util */ 1), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(/*! ../../util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
 	module.exports = Comment = (function(_super) {
 	  __extends(Comment, _super);
@@ -2429,7 +2460,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	_ref = __webpack_require__(/*! ../../util */ 1), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(/*! ../../util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
 	module.exports = Html = (function(_super) {
 	  __extends(Html, _super);
@@ -2476,9 +2507,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 8);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 10);
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 15);
 
-	_ref = __webpack_require__(/*! ../../util */ 1), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(/*! ../../util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
 	mergeThenElseValue = function(test, thenValue, elseValue) {
 	  if (typeof thenValue === 'function') {
@@ -2603,9 +2634,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 8);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 10);
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 15);
 
-	_ref = __webpack_require__(/*! ../../util */ 1), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(/*! ../../util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
 	module.exports = Case = (function(_super) {
 	  __extends(Case, _super);
@@ -2680,15 +2711,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	isArray = __webpack_require__(/*! ../../util */ 1).isArray;
+	isArray = __webpack_require__(/*! ../../util */ 3).isArray;
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 8);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 10);
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 15);
 
 	List = __webpack_require__(/*! ./List */ 16);
 
-	_ref = __webpack_require__(/*! ../../util */ 1), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(/*! ../../util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
 	module.exports = Repeat = (function(_super) {
 	  __extends(Repeat, _super);
@@ -2936,7 +2967,7 @@ return /******/ (function(modules) { // webpackBootstrap
   \*****************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var extend, extendEventValue, getInputValueProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,
+	var extend, extendEventValue, getBindProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,
 	  __slice = [].slice;
 
 	extend = __webpack_require__(/*! ../extend */ 5);
@@ -2945,7 +2976,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	extendEventValue = __webpack_require__(/*! ./property */ 19).extendEventValue;
 
-	getInputValueProp = __webpack_require__(/*! ../dom-util */ 12).getInputValueProp;
+	getBindProp = __webpack_require__(/*! ../dom-util */ 12).getBindProp;
 
 	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head html hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section";
 
@@ -2964,6 +2995,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	inputTypes = 'text textarea checkbox radio date email number'.split(' ');
 
 	input = exports.input = function(type, attrs, value) {
+	  var component;
 	  if (typeof type === 'object') {
 	    value = attrs;
 	    attrs = type;
@@ -2972,18 +3004,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  attrs = extend({
 	    type: type
 	  }, attrs);
+	  component = tag('input', attrs);
 	  if (value != null) {
-	    attrs[getInputValueProp(type)] = value;
+	    component.prop(getBindProp(component), value);
 	    if (value.setable) {
-	      extendEventValue(attrs, 'onchange', (function(event, comp) {
+	      component.bind('onchange', (function(event, comp) {
 	        return value(this.value);
 	      }), 'before');
 	    }
 	  }
-	  return tag('input', attrs);
+	  return component;
 	};
 
-	_ref = 'text textarea checkbox radio date email number'.split(' ');
+	_ref = 'text checkbox radio date email tel number'.split(' ');
 	_fn1 = function(type) {
 	  return exports[type] = function(value, attrs) {
 	    var temp;

@@ -61,7 +61,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	extend = dc.extend;
 
-	extend(dc, __webpack_require__(/*! ./directives */ 29), __webpack_require__(/*! ./builtins */ 37), __webpack_require__(/*! ./addon-util */ 44));
+	extend(dc, __webpack_require__(/*! ./directives */ 29), __webpack_require__(/*! ./builtins */ 36), __webpack_require__(/*! ./addon-util */ 43));
 
 	module.exports = dc;
 
@@ -120,9 +120,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.model = __webpack_require__(/*! ./model */ 31);
 
-	exports.bind = __webpack_require__(/*! ./bind */ 33);
+	exports.bind = __webpack_require__(/*! ./bind */ 32);
 
-	_ref = __webpack_require__(/*! ./show-hide */ 34), show = _ref.show, hide = _ref.hide;
+	_ref = __webpack_require__(/*! ./show-hide */ 33), show = _ref.show, hide = _ref.hide;
 
 	exports.show = show;
 
@@ -130,9 +130,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.blink = __webpack_require__(/*! ./blink */ 30);
 
-	exports.splitter = __webpack_require__(/*! ./splitter */ 35);
+	exports.splitter = __webpack_require__(/*! ./splitter */ 34);
 
-	exports.options = __webpack_require__(/*! ./options */ 36);
+	exports.options = __webpack_require__(/*! ./options */ 35);
 
 
 /***/ },
@@ -167,7 +167,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 	    });
 	    visible = true;
-	    this.attrs.style.visibility = function() {
+	    this.style.visibility = function() {
 	      if (visible) {
 	        return 'visible';
 	      } else {
@@ -188,20 +188,21 @@ return /******/ (function(modules) { // webpackBootstrap
   \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(module) {var extendEventValue, getInputValueProp, model, registerDirective;
+	var extendEventValue, getBindProp, model, registerDirective;
 
-	extendEventValue = dc.extendEventValue, getInputValueProp = dc.getInputValueProp;
+	extendEventValue = dc.extendEventValue, getBindProp = dc.getBindProp;
 
 	registerDirective = __webpack_require__(/*! ./register */ 20).registerDirective;
 
-	module.bindingorts = model = function(binding, eventName) {
+	module.exports = model = function(binding, eventName) {
 	  return function(comp) {
-	    var attrs, prop;
-	    attrs = comp.attrs;
-	    prop = getInputValueProp(attrs.type);
-	    attrs[prop] = binding;
-	    extendEventValue(attrs, eventName || 'onchange', (function() {
-	      return binding(this[prop]);
+	    var bindProp, props;
+	    props = comp.props;
+	    bindProp = getBindProp(comp);
+	    comp.addActivity(props, bindProp, 'Props');
+	    props[bindProp] = binding;
+	    comp.bind(eventName || 'onchange', (function() {
+	      return binding(this[bindProp]);
 	    }), 'before');
 	    return comp;
 	  };
@@ -209,45 +210,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	registerDirective('model', model);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! (webpack)/buildin/module.js */ 32)(module)))
 
 /***/ },
 /* 32 */
-/*!***********************************!*\
-  !*** (webpack)/buildin/module.js ***!
-  \***********************************/
-/***/ function(module, exports) {
-
-	module.exports = function(module) {
-		if(!module.webpackPolyfill) {
-			module.deprecate = function() {};
-			module.paths = [];
-			// module.parent = undefined by default
-			module.children = [];
-			module.webpackPolyfill = 1;
-		}
-		return module;
-	}
-
-
-/***/ },
-/* 33 */
 /*!************************************!*\
   !*** ./src/directives/bind.coffee ***!
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var bind, getInputValueProp, registerDirective;
+	var bind, getBindProp, registerDirective;
 
 	registerDirective = __webpack_require__(/*! ./register */ 20).registerDirective;
 
-	getInputValueProp = dc.getInputValueProp;
+	getBindProp = dc.getBindProp;
 
 	module.exports = bind = function(binding) {
 	  return function(comp) {
-	    var attrs;
-	    attrs = comp.attrs;
-	    attrs[getInputValueProp(attrs.type)] = binding;
+	    comp.props[getBindProp(comp)] = binding;
 	    return comp;
 	  };
 	};
@@ -256,7 +235,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 34 */
+/* 33 */
 /*!*****************************************!*\
   !*** ./src/directives/show-hide.coffee ***!
   \*****************************************/
@@ -288,7 +267,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 35 */
+/* 34 */
 /*!****************************************!*\
   !*** ./src/directives/splitter.coffee ***!
   \****************************************/
@@ -459,7 +438,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 36 */
+/* 35 */
 /*!***************************************!*\
   !*** ./src/directives/options.coffee ***!
   \***************************************/
@@ -489,7 +468,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 37 */
+/* 36 */
 /*!***********************************!*\
   !*** ./src/builtins/index.coffee ***!
   \***********************************/
@@ -499,21 +478,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	extend = dc.extend;
 
-	extend(exports, __webpack_require__(/*! ./accordion */ 39));
+	extend(exports, __webpack_require__(/*! ./accordion */ 38));
 
-	exports.arrow = __webpack_require__(/*! ./arrow */ 40);
+	exports.arrow = __webpack_require__(/*! ./arrow */ 39);
 
-	exports.dialog = __webpack_require__(/*! ./dialog */ 41);
+	exports.dialog = __webpack_require__(/*! ./dialog */ 40);
 
-	extend(exports, __webpack_require__(/*! ./combo */ 38));
+	extend(exports, __webpack_require__(/*! ./combo */ 37));
 
-	exports.comboEdit = __webpack_require__(/*! ./comboEdit */ 42);
+	exports.comboEdit = __webpack_require__(/*! ./comboEdit */ 41);
 
-	extend(exports, __webpack_require__(/*! ./autoWidthEdit */ 43));
+	extend(exports, __webpack_require__(/*! ./autoWidthEdit */ 42));
 
 
 /***/ },
-/* 38 */
+/* 37 */
 /*!***********************************!*\
   !*** ./src/builtins/combo.coffee ***!
   \***********************************/
@@ -556,7 +535,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    })
 	  });
 	  return comp = div(attrs, input({
-	    directives: model(modelValue),
+	    $model: modelValue,
 	    onmouseenter: (function() {
 	      showingItems = true;
 	      return comp.update();
@@ -584,7 +563,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 39 */
+/* 38 */
 /*!***************************************!*\
   !*** ./src/builtins/accordion.coffee ***!
   \***************************************/
@@ -665,7 +644,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 40 */
+/* 39 */
 /*!***********************************!*\
   !*** ./src/builtins/arrow.coffee ***!
   \***********************************/
@@ -707,7 +686,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 41 */
+/* 40 */
 /*!************************************!*\
   !*** ./src/builtins/dialog.coffee ***!
   \************************************/
@@ -797,7 +776,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 42 */
+/* 41 */
 /*!***************************************!*\
   !*** ./src/builtins/comboEdit.coffee ***!
   \***************************************/
@@ -847,7 +826,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 43 */
+/* 42 */
 /*!*******************************************!*\
   !*** ./src/builtins/autoWidthEdit.coffee ***!
   \*******************************************/
@@ -863,7 +842,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  __extends(AutoWidthEdit, _super);
 
 	  function AutoWidthEdit(contextEditAttrs, inputAttrs, inputKeyFn) {
-	    var editWidth, testSubject, testSubjectStyle;
+	    var editWidth, testSubject, testSubjectStyle, _inputAttrs;
 	    if (inputKeyFn == null) {
 	      inputKeyFn = this.inputKeyFn;
 	    }
@@ -917,7 +896,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return node.focus();
 	      };
 	    })(this);
-	    this.inputAttrs = {
+	    _inputAttrs = {
 	      style: {
 	        position: 'absolute',
 	        'z-index': '10',
@@ -936,7 +915,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this.focus();
 	      }
 	    }, contextEditAttrs);
-	    AutoWidthEdit.__super__.constructor.call(this, 'div', contextEditAttrs, [this.inputComp, this.testSubject]);
+	    AutoWidthEdit.__super__.constructor.call(this, 'div', contextEditAttrs, [this.inputComp, testSubject]);
 	  }
 
 	  return AutoWidthEdit;
@@ -949,7 +928,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 44 */
+/* 43 */
 /*!*******************************!*\
   !*** ./src/addon-util.coffee ***!
   \*******************************/

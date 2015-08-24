@@ -67,18 +67,18 @@ runWebPack = (entry, filename, options) ->
   webpackCompiler.run onTaskDone()
 
 webpackDistribute = (mode) ->
-  plugins = [new webpack.optimize.UglifyJsPlugin({minimize: true})]
-  #plugins = [new ClosureCompilerPlugin()]
-  runWebPack(domcomEntry, '[name].min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
-  runWebPack(domcomFullEntry, '[name].min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
   pathinfo = mode=='dev'
-  if mode=='dev' then plugins = []
+  plugins = []
   runWebPack(domcomEntry, '[name].js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
   runWebPack(domcomFullEntry, '[name].js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
+  if mode=='dist'
+    plugins = [new webpack.optimize.UglifyJsPlugin({minimize: true})]
+    #plugins = [new ClosureCompilerPlugin()]
+    runWebPack(domcomEntry, '[name].min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
+    runWebPack(domcomFullEntry, '[name].min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
   runWebPack('./test/mocha/index', 'mocha-index.js', {path:'dist', pathinfo:pathinfo, plugins})
   runWebPack('./demo/index', 'demo-index.js', {path:'dist', pathinfo:pathinfo, plugins})
   runWebPack('./demo/todomvc/todomvc', 'todomvc.js', {path:'dist', pathinfo:pathinfo, plugins})
-
 
 task 'webpack-dist', () -> webpackDistribute('dist')
 task 'webpack-dev', () -> webpackDistribute('dev')

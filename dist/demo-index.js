@@ -78,7 +78,7 @@
 	  current = initItem;
 	  currentComp = demoMap[current]();
 	  demoSelect = select({
-	    directives: options(Object.keys(demoMap)),
+	    $options: [Object.keys(demoMap)],
 	    value: 'accordion',
 	    onchange: function() {
 	      if (this.value !== current) {
@@ -391,14 +391,14 @@
   \***********************************/
 /***/ function(module, exports) {
 
-	var div, splitter;
+	var div;
 
-	splitter = dc.splitter, div = dc.div;
+	div = dc.div;
 
 	module.exports = function() {
 	  var comp;
 	  return comp = div({
-	    directives: splitter('vertical'),
+	    horizontal: 'horizontal',
 	    style: {
 	      height: '100%',
 	      width: '100%'
@@ -409,9 +409,10 @@
 	      width: '100%'
 	    }
 	  }, 1), div({
-	    directives: splitter('horizontal'),
+	    $splitter: 'vertical',
 	    style: {
 	      'background-color': "grey",
+	      height: '100%',
 	      width: '100%'
 	    }
 	  }, div(2), div(3)));

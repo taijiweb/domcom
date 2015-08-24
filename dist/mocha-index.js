@@ -77,13 +77,30 @@
   \*****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Component, a, bibind, checkbox, classFn, div, expect, func, hide, idescribe, if_, iit, li, list, model, ndescribe, nit, options, p, show, sibind, span, splitter, text, util, _ref;
+	var Component, a, attrToPropName, bibind, checkbox, classFn, div, expect, func, hide, idescribe, if_, iit, li, list, model, ndescribe, nit, options, p, show, sibind, span, splitter, styleFrom, text, util, _ref;
 
 	_ref = __webpack_require__(/*! ./helper */ 2), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
 
-	util = dc.util, sibind = dc.sibind, bibind = dc.bibind, classFn = dc.classFn, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, checkbox = dc.checkbox, model = dc.model, show = dc.show, hide = dc.hide, splitter = dc.splitter, options = dc.options;
+	util = dc.util, sibind = dc.sibind, bibind = dc.bibind, classFn = dc.classFn, styleFrom = dc.styleFrom, attrToPropName = dc.attrToPropName, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, checkbox = dc.checkbox, model = dc.model, show = dc.show, hide = dc.hide, splitter = dc.splitter, options = dc.options;
 
 	describe('properties ', function() {
+	  describe('utilities', function() {
+	    it('styleFrom ', function() {
+	      var x;
+	      x = styleFrom("display:none; zIndex:100; backgroundColor:white;");
+	      console.log(JSON.stringify(x));
+	      return expect(x).to.deep.equal({
+	        display: 'none',
+	        zIndex: '100',
+	        backgroundColor: 'white'
+	      });
+	    });
+	    return it('attrToPropName ', function() {
+	      var x;
+	      x = attrToPropName("background-color");
+	      return expect(x).to.equal('backgroundColor');
+	    });
+	  });
 	  describe("classFn", function() {
 	    it('get value of classFn', function() {
 	      var active, x;
@@ -127,7 +144,6 @@
 	          }
 	        }
 	      });
-	      comp.init();
 	      expect(comp.className()).to.equal('a b');
 	      comp.className = classFn({
 	        a: 1,
@@ -136,7 +152,13 @@
 	        }
 	      });
 	      expect(comp.className.needUpdate).to.equal(true);
-	      return comp.mount();
+	      comp.mount();
+	      expect(comp.className.needUpdate).to.equal(true);
+	      expect(comp.activePropertiesCount).to.equal(1);
+	      expect(comp.node.className).to.equal('a b');
+	      active = false;
+	      comp.update();
+	      return expect(comp.node.className).to.equal('a');
 	    });
 	  });
 	  describe('create', function() {
@@ -339,7 +361,7 @@
 	      return x;
 	    }), div(1), div(2)));
 	    console.log(comp.toString());
-	    return expect(comp.toString()).to.equal('\n<List>\n  <input type="text" onchange=fn:x = parseInt(this.value);\n\t        return comp.update() value=0><nothing/></input>\n  <if fn:x>\n    <div>\n      1</div>\n    <div>\n      2</div>\n  </if>\n</List>');
+	    return expect(comp.toString()).to.equal('\n<List>\n  <input type="text" value=0><nothing/></input>\n  <if fn:x>\n    <div>\n      1</div>\n    <div>\n      2</div>\n  </if>\n</List>');
 	  });
 	  it('should toString  tag with props', function() {
 	    var comp, x;
@@ -1601,7 +1623,7 @@
 	      expect(repeat1.node[0].textContent).to.equal('2');
 	      return expect(comp.node.innerHTML).to.equal('<div><span>2</span></div>');
 	    });
-	    return it('should process repeat under repeat', function() {
+	    it('should process repeat under repeat', function() {
 	      var comp, repeat1, repeat2, x;
 	      x = 1;
 	      repeat2 = null;
@@ -1620,6 +1642,48 @@
 	      expect(repeat1.node.parentNode).to.equal(comp.node);
 	      expect(repeat2.node[0].textContent).to.equal('2');
 	      return expect(comp.node.innerHTML).to.equal('2');
+	    });
+	    it('should mount and update repeat', function() {
+	      var comp;
+	      comp = new Tag('span', {}, [
+	        repeat([1], function(item) {
+	          return txt(1);
+	        })
+	      ]);
+	      comp.mount();
+	      expect(comp.node.innerHTML).to.equal('1');
+	      comp.update();
+	      return expect(comp.node.innerHTML).to.equal('1');
+	    });
+	    it('should update repeat with component as the item of list 1', function() {
+	      var comp, s;
+	      comp = repeat([txt(1)], function(item) {
+	        return item;
+	      });
+	      comp.mount();
+	      expect(comp.node[0].textContent).to.equal(s = '1');
+	      comp.update();
+	      return expect(comp.node[0].textContent).to.equal('1');
+	    });
+	    it('should update repeat with component as the item of list 2', function() {
+	      var comp, s;
+	      comp = div(repeat([txt(1)], function(item) {
+	        return item;
+	      }));
+	      comp.mount();
+	      expect(comp.node.innerHTML).to.equal(s = '1');
+	      comp.update();
+	      return expect(comp.node.innerHTML).to.equal('1');
+	    });
+	    return it('should update repeat with component as the item of list 3', function() {
+	      var comp, s;
+	      comp = div(div(repeat([txt(1)], function(item) {
+	        return item;
+	      })));
+	      comp.mount();
+	      expect(comp.node.innerHTML).to.equal(s = '<div>1</div>');
+	      comp.update();
+	      return expect(comp.node.innerHTML).to.equal('<div>1</div>');
 	    });
 	  });
 	});
@@ -1730,7 +1794,17 @@
 	bindings = dc.bindings, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, repeat = dc.repeat, accordionGroup = dc.accordionGroup, accordion = dc.accordion, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
 	describe('accordion', function() {
-	  it('should create and update accordion group', function() {
+	  it('should update accordionGroup', function() {
+	    var comp, s;
+	    comp = accordionGroup({}, 'group head', repeat([1], function(item) {
+	      return txt(1);
+	    }), {});
+	    comp.mount();
+	    expect(comp.node.innerHTML).to.equal(s = '<div class="panel-heading"><h4 class="panel-title"><div class="accordion-toggle"><span>group head</span></div></h4></div><div class="panel-collapse" style="display: none;"><div class="panel-body">1</div></div>');
+	    comp.update();
+	    return expect(comp.node.innerHTML).to.equal(s);
+	  });
+	  it('should update accordion group 2', function() {
 	    var comp;
 	    comp = accordionGroup({}, 'group head', new Tag('span', {}, [
 	      repeat([1], function(item) {
@@ -1754,19 +1828,15 @@
 	    comp.mount();
 	    return expect(comp.node.innerHTML).to.equal('<div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><div class="accordion-toggle"><span>group head</span></div></h4></div><div class="panel-collapse" style="display: none;"><div class="panel-body"><span>1</span></div></div></div>');
 	  });
-	  it('should mount and update repeat', function() {
-	    var comp;
-	    comp = new Tag('span', {}, [
-	      repeat([1], function(item) {
-	        return txt(1);
-	      })
-	    ]);
+	  it('should update accordion', function() {
+	    var comp, s;
+	    comp = accordion({}, [[{}, 'group head', txt(1), {}]], {});
 	    comp.mount();
-	    expect(comp.node.innerHTML).to.equal('1');
+	    expect(comp.node.innerHTML).to.equal(s = '<div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><div class="accordion-toggle"><span>group head</span></div></h4></div><div class="panel-collapse" style="display: none;"><div class="panel-body">1</div></div></div>');
 	    comp.update();
-	    return expect(comp.node.innerHTML).to.equal('1');
+	    return expect(comp.node.innerHTML).to.equal(s);
 	  });
-	  it('should mount and update accordion', function() {
+	  return it('should update accordion 2', function() {
 	    var comp, s;
 	    comp = accordion({}, [
 	      [
@@ -1781,34 +1851,6 @@
 	    expect(comp.node.innerHTML).to.equal(s = '<div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><div class="accordion-toggle"><span>group head</span></div></h4></div><div class="panel-collapse" style="display: none;"><div class="panel-body"><span>1</span></div></div></div>');
 	    comp.update();
 	    return expect(comp.node.innerHTML).to.equal(s);
-	  });
-	  it('should mount and update accordion 2', function() {
-	    var comp, s;
-	    comp = accordion({}, [[{}, 'group head', txt(1), {}]], {});
-	    comp.mount();
-	    expect(comp.node.innerHTML).to.equal(s = '<div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><div class="accordion-toggle"><span>group head</span></div></h4></div><div class="panel-collapse" style="display: none;"><div class="panel-body">1</div></div></div>');
-	    comp.update();
-	    return expect(comp.node.innerHTML).to.equal(s);
-	  });
-	  it('should mount and update accordion 3', function() {
-	    var comp, s;
-	    comp = div(div(repeat([txt(1)], function(item) {
-	      return item;
-	    })));
-	    comp.mount();
-	    expect(comp.node.innerHTML).to.equal(s = '<div>1</div>');
-	    comp.update();
-	    return expect(comp.node.innerHTML).to.equal('<div>1</div>');
-	  });
-	  return it('should mount and update accordion 4', function() {
-	    var comp, s;
-	    comp = div(repeat([txt(1)], function(item) {
-	      return item;
-	    }));
-	    comp.mount();
-	    expect(comp.node.innerHTML).to.equal(s = '1');
-	    comp.update();
-	    return expect(comp.node.innerHTML).to.equal('1');
 	  });
 	});
 

@@ -47,9 +47,9 @@
   \*************************************/
 /***/ function(module, exports) {
 
-	var a, allChecked, bi, bindings, button, checkbox, clearCompletedTodos, completedCount, div, editTodo, editingTodo, extend, fetch, footer, form, getTodos, h1, header, label, li, markAll, onEscapeFn, originalTodo, p, pluralize, remainingCount, removeTodo, repeat, revertEdits, reverted, save, saving, section, setView, show, si, span, strong, text, todoEditArea, todoFooter, todoHeader, todoItems, todos, toggleCompleted, txt, ul, view, viewStatusHash;
+	var a, allChecked, bibind, bindings, button, checkbox, clearCompletedTodos, completedCount, div, editTodo, editingTodo, extend, fetch, footer, form, getTodos, h1, header, label, li, markAll, onEscapeFn, originalTodo, p, pluralize, remainingCount, removeTodo, repeat, revertEdits, reverted, save, saving, section, setView, sibind, span, strong, text, todoEditArea, todoFooter, todoHeader, todoItems, todos, toggleCompleted, txt, ul, view, viewStatusHash;
 
-	bindings = dc.bindings, si = dc.si, bi = dc.bi, section = dc.section, h1 = dc.h1, header = dc.header, form = dc.form, text = dc.text, checkbox = dc.checkbox, div = dc.div, ul = dc.ul, li = dc.li, p = dc.p, a = dc.a, label = dc.label, button = dc.button, footer = dc.footer, strong = dc.strong, span = dc.span, repeat = dc.repeat, txt = dc.txt, show = dc.show, extend = dc.extend;
+	bindings = dc.bindings, sibind = dc.sibind, bibind = dc.bibind, section = dc.section, h1 = dc.h1, header = dc.header, form = dc.form, text = dc.text, checkbox = dc.checkbox, div = dc.div, ul = dc.ul, li = dc.li, p = dc.p, a = dc.a, label = dc.label, button = dc.button, footer = dc.footer, strong = dc.strong, span = dc.span, repeat = dc.repeat, txt = dc.txt, extend = dc.extend;
 
 	fetch = function() {
 	  return (JSON.parse(localStorage.getItem('dc') || '[]')).filter(function(todo) {
@@ -259,7 +259,7 @@
 	  }, text({
 	    className: "edit",
 	    trim: "false",
-	    value: si(todo, "title"),
+	    value: sibind(todo, "title"),
 	    onblur: (function() {
 	      todo.title = this.value;
 	      save(todos);
@@ -277,9 +277,9 @@
 
 	todoEditArea = section({
 	  id: "main",
-	  directives: show(function() {
+	  $show: function() {
 	    return todos.length;
-	  })
+	  }
 	}, checkbox({
 	  id: "toggle-all",
 	  className: "toggle",
@@ -293,7 +293,7 @@
 	  id: "todo-list"
 	}, todoItems), footer({
 	  id: "footer",
-	  directives: show(function() {
+	  $show: (function() {
 	    return todos.length;
 	  })
 	}, span({
@@ -318,7 +318,7 @@
 	}, "Completed"))), button({
 	  id: "clear-completed",
 	  onclick: clearCompletedTodos,
-	  directives: show(completedCount)
+	  $show: completedCount
 	}, txt(function() {
 	  return "Clear completed: " + completedCount();
 	}))));
