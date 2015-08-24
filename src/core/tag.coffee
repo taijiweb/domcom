@@ -22,10 +22,11 @@ input = exports.input = (type, attrs, value) ->
     attrs = type
     type = 'text'
   attrs = extend({type:type}, attrs)
+  component = tag('input', attrs)
   if value?
-    attrs[getBindProp(type)] = value
-    if value.setable then extendEventValue attrs, 'onchange', ((event, comp) -> value(@value)), 'before'
-  tag('input', attrs)
+    component.prop(getBindProp(component), value)
+    if value.setable then component.bind('onchange', ((event, comp) -> value(@value)), 'before')
+  component
 
 for type in 'text checkbox radio date email tel number'.split(' ')
   do (type=type) -> exports[type] = (value, attrs) ->

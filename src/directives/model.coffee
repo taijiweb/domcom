@@ -7,7 +7,7 @@ module.exports = model = (binding, eventName) -> (comp) ->
   bindProp = getBindProp(comp)
   comp.addActivity(props, bindProp, 'Props')
   props[bindProp] = binding
-  comp.bind(eventName or 'onchange', (-> binding(@[prop])), 'before')
+  comp.bind(eventName or 'onchange', (-> binding(@[bindProp])), 'before')
   comp
 
 registerDirective 'model',  model

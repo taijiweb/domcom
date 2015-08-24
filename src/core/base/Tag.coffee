@@ -99,31 +99,33 @@ module.exports = class Tag extends BaseComponent
       container = container.container
     return
 
-  prop: (prop, value) -> @_updateProp(@props, 'Props', arguments.slice())
+  prop: (args...) -> @_updateProp(@props, 'Props', args)
 
-  css: (prop, value) -> @_updateProp(@style, 'Style', arguments.slice())
+  css: (args...) -> @_updateProp(@style, 'Style', args)
 
   _updateProp: (props, type, args) ->
     if args.length==0 then return props
     if args.length==1
+      prop = args[0]
       if typeof prop == 'string' then return props[prop]
       for key, v of prop
         @addActivity(props, key, type)
         props[key] = v
     else if args.length==2
+      [prop, value] = args
       @addActivity(props, prop, type)
       props[prop] = value
     this
 
-  bind: (eventNames, handler) ->
+  bind: (eventNames, handler, before) ->
     names = eventNames.split('\s+')
-    for name in names then @_addEventProp(name, handler)
+    for name in names then @_addEventProp(name, handler, before)
     return
 
   _addEventProp: (prop, handler, before) ->
     if prop[...2]!='on' then prop = 'on'+prop
     {events} = @
-    if typeof handlers == 'function' then handler = [handler]
+    if typeof handler == 'function' then handler = [handler]
     if !events[prop]
       @addActivity(events, prop, 'Events')
       events[prop] = handler
@@ -250,7 +252,8 @@ module.exports = class Tag extends BaseComponent
     @
 
   updateProperties: ->
-    if !@activePropertiesCount then return
+    {activePropertiesCount} = @
+    if !activePropertiesCount then return
 
     {node, className} = @
     if className.needUpdate
@@ -258,6 +261,7 @@ module.exports = class Tag extends BaseComponent
       if !classValue then classValue = ''
       if classValue!=@cacheClassName
         @cacheClassName = node.className = classValue
+      if !className.needUpdate then activePropertiesCount--
 
     if @hasActiveProps
       {props, cacheProps} = @
@@ -312,6 +316,7 @@ module.exports = class Tag extends BaseComponent
         spercialPropSet[prop](@, prop, value)
       @hasActiveSpecials = active
 
+    @activePropertiesCount = activePropertiesCount
     return
 
   clone: (options=@options) ->

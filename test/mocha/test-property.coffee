@@ -48,12 +48,12 @@ describe 'properties ', ->
       comp.className = classFn {a:1, b:-> active} # need be assign again before the call before affected the className and its needUpdate
       expect(comp.className.needUpdate).to.equal true
       comp.mount()
-#      expect(comp.className.needUpdate).to.equal true
-#      expect(comp.activePropertiesCount).to.equal 1
-#      expect(comp.node.className).to.equal 'a b'
-#      active = false
-#      comp.update()
-#      expect(comp.node.className).to.equal 'a'
+      expect(comp.className.needUpdate).to.equal true
+      expect(comp.activePropertiesCount).to.equal 1
+      expect(comp.node.className).to.equal 'a b'
+      active = false
+      comp.update()
+      expect(comp.node.className).to.equal 'a'
 
   describe 'create', ->
     it 'should create properties', ->
