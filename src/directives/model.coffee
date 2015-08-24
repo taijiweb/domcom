@@ -1,12 +1,13 @@
-{extendEventValue, getInputValueProp} = dc
+{extendEventValue, getBindProp} = dc
 
 {registerDirective} = require './register'
 
-module.bindingorts = model = (binding, eventName) -> (comp) ->
-  {attrs} = comp
-  prop = getInputValueProp(attrs.type)
-  attrs[prop] = binding
-  extendEventValue attrs, eventName or 'onchange', (-> binding(@[prop])), 'before'
+module.exports = model = (binding, eventName) -> (comp) ->
+  {props} = comp
+  bindProp = getBindProp(comp)
+  comp.addActivity(props, bindProp, 'Props')
+  props[bindProp] = binding
+  comp.bind(eventName or 'onchange', (-> binding(@[prop])), 'before')
   comp
 
 registerDirective 'model',  model

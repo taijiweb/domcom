@@ -1,9 +1,8 @@
 {registerDirective} = require './register'
-{getInputValueProp} = dc
+{getBindProp} = dc
 
 module.exports = bind = (binding) -> (comp) ->
-  {attrs} = comp
-  attrs[getInputValueProp(attrs.type)] = binding
+  comp.props[getBindProp(comp)] = binding
   comp
 
 registerDirective 'bind', bind

@@ -6,7 +6,7 @@ module.exports = blink = (interval) -> (comp) ->
   comp.beforeMount (baseComponent) -> -> timer = setInterval (-> visible = !visible), interval
   comp.afterUnmount (baseComponent) -> -> clearInterval timer
   visible = true
-  @attrs.style.visibility = ->
+  @style.visibility = ->
     if visible then 'visible'
     else 'hidden'
   comp

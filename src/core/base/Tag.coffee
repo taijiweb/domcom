@@ -30,32 +30,34 @@ module.exports = class Tag extends BaseComponent
     else @children = toComponent(children)
     return
 
-  clone: (options=@options) ->
-    result = new Tag(@tagName, Object.create(null), @children.clone(), options or @options)
-    result.attrs = cloneObject(@attrs)
-    result.copyLifeCallback(@)
-
-
   processAttrs: ->
     @activePropertiesCount = 0
     attrs = @attrs
     @className = classFn(attrs.className, attrs.class)
     delete attrs.className
+    @hasActiveProps = false
+    @cacheProps = Object.create(null)
     @props = props = Object.create(null)
-    @style = style = styleFrom(attrs.style)
-    for key of style
-      k = attrToPropName(key)
-      if key==k then continue
-      style[k] = style[key]
-      delete style[key]
+    @hasActiveStyle = false
+    @cacheStyle = Object.create(null)
+    @style = style = Object.create(null)
+    attrStyle = styleFrom(attrs.style)
+    for key of attrStyle
+      @hasActiveStyle = true
+      style[attrToPropName(key)] = attrStyle[key]
+    @hasActiveEvents = false
+    @cacheEvents = Object.create(null)
     @events = events = Object.create(null)
+    @hasActiveSpecials = false
+    @cacheSpecials = Object.create(null)
     @specials = specials = Object.create(null)
     @directives = directives = []
     for key, value of attrs
-     if key[..1]=='on'
+      if key[..1]=='on'
         if typeof value == 'function'
           events[key] = [value]
         else events[key] = value
+        @hasActiveEvents = true
         @activePropertiesCount++
       else if key[0]=='$'
         # $directiveName: generator arguments list
@@ -64,18 +66,18 @@ module.exports = class Tag extends BaseComponent
         else handler = generator.apply(null, [value])
         directives.push(handler)
       else if key[0]=='_'
+        @hasActiveSpecials = true
         specials[key.slice(1)] = value
       else
+        @hasActiveProps = true
         props[attrToPropName(key)] = value
         @activePropertiesCount++
-    if !directives.length then delete @directives
     return
 
   # directives always return the component itself
   processDirectives: ->
-    if @directives
-      for directive in @directives
-        directive(@)
+    for directive in @directives
+      directive(@)
     return
 
   firstDomNode: -> @node
@@ -86,27 +88,31 @@ module.exports = class Tag extends BaseComponent
     @unmountCallbackComponentList = if @unmountCallbackList then [@] else []
     @
 
-  addActivity: (props, prop) ->
+  addActivity: (props, prop, type) ->
+    @['hasActive'+type] = true
     if !props[prop] then @activePropertiesCount++
     container = @
-    while container.isBaseComponent
-      container.isNoop = false
+    while container
+      if container.isBaseComponent
+        if container.isNoop then container.isNoop = false
+        else break
+      container = container.container
     return
 
-  css: (prop, value) ->
-    {style} = @
-    if arguments.length==0 then return style
-    if arguments.length==1
-      if typeof prop == 'string' then return style and style[prop]
-      style = style or style = Object.create(null)
+  prop: (prop, value) -> @_updateProp(@props, 'Props', arguments.slice())
+
+  css: (prop, value) -> @_updateProp(@style, 'Style', arguments.slice())
+
+  _updateProp: (props, type, args) ->
+    if args.length==0 then return props
+    if args.length==1
+      if typeof prop == 'string' then return props[prop]
       for key, v of prop
-        @addActivity(style, key)
-        style[key] = v
-    else if arguments.length==2
-      style = style or style = Object.create(null)
-      @addActivity(style, prop)
-      style[prop] = value
-    @style = style
+        @addActivity(props, key, type)
+        props[key] = v
+    else if args.length==2
+      @addActivity(props, prop, type)
+      props[prop] = value
     this
 
   bind: (eventNames, handler) ->
@@ -114,17 +120,16 @@ module.exports = class Tag extends BaseComponent
     for name in names then @_addEventProp(name, handler)
     return
 
-  _addEventProp: (prop, handler) ->
+  _addEventProp: (prop, handler, before) ->
     if prop[...2]!='on' then prop = 'on'+prop
     {events} = @
-    events = events or Object.create(null)
     if typeof handlers == 'function' then handler = [handler]
     if !events[prop]
-      @addActivity(events, prop)
+      @addActivity(events, prop, 'Events')
       events[prop] = handler
-    else if typeof handler == 'function' then events[prop] = [events[prop]].concat(handler)
-    else events[prop].push.apply(events[prop], handler)
-    @events = events
+    else
+      if before then events[prop] = handler.concat(events[prop])
+      else events[prop] = events[prop].concat(handler)
     @
 
   unbind: (eventNames, handler) ->
@@ -133,12 +138,14 @@ module.exports = class Tag extends BaseComponent
     return
 
   _removeEventHandlers: (eventName, handler) ->
-    if !@events then return @
+    if !@hasActiveEvents then return @
     if eventName[..1]!='on' then eventName = 'on'+eventName
-    eventHandlers = @events[eventName]
+    {events} = @
+    eventHandlers = events[eventName]
     if !eventHandlers then return @
     index = eventHandlers.indexOf(handler)
     if index>=0 then eventHandlers.splice(index, 1)
+    if !eventHandlers.length then delete events[eventName]
     @
 
   addClass: (items...) ->
@@ -178,9 +185,9 @@ module.exports = class Tag extends BaseComponent
     @showHide(false, test, display)
 
   showHide: (showHide, showing, display) ->
-    style = @style or Object.create(null)
-    @addActivity(style, 'display')
+    {style} = @
     oldDisplay = style.display
+    if !oldDisplay then  @addActivity(style, 'display', 'Style')
     style.display = ->
       if (if typeof showing == 'function' then !!showing() else !!showing)==showHide
         if display
@@ -245,17 +252,15 @@ module.exports = class Tag extends BaseComponent
   updateProperties: ->
     if !@activePropertiesCount then return
 
-    {className} = @
-    if className
+    {node, className} = @
+    if className.needUpdate
       classValue = className()
       if !classValue then classValue = ''
       if classValue!=@cacheClassName
         @cacheClassName = node.className = classValue
-      if !className.needUpdate then delete @className
 
-    {props} = @
-    if props
-      {cacheProps} = @
+    if @hasActiveProps
+      {props, cacheProps} = @
       active = false
       for prop, value of props
         if typeof value == 'function'
@@ -266,11 +271,10 @@ module.exports = class Tag extends BaseComponent
           @activePropertiesCount--
         if !value? then value = ''
         cacheProps[prop] = node[prop] = value
-      if !active then delete @props
+      @hasActiveProps = active
 
-    {style} = @
-    if style
-      {cacheStyle} = @
+    if @hasActiveStyle
+      {style, cacheStyle} = @
       active = false
       elementStyle = node.style
       for prop, value of style
@@ -282,19 +286,20 @@ module.exports = class Tag extends BaseComponent
           @activePropertiesCount--
         if !value? then value = ''
         cacheStyle[prop] = elementStyle[prop] = value
-      if !active then delete @style
+      @hasActiveStyle = active
 
-    {events} = @
-    if events
-      {cacheEvents} = @
+
+    if @hasActiveEvents
+      {events, cacheEvents} = @
       for prop, value of events
+        cacheEvents[prop] = events[prop]
         delete events[prop]
-        cacheEvents[prop] = node[prop] = eventHandlerFromArray(value, node, @)
+        node[prop] = eventHandlerFromArray(value, node, @)
         @activePropertiesCount--
+    @hasActiveEvents = false
 
-    {specials} = @
-    if specials
-      {cacheSpecials} = @
+    if @hasActiveSpecials
+      {specials, cacheSpecials} = @
       active = false
       for prop, value of specials
         if typeof value == 'function'
@@ -305,9 +310,14 @@ module.exports = class Tag extends BaseComponent
           @activePropertiesCount--
         if !value? then value = ''
         spercialPropSet[prop](@, prop, value)
-      if !active then delete @specials
+      @hasActiveSpecials = active
 
     return
+
+  clone: (options=@options) ->
+    result = new Tag(@tagName, Object.create(null), @children.clone(), options or @options)
+    result.attrs = cloneObject(@attrs)
+    result.copyLifeCallback(@)
 
   toString: (indent=0, noNewLine) ->
     s = newLine("<#{@tagName}", indent, noNewLine)
