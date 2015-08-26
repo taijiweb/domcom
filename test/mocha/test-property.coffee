@@ -11,7 +11,6 @@ describe 'properties ', ->
   describe 'utilities', ->
     it 'styleFrom ', ->
       x = styleFrom("display:none; zIndex:100; backgroundColor:white;")
-      console.log(JSON.stringify(x))
       expect(x).to.deep.equal {display:'none', zIndex:'100', backgroundColor:'white'}
     it 'attrToPropName ', ->
       x = attrToPropName("background-color")

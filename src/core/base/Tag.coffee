@@ -161,17 +161,32 @@ module.exports = class Tag extends BaseComponent
       @enableContainerComponent()
     this
 
-  show: (test, display) -> @showHide(true, test, display)
+  show: (display) ->
+    if typeof display == 'function'
+      display = display()
+      if !display? then display = ''
+    if !display? then @style.display = 'block'
+    else if display=='visible' then @style.visibility = 'visible'
+    else @style.display = display
+    @update()
+    @
 
-  hide: (test, display) ->
-    @showHide(false, test, display)
+  hide: (display) ->
+    if typeof display == 'function'
+      display = display()
+      if !display? then display = ''
+    if !display? then @style.display = 'none'
+    else if display=='hidden' then @style.visibility = 'hidden'
+    else @style.display = display
+    @update()
+    @
 
-  showHide: (showHide, showing, display) ->
+  status: (status, test, display) ->
     {style} = @
     oldDisplay = style.display
     if !oldDisplay then  @addActivity(style, 'display', 'Style')
     style.display = ->
-      if (if typeof showing == 'function' then !!showing() else !!showing)==showHide
+      if (if typeof test == 'function' then !!test() else !!test)==status
         if display
           if typeof display == 'function' then display()
           else display

@@ -27,7 +27,7 @@ exports.removeNode = removeNode = (parent, child) ->
     for node in child then removeNode(parent, node)
   else
     # todo: fix the bug about the child parentNode
-    if child.parentNode==parent then parent.removeChild(child)
+    if child and child.parentNode==parent then parent.removeChild(child)
   return
 
 createHtmlFragment =  (html) ->
