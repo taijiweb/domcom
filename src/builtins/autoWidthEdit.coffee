@@ -2,6 +2,7 @@
 
 exports.AutoWidthEdit = class AutoWidthEdit extends Tag
   constructor: (contextEditAttrs, inputAttrs, inputKeyFn=@inputKeyFn) ->
+    self = this
     editWidth = 48
     testSubjectStyle =
       position:'absolute'
@@ -12,18 +13,18 @@ exports.AutoWidthEdit = class AutoWidthEdit extends Tag
       display: 'inline-block',
       margin: '0',
       padding: '0',
-      fontSize: => @css('fontSize'),
-      fontFamily: => @css('fontFamily'),
-      fontWeight: => @css('fontWeight'),
-      letterSpacing: => @css('letterSpacing')
+      fontSize: -> self.css('fontSize'),
+      fontFamily: -> self.css('fontFamily'),
+      fontWeight: -> self.css('fontWeight'),
+      letterSpacing: -> self.css('letterSpacing')
       visibility: 'hidden'
     testSubject = div({style:testSubjectStyle}, (=> @value))
-    @inputKeyFn = inputKeyFn = (event, comp) =>
+    @inputKeyFn = (event, comp) ->
       event.executeDefault = true
       node = comp.node
-      @value = node.value
+      self.value = node.value
       editWidth = testSubject.node.getBoundingClientRect().width
-      @update()
+      self.update()
       node.focus()
     _inputAttrs =
       style:
@@ -31,7 +32,7 @@ exports.AutoWidthEdit = class AutoWidthEdit extends Tag
         'z-index': '10',
         width: -> Math.max(Math.floor(editWidth)+40, 48)+'px'
         whiteSpace: 'nowrap'
-      onkeydown: (event, comp) -> inputKeyFn(event, comp)
+      onkeydown: (event, comp) -> self.inputKeyFn(event, comp)
     @inputComp = text(overAttrs _inputAttrs, inputAttrs)
     contextEditAttrs = overAttrs {onclick: (event, comp) -> @focus()}, contextEditAttrs
     super('div', contextEditAttrs, [@inputComp, testSubject])

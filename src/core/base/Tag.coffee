@@ -92,27 +92,41 @@ module.exports = class Tag extends BaseComponent
 
   addActivity: (props, prop, type) ->
     @['hasActive'+type] = true
-    if !props[prop] then @activePropertiesCount++
+    if !props[prop]? then @activePropertiesCount++
     @enableContainerComponent()
     return
 
-  prop: (args...) -> @_updateProp(@props, 'Props', args)
+  prop: (args...) -> @_updateProp(args, @props, @cacheProps, 'Props')
 
-  css: (args...) -> @_updateProp(@style, 'Style', args)
+  css: (args...) -> @_updateProp(args, @style, @cacheStyle, 'Style')
 
-  _updateProp: (props, type, args) ->
+  _updateProp: (args, props, cache, type) ->
     if args.length==0 then return props
     if args.length==1
       prop = args[0]
       if typeof prop == 'string' then return props[prop]
       for key, v of prop
-        @addActivity(props, key, type)
-        props[key] = v
+        @setProp(key, v, props, cache, type)
     else if args.length==2
-      [prop, value] = args
-      @addActivity(props, prop, type)
-      props[prop] = value
+      @setProp(args[0], args[1], props, cache, type)
     this
+
+  setProp: (prop, value, props, cache, type) ->
+    if !props[prop]?
+      if typeof value == 'function'
+        props[prop] = value
+        @activePropertiesCount++
+        @['hasActive'+type] = true
+        @enableContainerComponent()
+      else
+        if !value? then value = ''
+        if value!=cache[prop]
+          props[prop] = value
+          @activePropertiesCount++
+          @['hasActive'+type] = true
+          @enableContainerComponent()
+    else props[prop] = value
+    return
 
   bind: (eventNames, handler, before) ->
     names = eventNames.split('\s+')
@@ -165,9 +179,9 @@ module.exports = class Tag extends BaseComponent
     if typeof display == 'function'
       display = display()
       if !display? then display = ''
-    if !display? then @style.display = 'block'
-    else if display=='visible' then @style.visibility = 'visible'
-    else @style.display = display
+    if !display? then @setProp('display', 'block', @style, @cacheStyle, 'Style')
+    else if display=='visible' then @setProp('visibility', 'visible', @style, @cacheStyle, 'Style')
+    else @setProp('display', display, @style, @cacheStyle, 'Style')
     @update()
     @
 
@@ -175,13 +189,13 @@ module.exports = class Tag extends BaseComponent
     if typeof display == 'function'
       display = display()
       if !display? then display = ''
-    if !display? then @style.display = 'none'
-    else if display=='hidden' then @style.visibility = 'hidden'
-    else @style.display = display
+    if !display then @setProp('display', 'none', @style, @cacheStyle, 'Style')
+    else if display=='hidden' then @setProp('visibility', 'hidden', @style, @cacheStyle, 'Style')
+    else @setProp('display', display, @style, @cacheStyle, 'Style')
     @update()
     @
 
-  status: (status, test, display) ->
+  showHide: (status, test, display) ->
     {style} = @
     oldDisplay = style.display
     if !oldDisplay then  @addActivity(style, 'display', 'Style')
@@ -199,6 +213,9 @@ module.exports = class Tag extends BaseComponent
       else 'none'
     @style = style
     @
+
+  showOn: (test, display) -> @showHide(true, test, display)
+  hideOn: (test, display) -> @showHide(false, test, display)
 
   top: ->
     elm = @node
@@ -240,8 +257,8 @@ module.exports = class Tag extends BaseComponent
     @
 
   updateDom: (mounting) ->
-    {children} = @
     @updateProperties()
+    {children} = @
     children.render()
     @isNoop = !@activePropertiesCount and !@mountCallbackComponentList.length and children.isNoop
     @
