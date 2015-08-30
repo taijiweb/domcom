@@ -31,32 +31,35 @@ module.exports = class Tag extends BaseComponent
 
   processAttrs: ->
     self = @
-    @activePropertiesCount = 0
+    @hasActiveProperties = false
     attrs = @attrs
     @cacheClassName = ""
     @className = className = classFn(attrs.className, attrs.class)
-    if className.needUpdate then @activePropertiesCount++
+    delete attrs.className
+    delete attrs['class']
+    if className.needUpdate then @hasActiveProperties = true
     className.onInvalidate ->
       if !className.needUpdate
-        self.activePropertiesCount++
+        self.hasActiveProperties = true
         self.activeInContainer()
         self.isNoop = false
     @hasActiveProps = false
     @cacheProps = Object.create(null)
     @props = props = Object.create(null)
-    @inactiveProps = inactiveProps = Object.create(null)
+    @invalidateProps = Object.create(null)
     @hasActiveStyle = false
     @cacheStyle = Object.create(null)
     @style = style = Object.create(null)
-    @inactiveStyle = inactiveStyle = Object.create(null)
+    @invalidateStyle = Object.create(null)
     attrStyle = styleFrom(attrs.style)
-    for key of attrStyle then @setProp(key, value, specials, 'Style')
+    for key, value of attrStyle then @setProp(key, value, style, 'Style')
+    delete attrs.style
     @hasActiveEvents = false
     @cacheEvents = Object.create(null)
     @events = events = Object.create(null)
     @hasActiveSpecials = false
     @cacheSpecials = Object.create(null)
-    @inactiveSpecials = inactiveSpecials = Object.create(null)
+    @invalidateSpecials = Object.create(null)
     @specials = specials = Object.create(null)
     directives = []
     for key, value of attrs
@@ -65,7 +68,7 @@ module.exports = class Tag extends BaseComponent
           events[key] = [value]
         else events[key] = value
         @hasActiveEvents = true
-        @activePropertiesCount++
+        @hasActiveProperties = true
       else if key[0]=='$'
         # $directiveName: generator arguments list
         generator = _directiveRegistry[key.slice(1)]
@@ -73,7 +76,7 @@ module.exports = class Tag extends BaseComponent
         else handler = generator.apply(null, [value])
         directives.push(handler)
       else if key[0]=='_' then @setProp(key.slice(1), value, specials, 'Specials')
-      else @setProp(key, value, specials, 'Props')
+      else @setProp(key, value, props, 'Props')
     for directive in directives then directive(@)
     return
 
@@ -85,9 +88,9 @@ module.exports = class Tag extends BaseComponent
     @unmountCallbackComponentList = if @unmountCallbackList then [@] else []
     @
 
-  prop: (args...) -> @_prop(args, @props, @cacheProps, 'Props')
+  prop: (args...) -> @_prop(args, @props, 'Props')
 
-  css: (args...) -> @_prop(args, @style, @cacheStyle, 'Style')
+  css: (args...) -> @_prop(args, @style, 'Style')
 
   _prop: (args, props, type) ->
     if args.length==0 then return props
@@ -106,26 +109,27 @@ module.exports = class Tag extends BaseComponent
     oldValue = props[prop]
     if !oldValue?
       if typeof value == 'function'
-        props[prop] = value
-        if updating then @addActivity(props, prop, type)
-      else
-        if value!=@['cache'+type][prop]
-          props[prop] = value
-          if updating then @addActivity(props, prop, type)
+        @addActivity(props, prop, type, updating)
+      else if value!=@['cache'+type][prop]
+          @addActivity(props, prop, type, updating)
     else
       # do not need to check cache
       # do not need check typeof value == 'function'
       if typeof oldValue =='function'
         oldValue.offInvalidate(@['invalidate'+type][prop])
-      if typeof value == 'function'
-        fn = -> @addActivity(props, prop, type)
-        value.onInvalidate(fn)
-      props[prop] =value
+    if typeof value == 'function'
+      self = @
+      @['invalidate'+type][prop] = fn = ->
+        self.addActivity(props, prop, type, true)
+        props[prop] = value
+      value.onInvalidate(fn)
+    props[prop] = value
     return
 
-  addActivity: (props, prop, type) ->
+  addActivity: (props, prop, type, updating) ->
     @['hasActive'+type] = true
-    if !props[prop]? then @activePropertiesCount++
+    @hasActiveProperties = true
+    if !updating then return
     if @isNoop
       @activeInContainer()
       @isNoop = false
@@ -177,14 +181,14 @@ module.exports = class Tag extends BaseComponent
   addClass: (items...) ->
     @className.extend(items)
     if @className.needUpdate
-      @activePropertiesCount++
+      @hasActiveProperties = true
       @activeInContainer()
     this
 
   removeClass: (items...) ->
     @className.removeClass(items...)
     if @className.needUpdate
-      @activePropertiesCount++
+      @hasActiveProperties = true
       @activeInContainer()
     this
 
@@ -257,31 +261,33 @@ module.exports = class Tag extends BaseComponent
   getSpecialProp: (prop) ->
 
   createDom: ->
-    {children} = @
     @node = node =
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
-    children.setParentNode node
     @updateProperties()
+    {children} = @
+    children.setParentNode node
     children.render(true) # need mounting
     if compList=children.baseComponent.unmountCallbackComponentList
       @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
-    @isNoop = !@activePropertiesCount and !@mountCallbackComponentList.length and children.isNoop
+    @isNoop = !@hasActiveProperties and !@mountCallbackComponentList.length and children.isNoop
     @
 
   updateDom: (mounting) ->
     @updateProperties()
     {children} = @
     children.render()
-    @isNoop = !@activePropertiesCount and !@mountCallbackComponentList.length and children.isNoop
+    @isNoop = !@hasActiveProperties and !@mountCallbackComponentList.length and children.isNoop
     @
 
   updateProperties: ->
-    if !@activePropertiesCount then return
+    if !@hasActiveProperties then return
+
+    @hasActiveProperties = false
 
     {node, className} = @
-    @activePropertiesCount--
     if className.needUpdate
+
       classValue = className()
       if classValue!=@cacheClassName
         @cacheClassName = node.className = classValue
@@ -290,9 +296,8 @@ module.exports = class Tag extends BaseComponent
       {props, cacheProps} = @
       @hasActiveProps = false
       for prop, value of props
-        @activePropertiesCount--
+        delete props[prop]
         if typeof value == 'function' then value = value()
-        else delete props[prop]
         if !value? then value = ''
         cacheProps[prop] = node[prop] = value
 
@@ -301,16 +306,14 @@ module.exports = class Tag extends BaseComponent
       @hasActiveStyle = false
       elementStyle = node.style
       for prop, value of style
-        @activePropertiesCount--
+        delete style[prop]
         if typeof value == 'function' then value = value()
-        else delete style[prop]
         if !value? then value = ''
         cacheStyle[prop] = elementStyle[prop] = value
 
     if @hasActiveEvents
       {events, cacheEvents} = @
       for prop, value of events
-        @activePropertiesCount--
         cacheEvents[prop] = events[prop]
         delete events[prop]
         node[prop] = eventHandlerFromArray(value, node, @)
@@ -320,9 +323,8 @@ module.exports = class Tag extends BaseComponent
       {specials, cacheSpecials} = @
       @hasActiveSpecials = false
       for prop, value of specials
-        @activePropertiesCount--
+        delete props[prop]
         if typeof value == 'function' then value = value()
-        else delete props[prop]
         if !value? then value = ''
         spercialPropSet[prop](@, prop, value)
 

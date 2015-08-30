@@ -44,23 +44,25 @@ describe 'properties ', ->
       comp = div({class:{a:1, b:active}})
       expect(comp.className()).to.equal 'a b'
       comp.className = classFn {a:1, b:active} # need be assign again before the call before affected the className and its needUpdate
-      expect(comp.className.needUpdate).to.equal true, 'className.needUpdate'
-      expect(comp.activePropertiesCount).to.equal 1, 'activePropertiesCount'
+      expect(comp.className.needUpdate).to.equal true, 'className.needUpdate 1'
+      expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties 1'
       comp.mount()
-      expect(comp.className.needUpdate).to.equal false, 'className.needUpdate'
-      expect(comp.activePropertiesCount).to.equal 0, 'activePropertiesCount'
+      expect(comp.className.needUpdate).to.equal false, 'className.needUpdate 2'
+      expect(comp.hasActiveProperties).to.equal false, 'hasActiveProperties 2'
       expect(comp.node.className).to.equal 'a b'
       active false
-      expect(comp.className.needUpdate).to.equal true, 'className.needUpdate'
-      expect(comp.activePropertiesCount).to.equal 1, 'activePropertiesCount'
+      expect(comp.className.needUpdate).to.equal true, 'className.needUpdate 3'
+      expect(comp.hasActiveProperties).to.equal false, 'hasActiveProperties 3'
       comp.update()
       expect(comp.node.className).to.equal 'a'
 
   describe 'create', ->
     it 'should create properties', ->
-      p1 = p({value:bound({a: 1}, 'a')})
-      p1.mount()
-      expect(p1.node.value).to.equal(1)
+      comp = p({value:bound({a: 1}, 'a')})
+      expect(comp.className.needUpdate).to.equal false, 'className.needUpdate'
+      expect(comp.hasActiveProperties).to.equal false, 'hasActiveProperties'
+      comp.mount()
+      expect(comp.node.value).to.equal(1)
 
   describe 'event', ->
     it 'click event ', ->
@@ -93,6 +95,8 @@ describe 'properties ', ->
   describe 'style', ->
     it 'should set style property with string value', ->
       comp = a({style: "border:red 1px solid"}, 'red 1px solid')
+      expect(comp.className.needUpdate).to.equal false, 'className.needUpdate'
+      expect(comp.hasActiveProperties).to.equal false, 'hasActiveProperties'
       elm = comp.mount('#demo')
       expect(comp.node.style.border).to.equal "1px solid red"
 

@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings, duplex
+{bindings, duplex, flow
 classFn, styleFrom
 Tag, Text, List
 Component, list, func, if_, txt
@@ -57,6 +57,12 @@ describe "component  ", ->
       comp = p(0)
       comp.mount()
       expect(comp.node.innerHTML).to.equal '0'
+
+    it 'should mount Text with flow value', ->
+      {_a, _b} = bindings({a: 1, b: 2})
+      comp = txt(flow.add _a, _b)
+      comp.mount('#demo')
+      expect(comp.node.textContent).to.equal '3',  'mount'
 
     it 'should not run event hanlder while creating tag', ->
       spy = sinon.spy()
@@ -203,16 +209,16 @@ describe "component  ", ->
     describe 'test for sum', ->
       it 'should construct and create components', ->
         {$a, $b, _a, _b} = bindings({a: 1, b: 2})
-        x = text($a); y = text($b); z = p(txt(-> _a()+_b()))
+        x = text($a); y = text($b); z = p(txt(flow.add _a, _b))
         comp = list(x, y, z)
         comp.mount('#demo')
-        expect(z.node.innerHTML).to.equal '3'
+        expect(z.node.innerHTML).to.equal '3',  'mount'
         x.node.value = '3'
         y.node.value = '4'
         x.node.onchange()
         y.node.onchange()
         comp.update()
-        expect(z.node.innerHTML).to.equal '34'
+        expect(z.node.innerHTML).to.equal '34', 'update'
 
     describe 'test for todomvc', ->
       it 'should construct and create components', ->

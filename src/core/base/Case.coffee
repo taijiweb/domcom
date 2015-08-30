@@ -1,6 +1,7 @@
 toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
 {funcString, newLine} = require '../../util'
+{renew} = require '../../flow'
 
 module.exports = class Case extends TransformComponent
   constructor: (test, map, else_, options={}) ->
@@ -15,8 +16,8 @@ module.exports = class Case extends TransformComponent
         else_ = new  If((->test()==key), value, else_)
       return else_
 
-    if !test.invaidate then test = dynamic(test)
-    test.addDependParents(@)
+    if !test.invaidate then test = renew(test)
+    test.onInvalidate(@invalidate.bind(@))
 
     for key, value of map
       map[key] = toComponent(value)

@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings, see
+{bindings, see, flow
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func, repeat
 accordionGroup, accordion
@@ -27,40 +27,44 @@ describe 'if, case, func', ->
 
     it 'should render If component', ->
       x = see 0
-      comp = if_((-> x), div(1), div(2))
+      comp = if_(x, div(1), div(2))
       comp.mount()
-      expect(comp.node.innerHTML).to.equal '2'
+      expect(comp.node.innerHTML).to.equal '2', 'mount'
       x 1
       comp.update()
-      expect(comp.node.innerHTML).to.equal '1'
+      expect(comp.node.innerHTML).to.equal '1', 'first update'
       x 0
       comp.update()
-      expect(comp.node.innerHTML).to.equal '2'
+      expect(comp.node.innerHTML).to.equal '2', 'second update'
 
     it 'should create  and render  if', ->
       x = see 0
       comp = if_(x, p(1), p(2))
       expect(comp).to.be.instanceof TransformComponent
       comp.mount()
-      expect(comp.node.tagName).to.equal 'P'
-      expect(comp.node.innerHTML).to.equal '2'
+      expect(comp.node.tagName).to.equal 'P', 'tagName'
+      expect(comp.node.innerHTML).to.equal '2', 'mount'
       x 1
       comp.update()
-      expect(comp.node.innerHTML).to.equal '1'
+      expect(comp.node.innerHTML).to.equal '1', 'update'
 
     it 'should create and update if_ with attrs',  ->
       x = see 0
-      comp = if_({class:'main', fakeProp:-x}, x, c1=p(1), c2=p(2))
+      comp = if_({class:'main', fakeProp:x}, x, c1=p(1), c2=p(2))
       expect(comp).to.be.instanceof Tag
+      expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties before mounting'
       comp.mount()
       expect(comp.node.tagName).to.equal 'DIV'
-      expect(comp.node.fakeProp).to.equal 0
-      expect(comp.node.childNodes[0].innerHTML).to.equal '2'
-      expect(comp.node.childNodes[0].tagName).to.equal 'P'
+      expect(comp.node.fakeProp).to.equal 0, 'mount fakeProp'
+      expect(comp.node.childNodes[0].innerHTML).to.equal '2', 'mount innerHTML'
+      expect(comp.node.childNodes[0].tagName).to.equal 'P', 'mount C1 tagName'
+      expect(comp.hasActiveProperties).to.equal false, 'hasActiveProperties after mounting'
       x 1
+      expect(comp.props.fakeProp).to.equal x, 'see invalidate fakeProp'
+      expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties'
       comp.update()
-      expect(comp.node.fakeProp).to.equal 1
-      expect(comp.node.childNodes[0].innerHTML).to.equal '1'
+      expect(comp.node.fakeProp).to.equal 1, 'update fakeProp'
+      expect(comp.node.childNodes[0].innerHTML).to.equal '1', 'update innerHTML'
       expect(comp.node.childNodes[0]).to.equal c1.node
 
     it 'should create and render if followed by other node ', ->

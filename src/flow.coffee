@@ -1,3 +1,5 @@
+{newLine, funcString} = require './util'
+
 exports.makeReactive = makeReactive = (method) ->
 
   method.needUpdate = true
@@ -35,11 +37,13 @@ exports.see = see = (value) ->
         method.invalidate()
       value
 
+  method.toString = () ->  "see: #{@tagName}"
   makeReactive method, true
 
 exports.see2 = (computation) ->
   reative = see computation
   reative.isDuplex = true
+  method.toString = () ->  "see2: #{@tagName}"
   reative
 
 exports.seen = (computations...) ->
@@ -56,6 +60,8 @@ exports.watch = watch = (computation) ->
       else cacheValue
     else throw new Error 'flow.watch is not allowed to accept arguments'
 
+  method.toString = () ->  "watch: #{funcString(computation)}"
+
   makeReactive method, false
 
 exports.renew = (computation) ->
@@ -66,16 +72,18 @@ exports.renew = (computation) ->
       value = computation()
     else throw new Error 'flow.dynamic is not allowed to accept arguments'
 
-  makeReactive method, false
+  method.toString = () ->  "renew: #{funcString(computation)}"
 
+  makeReactive method, false
 
 exports.flow = flow = (deps..., computation) ->
   reative = watch(computation)
   for dep in deps
     dep.onInvalidate(reative.invalidate)
+  reative.toString = () ->  "flow: [#{(for dep in deps then dep.toString()).join(',')}] --> #{funcString(computation)}"
   reative
 
-exports.bound = bound = (obj, attr) ->
+exports.bound = bound = (obj, attr, name) ->
   cacheValue =  obj[attr]
   method = (value) ->
     if !arguments.length then cacheValue
@@ -87,11 +95,14 @@ exports.bound = bound = (obj, attr) ->
 
   Object.defineProperty obj, attr, {get:method, set: method}
 
+  method.toString = () ->  "#{name or 'm'}[#{attr}]"
+
   makeReactive method, false
 
-exports.duplex = (obj, attr) ->
+exports.duplex = (obj, attr, name) ->
   reative = bound(obj, attr)
   reative.isDuplex = true
+  reative.toString = () ->  "#{name or 'm'}[#{attr}]"
   reative
 
 exports.watchList = (list) ->
@@ -102,14 +113,17 @@ exports.watchItem = (list, index) ->
   if list instanceof Array
     mixinListWatchHandlers(list)
     cacheValue =  list[index]
-    itemWatchers[index] = itemWatchers[index] or method = (value) ->
-      if !arguments.length then cacheValue
-      else
-        if value!=cacheValue
-          cacheValue = value
-          list[index] = value
-          method.invalidate()
-        value
+    if !itemWatchers[index]
+      itemWatchers[index] = method = (value) ->
+        if !arguments.length then cacheValue
+        else
+          if value!=cacheValue
+            cacheValue = value
+            list[index] = value
+            method.invalidate()
+          value
+      method.toString = () ->  "watchItem: #{list}[#{index}]"
+      method
   else if typeof list == 'funtion'
     flow.binary(list, index, (x, y) -> x[y])
   else throw new Error 'watchItem expect list to be an array or a function'

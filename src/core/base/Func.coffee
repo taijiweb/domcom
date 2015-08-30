@@ -1,14 +1,15 @@
 toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
 {funcString, newLine} = require '../../util'
+{renew} = require '../../flow'
 
 module.exports = class Func extends TransformComponent
   constructor: (func, options) ->
     super(options)
 
-    if !func.invaidate then func = dynamic(func)
+    if !func.invaidate then func = renew(func)
 
-    func.addDependParents(@)
+    func.onInvalidate(@invalidate.bind(@))
 
     @getContentComponent = -> toComponent(func())
 

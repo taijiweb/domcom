@@ -44,6 +44,7 @@ exports.funcString = (fn) ->
       try return JSON.stringify(fn)
       catch e then return fn.toString()
   s = fn.toString()
+  if fn.invalidate then return s
   if s.slice(0, 12)=="function (){" then s = s.slice(12, s.length-1)
   else if s.slice(0, 13)=="function () {" then s = s.slice(13, s.length-1)
   else s = s.slice(9)

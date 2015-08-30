@@ -97,6 +97,7 @@ exports.classFn = classFn = (items...) ->
   makeReactive method
   extendClassMap(items)
   method.classMap = classMap
+  method.needUpdate = !!Object.keys(classMap).length
   method.removeClass = (items...) -> for item in items then processClassValue(item, false)
   method.extend = (items...) -> extendClassMap(items)
   method

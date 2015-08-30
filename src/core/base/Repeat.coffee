@@ -3,6 +3,7 @@ toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
 List = require './List'
 {funcString, newLine} = require '../../util'
+{renew} = require '../../flow'
 
 module.exports = class Repeat extends TransformComponent
   constructor: (list, itemFn, options={}) ->
@@ -10,9 +11,13 @@ module.exports = class Repeat extends TransformComponent
 
     if typeof list != 'function' and !isArray(list)
       throw new Error 'children for List should be array like or a function'
-    if typeof list != 'function'
+    else if typeof list != 'function'
       items = list
       if !items or typeof(items)!='object' then throw new Error 'Repeat Component need an array or object'
+    else
+      if !list.invalidate
+        list = renew(list)
+      list.onInvalidate(@invalidate.bind(@))
 
     # object: (value, key) -> (-1, 0, 1)
     # array: (item) -> (-1, 0, 1)

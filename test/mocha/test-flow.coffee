@@ -27,3 +27,24 @@ describe 'reative flow', ->
     r1 2
     expect(r3()).to.equal 4
 
+  it 'should flow unary', ->
+    {_a, _b} = bindings({a: 4, b: 2})
+    r = flow.neg _a
+    expect(r()).to.equal -4, 'neg'
+    r = flow.no _a
+    expect(r()).to.equal false, 'not'
+    r = flow.abs flow.neg _a
+    expect(r()).to.equal 4, 'abs neg'
+    r = flow.bitnot _a
+    expect(r()).to.equal -5, 'bitnot'
+
+  it 'should flow binary', ->
+    {_a, _b} = bindings({a: 4, b: 2})
+    r = flow.add _a, _b
+    expect(r()).to.equal 6, 'add'
+    r = flow.sub _a, _b
+    expect(r()).to.equal 2, 'sub'
+    r = flow.mul _a, _b
+    expect(r()).to.equal 8, 'mul'
+    r = flow.div _a, _b
+    expect(r()).to.equal 2, 'div'

@@ -68,10 +68,10 @@ exports.getBindProp = (component)  ->
   else if component.attrs.type=='checkbox' then return 'checked'
   else return 'value'
 
-{dynamic} = require './flow'
+{renew} = require './flow'
 
 exports.domValue = (val, invalidateCallback) ->
   if !val? then val = ''
   else if typeof val != 'function' then return val
-  else if !val.invalidate then val = dynamic(val)
+  else if !val.invalidate then val = renew(val)
   val

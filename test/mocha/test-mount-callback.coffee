@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings, duplex
+{bindings, duplex, see
 classFn, styleFrom
 model, show
 Tag, Text, List
@@ -84,7 +84,7 @@ describe "test beforeMount afterUnmount callback  ", ->
       x = see 0
       y = 0
       comp = if_(x, p(t=txt(1)), p(t2=txt(2)))
-      t.beforeMount(-> x=1)
+      t.beforeMount(-> x 1)
       t2.afterUnmount(-> y=2)
       comp.mount()
       expect(x()).to.equal 0

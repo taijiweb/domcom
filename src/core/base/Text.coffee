@@ -11,8 +11,12 @@ module.exports = class Text extends BaseComponent
   firstDomNode: -> @node
 
   processText: ->
-    text = @text()
-    @isNoop = !@text.needUpdate and !@mountCallbackComponentList.length
+    if typeof @text == 'function'
+      text = @text()
+      @isNoop = !@text.needUpdate and !@mountCallbackComponentList.length
+    else
+      text = @text
+      @isNoop = !@mountCallbackComponentList.length
     text
 
   createDom: -> @node = document.createTextNode(@processText()); @
