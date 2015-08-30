@@ -55,11 +55,11 @@ describe 'ref, clone', ->
       comp.update()
       expect(comp.node[1].innerHTML).to.equal '1'
 
-    it 'should process if_  clone component ', ->
+    it 'should process if_ clone component ', ->
       x = see 0
       lstComp = list(c1=p(2), c2=clone(c1))
       comp = if_(x, c1=p(3), lstComp)
       comp.mount('#demo')
-      x = see 1
+      x 1
       comp.update()
       expect(comp.node.innerHTML).to.equal '3'

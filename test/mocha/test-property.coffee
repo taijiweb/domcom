@@ -52,7 +52,7 @@ describe 'properties ', ->
       expect(comp.node.className).to.equal 'a b'
       active false
       expect(comp.className.needUpdate).to.equal true, 'className.needUpdate 3'
-      expect(comp.hasActiveProperties).to.equal false, 'hasActiveProperties 3'
+      expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties 3'
       comp.update()
       expect(comp.node.className).to.equal 'a'
 
@@ -60,7 +60,7 @@ describe 'properties ', ->
     it 'should create properties', ->
       comp = p({value:bound({a: 1}, 'a')})
       expect(comp.className.needUpdate).to.equal false, 'className.needUpdate'
-      expect(comp.hasActiveProperties).to.equal false, 'hasActiveProperties'
+      expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties'
       comp.mount()
       expect(comp.node.value).to.equal(1)
 
@@ -96,7 +96,7 @@ describe 'properties ', ->
     it 'should set style property with string value', ->
       comp = a({style: "border:red 1px solid"}, 'red 1px solid')
       expect(comp.className.needUpdate).to.equal false, 'className.needUpdate'
-      expect(comp.hasActiveProperties).to.equal false, 'hasActiveProperties'
+      expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties'
       elm = comp.mount('#demo')
       expect(comp.node.style.border).to.equal "1px solid red"
 

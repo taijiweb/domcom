@@ -99,7 +99,7 @@ describe 'if, case, func', ->
 
     it 'should process event in embedded if 2', ->
       x = see 0
-      comp = list(t1=text({onchange: -> x = parseInt(@value); comp.update()}, x), pIf=if_((->x), div(1), div(2)))
+      comp = list(t1=text({onchange: -> x parseInt(@value); comp.update()}, x), pIf=if_(x, div(1), div(2)))
       comp.mount()
       expect(pIf.node.innerHTML).to.equal '2'
       t1.node.value = 1
@@ -111,7 +111,7 @@ describe 'if, case, func', ->
 
     it 'should process embedded if 2', ->
       x = see 0
-      comp = list(t1=text(x), pIf=if_((->x), div(1), div(2)))
+      comp = list(t1=text(x), pIf=if_(x, div(1), div(2)))
       comp.mount()
       expect(pIf.node.innerHTML).to.equal '2'
       x 1
