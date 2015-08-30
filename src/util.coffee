@@ -12,15 +12,6 @@ exports.pairListDict = (list...) ->
   while i<len then result[list[i]] = list[i+1]; i += 2
   result
 
-exports.sibind = (model, key) -> -> model[key]
-
-exports.bibind = (model, key) ->
-  fn = (value) ->
-    if !arguments.length then model[key]
-    else model[key] = value
-  fn.setable = true
-  fn
-
 exports.listToDict = (list...) ->
   if list.length==1 then list = list[0]
   result = Object.create(null)
@@ -61,3 +52,5 @@ exports.funcString = (fn) ->
   if s[s.length-1]==';' then s = s.slice(0, s.length-1)
   'fn:'+s
 
+globalDcid = 1
+exports.newDcid = -> globalDcid++

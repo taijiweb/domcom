@@ -1,4 +1,4 @@
-{bibind
+{duplex
 accordion
 repeat
 div, span} = dc
@@ -22,4 +22,3 @@ module.exports = ->
     )
     [groupAttrs, group.heading, content, groupOptions]
   comp = accordion(Object.create(null), accordionGroupList, {closeOthers:true})
-  #comp.mount()

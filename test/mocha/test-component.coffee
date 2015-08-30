@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings, bibind
+{bindings, duplex
 classFn, styleFrom
 Tag, Text, List
 Component, list, func, if_, txt
@@ -229,7 +229,7 @@ describe "component  ", ->
 
       it 'should process event property of child component with model directive', ->
         x = 0
-        comp = div({}, c0=input({ $model:bibind({}, 'x'), onmouseenter: -> x = 1}), div({}, 'wawa'))
+        comp = div({}, c0=input({ $model:duplex({}, 'x'), onmouseenter: -> x = 1}), div({}, 'wawa'))
         comp.mount()
         c0.node.onmouseenter()
         expect(x).to.equal 1

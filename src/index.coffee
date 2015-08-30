@@ -8,6 +8,7 @@ extend(dc,
   require('./core'),
 
   # utilities
+  require('./flow')
   require('./dom-util'),
   require('./util'),
   require('./constant')

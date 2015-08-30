@@ -1,7 +1,7 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
 {util
-sibind, bibind
+bound, duplex, see
 classFn, styleFrom, attrToPropName
 Component, list, func, if_
 a, p, span, text, li, div, checkbox
@@ -18,14 +18,13 @@ describe 'properties ', ->
 
   describe "classFn", ->
     it 'get value of classFn', ->
-      active = true
-      x = classFn(['a', {b: -> active}])
+      active = see true
+      x = classFn(['a', {b: active}])
       expect(x()).to.equal 'a b'
-      active = false
+      active false
       expect(x()).to.equal 'a'
 
     it 'should compute needUpdate', ->
-      active = true
       x = classFn(['a'])
       expect(x.needUpdate).to.equal true
       expect(x()).to.equal('a')
@@ -41,22 +40,25 @@ describe 'properties ', ->
       expect(x()).to.equal('a')
 
     it 'should get class property in component', ->
-      active = true
-      comp = div({class:{a:1, b:-> active}})
+      active = see true
+      comp = div({class:{a:1, b:active}})
       expect(comp.className()).to.equal 'a b'
-      comp.className = classFn {a:1, b:-> active} # need be assign again before the call before affected the className and its needUpdate
-      expect(comp.className.needUpdate).to.equal true
+      comp.className = classFn {a:1, b:active} # need be assign again before the call before affected the className and its needUpdate
+      expect(comp.className.needUpdate).to.equal true, 'className.needUpdate'
+      expect(comp.activePropertiesCount).to.equal 1, 'activePropertiesCount'
       comp.mount()
-      expect(comp.className.needUpdate).to.equal true
-      expect(comp.activePropertiesCount).to.equal 1
+      expect(comp.className.needUpdate).to.equal false, 'className.needUpdate'
+      expect(comp.activePropertiesCount).to.equal 0, 'activePropertiesCount'
       expect(comp.node.className).to.equal 'a b'
-      active = false
+      active false
+      expect(comp.className.needUpdate).to.equal true, 'className.needUpdate'
+      expect(comp.activePropertiesCount).to.equal 1, 'activePropertiesCount'
       comp.update()
       expect(comp.node.className).to.equal 'a'
 
   describe 'create', ->
     it 'should create properties', ->
-      p1 = p({value:sibind({a: 1}, 'a')})
+      p1 = p({value:bound({a: 1}, 'a')})
       p1.mount()
       expect(p1.node.value).to.equal(1)
 
@@ -69,7 +71,7 @@ describe 'properties ', ->
       expect(x).to.equal(2)
 
     it 'multiple handlers for one event', ->
-      $a = bibind(x={a:2}, 'a')
+      $a = duplex(x={a:2}, 'a')
       spy1 = sinon.spy()
       comp = text({onchange:spy1, $model:$a})
       comp.mount()
@@ -79,7 +81,7 @@ describe 'properties ', ->
       expect(x.a).to.equal '2'
 
     it 'multiple handlers for one event, with bound value', ->
-      $a = bibind(x={a:1}, 'a')
+      $a = duplex(x={a:1}, 'a')
       spy1 = sinon.spy()
       comp = text({onchange:spy1}, $a)
       comp.mount()
@@ -110,23 +112,22 @@ describe 'properties ', ->
         while (hexStr.length < 6)
           hexStr = '0' + hexStr
         '#'+hexStr
-      color = "red"
-      i = 0
-      comp = a({style: {borderWidth: (-> i+"px"), borderStyle: "solid", borderColor: -> paddingColor(color.toString(16))}}, 'dynamic property')
+      color = see "red"
+      i = see i0=0
+      comp = a({style: {borderWidth: (flow i, -> i()+"px"), borderStyle: "solid", borderColor: flow color, -> paddingColor(color().toString(16))}}, 'dynamic property')
       comp.mount('#demo')
       color = 0
       styleFn = ->
         color += 0x111111
-        i++
+        i i0++
         comp.render()
-        if i==50
-          #comp.element.style.borderColor = "blue"
+        if i0==50
           clearInterval handle
       handle = setInterval(styleFn, 5)
 
   it 'bidirectional bound checkbox', ->
     model1 = {a: 1}
-    bb = bibind(model1, 'a')
+    bb = duplex(model1, 'a')
     cbx = checkbox({$model:bb})
     cbx.mount('#demo')
     expect(cbx.node.onchange).to.be.defined

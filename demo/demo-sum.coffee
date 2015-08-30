@@ -1,12 +1,7 @@
-{bindings, list, text, p} = dc
+{reative, flow, list, text, p} = dc
 
 module.exports = demoSum = ->
-  {$a, $b} = bindings({a: 1, b: 2})
-  #comp = list(p(-> 1))
-  comp = list(text({onchange:->comp.update()}, $a), text({onchange:->comp.update()}, $b), p(-> parseFloat($a())+parseFloat($b())))
-#  comp.mount()
-#  comp.update()
-#  comp.update()
-#  comp.update()
-#  comp.update()
-  #setInterval (-> comp.update()),  300
+  a = reative(1); b = reative(2)
+  comp = list(t1=text({onchange:-> a(@value)}), t2=text({onchange:-> b(@value)}), p1 = p(flow(a, b, -> a()+b())))
+  dc.updateWhen([t1, t2], 'change', p1)
+  comp.mount()

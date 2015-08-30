@@ -1,6 +1,7 @@
 toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
 {funcString, newLine} = require '../../util'
+{dyanmic} = require '../../flow'
 
 mergeThenElseValue = (test, thenValue, elseValue) ->
   if typeof thenValue == 'function'
@@ -39,6 +40,10 @@ module.exports = class If extends TransformComponent
 
     if typeof test != 'function'
       return if test then then_ else else_
+
+    if !test.invaidate then test = dynamic(test)
+
+    test.addDependParents(@)
 
     super(options)
 

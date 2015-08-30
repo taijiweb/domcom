@@ -25,7 +25,7 @@ exports.runDemo = runDemo = (demoMap, initItem='accordion') ->
   currentComp = demoMap[current]()
   demoSelect = select({
     $options: [Object.keys(demoMap)]
-    value: 'accordion'
+    value: current
     onchange: ->
       if @value!=current
         currentComp.unmount()

@@ -25,7 +25,7 @@ input = exports.input = (type, attrs, value) ->
   component = tag('input', attrs)
   if value?
     component.prop(getBindProp(component), value)
-    if value.setable then component.bind('onchange', ((event, comp) -> value(@value)), 'before')
+    if value.isDuplex then component.bind('onchange', ((event, comp) -> value(@value)), 'before')
   component
 
 for type in 'text checkbox radio date email tel number'.split(' ')

@@ -15,6 +15,9 @@ module.exports = class Case extends TransformComponent
         else_ = new  If((->test()==key), value, else_)
       return else_
 
+    if !test.invaidate then test = dynamic(test)
+    test.addDependParents(@)
+
     for key, value of map
       map[key] = toComponent(value)
     else_ = toComponent(else_)

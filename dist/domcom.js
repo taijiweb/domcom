@@ -346,13 +346,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return result;
 	};
 
-	exports.sibind = function(model, key) {
+	exports.bound = function(model, key) {
 	  return function() {
 	    return model[key];
 	  };
 	};
 
-	exports.bibind = function(model, key) {
+	exports.duplex = function(model, key) {
 	  var fn;
 	  fn = function(value) {
 	    if (!arguments.length) {

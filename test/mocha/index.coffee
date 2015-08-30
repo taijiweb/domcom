@@ -1,3 +1,4 @@
+require('./test-flow')
 require('./test-property')
 require('./test-toString')
 require('./test-dc')

@@ -64,6 +64,14 @@ createUpdateHtml = ->
 exports.getBindProp = (component)  ->
   {tagName} = component
   if !tagName then throw new Error 'trying to bind wrong Component'
-  if tagName=='textarea' or tagName=='select' then return 'value'
+  else if tagName=='textarea' or tagName=='select' then return 'value'
   else if component.attrs.type=='checkbox' then return 'checked'
   else return 'value'
+
+{dynamic} = require './flow'
+
+exports.domValue = (val, invalidateCallback) ->
+  if !val? then val = ''
+  else if typeof val != 'function' then return val
+  else if !val.invalidate then val = dynamic(val)
+  val

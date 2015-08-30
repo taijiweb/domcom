@@ -10,13 +10,10 @@ describe "test dc", ->
       expect(!isComponent(dc(document))).to.equal true
 
     it 'should cache DomNodeComponent', ->
-      x = dc(document)
-      expect(dc(document)).to.equal x
+      expect(dc(document)).to.equal dc(document)
 
     it 'dc(document).bind should be a function', ->
       x = 0
-      dc(document).bind('onclick', -> x=1)
-      #dc(document).node.onclick()
-      #expect(x).to.equal 1
+      dc(document).bind('onclick', -> x = 1)
 
 

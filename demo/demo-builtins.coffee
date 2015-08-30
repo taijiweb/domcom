@@ -1,5 +1,5 @@
 {
-bibind
+duplex
 div
 arrow
 list
@@ -11,7 +11,7 @@ module.exports =  ->
 #  comp.mount()
   a = {}
   #dom component: left(), top(), height(), width() is not implemented
-#  comp = comboEdit(Object.create(null), bibind(a, 'x'), 'a b'.split(' '))
+#  comp = comboEdit(Object.create(null), duplex(a, 'x'), 'a b'.split(' '))
 #  comp.mount()
   arrows = div(Object.create(null),
     arrow(Object.create(null), 'top', 10, 'blue'),
@@ -19,8 +19,8 @@ module.exports =  ->
     arrow(Object.create(null), 'left', 10, 'red')
     arrow(Object.create(null), 'right', 10, 'green'))
   #comp.mount()
-  combo1 = hcombo({style:{display:'inline-block'}}, bibind(a, 'x'), 'a b'.split(' '))
+  combo1 = hcombo({style:{display:'inline-block'}}, duplex(a, 'x'), 'a b'.split(' '))
   #comp.mount()
-  combo2 = vcombo({style:{display:'inline-block'}}, bibind(a, 'x'), 'a b'.split(' '))
+  combo2 = vcombo({style:{display:'inline-block'}}, duplex(a, 'x'), 'a b'.split(' '))
   #comp.mount()
   list(arrows, combo1, combo2)

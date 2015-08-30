@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings
+{bindings, see
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func, repeat
 ref, clone
@@ -13,13 +13,11 @@ describe 'ref, clone', ->
   describe 'Ref', ->
     it 'should throw error while constucting conflicted component without ref: if_((-> x), t1=txt(1), Ref(t1))', ->
       t1 = txt(1)
-      #expect(-> list(p(t1), if_(1, t1, t1))).to.throw Error
       expect(-> list(p(t1), if_(1, t1, t1))).to.not.throw Error
 
     it 'should getBaseComponent of if_((-> x), t1=txt(1), Ref(t1))', ->
-      x = 0
-      #comp = if_((-> x), t1=txt(1), ref(t1))
-      comp = if_((-> x), t1=txt(1), t1)
+      x = see 0
+      comp = if_(x, t1=txt(1), t1)
       comp.mount()
       comp.update()
 
@@ -58,10 +56,10 @@ describe 'ref, clone', ->
       expect(comp.node[1].innerHTML).to.equal '1'
 
     it 'should process if_  clone component ', ->
-      x = 0
+      x = see 0
       lstComp = list(c1=p(2), c2=clone(c1))
-      comp = if_((->x), c1=p(3), lstComp)
+      comp = if_(x, c1=p(3), lstComp)
       comp.mount('#demo')
-      x = 1
+      x = see 1
       comp.update()
       expect(comp.node.innerHTML).to.equal '3'

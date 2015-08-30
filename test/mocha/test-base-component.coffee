@@ -98,7 +98,7 @@ describe "test base component", ->
       expect(p.node.className).to.equal 'some class'
       expect(p.node.getAttribute('className')).to.equal null
 
-    it 'process sibind as value', ->
+    it 'process bound as value', ->
       comp = new Tag('input', {type:'text', value:  _a}, [new Text(_a)])
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()

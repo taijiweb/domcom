@@ -100,9 +100,9 @@ model, bind, show, hide, blink, splitter, options
 
 
 #### samples
-    {input, model, bibind} = require('domcom')
+    {input, model, duplex} = require('domcom')
     obj = {a:1}
-    a = bibind(obj, 'a')
+    a = duplex(obj, 'a')
     comp = text({type:'text', directives:model(a)})
 
 #### src/core/builtins/

@@ -1,19 +1,14 @@
-{txt, p} = dc
+{txt, p, reative} = dc
 
 module.exports = ->
-  counter = 0
-  comp = p(txt( -> counter))
-  #comp.mount()
-#  counter++
-#  comp.update()
-#  counter++
-#  comp.update()
+  reat = reative(counter = 0)
+  comp = p(txt1=txt(react))
   count = ->
-    counter++
+    r(counter++)
     if counter==1000 then clearInterval countHandle
   update = ->
-    comp.update()
+    txt1.update()
     if counter>=1000 then clearInterval updateHandle
   countHandle = setInterval count,  1
-  updateHandle = setInterval update,  16
+  dc.updateWhen(window, setInterval, txt1, {interval:16, clear: -> counter>=1000})
   comp

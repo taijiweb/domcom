@@ -357,13 +357,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return result;
 	};
 
-	exports.sibind = function(model, key) {
+	exports.bound = function(model, key) {
 	  return function() {
 	    return model[key];
 	  };
 	};
 
-	exports.bibind = function(model, key) {
+	exports.duplex = function(model, key) {
 	  var fn;
 	  fn = function(value) {
 	    if (!arguments.length) {
@@ -3814,16 +3814,16 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 45 */
 /***/ function(module, exports) {
 
-	var bibind, sibind;
+	var duplex, bound;
 
-	sibind = dc.sibind, bibind = dc.bibind;
+	bound = dc.bound, duplex = dc.duplex;
 
 	exports.bindings = function(model) {
 	  var key, result;
 	  result = Object.create(null);
 	  for (key in model) {
-	    result['$' + key] = bibind(model, key);
-	    result['_' + key] = sibind(model, key);
+	    result['$' + key] = duplex(model, key);
+	    result['_' + key] = bound(model, key);
 	  }
 	  return result;
 	};

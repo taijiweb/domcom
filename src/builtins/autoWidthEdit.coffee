@@ -28,7 +28,6 @@ exports.AutoWidthEdit = class AutoWidthEdit extends Tag
       node.focus()
     _inputAttrs =
       style:
-        position: 'absolute',
         'z-index': '10',
         width: -> Math.max(Math.floor(editWidth)+40, 48)+'px'
         whiteSpace: 'nowrap'

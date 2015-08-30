@@ -1,25 +1,23 @@
 BaseComponent = require './BaseComponent'
-{funcString, newLine} = require '../../util'
+{funcString, newLine, value, dynamic} = require '../../util'
+{domValue} = require '../../dom-util'
 
 module.exports = class Text extends BaseComponent
   constructor: (text, options) ->
-    if !text? then text = ''
-    @text = text
+    self = @
+    @text = domValue(text, -> self.invalidate())
     super(options)
 
   firstDomNode: -> @node
 
   processText: ->
-    text = @text
-    if typeof text == 'function' then text = text()
-    else
-      @text = null
-      @isNoop = !@mountCallbackComponentList.length
+    text = @text()
+    @isNoop = !@text.needUpdate and !@mountCallbackComponentList.length
     text
 
   createDom: -> @node = document.createTextNode(@processText()); @
 
-  updateDom: -> @text? and @node.textContent = @processText(); @
+  updateDom: -> @text.needUpdate and @node.textContent = @processText(); @
 
   clone: (options) -> (new @constructor(@text, options)).copyLifeCallback(@)
 

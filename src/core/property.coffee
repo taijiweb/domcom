@@ -1,4 +1,6 @@
 {isArray, cloneObject} = require '../util'
+{domValue} = require '../dom-util'
+{makeReactive} = require '../flow'
 extend = require '../extend'
 
 exports.extendEventValue = extendEventValue = (props, prop, value, before) ->
@@ -20,17 +22,6 @@ exports.extendAttrs = (attrs, obj, options={}) ->
     delete attrs.class
     attrs.className = classFn([attrs.className, objClass])
   if obj.style then extend styleFrom(attrs.style), obj.style
-  if options.replaceDirectives
-    attrs.directives = obj.directives
-  else if obj.directives
-    if !attrs.directives
-      attrs.directives = obj.directives
-    else
-      if attrs.directives not instanceof Array
-        attrs.directives = [attrs.directives]
-      if value not instanceof Array
-        attrs.directives.push value
-      else attrs.directives.push.apply attrs.directives, value
   for key, value of obj
     if key[..1]=='on'
       if options['replace_'+key] or options.replaceEvents then attrs[key] = value
@@ -47,33 +38,38 @@ exports.overAttrs = (attrs, obj) ->
   else
     for key, value of attrs
       if !obj[key]? then obj[key] = value
+      if key=='style' then obj[key] = overAttrs(attr[key], obj[key])
     obj
 
 exports.classFn = classFn = (items...) ->
   classMap = Object.create(null)
 
-  fn = ->
+  method = ->
     if !arguments.length
       lst = []
-      needUpdate = false
+      method.needUpdate = false
       for klass, value of classMap
         if typeof value == 'function'
           value = value()
-          needUpdate = true
         if value then lst.push klass
-      fn.needUpdate = needUpdate
       lst.join(' ')
     else
       extendClassMap(arguments.slice())
       return
 
   processClassValue = (name, value) ->
-    if !value and classMap[name]
-      fn.needUpdate = true
+    value = domValue value
+    oldValue=classMap[name]
+    if typeof oldValue == 'function'
+      oldValue.offInvalidate method.invalidate
+    if !value and oldValue
+      method.invalidate()
       delete classMap[name]
     else
-      if classMap[name]!=value # value is a function or true
-        fn.needUpdate = true
+      if oldValue!=value # value is a function or true
+        method.invalidate()
+        if typeof value == 'function'
+          value.onInvalidate method.invalidate
         classMap[name] = value
 
   extendClassMap = (items) ->
@@ -98,12 +94,12 @@ exports.classFn = classFn = (items...) ->
           processClassValue(name, value)
     return
 
-  fn.needUpdate = false
+  makeReactive method
   extendClassMap(items)
-  fn.classMap = classMap
-  fn.removeClass = (items...) -> for item in items then processClassValue(item, false)
-  fn.extend = (items...) -> extendClassMap(items)
-  fn
+  method.classMap = classMap
+  method.removeClass = (items...) -> for item in items then processClassValue(item, false)
+  method.extend = (items...) -> extendClassMap(items)
+  method
 
 exports.styleFrom = styleFrom = (value) ->
   if typeof value == 'string'
@@ -127,16 +123,6 @@ exports.styleFrom = styleFrom = (value) ->
     result
   else if value and typeof value != 'object' then Object.create(null)
   else cloneObject(value)
-
-exports.updateProp = (prop, value, cache, element) ->
-  if typeof value == 'function'
-    value = value()
-    isFunc = true
-  else dynamic = false
-  if !value? then value = ''
-  if cache[prop]!=value
-    element[prop] = value
-  isFunc
 
 exports.eventHandlerFromArray = (callbackList, node, component) ->
   (event) ->

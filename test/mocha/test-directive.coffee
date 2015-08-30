@@ -7,7 +7,7 @@
 Component, list, func, if_, repeat
 a, div, p, span, text, select, input
 show, hide, splitter
-bindings, bibind} = dc
+bindings, duplex} = dc
 
 {$a, $b, _a, _b} = bindings({a: 1, b: 2})
 
@@ -23,8 +23,7 @@ describe 'directives', ->
 
     it 'should process event property of component with model directive', ->
       x = 0
-      modelValue = bibind({}, 'x')
-      # comp = input({ onmouseenter: -> x = 1})
+      modelValue = duplex(m={}, 'x')
       comp = input({$model:modelValue, onmouseenter: -> x = 1})
       comp.mount()
       comp.node.onmouseenter()
