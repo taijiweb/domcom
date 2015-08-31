@@ -177,6 +177,17 @@ describe "component  ", ->
       comp.update()
       expect(elm.innerHTML).to.equal '3'
 
+    it 'should process text with bound', ->
+      {_a, _b} = bindings({a: 1, b: 2})
+      comp = p(txt(flow.add _a, _b))
+      comp.mount('#demo')
+      expect(comp.node.innerHTML).to.equal '3',  'mount'
+      _a 3; _b 4
+      expect(_a()).to.equal(3, '_a')
+      expect(_b()).to.equal(4, '_b')
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '7', 'update'
+
     it 'should process bidirectional bind', ->
       {$a} = bindings({a: 1})
       comp = text($a)
@@ -217,6 +228,8 @@ describe "component  ", ->
         y.node.value = '4'
         x.node.onchange()
         y.node.onchange()
+        expect(_a()).to.equal('3', '_a')
+        expect(_b()).to.equal('4', '_b')
         comp.update()
         expect(z.node.innerHTML).to.equal '34', 'update'
 

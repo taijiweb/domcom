@@ -5,7 +5,9 @@ BaseComponent = require './BaseComponent'
 module.exports = class Text extends BaseComponent
   constructor: (text, options) ->
     self = @
-    @text = domValue(text, -> self.invalidate())
+    @text = text = domValue(text)
+    if typeof text == 'function'
+      text.onInvalidate -> self.activeInContainer()
     super(options)
 
   firstDomNode: -> @node

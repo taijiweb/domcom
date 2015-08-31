@@ -100,6 +100,24 @@ module.exports = class Component
     @baseComponent.remove(@parentNode)
     @
 
+  xxxactiveInContainer: ->
+    container = self = @
+    while container
+      if !container.isNoop or container.isUpdateRoot
+        container.activeOffspring = container.activeOffspring or Object.create(null)
+        container.activeOffspring[self.dcid] = self
+        container.isNoop = false
+        return
+      container = container.container
+
+  activeInContainer: ->
+    container = self = @
+    while container
+      if container.isNoop
+        container.isNoop = false
+      else return
+      container = container.container
+
   hasLifeTimeEvent: -> false
 
   copyLifeCallback: (srcComponent) ->

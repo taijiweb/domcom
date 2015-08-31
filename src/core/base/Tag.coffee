@@ -26,6 +26,7 @@ module.exports = class Tag extends BaseComponent
         @children = new Nothing()
       else @children = new List(children, {})
     else @children = toComponent(children)
+    @children.container = @
     @processAttrs()
     return
 
@@ -134,16 +135,6 @@ module.exports = class Tag extends BaseComponent
       @activeInContainer()
       @isNoop = false
     return
-
-  activeInContainer: ->
-    container = self = @
-    while container
-      if !container.isNoop or container.isUpdateRoot
-        container.activeOffspring = container.activeChildren or Object.create(null)
-        container.activeOffspring[self.dcid] = self
-        container.isNoop = false
-        return
-      container = container.container
 
   bind: (eventNames, handler, before) ->
     names = eventNames.split('\s+')

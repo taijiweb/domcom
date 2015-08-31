@@ -9,7 +9,7 @@ module.exports = class TransformComponent extends Component
 
   firstDomNode: -> @baseComponent and @baseComponent.firstDomNode()
 
-  invalidate: ->
+  invalidate: -> @isNoop = false
 
   getBaseComponent: ->
     @oldBaseComponent = @baseComponent

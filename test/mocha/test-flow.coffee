@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings, see, bound, watch, renew, flow} = dc
+{bindings, see, bound, duplex, watch, renew, flow} = dc
 
 describe 'reative flow', ->
 
@@ -48,3 +48,18 @@ describe 'reative flow', ->
     expect(r()).to.equal 8, 'mul'
     r = flow.div _a, _b
     expect(r()).to.equal 2, 'div'
+
+  it 'should bound', ->
+    m = {a:1}
+    a = bound(m, 'a')
+    a2 = bound(m, 'a')
+    expect(a()).to.equal(1)
+    expect(a2()).to.equal(1, 'a2')
+    a 3
+    expect(a()).to.equal(3, 'a again')
+    expect(a2()).to.equal(3, 'a2 again')
+
+  it 'should process bindings', ->
+    {$a, _a} = bindings({a: 1})
+    $a 3
+    expect(_a()).to.equal(3)

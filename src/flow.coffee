@@ -84,14 +84,18 @@ exports.flow = flow = (deps..., computation) ->
   reative
 
 exports.bound = bound = (obj, attr, name) ->
-  cacheValue =  obj[attr]
+  cacheValue = null
+  d = Object.getOwnPropertyDescriptor(obj, attr)
+  {get, set} = d
+  cacheValue = obj[attr]
   method = (value) ->
-    if !arguments.length then cacheValue
-    else
-      if value!=cacheValue
-        cacheValue = value
-        method.invalidate()
-      value
+    if !arguments.length
+      if get then get()
+      else cacheValue
+    else if value!=obj[attr]
+      if set then set(value)
+      method.invalidate()
+      cacheValue = value
 
   Object.defineProperty obj, attr, {get:method, set: method}
 
