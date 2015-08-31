@@ -2,7 +2,7 @@
 list,
 text, div, p} = dc
 
-module.exports = demoClickToChangeStyle = ->
+module.exports = ->
   x = true
   comp = list(
     div({onclick: -> x = !x; comp.update()}, 'change style'),

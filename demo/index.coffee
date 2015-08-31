@@ -6,6 +6,7 @@
 exports.demoMap = demoMap =
   accordion: require 'domcom/demo/demo-accordion'
   builtins: require 'domcom/demo/demo-builtins'
+  "show hide": require 'domcom/demo/demo-show-hide'
   counter: require 'domcom/demo/demo-counter'
   dialog: require 'domcom/demo/demo-dialog'
   event: require 'domcom/demo/demo-event'
