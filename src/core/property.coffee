@@ -47,7 +47,7 @@ exports.classFn = classFn = (items...) ->
   method = ->
     if !arguments.length
       lst = []
-      method.needUpdate = false
+      method.invalid = false
       for klass, value of classMap
         if typeof value == 'function'
           value = value()
@@ -97,7 +97,7 @@ exports.classFn = classFn = (items...) ->
   makeReactive method
   extendClassMap(items)
   method.classMap = classMap
-  method.needUpdate = !!Object.keys(classMap).length
+  method.invalid = !!Object.keys(classMap).length
   method.removeClass = (items...) -> for item in items then processClassValue(item, false)
   method.extend = (items...) -> extendClassMap(items)
   method

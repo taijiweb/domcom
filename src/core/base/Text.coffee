@@ -4,10 +4,10 @@ BaseComponent = require './BaseComponent'
 
 module.exports = class Text extends BaseComponent
   constructor: (text, options) ->
-    self = @
+    me = @
     @text = text = domValue(text)
     if typeof text == 'function'
-      text.onInvalidate -> self.activeInContainer()
+      text.onInvalidate -> me.activeInContainer()
     super(options)
 
   firstDomNode: -> @node
@@ -15,7 +15,7 @@ module.exports = class Text extends BaseComponent
   processText: ->
     if typeof @text == 'function'
       text = @text()
-      @isNoop = !@text.needUpdate and !@mountCallbackComponentList.length
+      @isNoop = !@text.invalid and !@mountCallbackComponentList.length
     else
       text = @text
       @isNoop = !@mountCallbackComponentList.length
@@ -23,7 +23,10 @@ module.exports = class Text extends BaseComponent
 
   createDom: -> @node = document.createTextNode(@processText()); @
 
-  updateDom: -> @text.needUpdate and @node.textContent = @processText(); @
+  updateDom: ->
+    if (text=@processText())!=@node.textContent
+      @node.textContent = text;
+    @
 
   clone: (options) -> (new @constructor(@text, options)).copyLifeCallback(@)
 

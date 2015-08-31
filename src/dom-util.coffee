@@ -70,8 +70,8 @@ exports.getBindProp = (component)  ->
 
 {renew} = require './flow'
 
-exports.domValue = (val, invalidateCallback) ->
-  if !val? then val = ''
-  else if typeof val != 'function' then return val
-  else if !val.invalidate then val = renew(val)
+exports.domValue = (val) ->
+  if !val? then return ''
+  if typeof val != 'function' then return val
+  if !val.invalidate then return renew(val)
   val

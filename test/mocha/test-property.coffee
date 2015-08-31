@@ -24,34 +24,34 @@ describe 'properties ', ->
       active false
       expect(x()).to.equal 'a'
 
-    it 'should compute needUpdate', ->
+    it 'should compute invalid', ->
       x = classFn(['a'])
-      expect(x.needUpdate).to.equal true
+      expect(x.invalid).to.equal true
       expect(x()).to.equal('a')
-      expect(x.needUpdate).to.equal false
+      expect(x.invalid).to.equal false
       x.extend('a')
-      expect(x.needUpdate).to.equal false
+      expect(x.invalid).to.equal false
       expect(x()).to.equal('a')
       x.extend('b')
-      expect(x.needUpdate).to.equal true
+      expect(x.invalid).to.equal true
       expect(x()).to.equal('a b')
       x.extend('!b')
-      expect(x.needUpdate).to.equal true
+      expect(x.invalid).to.equal true
       expect(x()).to.equal('a')
 
     it 'should get class property in component', ->
       active = see true
       comp = div({class:{a:1, b:active}})
       expect(comp.className()).to.equal 'a b'
-      comp.className = classFn {a:1, b:active} # need be assign again before the call before affected the className and its needUpdate
-      expect(comp.className.needUpdate).to.equal true, 'className.needUpdate 1'
+      comp.className = classFn {a:1, b:active} # need be assign again before the call before affected the className and its invalid
+      expect(comp.className.invalid).to.equal true, 'className.invalid 1'
       expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties 1'
       comp.mount()
-      expect(comp.className.needUpdate).to.equal false, 'className.needUpdate 2'
+      expect(comp.className.invalid).to.equal false, 'className.invalid 2'
       expect(comp.hasActiveProperties).to.equal false, 'hasActiveProperties 2'
       expect(comp.node.className).to.equal 'a b'
       active false
-      expect(comp.className.needUpdate).to.equal true, 'className.needUpdate 3'
+      expect(comp.className.invalid).to.equal true, 'className.invalid 3'
       expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties 3'
       comp.update()
       expect(comp.node.className).to.equal 'a'
@@ -59,7 +59,7 @@ describe 'properties ', ->
   describe 'create', ->
     it 'should create properties', ->
       comp = p({value:bound({a: 1}, 'a')})
-      expect(comp.className.needUpdate).to.equal false, 'className.needUpdate'
+      expect(comp.className.invalid).to.equal false, 'className.invalid'
       expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties'
       comp.mount()
       expect(comp.node.value).to.equal(1)
@@ -95,7 +95,7 @@ describe 'properties ', ->
   describe 'style', ->
     it 'should set style property with string value', ->
       comp = a({style: "border:red 1px solid"}, 'red 1px solid')
-      expect(comp.className.needUpdate).to.equal false, 'className.needUpdate'
+      expect(comp.className.invalid).to.equal false, 'className.invalid'
       expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties'
       elm = comp.mount('#demo')
       expect(comp.node.style.border).to.equal "1px solid red"

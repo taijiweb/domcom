@@ -42,12 +42,12 @@ toggleCompleted = (todo) ->
 markAll = ->
   if allChecked() then completed = false
   else completed = true
-  needUpdate = false
+  invalid = false
   for todo in todos
     if todo.completed!=completed
       todo.completed = completed
-      needUpdate = true
-  if needUpdate
+      invalid = true
+  if invalid
     save(todos)
     view.update()
 
@@ -67,14 +67,14 @@ revertEdits = (todo) ->
   view.update()
 
 clearCompletedTodos = ->
-  needUpdate = false
+  invalid = false
   i = todos.length-1
   while i>=0
     if todos[i].completed
       todos.splice(i)
-      needUpdate = true
+      invalid = true
     i--
-  if needUpdate
+  if invalid
     save(todos)
     view.update()
 

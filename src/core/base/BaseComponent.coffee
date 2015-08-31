@@ -12,13 +12,13 @@ module.exports = class BaseComponent extends Component
   attachNode: (parentNode) ->
     {node} = @
     insertNode(parentNode, node, @nextDomNode())
-    self = this
+    me = this
     container = @container
     while container
       # for child of list, always be set while createDom or updateDom
       if container.isTag then return
-      if !self.listIndex? then container.node = node
-      self = container
+      if !me.listIndex? then container.node = node
+      me = container
       container = container.container
     return
 

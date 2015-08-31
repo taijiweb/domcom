@@ -2,7 +2,7 @@
 the web framework to provide dom component
 
 ## Features
-* the value of any property and other stuffs can be reative function
+* the value of any property and other stuffs can be reactive function
 
     The stuffs, like dom property, the test condition of If, Case component, the items of Repeat component, can be functions. Different from the usage of function as property value in jQuery, the functions are used to declares the computating method for every rendering.
 

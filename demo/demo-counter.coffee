@@ -1,7 +1,7 @@
-{txt, p, reative} = dc
+{txt, p, reactive} = dc
 
 module.exports = ->
-  reat = reative(counter = 0)
+  reat = reactive(counter = 0)
   comp = p(txt1=txt(react))
   count = ->
     r(counter++)

@@ -4,6 +4,7 @@ extend = require '../../extend'
 BaseComponent = require './BaseComponent'
 List = require './List'
 {funcString, newLine, cloneObject} = require '../../util'
+{flow} = require '../../flow'
 {domValue} = require '../../dom-util'
 {_directiveRegistry} = require '../../directives/register'
 Nothing = require './Nothing'
@@ -31,19 +32,19 @@ module.exports = class Tag extends BaseComponent
     return
 
   processAttrs: ->
-    self = @
+    me = @
     @hasActiveProperties = false
     attrs = @attrs
     @cacheClassName = ""
     @className = className = classFn(attrs.className, attrs.class)
     delete attrs.className
     delete attrs['class']
-    if className.needUpdate then @hasActiveProperties = true
+    if className.invalid then @hasActiveProperties = true
     className.onInvalidate ->
-      if !className.needUpdate
-        self.hasActiveProperties = true
-        self.activeInContainer()
-        self.isNoop = false
+      if !className.invalid
+        me.hasActiveProperties = true
+        me.activeInContainer()
+        me.isNoop = false
     @hasActiveProps = false
     @cacheProps = Object.create(null)
     @props = props = Object.create(null)
@@ -99,38 +100,38 @@ module.exports = class Tag extends BaseComponent
       prop = args[0]
       if typeof prop == 'string' then return props[prop]
       for key, v of prop
-        @setProp(key, v, props, type, @node) #updating = @node
+        @setProp(key, v, props, type)
     else if args.length==2
-      @setProp(args[0], args[1], props, type, @node) #updating = @node
+      @setProp(args[0], args[1], props, type)
     this
 
-  setProp: (prop, value, props, type, updating) ->
+  setProp: (prop, value, props, type) ->
     prop = attrToPropName(prop)
     value = domValue value
     oldValue = props[prop]
     if !oldValue?
       if typeof value == 'function'
-        @addActivity(props, prop, type, updating)
+        @addActivity(props, prop, type)
       else if value!=@['cache'+type][prop]
-          @addActivity(props, prop, type, updating)
+          @addActivity(props, prop, type)
     else
       # do not need to check cache
       # do not need check typeof value == 'function'
       if typeof oldValue =='function'
         oldValue.offInvalidate(@['invalidate'+type][prop])
     if typeof value == 'function'
-      self = @
+      me = @
       @['invalidate'+type][prop] = fn = ->
-        self.addActivity(props, prop, type, true)
+        me.addActivity(props, prop, type, true)
         props[prop] = value
       value.onInvalidate(fn)
     props[prop] = value
     return
 
-  addActivity: (props, prop, type, updating) ->
+  addActivity: (props, prop, type) ->
     @['hasActive'+type] = true
     @hasActiveProperties = true
-    if !updating then return
+    if !@node then return
     if @isNoop
       @activeInContainer()
       @isNoop = false
@@ -171,14 +172,14 @@ module.exports = class Tag extends BaseComponent
 
   addClass: (items...) ->
     @className.extend(items)
-    if @className.needUpdate
+    if @className.invalid
       @hasActiveProperties = true
       @activeInContainer()
     this
 
   removeClass: (items...) ->
     @className.removeClass(items...)
-    if @className.needUpdate
+    if @className.invalid
       @hasActiveProperties = true
       @activeInContainer()
     this
@@ -205,9 +206,12 @@ module.exports = class Tag extends BaseComponent
 
   showHide: (status, test, display) ->
     {style} = @
+    test = domValue(test)
     oldDisplay = style.display
-    if !oldDisplay then  @addActivity(style, 'display', 'Style')
-    style.display = ->
+    if !oldDisplay then  @addActivity(style, 'display', 'Style', @node)
+    else if typeof oldDisplay =='function' and oldDisplay.offInvalidate
+      oldDisplay.offInvalidate(@invalidateStyle.display)
+    style.display = method = flow test, oldDisplay, ->
       if (if typeof test == 'function' then !!test() else !!test)==status
         if display
           if typeof display == 'function' then display()
@@ -219,6 +223,11 @@ module.exports = class Tag extends BaseComponent
           else 'block'
         else oldDisplay = 'block'
       else 'none'
+    me = this
+    @invalidateStyle.display = fn = ->
+      me.addActivity(style, 'display', 'Style', true)
+      style.display = method
+    method.onInvalidate fn
     @style = style
     @
 
@@ -277,7 +286,7 @@ module.exports = class Tag extends BaseComponent
     @hasActiveProperties = false
 
     {node, className} = @
-    if className.needUpdate
+    if className.invalid
 
       classValue = className()
       if classValue!=@cacheClassName

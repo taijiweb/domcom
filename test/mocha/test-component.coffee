@@ -219,8 +219,11 @@ describe "component  ", ->
   describe 'demo', ->
     describe 'test for sum', ->
       it 'should construct and create components', ->
-        {$a, $b, _a, _b} = bindings({a: 1, b: 2})
-        x = text($a); y = text($b); z = p(txt(flow.add _a, _b))
+        {$a, $b, _a, _b} = bindings({a: 3, b: 2})
+        x = text($a); y = text($b); z = p(txt(sum=flow.add _a, _b))
+        expect(sum()).to.equal 5, 'sum 1'
+        _a 1
+        expect(sum()).to.equal 3,  'sum 2'
         comp = list(x, y, z)
         comp.mount('#demo')
         expect(z.node.innerHTML).to.equal '3',  'mount'
@@ -230,6 +233,9 @@ describe "component  ", ->
         y.node.onchange()
         expect(_a()).to.equal('3', '_a')
         expect(_b()).to.equal('4', '_b')
+        expect(sum()).to.equal('34', 'sum')
+        expect(!!comp.isNoop).to.equal false
+        expect(!!z.isNoop).to.equal false
         comp.update()
         expect(z.node.innerHTML).to.equal '34', 'update'
 

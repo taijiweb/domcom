@@ -7,7 +7,8 @@
 Component, list, func, if_, repeat
 a, div, p, span, text, select, input
 show, hide, splitter
-bindings, duplex} = dc
+bindings, duplex
+see} = dc
 
 {$a, $b, _a, _b} = bindings({a: 1, b: 2})
 
@@ -46,13 +47,15 @@ describe 'directives', ->
       expect(comp.node.style.display).to.equal 'none'
 
     it  'should process show directive with function value', ->
-      a = true
-      comp = div({$show:-> a})
+      showing = see true
+      comp = div({$show: showing})
+      expect(comp.style.display.invalidate).to.be.defined
       comp.mount()
-      expect(comp.node.style.display).to.equal 'block'
-      a = false
+      expect(comp.node.style.display).to.equal 'block', 1
+      showing false
+      expect(comp.hasActiveStyle).to.equal true
       comp.update()
-      expect(comp.node.style.display).to.equal 'none'
+      expect(comp.node.style.display).to.equal 'none', 2
 
     it 'should process hide directive', ->
       comp = div({$hide:true}, div(1))

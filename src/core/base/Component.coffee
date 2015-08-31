@@ -101,17 +101,17 @@ module.exports = class Component
     @
 
   xxxactiveInContainer: ->
-    container = self = @
+    container = me = @
     while container
       if !container.isNoop or container.isUpdateRoot
         container.activeOffspring = container.activeOffspring or Object.create(null)
-        container.activeOffspring[self.dcid] = self
+        container.activeOffspring[me.dcid] = me
         container.isNoop = false
         return
       container = container.container
 
   activeInContainer: ->
-    container = self = @
+    container = me = @
     while container
       if container.isNoop
         container.isNoop = false

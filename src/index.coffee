@@ -5,10 +5,10 @@ dc.extend = extend = require './extend'
 extend(dc,
 
   # component
-  require('./core'),
+  require('./core/index'),
 
   # utilities
-  require('./flow')
+  require('./flow/index')
   require('./dom-util'),
   require('./util'),
   require('./constant')
