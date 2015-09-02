@@ -4,14 +4,16 @@ dc.extend = extend = require './extend'
 
 extend(dc,
 
-  # component
-  require('./core/index'),
+  require('./constant')
+  require('./config')
 
   # utilities
   require('./flow/index')
   require('./dom-util'),
   require('./util'),
-  require('./constant')
+
+  # component
+  require('./core/index'),
 
   require('./directives/register')
 

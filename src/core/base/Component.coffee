@@ -12,6 +12,8 @@ module.exports = class Component
     @parentNode = null
     @node = null
     @options = null
+    @hookUpdater = @
+    @activeOffSpring = Object.create(null)
     @id = componentId++
 
   setOptions: (@options) -> @
@@ -99,6 +101,24 @@ module.exports = class Component
   unmount: ->
     @baseComponent.remove(@parentNode)
     @
+
+  setUpdateRoot: ->
+    if !@isNoop
+      if !@isUpdateRoot
+        @isUpdateRoot = true
+        # remove me from my hooked ancestor container
+        # move my active offSprings to meself
+        hookUpdater = @hookUpdater
+        @hookUpdater = @
+        {activeOffSpring} = hookUpdater
+        myOffSpring = @activeOffSpring
+        #@hasActiveOffspring = false
+        for dcid, comp of activeOffSpring
+          if comp.isOffSpringOf(@)
+            delete offSpring[dcid]
+            myOffSpring[dcid] = comp
+            @hasActiveOffspring = true
+      return
 
   xxxactiveInContainer: ->
     container = me = @

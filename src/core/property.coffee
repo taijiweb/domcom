@@ -2,6 +2,7 @@
 {domValue} = require '../dom-util'
 {makeReactive} = require '../flow'
 extend = require '../extend'
+{isComponent} = require './base/isComponent'
 
 exports.extendEventValue = extendEventValue = (props, prop, value, before) ->
   oldValue = props[prop]
@@ -125,9 +126,17 @@ exports.styleFrom = styleFrom = (value) ->
   else if value and typeof value != 'object' then Object.create(null)
   else cloneObject(value)
 
-exports.eventHandlerFromArray = (callbackList, node, component) ->
+config = require '../config'
+
+exports.eventHandlerFromArray = (callbackList, prop, component) ->
   (event) ->
+    node = component.node
     for fn in callbackList then fn and fn.call(node, event, component)
+    updateList = component.updateConfig[prop]
+    if updateList
+      for [comp, options] in updateList
+        options = options or {}
+        if options.alwaysUpdating or !config.useSystemUpdating then comp.update()
     if !event then return
     if !event.executeDefault
       event.preventDefault()
@@ -155,3 +164,8 @@ exports.attrToPropName = (name) ->
     pieces[i] = pieces[i][0].toUpperCase()+pieces[i][1...]
     i++
   pieces.join('')
+
+# attach a processHandler for an eventHandler
+exports.process = (processHandler, eventHandler) ->
+  eventHandler.processHandler = processHandler
+  eventHandler

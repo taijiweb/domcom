@@ -1,6 +1,7 @@
 extend = require '../../extend'
 {insertNode} = require '../../dom-util'
-{classFn, styleFrom, eventHandlerFromArray, attrToPropName} = require '../property'
+dc = require '../../dc'
+{classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require '../property'
 BaseComponent = require './BaseComponent'
 List = require './List'
 {funcString, newLine, cloneObject} = require '../../util'
@@ -59,6 +60,7 @@ module.exports = class Tag extends BaseComponent
     @hasActiveEvents = false
     @cacheEvents = Object.create(null)
     @events = events = Object.create(null)
+    @updateConfig = Object.create(null)
     @hasActiveSpecials = false
     @cacheSpecials = Object.create(null)
     @invalidateSpecials = Object.create(null)
@@ -71,6 +73,8 @@ module.exports = class Tag extends BaseComponent
         else events[key] = value
         @hasActiveEvents = true
         @hasActiveProperties = true
+        if value and value.processHandler
+          value.processHandler(@, key)
       else if key[0]=='$'
         # $directiveName: generator arguments list
         generator = _directiveRegistry[key.slice(1)]
@@ -316,7 +320,7 @@ module.exports = class Tag extends BaseComponent
       for prop, value of events
         cacheEvents[prop] = events[prop]
         delete events[prop]
-        node[prop] = eventHandlerFromArray(value, node, @)
+        node[prop] = eventHandlerFromArray(value, prop, @)
     @hasActiveEvents = false
 
     if @hasActiveSpecials
@@ -329,6 +333,12 @@ module.exports = class Tag extends BaseComponent
         spercialPropSet[prop](@, prop, value)
 
     return
+
+  updateWhen: (events..., components) ->
+    if isComponent(components) and components not instanceof Array
+      events.push components
+      components = @
+    dc.update(@, events, components)
 
   clone: (options=@options) ->
     result = new Tag(@tagName, @attrs, @children.clone(), options or @options)

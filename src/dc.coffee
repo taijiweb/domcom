@@ -3,12 +3,10 @@
  * @param element
 ###
 DomNode = require './DomNode'
-{Component} = require './core'
+Component = require './core/base/component'
 {requestAnimationFrame} = require  './dom-util'
 {newDcid} = require './util'
-
-componentCache = {}
-readyFnList = []
+{componentCache, readyFnList, _updateComponentMap} = require './config'
 
 module.exports = dc = (element, options={}) ->
   if typeof element == 'string'
@@ -31,9 +29,10 @@ querySelector = (selector, all) ->
 dc.ready = (fn) -> readyFnList.push fn
 
 dc.onReady = ->
-  for fn in readyFnList
-    fn()
+  for fn in readyFnList then fn()
   return
+
+document.addEventListener 'DOMContentLoaded', dc.onReady, false
 
 dc.render = render = ->
   for comp in rootComponents
@@ -53,6 +52,7 @@ dcid = document.body.dcid = newDcid()
 window.$body = componentCache[dcid] = new DomNode(document.body)
 
 dc.updateWhen = (components, events, updateList, options) ->
+  if updateList not instanceof Array then updateList = [updateList]
   if components instanceof Array
     if events instanceof Array
       for component in events
@@ -67,21 +67,34 @@ dc.updateWhen = (components, events, updateList, options) ->
   else
     _updateWhen(components, events, updateList)
 
-exports._updateComponentMap = _updateComponentMap = {}
+isComponent = require './core/base/isComponent'
 
 _updateWhen = (component, event, updateList, options) ->
-  triggerMap = updateTriggers[component.dcid] = updateTriggers[component.dcid] or Object.create(null)
-  if isComponent(component) and event[...2]!='on'
-    event = 'on'+event
-  componentMap = triggerMap[event] = triggerMap[event] or []
-  for comp in updateList
-    dcid = comp.dcid
-    if !componentMap[dcid]
-      if !comp.findContainerParent(componentMap)
-        componentMap[dcid] = comp
-        comp.isUpdateRoot = true
-        comp.removeChildren(componentMap)
-      _updateComponentMap[dcid] = comp
+  if isComponent(component)
+    if event[...2]!='on' then event = 'on'+event
+    if options
+      component.updateConfig[event] = for comp in updateList
+        comp.setUpdateRoot()
+        [comp, options]
+    else
+      updateList = for item in updateList
+        if isComponent(item) then [item, {}] else item
+      component.updateConfig[event] = updateList
+      for [comp, _] in updateList
+        comp.setUpdateRoot()
+    return
+  else if component == window and event == 'setInterval'
+    intervalUpdateList = updateList
+    return
   return
 
-document.addEventListener 'DOMContentLoaded', dc.onReady, false
+updateInterval = (updateList, options) ->
+  updateList = combine updateList, options
+
+dc.updating = (components..., eventHandler) ->
+  if !components.length
+    eventHandler.processHandler = (component, key) ->
+      _updateWhen(component, key, [component])
+  else eventHandler.processHandler = (component, key) ->
+    _updateWhen(component, key, components)
+

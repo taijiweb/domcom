@@ -55,24 +55,26 @@ flow.makeReactive = makeReactive
 flow.dependent = dependent
 flow.flow = flow
 
-flow.see = see = (value) ->
+flow.see = see = (value, transform) ->
   cacheValue = value
 
   method = (value) ->
     if !arguments.length then cacheValue
     else
+      value = if transform then transform value else value
       if value!=cacheValue
         cacheValue = value
         method.invalidate()
       value
 
-  method.toString = () ->  "see: #{@tagName}"
+  method.toString = () ->  "see: #{value}"
   makeReactive method
 
-flow.see2 = (computation) ->
-  reactive = see computation
+flow.see2 = (value, transform) ->
+  if !value or !value.invalidate then reactive = see value, transform
+  else reactive = value
   reactive.isDuplex = true
-  method.toString = () ->  "see2: #{@tagName}"
+  reactive.toString = () ->  "see2: #{value}"
   reactive
 
 flow.seen = (computations...) ->

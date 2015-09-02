@@ -55,3 +55,4 @@ exports.funcString = (fn) ->
 
 globalDcid = 1
 exports.newDcid = -> globalDcid++
+
