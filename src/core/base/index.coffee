@@ -1,3 +1,4 @@
+route = require './route'
 module.exports =
   isComponent: require './isComponent'
   toComponent: require './toComponent'
@@ -14,4 +15,5 @@ module.exports =
   Case: require './Case'
   Func: require './Func'
   Repeat: require './Repeat'
-
+  Router: route.Router
+  route: route
