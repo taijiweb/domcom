@@ -146,3 +146,38 @@ describe 'route', ->
       comp2 =  content.getContent()
       expect(!!comp2).to.equal true
       expect(comp2.text).to.equal 2
+
+  describe 'multiple level route', ->
+    comp = route(
+      'a/*/**', (match, route2) ->
+        route2 1, (-> 1),
+          2, -> 2,
+          3, -> 3
+          otherwise: 'otherwise 2'
+      'b/**', -> 'b/**'
+      otherwise: 'otherwise 1'
+    )
+    it "should route a/b/3", ->
+      comp.getPath = -> 'a/b/3'
+      content = comp.getContent()
+      content.getPath = -> 'a/b/3'
+      comp2 =  content.getContent()
+      expect(!!comp2).to.equal true
+      expect(comp2.text).to.equal 3
+    it "should route b/2", ->
+      comp.getPath = -> 'b/2'
+      content = comp.getContent()
+      expect(!!content).to.equal true
+      expect(content.text).to.equal 'b/**'
+    it "should route not-found", ->
+      comp.getPath = -> 'not-found'
+      content = comp.getContent()
+      expect(!!content).to.equal true
+      expect(content.text).to.equal 'otherwise 1'
+    it "should route a/b/no-entry", ->
+      comp.getPath = -> 'a/b/no-entry'
+      content = comp.getContent()
+      content.getPath = -> 'a/b/no-entry'
+      comp2 =  content.getContent()
+      expect(!!comp2).to.equal true
+      expect(comp2.text).to.equal 'otherwise 2'

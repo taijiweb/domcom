@@ -37,7 +37,14 @@ _route = (routeList, otherwise, baseIndex, defaultBaseIndex) ->
     routeList.push otherwise
     otherwise = baseIndex
     baseIndex = defaultBaseIndex
-  else baseIndex = baseIndex >>> 0
+  else if baseIndex and not isComponent(baseIndex) and baseIndex.otherwise
+    routeList.push otherwise
+    otherwise = baseIndex.otherwise
+    baseIndex = defaultBaseIndex
+  else
+    baseIndex = baseIndex >>> 0
+    if otherwise and not isComponent(otherwise) and otherwise.otherwise
+      otherwise = otherwise.otherwise
   len = routeList.length
   if !isEven(len) then throw new Error 'route parameter error: missing matched handler'
   if len<2 or typeof routeList[len-1] != 'function'
@@ -109,6 +116,7 @@ route._processPiecePatterns = processPiecePatterns = (segmentPattern, params, no
   [pieces, nonameRegExpIndex]
 
 route._getRoutePattern = getRoutePattern = (pattern) ->
+  pattern = ''+pattern
   if pattern.match /\\\//  then new Error 'should not include /\\\// in pattern'
   if pattern=='' then segments = []
   else segments = pattern.split('/')  # '' at head or end will be processed in the loop
