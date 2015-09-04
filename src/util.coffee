@@ -59,4 +59,4 @@ exports.newDcid = -> globalDcid++
 exports.isEven = (n) ->
   if n<0 then n = -n
   while n>0 then n -= 2
-  return n==0
+  n==0
