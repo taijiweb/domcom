@@ -8,63 +8,51 @@ slashs = /(?:\\\/)|(?:\\\()|(?:\\\))/
 
 describe 'route', ->
   describe 'route regexp', ->
-    it 'should match slashs', ->
-      expect('\\(').to.match slashs, '\\('
-      expect('\\)').to.match slashs, '\\)'
-      expect('\\/').to.match slashs, '\\/'
-      expect('.dfa\\/+dsf/').to.match slashs, '.dfa\\/+dsf/'
-      expect('.dfa\\(+dsf/').to.match slashs, '.dfa\\(+dsf/'
-      expect('.dfa\\)+dsf/').to.match slashs, '.dfa\\)+dsf/'
     it 'should match paramName pattern', ->
-      paramName = /:([$_\w]+)/
-      expect(':dsaf').to.match paramName, ':dsaf'
-      expect(':$').to.match paramName, ':$'
-      expect(':_').to.match paramName, ':_'
-      expect(':').not.to.match paramName, ':_'
+      params = {}
+      route._processPiecePatterns(':dsaf', params)
+      expect(params.dsaf).to.equal true, ':dsaf'
+      route._processPiecePatterns(':$', params)
+      expect(params.$).to.equal true, ':$'
+      route._processPiecePatterns(':_', params)
+      expect(params._).to.equal true, ':_'
     it 'should match cureved re', ->
-      curve = /\([^\(\)]+\)/
-      expect('(fd+=.)').to.match curve, '(fd+=.)'
-      expect('(').not.to.match curve, '('
-      expect('(dfj(').not.to.match curve, '(dfj('
-      expect('(dfj()').not.to.match curve, '(dfj()'
-      expect('()').not.to.match curve, '()'
-    it 'should match rePatternTotal', ->
-      expect(':').not.to.match rePatternTotal, ':'
-      expect(':+').not.to.match rePatternTotal, ':+'
-      expect(':(dsaf)').not.to.match rePatternTotal, ':(dsaf)'
-      expect(':a(dsaf)').to.match rePatternTotal, ':a(dsaf)'
-      expect(':a(dsaf)asdfj').to.match rePatternTotal, ':a(dsaf)asdfj'
-      expect(':a(dsaf)asdfj(&*^)').to.match rePatternTotal, ':a(dsaf)asdfj(&*^)'
-      expect(':a(dsaf)asdfj(&*^)+_').to.match rePatternTotal, ':a(dsaf)asdfj(&*^)+_'
-      expect('asdfj:a(dsaf)asdfj(&*^)+_').to.match rePatternTotal, 'asdfj:a(dsaf)asdfj(&*^)+_'
-      expect('_):a(dsaf)asdfj(&*^)+_').to.match rePatternTotal, '_):a(dsaf)asdfj(&*^)+_'
-    it 'should get pattern from rePatternTotal match', ->
-      m = '(dsaf)'.match rePatternTotal
-      expect(m[0]).to.equal '(dsaf)'
-      expect(m[1]).to.equal '(dsaf)'
-      m = '(dsaf)abc'.match rePatternTotal
-      expect(m[0]).to.equal '(dsaf)abc'
-      expect(m[1]).to.equal 'abc'
-      expect(m[6]).to.equal 'abc'
-    it 'should match rePattern', ->
-      expect(':').not.to.match rePattern, ':'
-      expect(':+').not.to.match rePatternTotal, ':+'
-      expect('(dsaf').not.to.match rePatternTotal, '(dsaf'
-      expect(':(dsaf)').not.to.match rePatternTotal, ':(dsaf)'
-      expect(':a(dsaf)').to.match rePatternTotal, ':a(dsaf)'
-      expect(':a(dsaf)asdfj').to.match rePatternTotal, ':a(dsaf)asdfj'
-      expect(':a(dsaf)asdfj(&*^)').to.match rePatternTotal, ':a(dsaf)asdfj(&*^)'
-      expect(':a(dsaf)asdfj(&*^)+_').to.match rePatternTotal, ':a(dsaf)asdfj(&*^)+_'
-      m = '_):a(dsaf)asdfj(&*^)+_'.match rePatternTotal
-      console.log JSON.stringify m
-      expect(!!m).to.equal true, '_):a(dsaf)asdfj(&*^)+_'
-      expect(m.length).to.equal 7, 'match length'
-    it 'should match default patterns', ->
-      defaultParams = /[^\s,;]+/
-      expect(' ').not.to.match defaultParams, ':'
-      m = 'asdf,'.match(defaultParams)
-      console.log JSON.stringify m
-      expect(m[0]).to.equal 'asdf', 'asdf,'
+      params = {}
+      pat = route._processPiecePatterns('(fd+=.)', params, 2)
+      expect(pat[0][0].key).to.equal 2, '(fd+=.)'
+      expect(pat[1]).to.equal 3, '(fd+=.)'
+    it 'should match param and string', ->
+      params = {}
+      pat = route._processPiecePatterns(':a(dsaf)asdfj', params, 2)
+      expect(pat[0][0].key).to.equal 'a'
+      expect(pat[1]).to.equal 2, '(fd+=.)'
+    it 'should match param and string 2', ->
+      params = {}
+      pat = route._processPiecePatterns(':abc_$(dsaf)asdfj(&*^)+_', params, 2)
+      expect(pat[0][0].key).to.equal 'abc_$'
+      expect(pat[1]).to.equal 3, '(fd+=.)'
+    it 'should match param and string 3', ->
+      params = {}
+      pat = route._processPiecePatterns('_):_$a(dsaf)asdfj(&*^)+_', params, 2)
+      expect(pat[0][1].key).to.equal '_$a'
+      expect(pat[1]).to.equal 3, '(fd+=.)'
+    it 'should match param and string 3', ->
+      params = {}
+      pat = route._processPiecePatterns('_):_$a(dsaf):b:c-asdfj(&*^)+_', params, 2)
+      expect(pat[0][1].key).to.equal '_$a'
+      expect(pat[1]).to.equal 3, '(fd+=.)'
+    it 'should throw while wrong paramName pattern', ->
+      expect(->route._processPiecePatterns(':', params = {})).to.throw()
+    it 'should throw while wrong paramName pattern 1', ->
+      expect(->route._processPiecePatterns(':+', params = {})).to.throw()
+    it 'should throw while wrong paramName pattern 2', ->
+      expect(->route._processPiecePatterns('(dfj()', params = {})).to.throw()
+    it 'should throw while wrong paramName pattern 3', ->
+      expect(->route._processPiecePatterns('()', params = {})).to.throw()
+    it 'should throw while wrong paramName pattern 4', ->
+      expect(->route._processPiecePatterns(':(dsaf)', params = {})).to.throw()
+    it 'should throw while wrong paramName pattern 5', ->
+      expect(->route._processPiecePatterns('(', params = {})).to.throw()
 
   describe 'test private function', ->
     it 'should _getRoutePattern', ->
@@ -99,8 +87,13 @@ describe 'route', ->
       comp = route 'a', -> 1
       comp.getPath = -> 'a/'
       expect(!!(content = comp.getContent())).to.equal false
-    iit "should route '*' on path 'a'", ->
-      comp = route '*', (match) -> match.items[0]
+    it "should route '*' on path 'a'", ->
+      comp = route '*', (match) -> match.segments[0]
+      comp.getPath = -> 'a'
+      expect(!!(content = comp.getContent())).to.equal true
+      expect(content.text).to.equal 'a'
+    it "should route '(\w+)' on path 'a'", ->
+      comp = route '(\\w+)', (match) -> match.items[0]
       comp.getPath = -> 'a'
       expect(!!(content = comp.getContent())).to.equal true
       expect(content.text).to.equal 'a'
@@ -144,3 +137,12 @@ describe 'route', ->
       comp = route 'a/*/*/**', -> 1
       comp.getPath = -> 'a/b'
       expect(!!(content = comp.getContent())).to.equal false
+    it "should route embedding route", ->
+      comp = route 'a/**', (match, route2) ->
+        route2 'b', -> 2
+      comp.getPath = -> 'a/b'
+      content = comp.getContent()
+      content.getPath = -> 'a/b'
+      comp2 =  content.getContent()
+      expect(!!comp2).to.equal true
+      expect(comp2.text).to.equal 2

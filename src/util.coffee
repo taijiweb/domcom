@@ -60,3 +60,14 @@ exports.isEven = (n) ->
   if n<0 then n = -n
   while n>0 then n -= 2
   n==0
+
+exports.matchCurvedString = (str, i) ->
+  if str[i]!='(' then return
+  level = 0
+  while ch = str[++i]
+    if ch=='\\'
+      if !(ch=str[++i]) then return
+    else if ch=='(' then level++
+    else if ch==')'
+      if level==0 then return ++i
+      else level--
