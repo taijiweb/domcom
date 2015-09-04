@@ -55,7 +55,31 @@ _route = (routeList, otherwise, baseIndex, defaultBaseIndex) ->
     i += 2
   new Router(routeList2, otherwise, baseIndex)
 
+route._navigateTo = navigateTo = (oldPath, path, baseIndex=0) ->
+  path = ''+path
+  if path[0] != '/'
+    upCount = 0
+    while path
+      if path[..1]=='./' then path = path[2...]
+      else if path[..2]=='../' then path = path[3...]; upCount++
+      else break
+    baseIndex -= upCount
+    if baseIndex<0 then baseIndex = 0
+    base = oldPath.split('/').slice(0, baseIndex).join('/')+'/'
+    if base=='/' then base = ''
+    path = base+path
+  else path = path.slice(1) # clear start '/'
+
 navigate = (baseIndex) -> (path) ->
+  oldPath =
+    if window.history and window.history.pushState
+      decodeURI(location.pathname + location.search).replace(/\?(.*)$/, '')  # remove GET params
+    else if match=location.href.match(/#(.*)$/) then match[1] else ''
+  navigateTo(oldPath, path, baseIndex)
+  if window.history and window.history.pushState
+    history.pushState(null, null, path)
+  else location.href = location.href.replace(/#(.*)$/, '') + '#' + path
+  path
 
 route.to = navigate(0)
 
@@ -72,7 +96,7 @@ route.Router = class Router extends TransformComponent
   getPath: ->
     if window.history and window.history.pushState
       decodeURI(location.pathname + location.search).replace(/\?(.*)$/, '')  # remove GET params
-    else if match = location.href.match(/#(.*)$/) then match[1] else ''
+    else if match=location.href.match(/#(.*)$/) then match[1] else ''
 
 route._processRouteItem = processRouteItem = (patternRoute, path, baseIndex) ->
   if patternRoute.length==3 then [pattern, test, handler] = patternRoute
@@ -148,7 +172,9 @@ route._getRoutePattern = getRoutePattern = (pattern) ->
 route._matchRoute = matchRoute = (pattern, path, baseIndex) ->
   if pattern.endSlash and path[path.length-1]!='/' then return
   if pattern.absolute then baseIndex = 0
-  else baseIndex -= pattern.upCount
+  else
+    baseIndex -= pattern.upCount
+    if baseIndex<0 then baseIndex = 0
   if path=='/' or path=='' then pathSegments = []
   else
     pathSegments = path.split('/')

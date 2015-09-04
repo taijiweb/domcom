@@ -181,3 +181,14 @@ describe 'route', ->
       comp2 =  content.getContent()
       expect(!!comp2).to.equal true
       expect(comp2.text).to.equal 'otherwise 2'
+
+  describe 'process route.to', ->
+    it "should route.to", ->
+      expect(route._navigateTo('a/b/c', '../x', 2)).to.equal('a/x')
+      expect(route._navigateTo('a/b/c', 'f', 2)).to.equal('a/b/f')
+      expect(route._navigateTo('a/b/c', '/f', 2)).to.equal('f')
+      expect(route._navigateTo('a/b/c', '/f/', 2)).to.equal('f/')
+      expect(route._navigateTo('a/b/c', './f/', 2)).to.equal('a/b/f/')
+    it "should route.to 2", ->
+      expect(route._navigateTo('a/b/c', '../../f/', 2)).to.equal('f/')
+      expect(route._navigateTo('a/b/c', '../../../f/', 2)).to.equal('f/')
