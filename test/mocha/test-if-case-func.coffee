@@ -2,7 +2,7 @@
 
 {bindings, see, flow
 Component, TransformComponent, Tag, Text,
-txt, list, func, if_, case_, func, repeat
+txt, list, func, if_, case_, func, each
 accordionGroup, accordion
 a, p, span, text, div} = dc
 

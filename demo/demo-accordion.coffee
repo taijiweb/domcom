@@ -1,6 +1,6 @@
 {duplex
 accordion
-repeat
+each
 div, span} = dc
 
 module.exports = ->
@@ -14,7 +14,7 @@ module.exports = ->
     groupAttrs = {
       #onclick: -> groupOptions.open = !groupOptions.open
     }
-    content = repeat(group.items, (item) ->
+    content = each(group.items, (item) ->
       span({
         style:{margin:'5px'}
         onclick: ->

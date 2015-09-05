@@ -14,6 +14,6 @@ module.exports =
   If: require './If'
   Case: require './Case'
   Func: require './Func'
-  Repeat: require './Repeat'
+  Each: require './Each'
   Router: route.Router
   route: route

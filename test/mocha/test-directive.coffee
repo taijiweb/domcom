@@ -4,7 +4,7 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
 {
-Component, list, func, if_, repeat
+Component, list, func, if_, each
 a, div, p, span, text, select, input
 show, hide, splitter
 bindings, duplex

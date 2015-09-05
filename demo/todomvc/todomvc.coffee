@@ -1,6 +1,6 @@
 {bindings, bound, duplex,
 section, h1, header, form, text, checkbox, div, ul, li, p, a, label, button, footer, strong, span
-repeat, txt
+each, txt
 extend} = dc
 
 # store
@@ -99,7 +99,7 @@ todoHeader = header({id:"header"}
   )
 )
 
-todoItems = repeat(getTodos, (todo, index) ->
+todoItems = each(getTodos, (todo, index) ->
   window.todoItemComp = li({className:{ completed: (-> todo.completed), editing: -> todo==editingTodo}},
     div({class:"view"},
       checkbox({className:"toggle",checked: (-> todo and todo.completed), onchange:(-> toggleCompleted(todo))})

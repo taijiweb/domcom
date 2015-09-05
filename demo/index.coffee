@@ -1,7 +1,7 @@
 # domcom demo
 {select, options} = dc
 
-{repeatDemo1, repeatDemo2, repeatDemo3} = require 'domcom/demo/demo-repeat'
+{eachDemo1, eachDemo2, eachDemo3} = require 'domcom/demo/demo-each'
 
 exports.demoMap = demoMap =
   accordion: require 'domcom/demo/demo-accordion'
@@ -12,9 +12,9 @@ exports.demoMap = demoMap =
   event: require 'domcom/demo/demo-event'
   controls: require 'domcom/demo/demo-controls'
   if: require 'domcom/demo/demo-if-component'
-  repeat1: repeatDemo1
-  repeat2: repeatDemo2
-  repeat3: repeatDemo3
+  each1: eachDemo1
+  each2: eachDemo2
+  each3: eachDemo3
   splitter: require 'domcom/demo/demo-splitter'
   sum: require 'domcom/demo/demo-sum'
   'text model': require 'domcom/demo/demo-text-model'

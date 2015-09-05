@@ -2,7 +2,7 @@
 Nothing
 Tag, Text, Comment,
 #Ref, Clone,
-If, Case, Func, List, Repeat} = require './base'
+If, Case, Func, List, Each} = require './base'
 
 isAttrs = (item) ->
   typeof item == 'object' and item!=null and !isComponent(item) and item not instanceof Array
@@ -77,6 +77,6 @@ exports.list = list = (attrs, lst...) ->
     itemFn - function (item, index, list, component) { ... }
     itemFn - function (value, key, index, hash, component) { ... }
 ###
-exports.repeat = (attrs, list, itemFn, options) ->
-  if isAttrs(attrs) then new Tag('div', attrs, [new Repeat(list, itemFn, options)])
-  else new Repeat(attrs, list, itemFn)
+exports.each = (attrs, list, itemFn, options) ->
+  if isAttrs(attrs) then new Tag('div', attrs, [new Each(list, itemFn, options)])
+  else new Each(attrs, list, itemFn)

@@ -3,13 +3,13 @@
 {bindings
 isComponent
 Component, TransformComponent, Tag, Text,
-txt, list, func, if_, case_, func, repeat
+txt, list, func, if_, case_, func, each
 accordionGroup, accordion
 a, p, span, text, div} = dc
 
 {$a, $b, _a, _b} = bindings({a: 1, b: 2})
 
-describe 'list, repeat', ->
+describe 'list, each', ->
   describe 'List', ->
     it 'all of item in list should be  component', ->
       comp = list([1, 2])
@@ -70,18 +70,18 @@ describe 'list, repeat', ->
       comp.update()
       expect(comp.node.innerHTML).to.equal '12'
 
-  describe 'Repeat', ->
-    it  'should create  repeat component', ->
-      comp = repeat(lst = ['repeat', 'simple'], (item, i) -> p(item))
+  describe 'Each', ->
+    it  'should create  each component', ->
+      comp = each(lst = ['each', 'simple'], (item, i) -> p(item))
       comp.mount()
       expect(comp.node).to.be.instanceof Array
       expect(comp.node[0]).to.be.instanceof Element
 
-    it 'should mount and render repeat  component',  ->
+    it 'should mount and render each  component',  ->
       document.getElementById('demo').innerHTML = ''
-      comp = repeat(lst = ['repeat', 'simple'], (item, i) -> p(item))
+      comp = each(lst = ['each', 'simple'], (item, i) -> p(item))
       comp.mount("#demo")
-      expect(comp.node[0].innerHTML).to.equal 'repeat'
+      expect(comp.node[0].innerHTML).to.equal 'each'
       expect(comp.node[1].innerHTML).to.equal 'simple'
       lst[0] = 3; lst[1] = 4
       comp.update()
@@ -95,9 +95,9 @@ describe 'list, repeat', ->
       #List Component never be empty, if length is 0, then generate [txt('')]
       expect(comp.node.length).to.equal 1
 
-    it 'should process immutable template in repeat component', ->
+    it 'should process immutable template in each component', ->
       document.getElementById('demo').innerHTML = ''
-      comp = repeat(lst = [{text:'a'}, {text:'b'}], ((item, i) -> p(txt(-> item.text))), {itemTemplateImmutable:true})
+      comp = each(lst = [{text:'a'}, {text:'b'}], ((item, i) -> p(txt(-> item.text))), {itemTemplateImmutable:true})
       comp.mount("#demo")
       expect(comp.node[0].textContent).to.equal 'a'
       expect(comp.node[1].textContent).to.equal 'b'
@@ -113,97 +113,97 @@ describe 'list, repeat', ->
       # List Component never be empty, if length is 0, then generate txt('')
       expect(comp.node.length).to.equal 1
 
-    it 'should process itemTemplateImmutable repeat component ', ->
-      comp = repeat(lst = ['a', 'b'], ((item, i, list) -> p(txt(-> list[i]))), {itemTemplateImmutable:true})
+    it 'should process itemTemplateImmutable each component ', ->
+      comp = each(lst = ['a', 'b'], ((item, i, list) -> p(txt(-> list[i]))), {itemTemplateImmutable:true})
       comp.mount()
       lst[0] = 'c'
       comp.update()
       expect(comp.node[0].textContent).to.equal 'c'
 
-    it 'should process tag with repeat', ->
+    it 'should process tag with each', ->
       x = 1
       text1 = null
-      comp = new Tag('div', {}, [repeat1=repeat([1], (item) -> text1 = txt(x))])
+      comp = new Tag('div', {}, [each1=each([1], (item) -> text1 = txt(x))])
       comp.create()
       expect(comp.node.innerHTML).to.equal '1'
       x = 2
       comp.update()
       expect(text1.node.textContent).to.equal('2')
-      expect(repeat1.node[0].textContent).to.equal('2')
+      expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '2'
 
-    it  'should create and update deeper embedded repeat', ->
+    it  'should create and update deeper embedded each', ->
       x = 1
-      comp =  div({}, span1=new Tag('span', {}, [repeat1=repeat((-> [x]), (item) -> txt(item))]))
+      comp =  div({}, span1=new Tag('span', {}, [each1=each((-> [x]), (item) -> txt(item))]))
       comp.mount()
-      expect(repeat1.node.parentNode).to.equal(span1.node)
-      expect(repeat1.node[0].textContent).to.equal '1'
+      expect(each1.node.parentNode).to.equal(span1.node)
+      expect(each1.node[0].textContent).to.equal '1'
       x = 2
       comp.update()
-      expect(repeat1.node.parentNode).to.equal(span1.node)
-      expect(repeat1.node[0].textContent).to.equal('2')
+      expect(each1.node.parentNode).to.equal(span1.node)
+      expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<span>2</span>'
 
-    it  'should create and update embedded repeat in 3 layer', ->
+    it  'should create and update embedded each in 3 layer', ->
       x = 1
-      comp =  div({}, div({}, span1=new Tag('span', {}, [repeat1=repeat([1], (item) -> txt(x))])))
+      comp =  div({}, div({}, span1=new Tag('span', {}, [each1=each([1], (item) -> txt(x))])))
       comp.mount()
-      expect(repeat1.node.parentNode).to.equal(span1.node)
-      expect(repeat1.node[0].textContent).to.equal '1'
+      expect(each1.node.parentNode).to.equal(span1.node)
+      expect(each1.node[0].textContent).to.equal '1'
       x = 2
       comp.update()
-      expect(repeat1.node.parentNode).to.equal(span1.node)
-      expect(repeat1.node[0].textContent).to.equal('2')
+      expect(each1.node.parentNode).to.equal(span1.node)
+      expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<div><span>2</span></div>'
 
-    it  'should create and update embedded repeat in 3  layer', ->
+    it  'should create and update embedded each in 3  layer', ->
       x = 1
-      comp =  div({}, div({}, span1=new Tag('span', {}, [repeat1=repeat((-> [x]), (item) -> txt(item))])))
+      comp =  div({}, div({}, span1=new Tag('span', {}, [each1=each((-> [x]), (item) -> txt(item))])))
       comp.mount()
-      expect(repeat1.node.parentNode).to.equal(span1.node)
-      expect(repeat1.node[0].textContent).to.equal '1'
+      expect(each1.node.parentNode).to.equal(span1.node)
+      expect(each1.node[0].textContent).to.equal '1'
       x = 2
       comp.update()
-      expect(repeat1.node.parentNode).to.equal(span1.node)
-      expect(repeat1.node[0].textContent).to.equal('2')
+      expect(each1.node.parentNode).to.equal(span1.node)
+      expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<div><span>2</span></div>'
 
-    it  'should process repeat under repeat', ->
+    it  'should process each under each', ->
       x = 1
-      repeat2 = null
-      comp =  div({}, repeat1=repeat([1], -> repeat2=repeat((-> [x]), (item) -> item)))
+      each2 = null
+      comp =  div({}, each1=each([1], -> each2=each((-> [x]), (item) -> item)))
       comp.mount()
-      expect(repeat1.node.parentNode).to.equal(comp.node)
-      expect(repeat2.node[0].textContent).to.equal '1'
+      expect(each1.node.parentNode).to.equal(comp.node)
+      expect(each2.node[0].textContent).to.equal '1'
       x = 2
       comp.update()
-      expect(repeat1.node.parentNode).to.equal(comp.node)
-      expect(repeat2.node[0].textContent).to.equal('2')
+      expect(each1.node.parentNode).to.equal(comp.node)
+      expect(each2.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '2'
 
-    it  'should mount and update repeat', ->
-      comp = new Tag('span', {}, [repeat([1], (item) -> txt(1))])
+    it  'should mount and update each', ->
+      comp = new Tag('span', {}, [each([1], (item) -> txt(1))])
       comp.mount()
       expect(comp.node.innerHTML).to.equal '1'
       comp.update()
       expect(comp.node.innerHTML).to.equal '1'
 
-    it  'should update repeat with component as the item of list 1', ->
-      comp = repeat([txt(1)], (item) -> item)
+    it  'should update each with component as the item of list 1', ->
+      comp = each([txt(1)], (item) -> item)
       comp.mount()
       expect(comp.node[0].textContent).to.equal s='1'
       comp.update()
       expect(comp.node[0].textContent).to.equal '1'
 
-    it  'should update repeat with component as the item of list 2', ->
-      comp = div(repeat([txt(1)], (item) -> item))
+    it  'should update each with component as the item of list 2', ->
+      comp = div(each([txt(1)], (item) -> item))
       comp.mount()
       expect(comp.node.innerHTML).to.equal s='1'
       comp.update()
       expect(comp.node.innerHTML).to.equal '1'
 
-    it  'should update repeat with component as the item of list 3', ->
-      comp = div(div(repeat([txt(1)], (item) -> item)))
+    it  'should update each with component as the item of list 3', ->
+      comp = div(div(each([txt(1)], (item) -> item)))
       comp.mount()
       expect(comp.node.innerHTML).to.equal s='<div>1</div>'
       comp.update()

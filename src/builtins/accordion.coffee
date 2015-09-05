@@ -4,13 +4,13 @@
 
 {extend,
 div, h4, a, span, img
-Component, repeat
+Component, each
 extendAttrs} = dc
 
 module.exports = exports = accordion = (attrs, accordionGroupList, options) ->
   attrs = extendAttrs {class:"panel-group"}, attrs  or Object.create(null)
   accordionOptions = options or Object.create(null)
-  comp = div(attrs, repeat(accordionGroupList, (group, index) ->
+  comp = div(attrs, each(accordionGroupList, (group, index) ->
       [groupAttrs, heading, content, groupOptions] = group
       groupOptions = groupOptions or Object.create(null)
       groupOptions.toggleOpen = ->

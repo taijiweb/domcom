@@ -5,7 +5,7 @@ List = require './List'
 {funcString, newLine} = require '../../util'
 {renew} = require '../../flow'
 
-module.exports = class Repeat extends TransformComponent
+module.exports = class Each extends TransformComponent
   constructor: (list, itemFn, options={}) ->
     super(options)
 
@@ -13,7 +13,7 @@ module.exports = class Repeat extends TransformComponent
       throw new Error 'children for List should be array like or a function'
     else if typeof list != 'function'
       items = list
-      if !items or typeof(items)!='object' then throw new Error 'Repeat Component need an array or object'
+      if !items or typeof(items)!='object' then throw new Error 'Each Component need an array or object'
     else
       if !list.invalidate
         list = renew(list)
@@ -31,7 +31,7 @@ module.exports = class Repeat extends TransformComponent
     @getContentComponent = =>
       if typeof list == 'function'
         items = list()
-        if !items or typeof(items)!='object' then throw new Error 'Repeat Component need an array or object'
+        if !items or typeof(items)!='object' then throw new Error 'Each Component need an array or object'
       children = []
       if isArray(items)
         if sortFunction then items.sort(sortFunction)
@@ -49,8 +49,8 @@ module.exports = class Repeat extends TransformComponent
       new List(children)
 
     @clone = (options) ->
-      (new Repeat(list, ((item, index, list, comp) -> itemFn(item, index, list, comp).clone()), options or @options)).copyLifeCallback(@)
+      (new Each(list, ((item, index, list, comp) -> itemFn(item, index, list, comp).clone()), options or @options)).copyLifeCallback(@)
 
-    @toString = (indent=0, noNewLine) -> newLine("<Repeat #{funcString(list)} #{funcString(itemFn)}/>", indent, noNewLine)
+    @toString = (indent=0, noNewLine) -> newLine("<Each #{funcString(list)} #{funcString(itemFn)}/>", indent, noNewLine)
 
     this
