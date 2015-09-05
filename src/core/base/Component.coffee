@@ -67,6 +67,7 @@ module.exports = class Component
 
   mount: (mountNode, beforeNode) ->
     @mountNode = normalizeDomElement(mountNode)
+    if @isBaseComponent then @isHolder = true
     if @parentNode && @parentNode!=@mountNode
       @unmount()
     @setParentNode @mountNode
@@ -91,6 +92,8 @@ module.exports = class Component
       if mounting then baseComponent.executeMountCallback()
       if !baseComponent.noop then baseComponent.updateDom(mounting)
       if mounting then baseComponent.attachNode(@parentNode)
+    if @listIndex? then @container.node[@listIndex] = @node
+    @oldBaseComponent = baseComponent
 
   create: -> @render()
 

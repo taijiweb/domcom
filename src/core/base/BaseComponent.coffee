@@ -1,5 +1,6 @@
 Component = require './component'
 {insertNode, removeNode} = require '../../dom-util'
+{cloneObject} = require '../../util'
 
 module.exports = class BaseComponent extends Component
   constructor: (options) ->
@@ -23,6 +24,13 @@ module.exports = class BaseComponent extends Component
       me = container
       container = container.container
     return
+
+  updateOffspring: (mounting) ->
+    {activeOffspring} = @
+    if !activeOffspring then return
+    @activeOffspring = null
+    for _, component of cloneObject(activeOffspring)
+      component.render(mounting)
 
   invalidate: ->
     if !@noop then return

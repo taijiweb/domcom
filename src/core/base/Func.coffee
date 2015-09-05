@@ -7,13 +7,13 @@ module.exports = class Func extends TransformComponent
   constructor: (func, options) ->
     super(options)
 
-    if !func.invaidate then func = renew(func)
+    if !func.invalidate then func = renew(func)
 
     func.onInvalidate(@invalidate.bind(@))
 
     @getContentComponent = -> toComponent(func())
 
-    @clone = (options) -> (new Func((-> toComponent(func()).clone()), options or @options)).copyLifeCallback(@)
+    @clone = (options) -> (new Func((-> toComponent(func()).clone()), options)).copyLifeCallback(@)
 
     @toString = (indent=2, noNewLine) -> newLine("<Func #{funcString(func)}/>",  indent, noNewLine)
     this

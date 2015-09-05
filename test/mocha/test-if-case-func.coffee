@@ -15,15 +15,15 @@ describe 'if, case, func', ->
       x = see 0
       comp = if_(x, txt(1), txt(2))
       comp.mount()
-      expect(comp.node.textContent).to.equal '2'
+      expect(comp.node.textContent).to.equal '2', 'mount'
       comp.update()
-      expect(comp.node.textContent).to.equal '2'
+      expect(comp.node.textContent).to.equal '2', 'update'
       x 1
       comp.update()
-      expect(comp.node.textContent).to.equal '1'
+      expect(comp.node.textContent).to.equal '1', 'update x 1'
       x 0
       comp.update()
-      expect(comp.node.textContent).to.equal '2'
+      expect(comp.node.textContent).to.equal '2', 'update x 0'
 
     it 'should render If component', ->
       x = see 0
@@ -77,9 +77,9 @@ describe 'if, case, func', ->
       expect(demo2Node.innerHTML).to.equal '<p>2</p><p>3</p>'
       x 1
       comp.update()
-      expect(pIf.node.innerHTML).to.equal '1'
-      expect(comp.node[0].innerHTML).to.equal '1'
-      expect(demo2Node.innerHTML).to.equal '<p>1</p><p>3</p>'
+      expect(pIf.node.innerHTML).to.equal '1' , 'pif update'
+      expect(demo2Node.innerHTML).to.equal '<p>1</p><p>3</p>', 'demo2Node update'
+      expect(comp.node[0].innerHTML).to.equal '1', 'comp update'
 
     it 'should create and render embedded if', ->
       x = see 0
@@ -148,12 +148,12 @@ describe 'if, case, func', ->
       comp.mount()
       a 2
       comp.update()
-      expect(comp.node.innerHTML).to.equal '2'
+      expect(comp.node.innerHTML).to.equal '2', 'update a 2'
       a 3
       comp.update()
       a 4
       comp.update()
-      expect(comp.node.innerHTML).to.equal '4'
+      expect(comp.node.innerHTML).to.equal '4', 'update a 4'
 
     it 'should  create func component',  ->
       x = see 1

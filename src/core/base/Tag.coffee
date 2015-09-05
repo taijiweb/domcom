@@ -280,12 +280,7 @@ module.exports = class Tag extends BaseComponent
   updateDom: (mounting) ->
     @updateProperties()
     @resetHolderHookUpdater()
-    {activeOffspring} = @
-    if !activeOffspring then return
-    @activeOffspring = null
-    for _, component of cloneObject(activeOffspring)
-      component.render()
-    @
+    @updateOffspring(mounting)
 
   updateProperties: ->
     if !@hasActiveProperties then return

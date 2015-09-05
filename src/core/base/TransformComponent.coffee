@@ -9,7 +9,8 @@ module.exports = class TransformComponent extends Component
   firstDomNode: -> @baseComponent and @baseComponent.firstDomNode()
 
   invalidate: ->
-    if @content then return
+    if @invalid then return
+    @invalid = true
     @baseComponent = null
     @content = null
     activeChild = @
@@ -26,6 +27,7 @@ module.exports = class TransformComponent extends Component
 
   getBaseComponent: ->
     if @baseComponent then return @baseComponent
+    @invalid = false
     content = @content = @getContentComponent()
     content.container = @
     content.listIndex = null

@@ -16,7 +16,7 @@ module.exports = class Case extends TransformComponent
         else_ = new  If((->test()==key), value, else_)
       return else_
 
-    if !test.invaidate then test = renew(test)
+    if !test.invalidate then test = renew(test)
     test.onInvalidate(@invalidate.bind(@))
 
     for key, value of map

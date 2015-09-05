@@ -41,7 +41,7 @@ module.exports = class If extends TransformComponent
     if typeof test != 'function'
       return if test then then_ else else_
 
-    if !test.invaidate then test = renew(test)
+    if !test.invalidate then test = renew(test)
 
     test.onInvalidate(@invalidate.bind(@))
 
