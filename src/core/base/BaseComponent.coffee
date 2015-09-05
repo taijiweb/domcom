@@ -2,7 +2,9 @@ Component = require './component'
 {insertNode, removeNode} = require '../../dom-util'
 
 module.exports = class BaseComponent extends Component
-  constructor: (options) -> super(options)
+  constructor: (options) ->
+    super(options)
+    @isBaseComponent = true
 
   getBaseComponent: ->
     @mountCallbackComponentList = if @mountCallbackList then [@] else []
@@ -22,6 +24,17 @@ module.exports = class BaseComponent extends Component
       container = container.container
     return
 
+  invalidate: ->
+    if !@noop then return
+    @noop = false
+    container = @container
+    while container and !container.isHolder
+      container = container.container
+    if !container then return
+    container.activeOffspring = container.activeOffspring or Object.create(null)
+    container.activeOffspring[@dcid] = @
+    container.noop = false
+
   remove: (parentNode) ->
     if @node # Nothing.node is null
       removeNode(parentNode, @node)
@@ -37,5 +50,3 @@ module.exports = class BaseComponent extends Component
     for component in @unmountCallbackComponentList
       for cb in component.unmountCallbackList then cb()
     return
-
-  isBaseComponent: true

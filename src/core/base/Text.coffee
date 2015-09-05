@@ -7,25 +7,26 @@ module.exports = class Text extends BaseComponent
     me = @
     @text = text = domValue(text)
     if typeof text == 'function'
-      text.onInvalidate -> me.activeInContainer()
+      text.onInvalidate -> me.invalidate()
     super(options)
 
   firstDomNode: -> @node
 
   processText: ->
-    if typeof @text == 'function'
-      text = @text()
-      @isNoop = !@text.invalid and !@mountCallbackComponentList.length
-    else
-      text = @text
-      @isNoop = !@mountCallbackComponentList.length
-    text
+    if typeof @text == 'function'then @text()
+    else @text
 
-  createDom: -> @node = document.createTextNode(@processText()); @
+  createDom: ->
+    @noop = true
+    if @mountCallbackComponentList.length then @invalidate()
+    @node = document.createTextNode(@processText())
+    @
 
   updateDom: ->
+    @noop = true
+    if @mountCallbackComponentList.length then @invalidate()
     if (text=@processText())!=@node.textContent
-      @node.textContent = text;
+      @node.textContent = text
     @
 
   clone: (options) -> (new @constructor(@text, options)).copyLifeCallback(@)

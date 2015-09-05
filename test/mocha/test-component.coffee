@@ -234,8 +234,8 @@ describe "component  ", ->
         expect(_a()).to.equal('3', '_a')
         expect(_b()).to.equal('4', '_b')
         expect(sum()).to.equal('34', 'sum')
-        expect(!!comp.isNoop).to.equal false
-        expect(!!z.isNoop).to.equal false
+        expect(!!comp.noop).to.equal false
+        expect(!!z.noop).to.equal false
         comp.update()
         expect(z.node.innerHTML).to.equal '34', 'update'
 

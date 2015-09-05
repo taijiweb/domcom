@@ -132,7 +132,7 @@ exports.eventHandlerFromArray = (callbackList, prop, component) ->
   (event) ->
     node = component.node
     for fn in callbackList then fn and fn.call(node, event, component)
-    updateList = component.updateConfig[prop]
+    updateList = component.eventUpdateConfig[prop]
     if updateList
       for [comp, options] in updateList
         options = options or {}

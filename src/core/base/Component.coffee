@@ -6,12 +6,12 @@ componentId = 1
 mountList = []
 
 module.exports = class Component
-  constructor: ->
+  constructor: (options) ->
     @listeners = {}
     @baseComponent = null
     @parentNode = null
     @node = null
-    @options = null
+    @options = options or {}
     @hookUpdater = @
     @activeOffSpring = Object.create(null)
     @id = componentId++
@@ -77,13 +77,11 @@ module.exports = class Component
   render: (mounting) ->
     @baseComponent = baseComponent = @getBaseComponent()
     oldBaseComponent = @oldBaseComponent
-#    {funcString} = dc
-#    s = funcString(baseComponent)
     if oldBaseComponent and baseComponent!=oldBaseComponent
       oldBaseComponent.remove(@parentNode)
       baseComponent.executeMountCallback()
       if !baseComponent.node then baseComponent.createDom()
-      else if !baseComponent.isNoop then baseComponent.updateDom(mounting)
+      else if !baseComponent.noop then baseComponent.updateDom(mounting)
       baseComponent.attachNode(@parentNode)
     else if !baseComponent.node
       baseComponent.executeMountCallback()
@@ -91,7 +89,7 @@ module.exports = class Component
       baseComponent.attachNode(@parentNode)
     else
       if mounting then baseComponent.executeMountCallback()
-      if !baseComponent.isNoop then baseComponent.updateDom(mounting)
+      if !baseComponent.noop then baseComponent.updateDom(mounting)
       if mounting then baseComponent.attachNode(@parentNode)
 
   create: -> @render()
@@ -103,7 +101,7 @@ module.exports = class Component
     @
 
   setUpdateRoot: ->
-    if !@isNoop
+    if !@noop
       if !@isUpdateRoot
         @isUpdateRoot = true
         # remove me from my hooked ancestor container
@@ -120,21 +118,11 @@ module.exports = class Component
             @hasActiveOffspring = true
       return
 
-  xxxactiveInContainer: ->
-    container = me = @
-    while container
-      if !container.isNoop or container.isUpdateRoot
-        container.activeOffspring = container.activeOffspring or Object.create(null)
-        container.activeOffspring[me.dcid] = me
-        container.isNoop = false
-        return
-      container = container.container
-
   activeInContainer: ->
     container = me = @
     while container
-      if container.isNoop
-        container.isNoop = false
+      if container.noop
+        container.noop = false
       else return
       container = container.container
 

@@ -45,25 +45,25 @@ module.exports = class Tag extends BaseComponent
       if !className.invalid
         me.hasActiveProperties = true
         me.activeInContainer()
-        me.isNoop = false
+        me.noop = false
     @hasActiveProps = false
     @cacheProps = Object.create(null)
     @props = props = Object.create(null)
-    @invalidateProps = Object.create(null)
+    @['invalidateProps'] = Object.create(null)
     @hasActiveStyle = false
     @cacheStyle = Object.create(null)
     @style = style = Object.create(null)
-    @invalidateStyle = Object.create(null)
+    @['invalidateStyle'] = Object.create(null)
     attrStyle = styleFrom(attrs.style)
     for key, value of attrStyle then @setProp(key, value, style, 'Style')
     delete attrs.style
     @hasActiveEvents = false
     @cacheEvents = Object.create(null)
     @events = events = Object.create(null)
-    @updateConfig = Object.create(null)
+    @eventUpdateConfig = Object.create(null)
     @hasActiveSpecials = false
     @cacheSpecials = Object.create(null)
-    @invalidateSpecials = Object.create(null)
+    @['invalidateSpecials'] = Object.create(null)
     @specials = specials = Object.create(null)
     directives = []
     for key, value of attrs
@@ -136,9 +136,9 @@ module.exports = class Tag extends BaseComponent
     @['hasActive'+type] = true
     @hasActiveProperties = true
     if !@node then return
-    if @isNoop
+    if @noop
       @activeInContainer()
-      @isNoop = false
+      @noop = false
     return
 
   bind: (eventNames, handler, before) ->
@@ -269,19 +269,22 @@ module.exports = class Tag extends BaseComponent
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
     @updateProperties()
+    @resetHolderHookUpdater()
     {children} = @
     children.setParentNode node
     children.render(true) # need mounting
     if compList=children.baseComponent.unmountCallbackComponentList
       @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
-    @isNoop = !@hasActiveProperties and !@mountCallbackComponentList.length and children.isNoop
     @
 
   updateDom: (mounting) ->
     @updateProperties()
-    {children} = @
-    children.render()
-    @isNoop = !@hasActiveProperties and !@mountCallbackComponentList.length and children.isNoop
+    @resetHolderHookUpdater()
+    {activeOffspring} = @
+    if !activeOffspring then return
+    @activeOffspring = null
+    for _, component of cloneObject(activeOffspring)
+      component.render()
     @
 
   updateProperties: ->
@@ -333,6 +336,22 @@ module.exports = class Tag extends BaseComponent
         spercialPropSet[prop](@, prop, value)
 
     return
+
+  # this method will be called after updateProperties and before updating chidlren or activeOffspring
+  resetHolderHookUpdater: ->
+    @noop = !@hasActiveProperties and !@mountCallbackComponentList.length # will always be set again while offspring is changed
+    if !@container or @container.isTransformComponent
+      @isHolder = true
+      # do not need to hook updater, just to be itself
+    else if !@noop or @isUpdateRoot
+      @isHolder = true
+      container = @container
+      # the condition for isHolder ensure reaching baseComponent before transformCompnent or null
+      while !container.isHolder then container = container.container
+      @hookUpdater = container
+      container.activeOffspring = container.activeOffspring or Object.create(null)
+      container.activeOffspring[dcid] = @
+      container.noop = false # offspring update container.noop!!!
 
   updateWhen: (events..., components) ->
     if isComponent(components) and components not instanceof Array

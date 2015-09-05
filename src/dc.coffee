@@ -73,13 +73,13 @@ _updateWhen = (component, event, updateList, options) ->
   if isComponent(component)
     if event[...2]!='on' then event = 'on'+event
     if options
-      component.updateConfig[event] = for comp in updateList
+      component.eventUpdateConfig[event] = for comp in updateList
         comp.setUpdateRoot()
         [comp, options]
     else
       updateList = for item in updateList
         if isComponent(item) then [item, {}] else item
-      component.updateConfig[event] = updateList
+      component.eventUpdateConfig[event] = updateList
       for [comp, _] in updateList
         comp.setUpdateRoot()
     return

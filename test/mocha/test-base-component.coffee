@@ -52,10 +52,10 @@ describe "test base component", ->
       baseComponent = d.getBaseComponent()
       expect(baseComponent).to.equal d
 
-    it 'should set Text.baseComponent to VirtualNoop', ->
+    it 'should text.noop to be true', ->
       comp = txt(1)
       comp.mount()
-      expect(comp.isNoop).to.equal true
+      expect(comp.noop).to.equal true
 
   describe 'process creatDom',  ->
     it 'should creatDom of p(1)', ->
@@ -63,21 +63,21 @@ describe "test base component", ->
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()
       expect(comp.node.innerHTML).to.equal '1'
-      expect(baseComponent.isNoop).to.equal true
+      expect(baseComponent.noop).to.equal true
 
     it 'should creatDom of p(->1)', ->
       comp = p(-> 1)
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()
       expect(comp.node.innerHTML).to.equal '1'
-      expect(!!baseComponent.isNoop).to.equal false
+      expect(!!baseComponent.noop).to.equal false
 
     it 'should creatDom of p(p(p(t=txt(->1))))', ->
       comp = p(p(p(t=txt(->1))))
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()
       expect(comp.node.innerHTML).to.equal '<p><p>1</p></p>'
-      expect(!!baseComponent.isNoop).to.equal false
+      expect(!!baseComponent.noop).to.equal false
 
     it 'should createDom Text with text is  0', ->
       n = new Text(0)

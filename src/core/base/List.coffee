@@ -36,8 +36,8 @@ module.exports = exports = class List extends BaseComponent
         @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
     if !@mountCallbackComponentList.length
       for child in @children
-        if !child.isNoop then return
-      @isNoop = true
+        if !child.noop then return
+      @noop = true
     return
 
   updateDom: (mounting) ->
