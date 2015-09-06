@@ -47,6 +47,7 @@ module.exports = class BaseComponent extends Component
     @activeOffspring = null
     for _, component of cloneObject(activeOffspring)
       component.render(mounting)
+    return
 
   invalidate: ->
     if !@noop then return

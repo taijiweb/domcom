@@ -77,7 +77,7 @@ describe 'list, each', ->
       expect(comp.node).to.be.instanceof Array
       expect(comp.node[0]).to.be.instanceof Element
 
-    iit 'should mount and render each  component',  ->
+    it 'should mount and render each  component',  ->
       document.getElementById('demo').innerHTML = ''
       comp = each(lst = ['each', 'simple'], (item, i) -> p(item))
       comp.mount("#demo")

@@ -1,6 +1,7 @@
 extend = require '../../extend'
 
 {normalizeDomElement} = require '../../dom-util'
+{newDcid} = require '../../util'
 
 componentId = 1
 mountList = []
@@ -14,7 +15,7 @@ module.exports = class Component
     @options = options or {}
     @hookUpdater = @
     @activeOffSpring = Object.create(null)
-    @id = componentId++
+    @dcid = newDcid()
 
   setOptions: (@options) -> @
 
