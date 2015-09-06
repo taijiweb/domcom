@@ -9,6 +9,7 @@ extend(dc,
 
   # utilities
   require('./flow/index')
+  require('./flow/watch-list')
   require('./dom-util'),
   require('./util'),
 

@@ -4,7 +4,8 @@ Component = require './component'
 module.exports = class TransformComponent extends Component
   constructor: (options) ->
     super(options)
-    @isTransformCompnent = true
+    @invalid = false
+    @isTransformComponent = true
 
   firstDomNode: -> @baseComponent and @baseComponent.firstDomNode()
 

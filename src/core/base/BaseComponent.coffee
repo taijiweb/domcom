@@ -25,6 +25,22 @@ module.exports = class BaseComponent extends Component
       container = container.container
     return
 
+  # this method will be called after updateProperties and before updating chidlren or activeOffspring
+  resetHolderHookUpdater: ->
+    @noop = !@hasActiveProperties and !@mountCallbackComponentList.length # will always be set again while offspring is changed
+    if !@container or @container.isTransformComponent
+      @isHolder = true
+      # do not need to hook updater, just to be itself
+    else if !@noop or @isUpdateRoot
+      @isHolder = true
+      container = @container
+      # the condition for isHolder ensure reaching baseComponent before transformCompnent or null
+      while !container.isHolder then container = container.container
+      @hookUpdater = container
+      container.activeOffspring = container.activeOffspring or Object.create(null)
+      container.activeOffspring[dcid] = @
+      container.noop = false # offspring update container.noop!!!
+
   updateOffspring: (mounting) ->
     {activeOffspring} = @
     if !activeOffspring then return

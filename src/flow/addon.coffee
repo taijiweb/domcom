@@ -1,4 +1,4 @@
-{bound, duplex, flow} = dc
+{bound, duplex, flow, unary, binary} = dc
 
 module.exports = flow
 
@@ -9,11 +9,6 @@ dc.bindings = flow.bindings =  (model, name) ->
     result['_'+key] = bound(model, key, name)
   result
 
-flow.unary = unary = (x, unaryFn) ->
-  if typeof x != 'function' then unaryFn(x)
-  else if x.invalidate then flow(x, -> unaryFn(x()))
-  else -> unaryFn(x())
-
 flow.neg = (x) -> unary(x, (x) -> -x)
 flow.no = (x) -> unary(x, (x) -> !x)
 flow.bitnot = (x) -> unary(x, (x) -> ~x)
@@ -22,18 +17,6 @@ flow.abs = (x) -> unary(x, Math.abs)
 flow.floor = (x) -> unary(x, Math.floor)
 flow.ceil = (x) -> unary(x, Math.ceil)
 flow.round = (x) -> unary(x, Math.round)
-
-flow.binary = binary = (x, y, binaryFn) ->
-  if typeof x == 'function' and typeof y == 'function'
-    if x.invalidate and y.invalidate then flow x, y, -> binaryFn x(), y()
-    else -> binaryFn x(), y()
-  else if typeof x == 'function'
-    if x.invalidate then flow x, -> binaryFn x(), y
-    else -> binaryFn x(), y
-  else if typeof y == 'function'
-    if y.invalidate then flow y, -> binaryFn x, y()
-    else -> binaryFn x, y()
-  else binaryFn(x, y)
 
 flow.add = (x, y) -> binary(x, y, (x, y) -> x+y)
 flow.sub = (x, y) -> binary(x, y, (x, y) -> x-y)

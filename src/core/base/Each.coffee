@@ -2,8 +2,10 @@
 toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
 List = require './List'
+Func = require './Func'
 {funcString, newLine} = require '../../util'
-{renew} = require '../../flow'
+{renew, flow} = require '../../flow/index'
+{watchList, watchItem} = require '../../flow/watch-list'
 
 module.exports = class Each extends TransformComponent
   constructor: (list, itemFn, options={}) ->
@@ -28,24 +30,30 @@ module.exports = class Each extends TransformComponent
 
     cacheComponents = Object.create(null)
 
-    @getContentComponent = =>
+    @getContentComponent = ->
       if typeof list == 'function'
         items = list()
         if !items or typeof(items)!='object' then throw new Error 'Each Component need an array or object'
       children = []
       if isArray(items)
+        watchList items
         if sortFunction then items.sort(sortFunction)
-        for item, i in items
-          if keyFunction then child = cacheComponents[keyFunction(item, i)] or toComponent(itemFn(item, i, items, @))
-          else child = toComponent(itemFn(item, i, items, @))
-          children.push child
+        for item, i in items then do(item=item, i=i) ->
+          itemWatcher = watchItem(items, i)
+          if list.invalidate then list.onInvalidate(itemWatcher.invalidate.bind(itemWatcher))
+          fn = flow itemWatcher, ->
+            if keyFunction
+              cacheComponents[keyFunction(item, i)] or itemFn(item, i, items, @)
+            else itemFn(item, i, items, @)
+          children.push  new Func fn
       else
         itemList = for key, value of items then [key, value]
         if sortFunction then itemList.sort(sortFunction)
-        for [key, value], index in itemList
-          if keyFunction then child = @cacheComponents[keyFunction(value, key, index)] or toComponent(itemFn(value, key, index, itemList, @))
-          child = toComponent(itemFn(value, key, itemList, @))
-          children.push child
+        for [key, value], index in itemList then do(key=key, value=value, index=index) ->
+          fn = flow ->
+            if keyFunction then @cacheComponents[keyFunction(value, key, index)] or itemFn(value, key, index, itemList, @)
+            else itemFn(value, key, index, itemList, @)
+          children.push new Func fn
       new List(children)
 
     @clone = (options) ->

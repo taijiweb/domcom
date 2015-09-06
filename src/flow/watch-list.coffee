@@ -1,17 +1,16 @@
-{makeReactive} = flow = require './index'
-{binary} = require './addon'
+{makeReactive, binary} = flow = require './index'
+
+pop = Array::pop
+push = Array::push
+reverse = Array::reverse
+shift = Array::shift
+sort = Array::sort
+unshift  = Array::unshift
 
 mixinListWatchHandlers = (list) ->
   if list.watching then return
-  constructor = list.constructor
-  pop = constructor.prototype.pop
-  push = constructor.prototype.push
-  reverse = constructor.prototype.reverse
-  shift = constructor.prototype.shift
-  sort =constructor.prototype.sort
-  unshift  = constructor.prototype.unshift
-  list.itemWatchers = itemWatchers = []
   list.watching = true
+  list.itemWatchers = itemWatchers = []
 
   list.listWatcher = listWatcher = -> list
   makeReactive listWatcher
@@ -28,8 +27,8 @@ mixinListWatchHandlers = (list) ->
       listWatcher.invalidate()
       j = list.length
       while j<i
-        if itemWatcher[j] then itemWatcher[j].invalidate()
-      if itemWatcher[i] then itemWatcher[i](value)
+        if itemWatchers[j] then itemWatchers[j].invalidate()
+      if itemWatchers[i] then itemWatchers[i](value)
       else list[i] = value
 
   list.pop = ->
@@ -138,6 +137,7 @@ dc.watchItem = flow.watchItem = (list, index) ->
   if list instanceof Array
     mixinListWatchHandlers(list)
     cacheValue =  list[index]
+    itemWatchers = list.itemWatchers
     if !itemWatchers[index]
       itemWatchers[index] = method = (value) ->
         if !arguments.length then cacheValue
@@ -148,7 +148,7 @@ dc.watchItem = flow.watchItem = (list, index) ->
             method.invalidate()
           value
       method.toString = () ->  "watchItem: #{list}[#{index}]"
-      makeReative method
+      makeReactive method
     else itemWatchers[index]
   else if typeof list == 'funtion'
     binary(list, index, (x, y) -> x[y])

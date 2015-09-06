@@ -28,16 +28,17 @@ module.exports = exports = class List extends BaseComponent
 
   createDom: ->
     @node = node = []
-    if @mountCallbackComponentList.length then @isHolder = true
+    @resetHolderHookUpdater()
     for child, i in @children
-      #child.parentNode = node
       child.render(true)
       node[i] = child.node
       if compList=child.baseComponent.unmountCallbackComponentList
         @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
     return
 
-  updateDom: (mounting) -> @updateOffspring(mounting)
+  updateDom: (mounting) ->
+    @resetHolderHookUpdater()
+    @updateOffspring(mounting)
 
   toString: (indent=0, noNewLine) ->
     s = newLine("<List>", indent, noNewLine)

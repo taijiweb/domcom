@@ -126,3 +126,21 @@ flow.duplex = (obj, attr, name) ->
   reactive.isDuplex = true
   reactive.toString = () ->  "#{name or 'm'}[#{attr}]"
   reactive
+
+flow.unary = unary = (x, unaryFn) ->
+  if typeof x != 'function' then unaryFn(x)
+  else if x.invalidate then flow(x, -> unaryFn(x()))
+  else -> unaryFn(x())
+
+flow.binary = binary = (x, y, binaryFn) ->
+  if typeof x == 'function' and typeof y == 'function'
+    if x.invalidate and y.invalidate then flow x, y, -> binaryFn x(), y()
+    else -> binaryFn x(), y()
+  else if typeof x == 'function'
+    if x.invalidate then flow x, -> binaryFn x(), y
+    else -> binaryFn x(), y
+  else if typeof y == 'function'
+    if y.invalidate then flow y, -> binaryFn x, y()
+    else -> binaryFn x, y()
+  else binaryFn(x, y)
+
