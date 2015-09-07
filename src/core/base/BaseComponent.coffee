@@ -20,9 +20,13 @@ module.exports = class BaseComponent extends Component
     while container
       # for child of list, always be set while createDom or updateDom
       if container.isTag then return
-      if !me.listIndex? then container.node = node
-      me = container
-      container = container.container
+      else if !me.listIndex?
+        container.node = node
+        me = container
+        container = container.container
+      else
+        container.node[me.listIndex] = node
+        return
     return
 
   # this method will be called after updateProperties and before updating chidlren or activeOffspring
@@ -46,7 +50,7 @@ module.exports = class BaseComponent extends Component
     if !activeOffspring then return
     @activeOffspring = null
     for dcid, component of activeOffspring
-      component.render(dcid)
+      component.render(mounting)
     return
 
   invalidate: ->

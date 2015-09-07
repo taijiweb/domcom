@@ -7,7 +7,6 @@ Text = require './Text'
 module.exports = exports = class List extends BaseComponent
   constructor: (@children, options) ->
     options = options or {}
-    if children.length==0 then children.push new Text('')
     for child, i in children
       children[i] = toComponent(child)
     @isList = true
@@ -16,7 +15,7 @@ module.exports = exports = class List extends BaseComponent
 
   clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
 
-  firstDomNode: -> @children[0].firstDomNode()
+  firstDomNode: -> @children.length and @children[0].firstDomNode()
 
   setParentNode: (node) ->
     @parentNode = node
