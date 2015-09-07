@@ -9,10 +9,7 @@ module.exports = exports = class List extends BaseComponent
     options = options or {}
     if children.length==0 then children.push new Text('')
     for child, i in children
-      child = toComponent(child)
-      children[i] = child
-      child.container = @
-      child.listIndex = i
+      children[i] = toComponent(child)
     @isList = true
     super(options)
     return
@@ -30,8 +27,9 @@ module.exports = exports = class List extends BaseComponent
     @node = node = []
     @resetHolderHookUpdater()
     for child, i in @children
+      child.container = @
+      child.listIndex = i
       child.render(true)
-      node[i] = child.node
       if compList=child.baseComponent.unmountCallbackComponentList
         @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
     return

@@ -29,7 +29,7 @@ module.exports = class TransformComponent extends Component
   getBaseComponent: ->
     if @baseComponent then return @baseComponent
     @invalid = false
-    content = @content = @getContentComponent()
+    content = @content or @content = @getContentComponent()
     content.container = @
     content.listIndex = null
     baseComponent = content.getBaseComponent()

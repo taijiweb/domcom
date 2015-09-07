@@ -72,7 +72,7 @@ describe 'directives', ->
       comp.mount()
       expect(comp.node.innerHTML).to.match /splitbar/
 
-  describe 'select options', ->
+  ndescribe 'select options', ->
     it 'should constructor select with options', ->
       comp = select({$options:[[1,2]]})
       comp.mount()

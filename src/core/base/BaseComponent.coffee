@@ -45,8 +45,8 @@ module.exports = class BaseComponent extends Component
     {activeOffspring} = @
     if !activeOffspring then return
     @activeOffspring = null
-    for _, component of cloneObject(activeOffspring)
-      component.render(mounting)
+    for dcid, component of activeOffspring
+      component.render(dcid)
     return
 
   invalidate: ->

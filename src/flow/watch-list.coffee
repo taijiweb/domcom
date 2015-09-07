@@ -1,4 +1,4 @@
-{makeReactive, binary} = flow = require './index'
+{react, binary} = flow = require './index'
 
 pop = Array::pop
 push = Array::push
@@ -13,7 +13,7 @@ mixinListWatchHandlers = (list) ->
   list.itemWatchers = itemWatchers = []
 
   list.listWatcher = listWatcher = -> list
-  makeReactive listWatcher
+  react listWatcher
 
   list.setItem = (i, value) ->
     i = i>>>0
@@ -148,7 +148,7 @@ dc.watchItem = flow.watchItem = (list, index) ->
             method.invalidate()
           value
       method.toString = () ->  "watchItem: #{list}[#{index}]"
-      makeReactive method
+      react method
     else itemWatchers[index]
   else if typeof list == 'funtion'
     binary(list, index, (x, y) -> x[y])

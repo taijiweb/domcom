@@ -1,6 +1,6 @@
 {isArray, cloneObject} = require '../util'
 {domValue} = require '../dom-util'
-{makeReactive} = require '../flow'
+{react} = require '../flow'
 extend = require '../extend'
 {isComponent} = require './base/isComponent'
 
@@ -95,7 +95,7 @@ exports.classFn = classFn = (items...) ->
           processClassValue(name, value)
     return
 
-  makeReactive method
+  react method
   extendClassMap(items)
   method.classMap = classMap
   method.invalid = !!Object.keys(classMap).length

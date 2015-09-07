@@ -1,6 +1,6 @@
 {newLine, funcString} = require '../util'
 
-makeReactive = (method) ->
+react = (method) ->
 
   method.invalid = true
 
@@ -39,7 +39,7 @@ dependent = (computation) ->
 
   method.toString = () ->  "dependent: #{funcString(computation)}"
 
-  makeReactive method
+  react method
 
 module.exports = flow = (deps..., computation) ->
   if !computation.invalidate
@@ -51,7 +51,14 @@ module.exports = flow = (deps..., computation) ->
       dep.onInvalidate(reactive.invalidate)
   reactive
 
-flow.makeReactive = makeReactive
+flow.pipe = (deps..., computation) ->
+  reactive = react -> computation.apply(null, dep() for dep in deps())
+  for dep in deps
+    if dep and dep.onInvalidate
+      dep.onInvalidate(reactive.invalidate)
+  reactive
+
+flow.react = react
 flow.dependent = dependent
 flow.flow = flow
 
@@ -68,7 +75,7 @@ flow.see = see = (value, transform) ->
       value
 
   method.toString = () ->  "see: #{value}"
-  makeReactive method
+  react method
 
 flow.see2 = (value, transform) ->
   if !value or !value.invalidate then reactive = see value, transform
@@ -90,7 +97,7 @@ flow.renew = (computation) ->
 
   method.toString = () ->  "renew: #{funcString(computation)}"
 
-  makeReactive method
+  react method
 
 flow.bound = bound = (obj, attr, name) ->
 
@@ -107,11 +114,11 @@ flow.bound = bound = (obj, attr, name) ->
         if set then set(value)
         method.invalidate()
         cacheValue = value
-    makeReactive method
+    react method
     Object.defineProperty(obj, attr, {get:method, set:method})
   else method = set
 
-  reactive = makeReactive (value) ->
+  reactive = react (value) ->
     if !arguments.length then obj[attr]
     else if value!=obj[attr] then obj[attr] = value else value
 
@@ -143,4 +150,3 @@ flow.binary = binary = (x, y, binaryFn) ->
     if y.invalidate then flow y, -> binaryFn x, y()
     else -> binaryFn x, y()
   else binaryFn(x, y)
-

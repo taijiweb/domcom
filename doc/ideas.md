@@ -1,3 +1,8 @@
+nextDomNode is too expensive:
+  2015-9-6
+    nextBaseComponent and prevBaseComponent
+    firstNode, lastNode, should not be method, should be attribute instead
+
 event delegate:
   2015-9-5
   component.delegate(target, events...)
