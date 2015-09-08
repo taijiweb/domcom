@@ -1,11 +1,19 @@
 {Component, toComponent, isComponent,
 Nothing
 Tag, Text, Comment,
-#Ref, Clone,
 If, Case, Func, List, Each} = require './base'
 
 isAttrs = (item) ->
   typeof item == 'object' and item!=null and !isComponent(item) and item not instanceof Array
+
+getAttrsOptions = (item) ->
+  if typeof item != 'object' or item==null or isComponent(item) or item instanceof Array
+    return [null, null]
+  if item.options
+    options = item.options
+    delete item.options
+  attrs =  if Object.keys(item).length then item else null
+  [attrs, options]
 
 attrsChildren = (args) ->
   attrs = args[0]
@@ -41,6 +49,7 @@ exports.nothing = (attrs, options) ->
 #  else new Ref(attrs, src)
 
 exports.clone = (attrs, src, options) ->
+  [attrs, options] =
   if isAttrs(attrs) then new Tag('div', attrs, [toComponent(src).clone(options)])
   else toComponent(attrs).clone(src)
 

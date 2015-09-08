@@ -77,7 +77,7 @@ describe 'list, each', ->
       expect(comp.node).to.be.instanceof Array
       expect(comp.node[0]).to.be.instanceof Element
 
-    it 'should mount and render each  component',  ->
+    iit 'should mount and render each  component',  ->
       document.getElementById('demo').innerHTML = ''
       comp = each(lst=['each', 'simple'], (item, i) -> p(item))
       comp.mount("#demo")
@@ -88,10 +88,10 @@ describe 'list, each', ->
       comp.children[1].invalidate()
       comp.update()
       expect(comp.node[0].innerHTML).to.equal '3', 'update node 0'
-#      expect(comp.node[1].innerHTML).to.equal '4', 'update node 1'
-#      lst.setItem 2, 5
-#      comp.update()
-#      expect(comp.node[2].innerHTML).to.equal '5', 'update list[2] = 5'
+      expect(comp.node[1].innerHTML).to.equal '4', 'update node 1'
+      lst.setItem 2, 5
+      comp.update()
+      expect(comp.node[2].innerHTML).to.equal '5', 'update list[2] = 5'
 #      lst.length = 0
 #      comp.update()
 #      #List Component never be empty, if length is 0, then generate [txt('')]

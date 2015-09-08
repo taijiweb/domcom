@@ -27,10 +27,15 @@ module.exports = class Each extends TransformComponent
 
     # object: (value, key) -> (-1, 0, 1)
     # array: (item) -> (-1, 0, 1)
-    @sortFunction = options.sortFunction
+    if options.sort
+      @needSort = true
+      if typeof options.sort == 'function'
+        @sortFunction = options.sort
+      else @sortFunction = null
     # object: (value, key, index) -> hash
     # array: (item, index) -> hash
-    @keyFunction = options.keyFunction
+    key = options.key
+    @keyFunction = if typeof key == 'function' then key else (item, i) -> item[key]
 
     @cacheComponents = Object.create(null)
     @cacheChildren = []
@@ -41,24 +46,26 @@ module.exports = class Each extends TransformComponent
   reset: (options) ->
 
   getItems: ->
-    {items, sortFunction} = @
+    {items} = @
     if typeof items == 'function' and items.invalid
       items = items()
       if !items or typeof(items)!='object' then throw new Error 'Each Component need an array or object'
       if !isArray(items)
         items = for key, value of items then [key, value]
         @isArrayItems = false
-      else @isArrayItems = true
-      if sortFunction then items.sort(sortFunction)
+      else
+        if @watching then mixinListWatchHandlers(items, @watching)
+        @isArrayItems = true
+      if @needSort then items.sort(@sortFunction)
     else
-      if items.invalid and @sortFunction then items.sort(sortFunction)
+      if items.invalid and @needSort then items.sort(@sortFunction)
       @isArrayItems = true
     @_items = items
 
   getContentComponent: ->
     me = @
     @getItems()
-    {listComponent, cacheChildren, children, childReactives, cacheComponents, keyFunction, _items, itemFn} = @
+    {listComponent, cacheChildren, children, childReactives, cacheComponents, _items, keyFunction, itemFn} = @
     itemsLength = _items.length
     cacheChildrenLength = cacheChildren.length
     childrenLength = children.length

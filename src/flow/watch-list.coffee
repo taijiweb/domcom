@@ -7,7 +7,7 @@ shift = Array::shift
 sort = Array::sort
 unshift  = Array::unshift
 
-mixinListWatchHandlers = (list) ->
+mixinListWatchHandlers = (list, watching) ->
   if list.watching then return
   list.watching = true
   list.itemWatchers = itemWatchers = []
