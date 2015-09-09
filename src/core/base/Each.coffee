@@ -5,7 +5,7 @@ List = require './List'
 Func = require './Func'
 {funcString, newLine} = require '../../util'
 {react, renew, flow} = require '../../flow/index'
-{watchList, watchItem} = require '../../flow/watch-list'
+{watchEachList, watchEachObject} = require '../../flow/watch-list'
 
 # itemFn:
 # (item, index, items, component) -> Component
@@ -65,21 +65,24 @@ module.exports = class Each extends TransformComponent
   getContentComponent: ->
     me = @
     @getItems()
+    @invalidateChildren(0, @_items.length)
+    listComponent.setParentNode @parentNode
+    listComponent
+
+  invalidateChild: (i) ->
     {listComponent, cacheChildren, children, childReactives, cacheComponents, _items, keyFunction, itemFn} = @
     itemsLength = _items.length
     cacheChildrenLength = cacheChildren.length
     childrenLength = children.length
-    i = childrenLength
     if i>itemsLength
-      while --i>=itemsLength
-        children[i].removing = true
-        children[i].invalidate()
+      children[i].removing = true
+      children[i].invalidate()
     else while i<itemsLength
       if i<cacheChildrenLength
         children[i] = cacheChildren[i]
         children[i].mounting = true
         children[i].invalidate()
-      else do (i=i) ->
+      else
         childReactives[i] = react ->
           items = me._items
           item = _items[i]
@@ -93,9 +96,14 @@ module.exports = class Each extends TransformComponent
         children[i] = cacheChildren[i] = child = new Func childReactives[i]
         child.container = listComponent
         child.listIndex = i
-      i++
-    listComponent.setParentNode @parentNode
-    listComponent
+
+  invalidateChildren: (start, stop) ->
+    if !stop?
+      i = start
+      while i<stop
+        @invalidateChild(i)
+        i++
+    else @invalidateChild(start)
 
   clone: (options) -> (new Each(@items, @itemFn, options or @options)).copyLifeCallback(@)
 

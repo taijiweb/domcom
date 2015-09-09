@@ -1,155 +1,96 @@
-{react, binary} = flow = require './index'
+{react} = flow = require './index'
 
-pop = Array::pop
-push = Array::push
-reverse = Array::reverse
-shift = Array::shift
-sort = Array::sort
-unshift  = Array::unshift
 
-mixinListWatchHandlers = (list, watching) ->
-  if list.watching then return
-  list.watching = true
-  list.itemWatchers = itemWatchers = []
+mixinListWatcher = (list) ->
 
-  list.listWatcher = listWatcher = -> list
-  react listWatcher
+  pop = list.pop
+  push = list.push
+  reverse = list.reverse
+  shift = list.shift
+  sort = list.sort
+  unshift  = list.unshift
+
+  list.watchingComponents = watchingComponents = []
 
   list.setItem = (i, value) ->
     i = i>>>0
     if i<0 then throw new Error('array index is negative')
-    if i<list.length
-      if list[i]!=value
-        listWatcher.invalidate()
-        if itemWatchers[i] then itemWatchers[i](value)
-        else list[i] = value
+    listLength = list.length
+    if i<listLength
+      for component in watchingComponents
+        component.invalidateChild(i)
     else
-      listWatcher.invalidate()
-      j = list.length
-      while j<i
-        if itemWatchers[j] then itemWatchers[j].invalidate()
-      if itemWatchers[i] then itemWatchers[i](value)
-      else list[i] = value
+      for component in watchingComponents
+        component.invalidateChildren(listLength, i)
+    return
 
   list.pop = ->
-    if !list.length then return
-    listWatcher.invalidate()
-    element = pop.call(this)
-    if itemWatchers[list.length]
-      itemWatchers[list.length].invalidate()
+    listLength = list.length
+    if !listLength then return
+    result = pop.call(this)
+    for component in watchingComponents
+      component.invalidateChild(listLength-1)
+    result
 
   list.push = ->
-    listWatcher.invalidate()
     oldLength = list.length
-    result = element = push.apply(list, arguments)
-    i = oldLength
-    while i<list.length
-      if itemWatchers[i]
-        itemWatchers[i].invalidate()
-      i++
+    result = push.apply(list, arguments)
+    listLength = list.length
+    for component in watchingComponents
+      component.invalidateChild(oldLength, listLength)
+    result
+
+  list.shift = ->
+    if !list.length then return
+    result = shift.call(this)
+    listLength = list.length
+    for component in watchingComponents
+      component.invalidateChildren(0, listLength)
+    result
+
+  list.unshift= ->
+    result = unshift.apply(list, arguments)
+    listLength = list.length
+    for component in watchingComponents
+      component.invalidateChildren(0, listLength)
     result
 
   list.reverse= ->
-    if list.length <= 1 then return list
-    tmp = list.slice()
+    listLength = list.length
+    if listLength <= 1 then return list
     reverse.call(list)
-    i = 0
-    while i<list.length
-      changed = false
-      if list[i]!=tmp[i]
-        if itemWatchers[i] then itemWatchers[i].invalidate()
-        changed = true
-      i++
-    if changed then listWatcher.invalidate()
-    list
-
-  list.shift= ->
-    if !list.length then return
-    listWatcher.invalidate()
-    tmp = list.slice()
-    shift.call(list)
-    i = 0
-    while i<list.length
-      if list[i]!=tmp[i] and itemWatchers[i]
-        itemWatchers[i].invalidate()
-      i++
-    list
-
-  list.unshift= ->
-    listWatcher.invalidate()
-    tmp = list.slice()
-    unshift.call(list)
-    i = 0
-    while i<list.length
-      if list[i]!=tmp[i] and itemWatchers[i]
-        itemWatchers[i].invalidate()
-      i++
+    for component in watchingComponents
+      component.invalidateChildren(0, listLength)
     list
 
   list.sort= ->
-    tmp = list.slice()
+    listLength = list.length
+    if listLength <= 1 then return list
     sort.call(list)
-    i = 0
-    changed = false
-    while i<list.length
-      if list[i]!=tmp[i] and itemWatchers[i]
-        changed = true
-        itemWatchers[i].invalidate()
-      i++
-    if changed then listWatcher.invalidate()
+    for component in watchingComponents
+      component.invalidateChildren(0, listLength)
     list
 
   list.splice = (start, deleteCount) ->
     len = arguments.length
-    if !len then return []
-    if start>>>0 >= list.length then return []
-    if deleteCount>>>0 <= 0 then return []
-    items = slice.call(arguments, 2)
-    if deleteCount==items.length
-      tmp = list.slice(start, deleteCount)
-    else tmp = list.slice(start)
+    listLength = list.length
+    if !len or start>>>0 >= list.length or deleteCount>>>0 <= 0 then return []
     result = splice.apply(this, arguments)
-    if deleteCount==items.length
-      i = start; j = 0
-      changed = false
-      while j<deleteCount
-        if list[i]!=items[i]
-          if itemWatchers[i] then itemWatchers[i].invalidate()
-          changed = true
-        i++; j++
-      if changed then listWatcher.invalidate()
-    else
-      listWatcher.invalidate()
-      i = start; j = 0;
-      while i<Math.max(list.length, i+deleteCount)
-        if list[i]!=tmp[i] and itemWatchers[i]
-          itemWatchers[i].invalidate()
-        i++; j++
+    for component in watchingComponents
+      component.invalidateChildren(start, Math.max(listLength, start+deleteCount))
     result
 
 module.exports = flow
 
-dc.watchList = flow.watchList = (list) ->
-  mixinListWatchHandlers(list)
-  list.listWatcher
+flow.watchEachList = (list, component) ->
+  if !list.watching
+    list.watching = true
+    mixinListWatcher(list)
+  list.watchingComponents.push component
 
-dc.watchItem = flow.watchItem = (list, index) ->
-  if list instanceof Array
-    mixinListWatchHandlers(list)
-    cacheValue =  list[index]
-    itemWatchers = list.itemWatchers
-    if !itemWatchers[index]
-      itemWatchers[index] = method = (value) ->
-        if !arguments.length then cacheValue
-        else
-          if value!=cacheValue
-            cacheValue = value
-            list[index] = value
-            method.invalidate()
-          value
-      method.toString = () ->  "watchItem: #{list}[#{index}]"
-      react method
-    else itemWatchers[index]
-  else if typeof list == 'funtion'
-    binary(list, index, (x, y) -> x[y])
-  else throw new Error 'watchItem expect list to be an array or a function'
+flow.watchEachObject = (object, component) ->
+  if !object.watching
+    object.watching = true
+    mixinListWatcher(list)
+  object.watchingComponents.push component
+
