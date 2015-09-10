@@ -47,13 +47,13 @@ describe 'ref, clone', ->
       comp = list(t1=txt(1), clone(t1))
       comp.mount('#demo')
       comp.update()
-      expect(comp.node[1].textContent).to.equal '1'
+      expect(comp.getNode()[1].textContent).to.equal '1'
 
     it 'should process tag clone component ', ->
       comp = list(c1=p(1), c2=clone(c1))
       comp.mount('#demo')
       comp.update()
-      expect(comp.node[1].innerHTML).to.equal '1'
+      expect(comp.getNode()[1].innerHTML).to.equal '1'
 
     it 'should process if_ clone component ', ->
       x = see 0
@@ -62,4 +62,4 @@ describe 'ref, clone', ->
       comp.mount('#demo')
       x 1
       comp.update()
-      expect(comp.node.innerHTML).to.equal '3'
+      expect(comp.getNode().innerHTML).to.equal '3'

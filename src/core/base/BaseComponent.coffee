@@ -12,22 +12,7 @@ module.exports = class BaseComponent extends Component
     @unmountCallbackComponentList = if @unmountCallbackList then [@] else []
     @oldBaseComponent = @
 
-  attachNode: (parentNode) ->
-    {node} = @
-    insertNode(parentNode, node, @nextDomNode())
-    me = this
-    container = @container
-    while container
-      # for child of list, always be set while createDom or updateDom
-      if container.isTag then return
-      else if !me.listIndex?
-        container.node = node
-        me = container
-        container = container.container
-      else
-        container.node[me.listIndex] = node
-        return
-    return
+  attachNode: (nextNode) -> @parentNode and @parentNode.insertBefore(@node, nextNode)
 
   # this method will be called after updateProperties and before updating chidlren or activeOffspring
   resetHolderHookUpdater: ->
@@ -64,11 +49,37 @@ module.exports = class BaseComponent extends Component
     container.activeOffspring[@dcid] = @
     container.noop = false
 
-  remove: (parentNode) ->
-    if @node # Nothing.node is null
-      removeNode(parentNode, @node)
+  replace: (baseComponent, rootContainer) ->
+    @removeNode()
     @executeUnmountCallback()
-    @
+    prevNodeComponent = @prevNodeComponent
+    nextNodeComponent = @nextNodeComponent
+    firstNodeComponent = baseComponent.firstNodeComponent
+    if firstNodeComponent
+      container = baseComponent.container
+      if prevNodeComponent then prevNodeComponent.nextNodeComponent = firstNodeComponent
+      else container and container.firstNodeComponent = firstNodeComponent
+      if nextNodeComponent then nextNodeComponent.prevNodeComponent = baseComponent.lastNodeComponent
+      else container and container.lastNodeComponent = baseComponent.lastNodeComponent
+    if !baseComponent.node then baseComponent.createDom()
+    else if !baseComponent.noop then baseComponent.updateDom(mounting)
+    baseComponent.attachNode(@nextNodeComponent and @nextNodeComponent.node or rootContainer.mountBeforeNode)
+    return
+
+  remove: ->
+    @removeNode()
+    @executeUnmountCallback()
+    prevNodeComponent = @prevNodeComponent
+    nextNodeComponent = @nextNodeComponent
+    prevNodeComponent and prevNodeComponent.nextNodeComponent = nextNodeComponent
+    nextNodeComponent and nextNodeComponent.prevNodeComponent = prevNodeComponent
+    if @listIndex?
+      container = @container
+      container.children.splice(@listIndex, 1)
+    @removing = null
+    return
+
+  replacePrevNextNodeComponent: (baseComponent) ->
 
   executeMountCallback: ->
     for component in @mountCallbackComponentList
@@ -79,3 +90,5 @@ module.exports = class BaseComponent extends Component
     for component in @unmountCallbackComponentList
       for cb in component.unmountCallbackList then cb()
     return
+
+  getNode: -> @node

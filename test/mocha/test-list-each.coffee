@@ -31,8 +31,8 @@ describe 'list, each', ->
     it 'should create list', ->
       lst = list(1, 2)
       lst.mount()
-      expect(lst.node[0].textContent).to.equal '1'
-      expect(lst.node[1].textContent).to.equal '2'
+      expect(lst.getNode()[0].textContent).to.equal '1'
+      expect(lst.getNode()[1].textContent).to.equal '2'
 
     it 'should create list with attrs', ->
       x = 2
@@ -44,7 +44,7 @@ describe 'list, each', ->
       x = 3
       comp.update()
       expect(comp.node.fakeProp).to.equal 3
-      expect(comp.node.childNodes[1].textContent).to.equal '3'
+      expect(comp.node.childNodes[1].textContent).to.equal '3', 'textContent update'
 
   describe 'list', ->
     it 'list(txt(->12))', ->
@@ -74,42 +74,39 @@ describe 'list, each', ->
     it  'should create each component', ->
       comp = each(lst = ['each', 'simple'], (item, i) -> p(item))
       comp.mount()
-      expect(comp.node).to.be.instanceof Array
-      expect(comp.node[0]).to.be.instanceof Element
+      expect(comp.getNode()).to.be.instanceof Array
+      expect(comp.getNode()[0]).to.be.instanceof Element
 
-    iit 'should mount and render each  component',  ->
+    it 'should mount and render each  component',  ->
       document.getElementById('demo').innerHTML = ''
       comp = each(lst=['each', 'simple'], (item, i) -> p(item))
       comp.mount("#demo")
-      expect(comp.node[0].innerHTML).to.equal 'each'
-      expect(comp.node[1].innerHTML).to.equal 'simple'
-      lst[0] = 3; lst[1] = 4
-      comp.children[0].invalidate()
-      comp.children[1].invalidate()
+      expect(comp.getNode()[0].innerHTML).to.equal 'each'
+      expect(comp.getNode()[1].innerHTML).to.equal 'simple'
+      lst.setItem 0,  3; lst.setItem 1, 4
       comp.update()
-      expect(comp.node[0].innerHTML).to.equal '3', 'update node 0'
-      expect(comp.node[1].innerHTML).to.equal '4', 'update node 1'
+      expect(comp.getNode()[0].innerHTML).to.equal '3', 'update node 0'
+      expect(comp.getNode()[1].innerHTML).to.equal '4', 'update node 1'
       lst.setItem 2, 5
       comp.update()
-      expect(comp.node[2].innerHTML).to.equal '5', 'update list[2] = 5'
-#      lst.length = 0
-#      comp.update()
-#      #List Component never be empty, if length is 0, then generate [txt('')]
-#      expect(comp.node.length).to.equal 1, 'lst.length = 0'
+      expect(comp.getNode()[2].innerHTML).to.equal '5', 'update list[2] = 5'
+      lst.setLength 0
+      comp.update()
+      expect(comp.getNode().length).to.equal 0, 'lst.length = 0'
 
     it 'should process immutable template in each component', ->
       document.getElementById('demo').innerHTML = ''
       comp = each(lst = [{text:'a'}, {text:'b'}], ((item, i) -> p(txt(-> item.text))), {itemTemplateImmutable:true})
       comp.mount("#demo")
-      expect(comp.node[0].textContent).to.equal 'a'
-      expect(comp.node[1].textContent).to.equal 'b'
+      expect(comp.getNode()[0].textContent).to.equal 'a'
+      expect(comp.getNode()[1].textContent).to.equal 'b'
       lst[0].text = 'c'; lst[1].text = 'd'
       comp.update()
-      expect(comp.node[0].textContent).to.equal 'c'
-      expect(comp.node[1].textContent).to.equal 'd'
+      expect(comp.getNode()[0].textContent).to.equal 'c'
+      expect(comp.getNode()[1].textContent).to.equal 'd'
       lst[2] = {text: 'e'}
       comp.update()
-      expect(comp.node[2].textContent).to.equal 'e'
+      expect(comp.getNode()[2].textContent).to.equal 'e'
       lst.length = 0
       comp.update()
       # List Component never be empty, if length is 0, then generate txt('')
@@ -120,7 +117,7 @@ describe 'list, each', ->
       comp.mount()
       lst[0] = 'c'
       comp.update()
-      expect(comp.node[0].textContent).to.equal 'c'
+      expect(comp.getNode()[0].textContent).to.equal 'c'
 
     it 'should process tag with each', ->
       x = 1
@@ -131,7 +128,7 @@ describe 'list, each', ->
       x = 2
       comp.update()
       expect(text1.node.textContent).to.equal('2')
-      expect(each1.node[0].textContent).to.equal('2')
+      expect(each1.getNode()[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '2'
 
     it  'should create and update deeper embedded each', ->
@@ -139,11 +136,11 @@ describe 'list, each', ->
       comp =  div({}, span1=new Tag('span', {}, [each1=each((-> [x]), (item) -> txt(item))]))
       comp.mount()
       expect(each1.node.parentNode).to.equal(span1.node)
-      expect(each1.node[0].textContent).to.equal '1'
+      expect(each1.getNode()[0].textContent).to.equal '1'
       x = 2
       comp.update()
       expect(each1.node.parentNode).to.equal(span1.node)
-      expect(each1.node[0].textContent).to.equal('2')
+      expect(each1.getNode()[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<span>2</span>'
 
     it  'should create and update embedded each in 3 layer', ->
@@ -151,11 +148,11 @@ describe 'list, each', ->
       comp =  div({}, div({}, span1=new Tag('span', {}, [each1=each([1], (item) -> txt(x))])))
       comp.mount()
       expect(each1.node.parentNode).to.equal(span1.node)
-      expect(each1.node[0].textContent).to.equal '1'
+      expect(each1.getNode()[0].textContent).to.equal '1'
       x = 2
       comp.update()
       expect(each1.node.parentNode).to.equal(span1.node)
-      expect(each1.node[0].textContent).to.equal('2')
+      expect(each1.getNode()[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<div><span>2</span></div>'
 
     it  'should create and update embedded each in 3  layer', ->
@@ -163,11 +160,11 @@ describe 'list, each', ->
       comp =  div({}, div({}, span1=new Tag('span', {}, [each1=each((-> [x]), (item) -> txt(item))])))
       comp.mount()
       expect(each1.node.parentNode).to.equal(span1.node)
-      expect(each1.node[0].textContent).to.equal '1'
+      expect(each1.getNode()[0].textContent).to.equal '1'
       x = 2
       comp.update()
       expect(each1.node.parentNode).to.equal(span1.node)
-      expect(each1.node[0].textContent).to.equal('2')
+      expect(each1.getNode()[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<div><span>2</span></div>'
 
     it  'should process each under each', ->
@@ -176,11 +173,11 @@ describe 'list, each', ->
       comp =  div({}, each1=each([1], -> each2=each((-> [x]), (item) -> item)))
       comp.mount()
       expect(each1.node.parentNode).to.equal(comp.node)
-      expect(each2.node[0].textContent).to.equal '1'
+      expect(each2.getNode()[0].textContent).to.equal '1'
       x = 2
       comp.update()
       expect(each1.node.parentNode).to.equal(comp.node)
-      expect(each2.node[0].textContent).to.equal('2')
+      expect(each2.getNode()[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '2'
 
     it  'should mount and update each', ->
@@ -193,9 +190,9 @@ describe 'list, each', ->
     it  'should update each with component as the item of list 1', ->
       comp = each([txt(1)], (item) -> item)
       comp.mount()
-      expect(comp.node[0].textContent).to.equal s='1'
+      expect(comp.getNode()[0].textContent).to.equal s='1'
       comp.update()
-      expect(comp.node[0].textContent).to.equal '1'
+      expect(comp.getNode()[0].textContent).to.equal '1'
 
     it  'should update each with component as the item of list 2', ->
       comp = div(each([txt(1)], (item) -> item))

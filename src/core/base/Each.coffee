@@ -16,13 +16,10 @@ module.exports = class Each extends TransformComponent
 
     me = this
 
-    if typeof items != 'function' and !isArray(items)
-      throw new Error 'cacheChildren for List should be array like or a function'
-    else if typeof items != 'function'
-      if !items or typeof(items)!='object' then throw new Error 'Each Component need an array or object'
-    else
+    if typeof items == 'function'
       if !items.invalidate then items = renew(items)
       items.onInvalidate(@invalidate.bind(@))
+
     @items = items
 
     # object: (value, key) -> (-1, 0, 1)
@@ -35,75 +32,80 @@ module.exports = class Each extends TransformComponent
     # object: (value, key, index) -> hash
     # array: (item, index) -> hash
     key = options.key
-    @keyFunction = if typeof key == 'function' then key else (item, i) -> item[key]
+    @keyFunction =
+      if typeof key == 'function' then key
+      else if key? then (item, i) -> item[key]
 
+    @childReactives = []
     @cacheComponents = Object.create(null)
     @cacheChildren = []
     @listComponent = new List(@children=[])
-    @childReactives = []
     return
 
   reset: (options) ->
 
   getItems: ->
     {items} = @
-    if typeof items == 'function' and items.invalid
+    if typeof items == 'function'
+      isFunction = true
       items = items()
       if !items or typeof(items)!='object' then throw new Error 'Each Component need an array or object'
-      if !isArray(items)
-        items = for key, value of items then [key, value]
-        @isArrayItems = false
-      else
-        if @watching then mixinListWatchHandlers(items, @watching)
-        @isArrayItems = true
-      if @needSort then items.sort(@sortFunction)
+    if items not instanceof Array
+      @isArrayItems = false
+      if !@notWatch and !isFunction then watchEachObject items, @
+      items = for key, value of items then [key, value]
     else
-      if items.invalid and @needSort then items.sort(@sortFunction)
+      if !@notWatch and !isFunction then watchEachList items, @
       @isArrayItems = true
+    if @needSort then items = items.sort(@sortFunction)
     @_items = items
 
   getContentComponent: ->
     me = @
+    {listComponent} = @
+    listComponent.parentNode = @parentNode
     @getItems()
     @invalidateChildren(0, @_items.length)
-    listComponent.setParentNode @parentNode
     listComponent
 
   invalidateChild: (i) ->
+    me = @
     {listComponent, cacheChildren, children, childReactives, cacheComponents, _items, keyFunction, itemFn} = @
     itemsLength = _items.length
     cacheChildrenLength = cacheChildren.length
     childrenLength = children.length
     if i>itemsLength
-      children[i].removing = true
+      children[i].setRemoving()
       children[i].invalidate()
-    else while i<itemsLength
+    else
       if i<cacheChildrenLength
         children[i] = cacheChildren[i]
         children[i].mounting = true
-        children[i].invalidate()
       else
         childReactives[i] = react ->
           items = me._items
           item = _items[i]
+          index = child.listIndex
           if me.isArrayItems
-            if keyFunction then cacheComponents[keyFunction(item, i)] or itemFn(item, i, items, me)
+            if keyFunction then cacheComponents[keyFunction(item, index)] or itemFn(item, index, items, me)
             else itemFn(item, i, items, me)
           else
             [key, value] = item
-            if keyFunction then cacheComponents[keyFunction(value, key, i)] or itemFn(value, key, i, items, me)
+            if keyFunction then cacheComponents[keyFunction(value, key, index)] or itemFn(value, key, index, items, me)
             else itemFn(value, key, i, items, me)
         children[i] = cacheChildren[i] = child = new Func childReactives[i]
         child.container = listComponent
         child.listIndex = i
+        child.parentNode = @parentNode
+      children[i].invalidate()
 
   invalidateChildren: (start, stop) ->
-    if !stop?
-      i = start
-      while i<stop
-        @invalidateChild(i)
-        i++
+    if stop
+      while start<stop
+        @invalidateChild(start)
+        start++
     else @invalidateChild(start)
+    return
 
   clone: (options) -> (new Each(@items, @itemFn, options or @options)).copyLifeCallback(@)
 

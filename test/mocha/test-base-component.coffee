@@ -69,7 +69,7 @@ describe "test base component", ->
       comp = p(-> 1)
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()
-      expect(comp.node.innerHTML).to.equal '1'
+      expect(comp.getNode().innerHTML).to.equal '1'
       expect(!!baseComponent.noop).to.equal false
 
     it 'should creatDom of p(p(p(t=txt(->1))))', ->
@@ -104,12 +104,27 @@ describe "test base component", ->
       baseComponent.createDom()
       expect(comp.node.value).to.equal '1'
 
-    it 'tag shoud have children', ->
-      comp = new Tag('p', {}, [new Text(1), new Text(2)])
-      expect(comp.children.children.length).to.equal 2
+    it 'tag shoud createDom and calc prev/nextNodeCompnoent', ->
+      comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t3=new Text(3)]) #
+      expect(comp.children.children.length).to.equal 3
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()
-      expect(comp.node.childNodes.length).to.equal 2
+      expect(t1.nextNodeComponent).to.equal t2, 't1.nextNodeComponent'
+      expect(t2.prevNodeComponent).to.equal t1, 't2.prevNodeComponent'
+      expect(t2.nextNodeComponent).to.equal t3, 't2.nextNodeComponent'
+      expect(t3.prevNodeComponent).to.equal t2, 't2.prevNodeComponent'
+      expect(comp.node.childNodes.length).to.equal 3
+
+    it 'tag shoud createDom and calc prev/nextNodeCompnoent with Nothing', ->
+      comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t4=new Nothing(), t3=new Text(3)]) #
+      expect(comp.children.children.length).to.equal 4
+      baseComponent = comp.getBaseComponent()
+      baseComponent.createDom()
+      expect(comp.node.childNodes.length).to.equal 3
+      expect(t1.nextNodeComponent).to.equal t2, 't1.nextNodeComponent'
+      expect(t2.prevNodeComponent).to.equal t1, 't2.prevNodeComponent'
+      expect(t2.nextNodeComponent).to.equal t3, 't2.nextNodeComponent'
+      expect(t3.prevNodeComponent).to.equal t2, 't2.prevNodeComponent'
 
     it 'should create  tag with children', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')])])
@@ -133,4 +148,4 @@ describe "test base component", ->
       comp =  new List([new Tag('span',  {}, [new Text('adf')]), new Text(-> undefined)])
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()
-      expect(comp.node[0].tagName).to.equal 'SPAN'
+      expect(comp.getNode()[0].tagName).to.equal 'SPAN'

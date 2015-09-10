@@ -9,8 +9,7 @@ module.exports = class Text extends BaseComponent
     if typeof text == 'function'
       text.onInvalidate -> me.invalidate()
     super(options)
-
-  firstDomNode: -> @node
+    @firstNodeComponent = @lastNodeComponent = @
 
   processText: ->
     if typeof @text == 'function'then @text()
@@ -19,7 +18,7 @@ module.exports = class Text extends BaseComponent
   createDom: ->
     @noop = true
     if @mountCallbackComponentList.length then @invalidate()
-    @node = document.createTextNode(@processText())
+    @firstNode = @lastNode = @node = document.createTextNode(@processText())
     @
 
   updateDom: ->
@@ -28,6 +27,8 @@ module.exports = class Text extends BaseComponent
     if (text=@processText())!=@node.textContent
       @node.textContent = text
     @
+
+  removeNode: -> @parentNode.removeChild(@node)
 
   clone: (options) -> (new @constructor(@text, options)).copyLifeCallback(@)
 

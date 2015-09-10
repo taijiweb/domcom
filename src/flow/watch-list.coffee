@@ -1,5 +1,6 @@
 {react} = flow = require './index'
 
+module.exports = flow
 
 mixinListWatcher = (list) ->
 
@@ -16,12 +17,13 @@ mixinListWatcher = (list) ->
     i = i>>>0
     if i<0 then throw new Error('array index is negative')
     listLength = list.length
+    list[i] = value
     if i<listLength
       for component in watchingComponents
         component.invalidateChild(i)
     else
       for component in watchingComponents
-        component.invalidateChildren(listLength, i)
+        component.invalidateChildren(listLength, i+1)
     return
 
   list.pop = ->
@@ -80,7 +82,13 @@ mixinListWatcher = (list) ->
       component.invalidateChildren(start, Math.max(listLength, start+deleteCount))
     result
 
-module.exports = flow
+  list.setLength = (length) ->
+    if length==list.length  then return
+    list.length = length
+    for component in watchingComponents
+      for child in component.listComponent.children
+        child.setRemoving()
+    return
 
 flow.watchEachList = (list, component) ->
   if !list.watching
@@ -91,6 +99,17 @@ flow.watchEachList = (list, component) ->
 flow.watchEachObject = (object, component) ->
   if !object.watching
     object.watching = true
-    mixinListWatcher(list)
-  object.watchingComponents.push component
 
+    object.deleteItem = (key) ->
+      delete object[key]
+      for component in object.watchingComponents
+        if component.watchIteming
+          index = component.childComponentMap[key]
+          component._items.splice(index, 1)
+          component.invalidateChildren(index, component._items.length)
+
+    object.setItem = (key, value) ->
+      object[key] = value
+      for component in object.watchingComponents
+        component._items.push([key, value])
+        component.invalidateChild(component._items.length-1)

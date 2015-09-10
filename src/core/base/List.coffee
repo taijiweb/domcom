@@ -8,34 +8,72 @@ module.exports = exports = class List extends BaseComponent
   constructor: (@children, options) ->
     options = options or {}
     for child, i in children
-      children[i] = toComponent(child)
+      child = toComponent(child)
+      children[i] = child
+      child.container = @
+      child.listIndex = i
     @isList = true
     super(options)
     return
 
   clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
 
-  firstDomNode: -> @children.length and @children[0].firstDomNode()
-
-  setParentNode: (node) ->
-    @parentNode = node
-    for child in @children then child.setParentNode node
-    return
-
   createDom: ->
-    @node = node = []
     @resetHolderHookUpdater()
-    for child, i in @children
-      child.container = @
-      child.listIndex = i
+    children = @children
+    listLength = children.length
+    for child, i in children
+      child.parentNode = @parentNode
       child.render(true)
-      if compList=child.baseComponent.unmountCallbackComponentList
-        @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
+    length = children.length
+    i = 0
+    while i < length-1
+      lastNodeComponent = children[i].baseComponent.lastNodeComponent
+      if !lastNodeComponent then i++; continue
+      last = lastNodeComponent
+      j = i+1
+      while j<length
+        firstNodeComponent = children[j].baseComponent.firstNodeComponent
+        if firstNodeComponent
+          last = children[j].baseComponent.lastNodeComponent
+          break
+        j++
+      if !firstNodeComponent then break
+      lastNodeComponent.nextNodeComponent = firstNodeComponent
+      i = j
+    @lastNodeComponent = last
+    i = length-1
+    while i
+      firstNodeComponent = children[i].baseComponent.firstNodeComponent
+      if !firstNodeComponent then i--; continue
+      first = firstNodeComponent
+      j = i-1
+      while j>=0
+        lastNodeComponent = children[j].baseComponent.lastNodeComponent
+        if lastNodeComponent
+          first = children[j].baseComponent.firstNodeComponent
+          break
+        j--
+      if !lastNodeComponent then break
+      firstNodeComponent.prevNodeComponent = lastNodeComponent
+      i = j
+    @firstNodeComponent = first
+    @node = true # prevent createDom this List again
     return
 
   updateDom: (mounting) ->
     @resetHolderHookUpdater()
     @updateOffspring(mounting)
+
+  getNode: ->
+    for child in @children then child.getNode()
+
+  attachNode: -> # children will attach themself
+
+  removeNode: ->
+    parentNode = @parentNode
+    for node in @getNode()
+      parentNode.removeChild(node)
 
   toString: (indent=0, noNewLine) ->
     s = newLine("<List>", indent, noNewLine)

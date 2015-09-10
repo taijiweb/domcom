@@ -30,6 +30,7 @@ module.exports = class Tag extends BaseComponent
     else @children = toComponent(children)
     @children.container = @
     @processAttrs()
+    @firstNodeComponent = @lastNodeComponent = @
     return
 
   processAttrs: ->
@@ -85,8 +86,6 @@ module.exports = class Tag extends BaseComponent
       else @setProp(key, value, props, 'Props')
     for directive in directives then directive(@)
     return
-
-  firstDomNode: -> @node
 
   getBaseComponent: ->
     @oldBaseComponent = @
@@ -265,13 +264,13 @@ module.exports = class Tag extends BaseComponent
   getSpecialProp: (prop) ->
 
   createDom: ->
-    @node = node =
+    @firstNode = @lastNode = @node = node =
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
     @updateProperties()
     @resetHolderHookUpdater()
     {children} = @
-    children.setParentNode node
+    children.parentNode = node
     children.render(true) # need mounting
     if compList=children.baseComponent.unmountCallbackComponentList
       @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
@@ -337,6 +336,8 @@ module.exports = class Tag extends BaseComponent
       events.push components
       components = @
     dc.update(@, events, components)
+
+  removeNode: -> @parentNode.removeChild(@node)
 
   clone: (options=@options) ->
     result = new Tag(@tagName, @attrs, @children.clone(), options or @options)

@@ -144,7 +144,7 @@ describe "component  ", ->
       comp =  list(span(['adf']), txt(-> undefined))
       elm = comp.mount('#demo')
       expect(comp.parentNode.id).to.equal 'demo'
-      expect(comp.node[0].parentNode.id).to.equal('demo')
+      expect(comp.getNode()[0].parentNode.id).to.equal('demo')
 
   describe 'component update', ->
     it 'should render tag 1', ->

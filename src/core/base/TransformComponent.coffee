@@ -4,16 +4,13 @@ Component = require './component'
 module.exports = class TransformComponent extends Component
   constructor: (options) ->
     super(options)
-    @invalid = false
+    @invalid = true
     @isTransformComponent = true
-
-  firstDomNode: -> @baseComponent and @baseComponent.firstDomNode()
 
   invalidate: ->
     if @invalid then return
     @invalid = true
-    @baseComponent = null
-    @content = null
+    @content  = null
     activeChild = @
     container = @container
     while container and !container.isHolder
@@ -27,15 +24,16 @@ module.exports = class TransformComponent extends Component
       container.noop = false
 
   getBaseComponent: ->
-    if @baseComponent then return @baseComponent
+    if !@invalid then return @baseComponent
     @invalid = false
     content = @content or @content = @getContentComponent()
     content.container = @
-    content.listIndex = null
+    content.mountBeforeNode = @mountBeforeNode
     baseComponent = content.getBaseComponent()
     if @mountCallbackList then baseComponent.mountCallbackComponentList.unshift @
     if @unmountCallbackList then baseComponent.unmountCallbackComponentList.push @
     baseComponent
 
+  getNode: -> @content and @content.getNode()
 
 
