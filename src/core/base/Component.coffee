@@ -19,36 +19,43 @@ module.exports = class Component
 
   setOptions: (@options) -> @
 
-  beforeMount: (fns...) ->
+  onMount: (fns...) ->
     @mountCallbackList = cbs = @mountCallbackList or []
     cbs.push.apply(cbs, fns)
     @
 
-  unbindBeforeMount: (fns...) ->
+  offMount: (fns...) ->
     cbs = @mountCallbackList
     for fn in cbs
       if cbs.indexOf(fn)==-1 then continue
       else cbs.splice(index, 1)
-    if !cbs.length
-      @mountCallbackList = null
-      if @baseComponent instanceof LifeTimeEvent
-        @baseComponent = null
+    !cbs.length and @mountCallbackList = null
     @
 
-  afterUnmount: (fns...) ->
+  onUnmount: (fns...) ->
     @unmountCallbackList = cbs = @unmountCallbackList or []
     cbs.push.apply(cbs, fns)
     @
 
-  unbindAfterUnmount: (fns...) ->
+  offUnmount: (fns...) ->
     cbs = @unmountCallbackList
     for fn in cbs
       if cbs.indexOf(fn)==-1 then continue
       else cbs.splice(index, 1)
-    if !cbs.length
-      @unmountCallbackList = null
-      if @baseComponent instanceof LifeTimeEvent
-        @baseComponent = null
+    !cbs.length and @unmountCallbackList = null
+    @
+
+  onUpdate: (fns...) ->
+    @updateCallbackList = cbs = @updateCallbackList or []
+    cbs.push.apply(cbs, fns)
+    @
+
+  unbindUpdate: (fns...) ->
+    cbs = @updateCallbackList
+    for fn in cbs
+      if cbs.indexOf(fn)==-1 then continue
+      else cbs.splice(index, 1)
+    !cbs.length and @updateCallbackList = null
     @
 
   mount: (mountNode, beforeNode) ->
@@ -86,7 +93,10 @@ module.exports = class Component
 
   create: -> @render()
 
-  update: -> @render()
+  update: ->
+    if @updateCallbackList
+      for callback in @updateCallbackList then callback()
+    @render()
 
   unmount: ->
     @baseComponent.remove(@parentNode)
@@ -109,14 +119,6 @@ module.exports = class Component
             myOffSpring[dcid] = comp
             @hasActiveOffspring = true
       return
-
-  activeInContainer: ->
-    container = me = @
-    while container
-      if container.noop
-        container.noop = false
-      else return
-      container = container.container
 
   setRemoving: ->
     if @removing then return

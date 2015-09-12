@@ -83,13 +83,19 @@ _updateWhen = (component, event, updateList, options) ->
       for [comp, _] in updateList
         comp.setUpdateRoot()
     return
-  else if component == window and event == 'setInterval'
-    intervalUpdateList = updateList
+  else if component == setInterval
+    if isComponent(event) then addSetIntervalUpdater(event, updateList) # updateList is options
+    else for component in event then addSetIntervalUpdater(event, updateList)
     return
   return
 
-updateInterval = (updateList, options) ->
-  updateList = combine updateList, options
+addSetIntervalUpdater = (component, options) ->
+  handler = null
+  {test, interval, clear} = options
+  fn = ->
+    if !test or test() then component.render()
+    if clear and clear() then clearInterval handler
+  handler = setInterval(fn, interval or 16)
 
 dc.updating = (components..., eventHandler) ->
   if !components.length

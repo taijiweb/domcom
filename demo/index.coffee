@@ -2,10 +2,12 @@
 {select, options} = dc
 
 {eachDemo1, eachDemo2, eachDemo3} = require 'domcom/demo/demo-each'
+{demoArrow, demoCombo} = require 'domcom/demo/demo-builtins'
 
 exports.demoMap = demoMap =
   accordion: require 'domcom/demo/demo-accordion'
-  builtins: require 'domcom/demo/demo-builtins'
+  arrow:demoArrow
+  combo:demoCombo
   "show hide": require 'domcom/demo/demo-show-hide'
   counter: require 'domcom/demo/demo-counter'
   dialog: require 'domcom/demo/demo-dialog'

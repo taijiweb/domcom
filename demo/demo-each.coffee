@@ -16,6 +16,6 @@ exports.eachDemo3 = ->
   lst = [1, 2, 3, 4, 5, 6]
   comp = each(lst, (item) -> p item)
   #comp.mount()
-  setTimeout((-> lst.push 7; comp.update()), 2000)
-  setTimeout((-> lst.length = 4; comp.update()), 4000)
+  setTimeout((-> lst.push 7; comp.update()), 1000)
+  setTimeout((-> lst.setLength 4; comp.update()), 2000)
   comp

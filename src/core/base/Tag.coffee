@@ -45,7 +45,7 @@ module.exports = class Tag extends BaseComponent
     className.onInvalidate ->
       if !className.invalid
         me.hasActiveProperties = true
-        me.activeInContainer()
+        me.invalidate()
         me.noop = false
     @hasActiveProps = false
     @cacheProps = Object.create(null)
@@ -135,10 +135,7 @@ module.exports = class Tag extends BaseComponent
     @['hasActive'+type] = true
     @hasActiveProperties = true
     if !@node then return
-    if @noop
-      @activeInContainer()
-      @noop = false
-    return
+    @invalidate()
 
   bind: (eventNames, handler, before) ->
     names = eventNames.split('\s+')
@@ -177,14 +174,14 @@ module.exports = class Tag extends BaseComponent
     @className.extend(items)
     if @className.invalid
       @hasActiveProperties = true
-      @activeInContainer()
+      @invalidate()
     this
 
   removeClass: (items...) ->
     @className.removeClass(items...)
     if @className.invalid
       @hasActiveProperties = true
-      @activeInContainer()
+      @invalidate()
     this
 
   show: (display) ->
@@ -264,6 +261,7 @@ module.exports = class Tag extends BaseComponent
   getSpecialProp: (prop) ->
 
   createDom: ->
+    @noop = true
     @firstNode = @lastNode = @node = node =
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
@@ -277,6 +275,7 @@ module.exports = class Tag extends BaseComponent
     @
 
   updateDom: (mounting) ->
+    @noop = true
     @updateProperties()
     @resetHolderHookUpdater()
     @updateOffspring(mounting)

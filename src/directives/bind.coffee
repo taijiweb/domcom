@@ -2,5 +2,5 @@
 {getBindProp, domValue} = dc
 
 module.exports = registerDirective '$bind', (binding) -> (comp) ->
-  comp.props[getBindProp(comp)] = domValue binding
+  comp.setProp(getBindProp(comp), binding, props, 'Props')
   comp

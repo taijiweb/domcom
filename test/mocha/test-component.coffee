@@ -6,8 +6,6 @@ Tag, Text, List
 Component, list, func, if_, txt
 a, p, span, text, li, div, button, input} = dc
 
-{$a, $b, _a, _b} = bindings({a: 1, b: 2})
-
 describe "component  ", ->
   describe 'construct component', ->
     it 'component shoud have children', ->
@@ -160,6 +158,7 @@ describe "component  ", ->
       expect(comp.node.innerHTML).to.equal '3'
 
     it 'should process bidirectional bind', ->
+      {$a} = bindings({a: 1})
       comp = new Tag('input', {value:$a}, [])
       comp.mount()
       expect(comp.node.value).to.equal "1"
@@ -215,47 +214,3 @@ describe "component  ", ->
       expect(comp.node.innerHTML).to.equal '12'
       comp.update()
       expect(comp.node.innerHTML).to.equal '12'
-
-  describe 'demo', ->
-    describe 'test for sum', ->
-      it 'should construct and create components', ->
-        {$a, $b, _a, _b} = bindings({a: 3, b: 2})
-        x = text($a); y = text($b); z = p(txt(sum=flow.add _a, _b))
-        expect(sum()).to.equal 5, 'sum 1'
-        _a 1
-        expect(sum()).to.equal 3,  'sum 2'
-        comp = list(x, y, z)
-        comp.mount('#demo')
-        expect(z.node.innerHTML).to.equal '3',  'mount'
-        x.node.value = '3'
-        y.node.value = '4'
-        x.node.onchange()
-        y.node.onchange()
-        expect(_a()).to.equal('3', '_a')
-        expect(_b()).to.equal('4', '_b')
-        expect(sum()).to.equal('34', 'sum')
-        expect(!!comp.noop).to.equal false, 'comp.noop'
-        # z is not holder, not update root
-        expect(!!z.noop).to.equal true, 'z.noop'
-        comp.update()
-        expect(z.node.innerHTML).to.equal '34', 'update'
-
-    describe 'test for todomvc', ->
-      it 'should construct and create components', ->
-        comp = li(a({className:{selected: 1}, href:"#/"}, "All"))
-        comp.mount('#demo')
-
-    describe 'test for combobox', ->
-      it 'should process event property of child component', ->
-        x = 0
-        comp = div({}, c0=input({ onmouseenter: -> x = 1}), div({}, 'wawa'))
-        comp.mount()
-        c0.node.onmouseenter()
-        expect(x).to.equal 1
-
-      it 'should process event property of child component with model directive', ->
-        x = 0
-        comp = div({}, c0=input({ $model:duplex({}, 'x'), onmouseenter: -> x = 1}), div({}, 'wawa'))
-        comp.mount()
-        c0.node.onmouseenter()
-        expect(x).to.equal 1

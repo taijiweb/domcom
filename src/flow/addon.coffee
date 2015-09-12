@@ -23,3 +23,5 @@ flow.sub = (x, y) -> binary(x, y, (x, y) -> x-y)
 flow.mul = (x, y) -> binary(x, y, (x, y) -> x*y)
 flow.div = (x, y) -> binary(x, y, (x, y) -> x/y)
 flow.min = (x, y) -> binary(x, y, (x, y) -> Math.min(x, y))
+
+flow.toggle = (x) -> x(!x())

@@ -1,7 +1,7 @@
-{list, input, span, div, extendAttrs} = dc
+{list, input, span, div, extendAttrs, see, flow} = dc
 
 exports.combobox = combobox = (attrs, modelValue, valueList, direction) ->
-  showingItems = false
+  showingItems = see false
   disp = if direction=='v' or direction=='vertical' then 'block' else 'inline-block'
   comp = null # do NOT remove this line, because comp is referenced in attrs
   opts = for item in valueList then do(item=item) -> span({
@@ -9,13 +9,13 @@ exports.combobox = combobox = (attrs, modelValue, valueList, direction) ->
     onclick:(-> modelValue(item); comp.update())
   }, item)
   attrs = extendAttrs attrs, {
-    onmouseleave:(-> showingItems = false; comp.update())
+    onmouseleave:(-> showingItems false; comp.update())
   }
   comp = div(attrs,
     input({
       $model:modelValue
-      onmouseenter:(-> showingItems = true; comp.update())}),
-    div({style:{display: -> if showingItems then 'block' else 'none'}}, opts)
+      onmouseenter:(-> showingItems true; comp.update())}),
+    div({style:{display: -> if showingItems() then 'block' else 'none'}}, opts) #flow showingItems,
   )
 
 exports.vcombo = (attrs, modelValue, valueList) -> combobox(attrs, modelValue, valueList, 'vertical')

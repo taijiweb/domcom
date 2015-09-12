@@ -117,15 +117,9 @@ flow.bind = bind = (obj, attr, name) ->
     Object.defineProperty(obj, attr, {get:method, set:method})
   else method = set
 
-  reactive = react (value) ->
-    if !arguments.length then obj[attr]
-    else if value!=obj[attr] then obj[attr] = value else value
+  method.toString = () ->  "#{name or 'm'}[#{attr}]"
 
-  reactive = flow method, reactive
-
-  reactive.toString = () ->  "#{name or 'm'}[#{attr}]"
-
-  reactive
+  method
 
 flow.duplex = (obj, attr, name) ->
   reactive = bind(obj, attr)

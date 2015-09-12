@@ -18,11 +18,11 @@ module.exports = (options, template) ->
     dlg.unmount()
     closeCallback and closeCallback()
   if options.escClose
-    dlg.on 'beforeMount', ->
+    dlg.on 'onMount', ->
       escHandler = (event) ->
         esc = 27
         if event.which==esc or event.keyCode==esc
           dlg.close()
       document.body.addEventListener 'keydown', escHandler
-    dlg.on 'afterUnmount', -> document.body.removeEventListener('keydown', escHandler)
+    dlg.on 'onUnmount', -> document.body.removeEventListener('keydown', escHandler)
   dlg

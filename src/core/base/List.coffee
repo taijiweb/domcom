@@ -65,8 +65,7 @@ module.exports = exports = class List extends BaseComponent
     @resetHolderHookUpdater()
     @updateOffspring(mounting)
 
-  getNode: ->
-    for child in @children then child.getNode()
+  getNode: -> for child in @children then child.getNode()
 
   attachNode: -> # children will attach themself
 

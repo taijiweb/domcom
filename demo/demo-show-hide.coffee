@@ -1,12 +1,14 @@
 {bindings
 list,
-text, div, p} = dc
+text, div, p, see, flow} = dc
+
+toggle = flow.toggle
 
 module.exports = ->
-  x = true
+  x = see true
   comp = list(
-    div({onclick: -> x = !x; comp.update()}, 'change style'),
-    p({class:Object.create(null), style:{display: -> if x then 'block' else 'none'}}, 'asdfdfs')
+    div({onclick: -> toggle x; comp.update()}, 'change style'),
+    p({class:Object.create(null), style:{display: -> if x() then 'block' else 'none'}}, 'asdfdfs')
   )
   #comp.mount()
 
