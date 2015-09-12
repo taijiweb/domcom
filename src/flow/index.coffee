@@ -52,7 +52,7 @@ module.exports = flow = (deps..., computation) ->
   reactive
 
 flow.pipe = (deps..., computation) ->
-  reactive = react -> computation.apply(null, dep() for dep in deps())
+  reactive = react -> computation.apply(null, dep() for dep in deps)
   for dep in deps
     if dep and dep.onInvalidate
       dep.onInvalidate(reactive.invalidate)

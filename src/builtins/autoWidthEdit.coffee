@@ -1,9 +1,9 @@
-{div, text, overAttrs, Tag} = dc
+{div, text, overAttrs, Tag, see, flow, pipe} = dc
 
 exports.AutoWidthEdit = class AutoWidthEdit extends Tag
   constructor: (contextEditAttrs, inputAttrs, inputKeyFn=@inputKeyFn) ->
     me = this
-    editWidth = 48
+    editWidth = see 48
     testSubjectStyle =
       position:'absolute'
       top:'30px'
@@ -23,13 +23,13 @@ exports.AutoWidthEdit = class AutoWidthEdit extends Tag
       event.executeDefault = true
       node = comp.node
       me.value = node.value
-      editWidth = testSubject.node.getBoundingClientRect().width
+      editWidth testSubject.node.getBoundingClientRect().width
       me.update()
       node.focus()
     _inputAttrs =
       style:
         'z-index': '10',
-        width: -> Math.max(Math.floor(editWidth)+40, 48)+'px'
+        width: pipe editWidth, (w) -> Math.max(Math.floor(w)+40, 48)+'px'
         whiteSpace: 'nowrap'
       onkeydown: (event, comp) -> me.inputKeyFn(event, comp)
     @inputComp = text(overAttrs _inputAttrs, inputAttrs)
