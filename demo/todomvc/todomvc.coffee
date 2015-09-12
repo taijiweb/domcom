@@ -4,8 +4,8 @@ each, txt
 extend} = dc
 
 # store
-fetch = -> (JSON.parse(localStorage.getItem('dc') || '[]')).filter((todo) -> todo)
-save = (todos) -> localStorage.setItem('dc', JSON.stringify(todos.filter((todo) -> todo)))
+fetch = -> JSON.parse(localStorage.getItem('dc') || '[]')
+save = (todos) -> localStorage.setItem('dc', JSON.stringify(todos))
 
 # model
 # [ { title: string, completed: boolean } ... ]
@@ -21,7 +21,7 @@ saving = false
 getTodos = ->
   if viewStatusHash=='active' then todos.filter((todo) -> todo and !todo.completed)
   else if viewStatusHash=='completed' then todos.filter((todo) -> todo and todo.completed)
-  else todos.filter((todo) -> todo)
+  else todos
 
 remainingCount = -> todos.filter((todo) -> !todo.completed).length
 completedCount = -> todos.length - remainingCount()
@@ -87,8 +87,8 @@ todoHeader = header({id:"header"}
   h1("todos")
   form({id:"todo-form"},
     text({
-      id:"new-todo",
-      placeholder:"What needs to be done?"
+      id: "new-todo",
+      placeholder: "What needs to be done?"
       disable: -> saving
       onchange: ->
         if (!@value) then return
@@ -102,7 +102,7 @@ todoHeader = header({id:"header"}
 todoItems = each(getTodos, (todo, index) ->
   window.todoItemComp = li({className:{ completed: (-> todo.completed), editing: -> todo==editingTodo}},
     div({class:"view"},
-      checkbox({className:"toggle",checked: (-> todo and todo.completed), onchange:(-> toggleCompleted(todo))})
+      checkbox({className:"toggle", checked: (-> todo and todo.completed), onchange:(-> toggleCompleted(todo))})
       label({ondblclick:(-> editTodo(todo))}, (-> todo and todo.title))
       button({className:"destroy", onclick:(-> removeTodo(todo))})
     )
@@ -129,11 +129,11 @@ todoEditArea = section({id:"main", $show: -> todos.length}
   footer({id:"footer", $show:(-> todos.length)},
     span({id:"todo-count"}, strong(remainingCount), pluralize(remainingCount, ' item'), ' left')
     ul({id:"filters"}
-      li(a({className:{selected: viewStatusHash == ''}, href:"#/all"}, "All"))
-      li(a({className:{selected: viewStatusHash == 'active'}, href:"#/active"}, "Active"))
-      li(a({className:{selected: viewStatusHash == 'completed'}, href:"#/completed"}, "Completed"))
+      li(a({className:{selected: -> viewStatusHash == ''}, href:"#/all"}, "All"))
+      li(a({className:{selected: -> viewStatusHash == 'active'}, href:"#/active"}, "Active"))
+      li(a({className:{selected: -> viewStatusHash == 'completed'}, href:"#/completed"}, "Completed"))
     )
-    button({id:"clear-completed", onclick:clearCompletedTodos, $show:(completedCount) }, txt(-> "Clear completed: "+completedCount()))
+    button({id:"clear-completed", onclick:clearCompletedTodos, $show:completedCount }, txt(-> "Clear completed: "+completedCount()))
   )
 )
 

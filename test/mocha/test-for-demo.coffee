@@ -6,6 +6,8 @@ Tag, Text, List
 Component, list, func, if_, txt
 a, p, span, text, li, div, button, input} = dc
 
+controls = require 'domcom/demo/demo-controls'
+
 describe 'demo', ->
   describe 'sum', ->
     it 'should construct and create components', ->
@@ -101,3 +103,9 @@ describe 'demo', ->
       expect(comp.children.node.className).to.equal('selected')
       expect(comp.children.node.href).to.equal('http://localhost:63342/tiiji/domcom/#/')
 
+  describe 'controls', ->
+    iit 'should mount controls and others', ->
+      comp = controls()
+      comp.mount('#demo')
+      expect(comp.getNode().length).to.equal(2)
+      comp.unmount()

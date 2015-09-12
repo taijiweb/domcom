@@ -336,8 +336,6 @@ module.exports = class Tag extends BaseComponent
       components = @
     dc.update(@, events, components)
 
-  removeNode: -> @parentNode.removeChild(@node)
-
   clone: (options=@options) ->
     result = new Tag(@tagName, @attrs, @children.clone(), options or @options)
     result.copyLifeCallback(@)

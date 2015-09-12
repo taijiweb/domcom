@@ -75,7 +75,10 @@ module.exports = class BaseComponent extends Component
     nextNodeComponent and nextNodeComponent.prevNodeComponent = prevNodeComponent
     return
 
-  replacePrevNextNodeComponent: (baseComponent) ->
+  removeNode: ->
+    if @parentNode
+      @parentNode.removeChild(@node)
+      @parentNode = null
 
   executeMountCallback: ->
     for component in @mountCallbackComponentList

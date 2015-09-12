@@ -70,9 +70,11 @@ module.exports = exports = class List extends BaseComponent
   attachNode: -> # children will attach themself
 
   removeNode: ->
-    parentNode = @parentNode
-    for node in @getNode()
-      parentNode.removeChild(node)
+    if !@parentNode then return
+    for child in @children
+      child.baseComponent.removeNode()
+    @parentNode = null
+    return
 
   removeChild: (index, notSetFirstLast) ->
     children = @children

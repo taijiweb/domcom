@@ -99,7 +99,9 @@ module.exports = class Component
     @render()
 
   unmount: ->
+    if !@parentNode then return
     @baseComponent.remove(@parentNode)
+    @parentNode = null
     @
 
   setUpdateRoot: ->
