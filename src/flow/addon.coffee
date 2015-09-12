@@ -1,4 +1,4 @@
-{bound, duplex, flow, unary, binary} = dc
+{bind, duplex, flow, unary, binary} = dc
 
 module.exports = flow
 
@@ -6,7 +6,7 @@ dc.bindings = flow.bindings =  (model, name) ->
   result = Object.create(null)
   for key of model
     result['$'+key] = duplex(model, key, name)
-    result['_'+key] = bound(model, key, name)
+    result['_'+key] = bind(model, key, name)
   result
 
 flow.neg = (x) -> unary(x, (x) -> -x)

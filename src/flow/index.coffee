@@ -88,18 +88,17 @@ flow.seen = (computations...) ->
   for computation in computations then see computation
 
 flow.renew = (computation) ->
-
   method = ->
     if !arguments.length
       method.invalidate()
-      value = computation()
+      method.value = computation()
     else throw new Error 'flow.dynamic is not allowed to accept arguments'
 
   method.toString = () ->  "renew: #{funcString(computation)}"
 
   react method
 
-flow.bound = bound = (obj, attr, name) ->
+flow.bind = bind = (obj, attr, name) ->
 
   d = Object.getOwnPropertyDescriptor(obj, attr)
   if d then {get, set} = d
@@ -129,7 +128,7 @@ flow.bound = bound = (obj, attr, name) ->
   reactive
 
 flow.duplex = (obj, attr, name) ->
-  reactive = bound(obj, attr)
+  reactive = bind(obj, attr)
   reactive.isDuplex = true
   reactive.toString = () ->  "#{name or 'm'}[#{attr}]"
   reactive

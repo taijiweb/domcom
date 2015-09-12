@@ -47,7 +47,7 @@ module.exports = class BaseComponent extends Component
     if !container then return
     container.activeOffspring = container.activeOffspring or Object.create(null)
     container.activeOffspring[@dcid] = @
-    container.noop = false
+    container.invalidate()
 
   replace: (baseComponent, rootContainer) ->
     @removeNode()
@@ -73,10 +73,6 @@ module.exports = class BaseComponent extends Component
     nextNodeComponent = @nextNodeComponent
     prevNodeComponent and prevNodeComponent.nextNodeComponent = nextNodeComponent
     nextNodeComponent and nextNodeComponent.prevNodeComponent = prevNodeComponent
-    if @listIndex?
-      container = @container
-      container.children.splice(@listIndex, 1)
-    @removing = null
     return
 
   replacePrevNextNodeComponent: (baseComponent) ->

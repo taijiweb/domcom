@@ -1,4 +1,4 @@
-{bindings, bound, duplex,
+{bindings, bind, duplex,
 section, h1, header, form, text, checkbox, div, ul, li, p, a, label, button, footer, strong, span
 each, txt
 extend} = dc
@@ -108,7 +108,7 @@ todoItems = each(getTodos, (todo, index) ->
     )
     form({submit:->save(todos)}
       text({
-        className:"edit", trim:"false", value:bound(todo, "title"),
+        className:"edit", trim:"false", value:bind(todo, "title"),
         onblur:(-> todo.title = @value; save(todos); editingTodo = null; view.update()),
         onfocus:(-> todo == editingTodo)
         onkeyup: onEscapeFn(-> revertEdits(todo))

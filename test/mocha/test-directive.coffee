@@ -6,7 +6,7 @@
 {
 Component, list, func, if_, each
 a, div, p, span, text, select, input
-show, hide, splitter
+$show, $hide, $splitter
 bindings, duplex
 see} = dc
 
@@ -30,23 +30,23 @@ describe 'directives', ->
       comp.node.onmouseenter()
       expect(x).to.equal 1
 
-  describe 'show', ->
-    it 'should process show directive', ->
+  describe '$show', ->
+    it 'should process $show directive', ->
       comp = div({$show:true})
       comp.mount()
       expect(comp.node.style.display).to.equal 'block'
 
-    it 'should process show directive with non block display', ->
-      comp = div({style:{display:"inline"}, show:true})
+    it 'should process $show directive with non block display', ->
+      comp = div({style:{display:"inline"}, $show:true})
       comp.mount()
       expect(comp.node.style.display).to.equal 'inline'
 
-    it 'should process show directive with false value', ->
+    it 'should process $show directive with false value', ->
       comp = div({$show:false}, div(1))
       comp.mount()
       expect(comp.node.style.display).to.equal 'none'
 
-    it  'should process show directive with function value', ->
+    it  'should process $show directive with function value', ->
       showing = see true
       comp = div({$show: showing})
       expect(comp.style.display.invalidate).to.be.defined
@@ -61,14 +61,21 @@ describe 'directives', ->
       comp = div({$hide:true}, div(1))
       comp.mount()
       expect(comp.node.style.display).to.equal 'none'
-    it 'should process hide directive with false value', ->
-      comp = hide(false)(div(div(1)))
+      comp = div({$hide:false}, div(1))
+      comp.mount()
+      expect(comp.node.style.display).to.equal 'block'
+
+    it 'should process show directive with true or false value', ->
+      comp = $show(false)(div(div(1)))
+      comp.mount()
+      expect(comp.node.style.display).to.equal 'none'
+      comp = $show(true)(div(div(1)))
       comp.mount()
       expect(comp.node.style.display).to.equal 'block'
 
   describe 'splitter', ->
     it 'should constructor splitter', ->
-      comp = splitter('vertical')(div(div(1), div(2)))
+      comp = $splitter('vertical')(div(div(1), div(2)))
       comp.mount()
       expect(comp.node.innerHTML).to.match /splitbar/
 

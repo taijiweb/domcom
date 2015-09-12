@@ -2,7 +2,7 @@
 
 {registerDirective} = require './register'
 
-module.exports = splitter = (direction) -> (comp) ->
+module.exports = registerDirective '$splitter', (direction) -> (comp) ->
 
   attrs = comp.attrs
   direction = direction or 'vertical'
@@ -84,5 +84,3 @@ module.exports = splitter = (direction) -> (comp) ->
     comp.update()
 
   comp
-
-registerDirective 'splitter', splitter

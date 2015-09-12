@@ -177,7 +177,7 @@ describe "component  ", ->
       comp.update()
       expect(elm.innerHTML).to.equal '3'
 
-    it 'should process text with bound', ->
+    it 'should process text with bind', ->
       {_a, _b} = bindings({a: 1, b: 2})
       comp = p(txt(flow.add _a, _b))
       comp.mount('#demo')

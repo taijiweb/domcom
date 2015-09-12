@@ -83,11 +83,13 @@ mixinListWatcher = (list) ->
     result
 
   list.setLength = (length) ->
-    if length==list.length  then return
+    oldListLength = list.length
+    if length==oldListLength  then return
     list.length = length
     for component in watchingComponents
-      for child in component.listComponent.children
-        child.setRemoving()
+      if length>oldListLength
+        component.invalidateChildren(oldListLength, length)
+      else component.invalidateChildren(length, oldListLength)
     return
 
 flow.watchEachList = (list, component) ->
@@ -113,3 +115,7 @@ flow.watchEachObject = (object, component) ->
       for component in object.watchingComponents
         component._items.push([key, value])
         component.invalidateChild(component._items.length-1)
+
+# make itemFn always invalidate childComponent of the Each component
+# be careful about this, this will affect the performace
+flow.pour = (itemFn) -> itemFn.pouring = true; itemFn

@@ -10,23 +10,22 @@ module.exports = class TransformComponent extends Component
   invalidate: ->
     if @invalid then return
     @invalid = true
-    @content  = null
     activeChild = @
     container = @container
     while container and !container.isHolder
       if container.isTransformComponent
-        container.baseComponent = null
+        container.invalid = true
         activeChild = container
       container = container.container
     if container and container.isHolder
       container.activeOffspring = container.activeOffspring or Object.create(null)
       container.activeOffspring[activeChild.dcid] = activeChild
-      container.noop = false
+      container.invalidate()
 
   getBaseComponent: ->
     if !@invalid then return @baseComponent
     @invalid = false
-    content = @content or @content = @getContentComponent()
+    content = @content = @getContentComponent()
     content.container = @
     content.mountBeforeNode = @mountBeforeNode
     baseComponent = content.getBaseComponent()

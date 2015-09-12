@@ -1,7 +1,7 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
 {util
-bound, duplex, see
+bind, duplex, see
 classFn, styleFrom, attrToPropName
 Component, list, func, if_
 a, p, span, text, li, div, checkbox
@@ -58,7 +58,7 @@ describe 'properties ', ->
 
   describe 'create', ->
     it 'should create properties', ->
-      comp = p({value:bound({a: 1}, 'a')})
+      comp = p({value:bind({a: 1}, 'a')})
       expect(comp.className.invalid).to.equal false, 'className.invalid'
       expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties'
       comp.mount()
@@ -82,7 +82,7 @@ describe 'properties ', ->
       expect(spy1.called).to.equal true
       expect(x.a).to.equal '2'
 
-    it 'multiple handlers for one event, with bound value', ->
+    it 'multiple handlers for one event, with bind value', ->
       $a = duplex(x={a:1}, 'a')
       spy1 = sinon.spy()
       comp = text({onchange:spy1}, $a)
@@ -129,7 +129,7 @@ describe 'properties ', ->
           clearInterval handle
       handle = setInterval(styleFn, 5)
 
-  it 'bidirectional bound checkbox', ->
+  it 'bidirectional bind checkbox', ->
     model1 = {a: 1}
     bb = duplex(model1, 'a')
     cbx = checkbox({$model:bb})

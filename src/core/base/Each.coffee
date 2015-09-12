@@ -18,7 +18,7 @@ module.exports = class Each extends TransformComponent
 
     if typeof items == 'function'
       if !items.invalidate then items = renew(items)
-      items.onInvalidate(@invalidate.bind(@))
+      items.onInvalidate -> me.invalidate()
 
     @items = items
 
@@ -74,7 +74,7 @@ module.exports = class Each extends TransformComponent
     itemsLength = _items.length
     cacheChildrenLength = cacheChildren.length
     childrenLength = children.length
-    if i>itemsLength
+    if i>=itemsLength
       children[i].setRemoving()
       children[i].invalidate()
     else
@@ -84,16 +84,21 @@ module.exports = class Each extends TransformComponent
       else
         childReactives[i] = react ->
           items = me._items
-          item = _items[i]
+          item = items[i]
           index = child.listIndex
-          if me.isArrayItems
-            if keyFunction then cacheComponents[keyFunction(item, index)] or itemFn(item, index, items, me)
-            else itemFn(item, i, items, me)
-          else
-            [key, value] = item
-            if keyFunction then cacheComponents[keyFunction(value, key, index)] or itemFn(value, key, index, items, me)
-            else itemFn(value, key, i, items, me)
+          result =
+            if me.isArrayItems
+              if keyFunction then cacheComponents[keyFunction(item, index)] or itemFn(item, index, items, me)
+              else itemFn(item, i, items, me)
+            else
+              [key, value] = item
+              if keyFunction then cacheComponents[keyFunction(value, key, index)] or itemFn(value, key, index, items, me)
+              else itemFn(value, key, i, items, me)
+          if itemFn.pouring then child.invalidate()
+          result
+
         children[i] = cacheChildren[i] = child = new Func childReactives[i]
+        child.invalid = false # let child can be add to activeOffspring by children[i].invalidate()
         child.container = listComponent
         child.listIndex = i
         child.parentNode = @parentNode

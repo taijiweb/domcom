@@ -2,7 +2,7 @@
 {see, flow} = dc
 {toggle} = flow
 
-module.exports = blink = (interval) -> (comp) ->
+module.exports = registerDirective '$blink', (interval) -> (comp) ->
   if !interval? then interval = 500
   timer = null
   comp.beforeMount (baseComponent) -> -> timer = setInterval (-> visible(!visible()); comp.update()), interval
@@ -12,5 +12,3 @@ module.exports = blink = (interval) -> (comp) ->
     if visible() then 'visible'
     else 'hidden'
   comp
-
-registerDirective 'blink', blink

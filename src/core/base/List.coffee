@@ -75,6 +75,39 @@ module.exports = exports = class List extends BaseComponent
     for node in @getNode()
       parentNode.removeChild(node)
 
+  removeChild: (index, notSetFirstLast) ->
+    children = @children
+    removedChild = children[index]
+    children.splice(index, 1)
+    childrenLengh = children.length
+    while index<childrenLengh
+      children[index].listIndex = index
+      index++
+    if !notSetFirstLast then @setFirstLast(removedChild.baseComponent)
+
+  setFirstLast: (removed, replaced) ->
+    removedFirst = removed.firstNodeComponent
+    if !removedFirst then return
+    if removedFirst==@firstNodeComponent
+      newFirst = replaced and replaced.firstNodeComponent or removed.nextNodeComponent
+      @firstNodeComponent = newFirst
+      me = @; container = @container
+      while me.listIndex
+        if removedFirst!=container.firstNodeComponent then break
+        container.firstNodeComponent = newFirst
+        me = container; container = @container
+    removedLast = removed.lastNodeComponent
+    if !removedLast then return
+    if removedLast==@lastNodeComponent
+      newLast = replaced and replaced.lastNodeComponent or removed.prevNodeComponent
+      @lastNodeComponent = newLast
+      me = @; container = @container
+      while me.listIndex
+        if removedLast==container.lastNodeComponent then break
+        container.firstNodeComponent = newLast
+        me = container; container = @container
+    return
+
   toString: (indent=0, noNewLine) ->
     s = newLine("<List>", indent, noNewLine)
     for child in @children

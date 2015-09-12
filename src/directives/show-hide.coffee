@@ -5,8 +5,5 @@
 showHide = (showing) -> (test, display) -> (comp) ->
   comp.showHide(showing, test, display)
 
-exports.show = show = showHide(true)
-registerDirective 'show', show
-
-exports.hide = hide = showHide(false)
-registerDirective 'hide', hide
+exports.$show = registerDirective '$show', showHide(true)
+exports.$hide = registerDirective '$hide', showHide(false)

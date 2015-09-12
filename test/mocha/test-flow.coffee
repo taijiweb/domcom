@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings, see, bound, duplex, watch, renew, flow} = dc
+{bindings, see, bind, duplex, watch, renew, flow} = dc
 
 describe 'reactive flow', ->
 
@@ -56,18 +56,18 @@ describe 'reactive flow', ->
     a 3
     expect(r()).to.equal 5, 'add 2'
 
-  it 'should invalidate bound flow binary', ->
+  it 'should invalidate bind flow binary', ->
     m = {a:1, b:2}
-    a = bound(m, 'a', 'm'); b = bound(m, 'b', 'm')
+    a = bind(m, 'a', 'm'); b = bind(m, 'b', 'm')
     r = flow.add a, b
     expect(r()).to.equal 3, 'add'
     a 3
     expect(r()).to.equal 5, 'add 2'
 
-  it 'should bound', ->
+  it 'should bind', ->
     m = {a:1}
-    a = bound(m, 'a')
-    a2 = bound(m, 'a')
+    a = bind(m, 'a')
+    a2 = bind(m, 'a')
     expect(a()).to.equal(1)
     expect(a2()).to.equal(1, 'a2')
     a 3
@@ -79,10 +79,10 @@ describe 'reactive flow', ->
     $a 3
     expect(_a()).to.equal(3)
 
-  it 'should process multiple bound and duplex on same object and attr', ->
+  it 'should process multiple bind and duplex on same object and attr', ->
     m = {a:1, b:2}
-    a1 = bound(m, 'a'); b1 = bound(m, 'b')
-    a2 = bound(m, 'a'); b2 = bound(m, 'b')
+    a1 = bind(m, 'a'); b1 = bind(m, 'b')
+    a2 = bind(m, 'a'); b2 = bind(m, 'b')
     sum = flow.add a1, b1
     expect(sum()).to.equal 3, 'sum 1'
     expect(sum.invalid).to.equal false, 'invalid 1'

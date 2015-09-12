@@ -78,11 +78,11 @@ module.exports = class Tag extends BaseComponent
           value.processHandler(@, key)
       else if key[0]=='$'
         # $directiveName: generator arguments list
-        generator = _directiveRegistry[key.slice(1)]
+        generator = _directiveRegistry[key]
         if value instanceof Array then handler = generator.apply(null, value)
         else handler = generator.apply(null, [value])
         directives.push(handler)
-      else if key[0]=='_' then @setProp(key.slice(1), value, specials, 'Specials')
+      else if key[0]=='_' then @setProp(key, value, specials, 'Specials')
       else @setProp(key, value, props, 'Props')
     for directive in directives then directive(@)
     return

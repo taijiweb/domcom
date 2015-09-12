@@ -63,7 +63,11 @@ module.exports = class Component
 
   render: (mounting) ->
     oldBaseComponent = @oldBaseComponent
-    if @removing then oldBaseComponent.remove(); return
+    if @removing
+      oldBaseComponent.remove()
+      if @listIndex? then @container.removeChild(@listIndex) #notSetFirstLast
+      @removing = null
+      return
     @baseComponent = baseComponent = @getBaseComponent()
     baseComponent.parentNode = @parentNode
     if oldBaseComponent and baseComponent!=oldBaseComponent
