@@ -73,15 +73,26 @@ describe 'directives', ->
       comp.mount()
       expect(comp.node.style.display).to.equal 'block'
 
-  describe 'splitter', ->
-    it 'should constructor splitter', ->
-      comp = $splitter('vertical')(div(div(1), div(2)))
-      comp.mount()
-      expect(comp.node.innerHTML).to.match /splitbar/
-
   ndescribe 'select options', ->
     it 'should constructor select with options', ->
       comp = select({$options:[[1,2]]})
       comp.mount()
       expect(comp.node.innerHTML).to.match /<option>1/
       expect(comp.node.innerHTML).to.equal '<option>1</option><option>2</option>'
+
+  describe 'splitter', ->
+    it 'should constructor splitter', ->
+      comp = $splitter('vertical')(div({style:{height:'800px', width:'200px'}}, div(1), div(2)))
+      comp.mount()
+      #comp.node.getBoundingClientRect = -> bottom: 176, height: 0, left: 0, right: 0, top: 176, width: 0
+      bounds = comp.node.getBoundingClientRect()
+      expect(bounds.width>0).to.equal true
+      expect(comp.node.innerHTML).to.match /splitbar/
+      children = comp.children.children
+      expect(children[1].node.getBoundingClientRect().top).to.equal comp.node.getBoundingClientRect().top
+      children[1].node.onmousedown()
+      comp.node.onmousemove({clientX:20, clientY:30, preventDefault:(->), stopPropagation:(->)})
+      expect(children[1].node.getBoundingClientRect().top).to.equal comp.node.getBoundingClientRect().top
+      expect(children[1].node.style.top).to.equal '0px'
+      comp.node
+

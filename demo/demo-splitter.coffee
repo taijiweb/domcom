@@ -20,14 +20,14 @@ module.exports = ->
 #      div(2), div(3)
 #    ))
 
-  comp = div({horizontal: 'horizontal', style:{height:'100%',width:'100%'}},
-    div({style:{'background-color':"blue", width:'100%'}}, 1),
-    div({$splitter:'vertical', style:{'background-color':"grey", height:'100%', width:'100%'}},
-      div(2), div(3)
-    ))
-
-#  comp =div({$splitter:'vertical', style:{'background-color':"grey", height:'100%',width:'100%'}},
+#  comp = div({horizontal: 'horizontal', style:{height:'100%',width:'100%'}},
+#    div({style:{'background-color':"blue", width:'100%'}}, 1),
+#    div({$splitter:'vertical', style:{'background-color':"grey", height:'100%', width:'100%'}},
 #      div(2), div(3)
-#    )
+#    ))
+
+  comp =div({$splitter:'vertical', style:{'background-color':"grey", height:'100%',width:'100%'}},
+      div(2), div(3)
+    )
 
   #comp.mount()

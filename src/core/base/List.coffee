@@ -19,6 +19,18 @@ module.exports = exports = class List extends BaseComponent
 
   clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
 
+  setChildren: (startIndex, newChildren...) ->
+    children = @children
+    i = startIndex; j = 0
+    newChildrenLength = newChildren.length
+    while j<newChildrenLength
+      child = children[i] = newChildren[j]
+      child.container = @
+      child.listIndex = @
+      i++; j++
+    if i>children.length then @length = i
+    @
+
   createDom: ->
     @resetHolderHookUpdater()
     children = @children

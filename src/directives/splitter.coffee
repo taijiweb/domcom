@@ -16,7 +16,8 @@ module.exports = registerDirective '$splitter', (direction) -> (comp) ->
 
   getSize = -> size or 600
 
-  children = comp.children.children
+  childrenList = comp.children
+  children = childrenList.children
   paneA = children[0]; paneB = children[1]
   minAWidth = attrs.minAWidth or 0; minBWidth = attrs.minBWidth or 0
   splitBarAttr = {
@@ -50,12 +51,12 @@ module.exports = registerDirective '$splitter', (direction) -> (comp) ->
   arrowA = div(arrawAAttr)
   arrowB = div(arrawBAttr)
 
-  children[2] = paneB
-  children[1] = splitBar = div(splitBarAttr, span(), arrowA, arrowB)
+  splitBar = div(splitBarAttr, span(), arrowA, arrowB)
+  childrenList.setChildren 1, splitBar, paneB
 
-  splitBar.bind 'mousedown', (ev) -> drag = true
+  splitBar.bind 'mousedown', (event) -> drag = true
   dc(document).bind 'mouseup', -> drag = false
-  comp.bind 'mousemove', (ev) ->
+  comp.bind 'mousemove', (event) ->
     event.continuePropagation = true
     event.executeDefault = true
     if (!drag) then return
@@ -63,7 +64,7 @@ module.exports = registerDirective '$splitter', (direction) -> (comp) ->
     event.executeDefault = false
     bounds = comp.node.getBoundingClientRect()
     size = w = bounds[right] - bounds[left]
-    pos = Math.max(ev[clientX] - bounds[left], 0)
+    pos = Math.max(event[clientX] - bounds[left], 0)
     pencent = pos/w
     comp.update()
 
@@ -71,9 +72,9 @@ module.exports = registerDirective '$splitter', (direction) -> (comp) ->
   paneB.css pairListDict('position', 'absolute', left, (-> (pos+barsize)+'px'), width, (-> getSize()-(pos+barsize)+'px') )
   comp.css pairListDict 'position', 'absolute'
 
-  comp.bind 'resize', (ev) ->
-    ev.preventDefault()
-    ev.stopPropagation()
+  comp.bind 'resize', (event) ->
+    event.preventDefault()
+    event.stopPropagation()
     bounds = comp.node.getBoundingClientRect()
     w = bounds[right] - bounds[left]
     pos = percent*w

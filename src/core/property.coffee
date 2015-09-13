@@ -30,7 +30,7 @@ exports.extendAttrs = (attrs, obj, options={}) ->
     else attrs[key] = value
   attrs
 
-exports.overAttrs = (attrs, obj) ->
+exports.overAttrs = overAttrs = (attrs, obj) ->
   if !obj
     attrs = extend(Object.create(null), attrs)
     if attrs.style then attrs.style = extend({}, styleFrom(attrs.style))
@@ -39,7 +39,7 @@ exports.overAttrs = (attrs, obj) ->
   else
     for key, value of attrs
       if !obj[key]? then obj[key] = value
-      if key=='style' then obj[key] = overAttrs(attr[key], obj[key])
+      if key=='style' then obj[key] = overAttrs(attrs[key], obj[key])
     obj
 
 exports.classFn = classFn = (items...) ->

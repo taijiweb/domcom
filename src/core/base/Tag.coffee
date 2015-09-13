@@ -187,9 +187,9 @@ module.exports = class Tag extends BaseComponent
     if typeof display == 'function'
       display = display()
       if !display? then display = ''
-    if !display? then @setProp('display', 'block', @style, @cacheStyle, 'Style')
-    else if display=='visible' then @setProp('visibility', 'visible', @style, @cacheStyle, 'Style')
-    else @setProp('display', display, @style, @cacheStyle, 'Style')
+    if !display? then @setProp('display', 'block', @style, 'Style')
+    else if display=='visible' then @setProp('visibility', 'visible', @style, 'Style')
+    else @setProp('display', display, @style, 'Style')
     @update()
     @
 
@@ -197,9 +197,9 @@ module.exports = class Tag extends BaseComponent
     if typeof display == 'function'
       display = display()
       if !display? then display = ''
-    if !display then @setProp('display', 'none', @style, @cacheStyle, 'Style')
-    else if display=='hidden' then @setProp('visibility', 'hidden', @style, @cacheStyle, 'Style')
-    else @setProp('display', display, @style, @cacheStyle, 'Style')
+    if !display then @setProp('display', 'none', @style, 'Style')
+    else if display=='hidden' then @setProp('visibility', 'hidden', @style, 'Style')
+    else @setProp('display', display, @style, 'Style')
     @update()
     @
 
