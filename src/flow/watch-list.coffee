@@ -13,17 +13,19 @@ mixinListWatcher = (list) ->
 
   list.watchingComponents = watchingComponents = []
 
-  list.setItem = (i, value) ->
-    i = i>>>0
-    if i<0 then throw new Error('array index is negative')
+  list.setItem = (startIndex, values...) ->
+    startIndex = startIndex>>>0
+    if startIndex<0 then throw new Error('array index is negative')
     listLength = list.length
-    list[i] = value
-    if i<listLength
+    i = startIndex; j = 0; valuesLength = values.length
+    while j<valuesLength then list[i] = values[j]; i++; j++
+    if startIndex<listLength
       for component in watchingComponents
-        component.invalidateChildren(i, i+1)
+        component.invalidateChildren(startIndex, i)
     else
       for component in watchingComponents
-        component.invalidateChildren(listLength, i+1)
+        component.invalidateChildren(listLength, i)
+        component.listComponent.length = i
     return
 
   list.pop = ->
@@ -32,6 +34,7 @@ mixinListWatcher = (list) ->
     result = pop.call(this)
     for component in watchingComponents
       component.invalidateChildren(listLength-1, listLength)
+      component.listComponent.length = list.length
     result
 
   list.push = ->
@@ -40,6 +43,7 @@ mixinListWatcher = (list) ->
     listLength = list.length
     for component in watchingComponents
       component.invalidateChildren(oldLength, listLength)
+      component.listComponent.length = listLength
     result
 
   list.shift = ->
@@ -48,6 +52,7 @@ mixinListWatcher = (list) ->
     listLength = list.length
     for component in watchingComponents
       component.invalidateChildren(0, listLength)
+      component.listComponent.length = listLength
     result
 
   list.unshift= ->
@@ -55,6 +60,7 @@ mixinListWatcher = (list) ->
     listLength = list.length
     for component in watchingComponents
       component.invalidateChildren(0, listLength)
+      component.listComponent.length = listLength
     result
 
   list.reverse= ->
@@ -75,11 +81,16 @@ mixinListWatcher = (list) ->
 
   list.splice = (start, deleteCount) ->
     len = arguments.length
-    listLength = list.length
     if !len or start>>>0 >= list.length or deleteCount>>>0 <= 0 then return []
+    oldListLength = list.length
     result = splice.apply(this, arguments)
+    listLength = list.length
     for component in watchingComponents
-      component.invalidateChildren(start, Math.max(listLength, start+deleteCount))
+      if newListLength==listLength
+        component.invalidateChildren(start, start+deleteCount)
+      else
+        component.invalidateChildren(start, Math.max(oldListLength, listLength) )
+        component.listComponent.length = listLength
     result
 
   list.setLength = (length) ->
@@ -90,6 +101,7 @@ mixinListWatcher = (list) ->
       if length>oldListLength
         component.invalidateChildren(oldListLength, length)
       else component.invalidateChildren(length, oldListLength)
+      component.listComponent.length = length
     return
 
 flow.watchEachList = (list, component) ->
@@ -102,20 +114,38 @@ flow.watchEachObject = (object, component) ->
   if !object.watching
     object.watching = true
 
-    object.deleteItem = (key) ->
-      delete object[key]
+    object.deleteItem = (keys...) ->
+      for key in keys then delete object[key]
       for component in object.watchingComponents
-        if component.watchIteming
-          index = component.childComponentMap[key]
-          component._items.splice(index, 1)
-          component.invalidateChildren(index, component._items.length)
+        if component.watchingItem
+          oldItemsLength = component._items.length
+          min = oldItemsLength
+          for key in keys
+            index = component.childComponentMap[key]
+            component._items.splice(index, 1)
+            if index<min then min = index
+          component.invalidateChildren(min, oldItemsLength)
+          component.listComponent.length = component._items.length
 
     object.setItem = (key, value) ->
       object[key] = value
       length = component._items.length
       for component in object.watchingComponents
-        component._items.push([key, value])
-        component.invalidateChildren(length, length+1)
+        if component.watchingItem
+          component._items.push([key, value])
+          component.invalidateChildren(length, length+1)
+          component.listComponent.length = component._items.length
+
+    object.extend = (obj) ->
+      for key, value of obj
+        object[key] = value
+      length = component._items.length
+      for component in object.watchingComponents
+        if component.watchingItem
+          for key, value of obj then object[key] = value
+          component._items.push([key, value])
+          component.invalidateChildren(length, component._items.length)
+          component.listComponent.length = component._items.length
 
 # make itemFn always invalidate childComponent of the Each component
 # be careful about this, this will affect the performace

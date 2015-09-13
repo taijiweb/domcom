@@ -53,10 +53,10 @@ module.exports = class Each extends TransformComponent
       if !items or typeof(items)!='object' then throw new Error 'Each Component need an array or object'
     if items not instanceof Array
       @isArrayItems = false
-      if !@notWatch and !isFunction then watchEachObject items, @
+      if !@notWatch and !isFunction and !@needSort then watchEachObject items, @
       items = for key, value of items then [key, value]
     else
-      if !@notWatch and !isFunction then watchEachList items, @
+      if !@notWatch and !isFunction and !@needSort then watchEachList items, @
       @isArrayItems = true
     if @needSort then items = items.sort(@sortFunction)
     @_items = items
@@ -107,6 +107,7 @@ module.exports = class Each extends TransformComponent
         child.container = listComponent
         child.listIndex = i
         child.parentNode = @parentNode
+        if listComponent.node then child.mountMode = 'mounting'
 
     child
 

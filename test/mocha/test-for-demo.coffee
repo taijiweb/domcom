@@ -146,7 +146,7 @@ describe 'demo', ->
       comp.getBaseComponent()
       expect(comp.listComponent.activeOffspring[child0.dcid]).to.equal child0, 'all 2'
 
-    iit 'should process getTodos and Each correctly', ->
+    it 'should process getTodos and Each correctly', ->
       todos = [{title:'do this'}]
       comp = makeTodo todos, status={hash:'all'}
       comp.mount()
