@@ -40,6 +40,7 @@ module.exports = class Each extends TransformComponent
     @cacheComponents = Object.create(null)
     @cacheChildren = []
     @listComponent = new List(@children=[])
+    @listComponent.isHolder = true
     return
 
   reset: (options) ->
@@ -64,23 +65,28 @@ module.exports = class Each extends TransformComponent
     me = @
     {listComponent} = @
     listComponent.parentNode = @parentNode
+    if listComponent.node then listComponent.noop = true
     @getItems()
-    @invalidateChildren(0, @_items.length)
+    length = Math.max(@_items.length, @children.length)
+    length and @invalidateChildren(0, length)
+    listComponent.length = @_items.length
     listComponent
 
-  invalidateChild: (i) ->
+  getChild: (i) ->
     me = @
-    {listComponent, cacheChildren, children, childReactives, cacheComponents, _items, keyFunction, itemFn} = @
-    itemsLength = _items.length
-    cacheChildrenLength = cacheChildren.length
-    childrenLength = children.length
-    if i>=itemsLength
-      children[i].setRemoving()
-      children[i].invalidate()
+    {listComponent, cacheChildren, children, childReactives, cacheComponents, keyFunction, itemFn} = @
+    if i>=@_items.length
+      child = cacheChildren[i]
+      child.invalid = true
+      child.mountMode = 'unmounting'
     else
-      if i<cacheChildrenLength
-        children[i] = cacheChildren[i]
-        children[i].mounting = true
+      if i<children.length
+        child = children[i]
+        child.invalid = true
+      else if i<cacheChildren.length
+        child = children[i] = cacheChildren[i]
+        child.invalid = true
+        child.mountMode = 'mounting'
       else
         childReactives[i] = react ->
           items = me._items
@@ -97,19 +103,24 @@ module.exports = class Each extends TransformComponent
           if itemFn.pouring then child.invalidate()
           result
 
-        children[i] = cacheChildren[i] = child = new Func childReactives[i]
-        child.invalid = false # let child can be add to activeOffspring by children[i].invalidate()
+        child = children[i] = cacheChildren[i] = new Func childReactives[i]
         child.container = listComponent
         child.listIndex = i
         child.parentNode = @parentNode
-      children[i].invalidate()
+
+    child
 
   invalidateChildren: (start, stop) ->
-    if stop
-      while start<stop
-        @invalidateChild(start)
-        start++
-    else @invalidateChild(start)
+    {listComponent} = @
+    node = listComponent.node
+    if node then activeOffspring = listComponent.activeOffspring = listComponent.activeOffspring or Object.create(null)
+    while start<stop
+      child = @getChild(start)
+      node and activeOffspring[child.dcid] = child
+      start++
+    if node
+      listComponent.noop = true
+      listComponent.invalidate()
     return
 
   clone: (options) -> (new Each(@items, @itemFn, options or @options)).copyLifeCallback(@)

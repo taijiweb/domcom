@@ -5,12 +5,13 @@ Component = require './component'
 module.exports = class BaseComponent extends Component
   constructor: (options) ->
     super(options)
+    @activeOffspring = null
     @isBaseComponent = true
 
   getBaseComponent: ->
     @mountCallbackComponentList = if @mountCallbackList then [@] else []
     @unmountCallbackComponentList = if @unmountCallbackList then [@] else []
-    @oldBaseComponent = @
+    @
 
   attachNode: (nextNode) -> @parentNode and @parentNode.insertBefore(@node, nextNode)
 
@@ -30,12 +31,12 @@ module.exports = class BaseComponent extends Component
       container.activeOffspring[dcid] = @
       container.noop = false # offspring update container.noop!!!
 
-  updateOffspring: (mounting) ->
+  updateOffspring: () ->
     {activeOffspring} = @
     if !activeOffspring then return
     @activeOffspring = null
     for dcid, component of activeOffspring
-      component.render(mounting)
+      component.render()
     return
 
   invalidate: ->
@@ -62,7 +63,7 @@ module.exports = class BaseComponent extends Component
       if nextNodeComponent then nextNodeComponent.prevNodeComponent = baseComponent.lastNodeComponent
       else container and container.lastNodeComponent = baseComponent.lastNodeComponent
     if !baseComponent.node then baseComponent.createDom()
-    else if !baseComponent.noop then baseComponent.updateDom(mounting)
+    else if !baseComponent.noop then baseComponent.updateDom(true) # mounting = true
     baseComponent.attachNode(@nextNodeComponent and @nextNodeComponent.node or rootContainer.mountBeforeNode)
     return
 

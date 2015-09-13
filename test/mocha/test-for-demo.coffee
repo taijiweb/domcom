@@ -4,7 +4,8 @@
 classFn, styleFrom, extendAttrs
 Tag, Text, List
 Component, list, func, if_, txt
-a, p, span, text, li, div, button, input} = dc
+a, p, span, text, li, div, button, input
+each} = dc
 
 controls = require 'domcom/demo/demo-controls'
 
@@ -96,6 +97,13 @@ describe 'demo', ->
       opts[1].node.onclick()
       expect(input1.node.value).to.equal('2')
 
+  describe 'controls', ->
+    it 'should mount controls and others', ->
+      comp = controls()
+      comp.mount('#demo')
+      expect(comp.getNode().length).to.equal(2)
+      comp.unmount()
+
   describe 'todomvc', ->
     it 'should construct and create components', ->
       comp = li(a({className:{selected: 1}, href:"#/"}, "All"))
@@ -103,9 +111,53 @@ describe 'demo', ->
       expect(comp.children.node.className).to.equal('selected')
       expect(comp.children.node.href).to.equal('http://localhost:63342/tiiji/domcom/#/')
 
-  describe 'controls', ->
-    iit 'should mount controls and others', ->
-      comp = controls()
-      comp.mount('#demo')
-      expect(comp.getNode().length).to.equal(2)
-      comp.unmount()
+    makeTodo = (todos, status) ->
+      status.hash = 'all'
+
+      getTodos = ->
+        if status.hash=='active' then todos.filter((todo) -> todo and !todo.completed)
+        else if status.hash=='completed' then todos.filter((todo) -> todo and todo.completed)
+        else todos
+
+      todoItems = each getTodos, (todo, index) ->
+        p(txt(->todo.title), ', ', txt(-> if todo.completed then 'completed' else 'uncompleted'))
+
+    it 'should mount getTodos and Each with empty todos correctly', ->
+      todos = []
+      comp = makeTodo todos, status={hash:'all'}
+      comp.mount()
+      expect(comp.getNode().length).to.equal 0
+
+    it 'should invalidate children to listComponent', ->
+      todos = [{title:'do this'}]
+      comp = makeTodo todos, status={hash:'all'}
+      comp.getBaseComponent()
+      expect(comp.listComponent.activeOffspring).to.equal null, 'all 1'
+      child0 = comp.cacheChildren[0]
+      status.hash = 'completed'
+      comp.listComponent.node = true
+      child0.invalid = false
+      comp.listComponent.activeOffspring = null
+      comp.getBaseComponent()
+      expect(comp.listComponent.activeOffspring[child0.dcid]).to.equal child0, 'completed'
+      child0.invalid = false
+      comp.listComponent.activeOffspring = null
+      status.hash = 'all'
+      comp.getBaseComponent()
+      expect(comp.listComponent.activeOffspring[child0.dcid]).to.equal child0, 'all 2'
+
+    iit 'should process getTodos and Each correctly', ->
+      todos = [{title:'do this'}]
+      comp = makeTodo todos, status={hash:'all'}
+      comp.mount()
+      expect(comp.getNode().length).to.equal 1
+      status.hash = 'completed'
+      comp.update()
+      expect(comp.getNode().length).to.equal 0
+      status.hash = 'all'
+      comp.getContentComponent()
+      child0 = comp.listComponent.children[0]
+      expect(comp.listComponent.activeOffspring[child0.dcid]).to.equal child0
+      comp.update()
+      expect(comp.listComponent.length).to.equal 1
+      expect(comp.getNode().length).to.equal 1

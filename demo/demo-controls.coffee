@@ -6,7 +6,7 @@ bindings} = dc
 module.exports = ->
   checkboxes = list(cbx=checkbox($a), cbx=checkbox($a))
   texts = list(a=text($a), text($a))
-#  $a(6)
+  $a(6)
   comp = list(checkboxes, texts)
-#  dc.updateWhen(cbx, 'change', comp)
-#  comp
+  dc.updateWhen(cbx, 'change', comp)
+  comp

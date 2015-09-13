@@ -20,7 +20,7 @@ mixinListWatcher = (list) ->
     list[i] = value
     if i<listLength
       for component in watchingComponents
-        component.invalidateChild(i)
+        component.invalidateChildren(i, i+1)
     else
       for component in watchingComponents
         component.invalidateChildren(listLength, i+1)
@@ -31,7 +31,7 @@ mixinListWatcher = (list) ->
     if !listLength then return
     result = pop.call(this)
     for component in watchingComponents
-      component.invalidateChild(listLength-1)
+      component.invalidateChildren(listLength-1, listLength)
     result
 
   list.push = ->
@@ -39,7 +39,7 @@ mixinListWatcher = (list) ->
     result = push.apply(list, arguments)
     listLength = list.length
     for component in watchingComponents
-      component.invalidateChild(oldLength, listLength)
+      component.invalidateChildren(oldLength, listLength)
     result
 
   list.shift = ->
@@ -112,9 +112,10 @@ flow.watchEachObject = (object, component) ->
 
     object.setItem = (key, value) ->
       object[key] = value
+      length = component._items.length
       for component in object.watchingComponents
         component._items.push([key, value])
-        component.invalidateChild(component._items.length-1)
+        component.invalidateChildren(length, length+1)
 
 # make itemFn always invalidate childComponent of the Each component
 # be careful about this, this will affect the performace

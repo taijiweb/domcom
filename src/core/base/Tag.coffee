@@ -88,7 +88,6 @@ module.exports = class Tag extends BaseComponent
     return
 
   getBaseComponent: ->
-    @oldBaseComponent = @
     @mountCallbackComponentList = if @mountCallbackList then [@] else []
     @unmountCallbackComponentList = if @unmountCallbackList then [@] else []
     @
@@ -278,7 +277,7 @@ module.exports = class Tag extends BaseComponent
     @noop = true
     @updateProperties()
     @resetHolderHookUpdater()
-    @updateOffspring(mounting)
+    @updateOffspring()
 
   updateProperties: ->
     if !@hasActiveProperties then return
@@ -335,6 +334,11 @@ module.exports = class Tag extends BaseComponent
       events.push components
       components = @
     dc.update(@, events, components)
+
+  removeNode: ->
+    if @parentNode
+      @parentNode.removeChild(@node)
+      @parentNode = null
 
   clone: (options=@options) ->
     result = new Tag(@tagName, @attrs, @children.clone(), options or @options)

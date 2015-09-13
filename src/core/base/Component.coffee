@@ -14,7 +14,6 @@ module.exports = class Component
     @node = null
     @options = options or {}
     @hookUpdater = @
-    @activeOffSpring = Object.create(null)
     @dcid = newDcid()
 
   setOptions: (@options) -> @
@@ -63,33 +62,39 @@ module.exports = class Component
     if @isBaseComponent then @isHolder = true
     if @parentNode && @parentNode!=@mountNode
       @unmount()
+    @mountMode = 'mounting'
     @parentNode = @mountNode
     @mountBeforeNode = beforeNode
     @render(true) # mounting = true
     @
 
   render: (mounting) ->
-    oldBaseComponent = @oldBaseComponent
-    if @removing
+    oldBaseComponent = @baseComponent
+    mountMode = @mountMode
+    if mountMode=='unmounting'
       oldBaseComponent.remove()
       if @listIndex? then @container.removeChild(@listIndex) #notSetFirstLast
-      @removing = null
+      @mountMode = null
       return
     @baseComponent = baseComponent = @getBaseComponent()
     baseComponent.parentNode = @parentNode
     if oldBaseComponent and baseComponent!=oldBaseComponent
       oldBaseComponent.replace(baseComponent, @) # pass the root container
     else
-      nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
       if !baseComponent.node
+        nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
         baseComponent.executeMountCallback()
-        baseComponent.createDom()
+        baseComponent.createDom(mounting)
         baseComponent.attachNode(nextNode)
       else
-        if mounting then baseComponent.executeMountCallback()
-        if !baseComponent.noop then baseComponent.updateDom(mounting)
-        if mounting then baseComponent.attachNode(nextNode)
-    @oldBaseComponent = baseComponent
+        mounting = @mountMode=='mounting' or mounting
+        if mounting
+          nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
+          baseComponent.executeMountCallback()
+          if !baseComponent.noop then baseComponent.updateDom(mounting)
+          baseComponent.attachNode(nextNode)
+          @mountMode = null
+        else if !baseComponent.noop then baseComponent.updateDom(mounting)
 
   create: -> @render()
 
@@ -99,10 +104,10 @@ module.exports = class Component
     @render()
 
   unmount: ->
-    if !@parentNode then return
-    @baseComponent.remove(@parentNode)
-    @parentNode = null
-    @
+    @baseComponent.remove()
+    if @listIndex? then @container.removeChild(@listIndex)
+    @mountMode = null
+    return
 
   setUpdateRoot: ->
     if !@noop
@@ -122,10 +127,8 @@ module.exports = class Component
             @hasActiveOffspring = true
       return
 
-  setRemoving: ->
-    if @removing then return
-    @removing = true
-    if @invalid then return
+  setMountMode: (mode) ->
+    @mountMode = mode
     @invalidate()
 
   hasLifeTimeEvent: -> false

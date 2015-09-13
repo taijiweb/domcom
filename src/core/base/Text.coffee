@@ -12,7 +12,7 @@ module.exports = class Text extends BaseComponent
     @firstNodeComponent = @lastNodeComponent = @
 
   processText: ->
-    if typeof @text == 'function'then @text()
+    if typeof @text == 'function'then domValue @text()
     else @text
 
   createDom: ->

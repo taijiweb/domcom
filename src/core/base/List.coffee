@@ -13,6 +13,7 @@ module.exports = exports = class List extends BaseComponent
       child.container = @
       child.listIndex = i
     @isList = true
+    @length = children.length
     super(options)
     return
 
@@ -25,7 +26,9 @@ module.exports = exports = class List extends BaseComponent
     for child, i in children
       child.parentNode = @parentNode
       child.render(true)
+    @node = true # prevent createDom this List again
     length = children.length
+    if length<2 then return
     i = 0
     while i < length-1
       lastNodeComponent = children[i].baseComponent.lastNodeComponent
@@ -58,12 +61,12 @@ module.exports = exports = class List extends BaseComponent
       firstNodeComponent.prevNodeComponent = lastNodeComponent
       i = j
     @firstNodeComponent = first
-    @node = true # prevent createDom this List again
     return
 
   updateDom: (mounting) ->
     @resetHolderHookUpdater()
     @updateOffspring(mounting)
+    @children.length = @length
 
   getNode: -> for child in @children then child.getNode()
 

@@ -78,15 +78,17 @@ describe 'list, each', ->
       expect(comp.getNode()).to.be.instanceof Array
       expect(comp.getNode()[0]).to.be.instanceof Element
 
-    it 'should mount and render each  component',  ->
+    it 'should mount and render each component',  ->
       document.getElementById('demo').innerHTML = ''
       comp = each(lst=['each', 'simple'], (item, i) -> p(item))
       comp.mount("#demo")
       expect(comp.getNode()[0].innerHTML).to.equal 'each'
       expect(comp.getNode()[1].innerHTML).to.equal 'simple'
-      lst.setItem 0,  3; lst.setItem 1, 4
+      lst.setItem 0,  3
       comp.update()
       expect(comp.getNode()[0].innerHTML).to.equal '3', 'update node 0'
+      lst.setItem 1, 4
+      comp.update()
       expect(comp.getNode()[1].innerHTML).to.equal '4', 'update node 1'
       lst.setItem 2, 5
       comp.update()
