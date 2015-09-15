@@ -101,16 +101,3 @@ addSetIntervalUpdater = (component, options) ->
     if clear and clear() then clearInterval handler
   handler = setInterval(fn, interval or 16)
 
-# usage:
-# tag {
-#  onEvent: updating comp, (event, comp) -> ...
-#  }
-# this is a bad design, will be deprecated!
-# the new component.updateWhen is better than this
-dc.updating = (components..., eventHandler) ->
-  if !components.length
-    eventHandler.processHandler = (component, key) ->
-      _updateWhen(component, key, [component])
-  else eventHandler.processHandler = (component, key) ->
-    _updateWhen(component, key, components)
-

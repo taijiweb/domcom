@@ -74,8 +74,6 @@ module.exports = class Tag extends BaseComponent
         else events[key] = value
         @hasActiveEvents = true
         @hasActiveProperties = true
-        if value and value.processHandler
-          value.processHandler(@, key)
       else if key[0]=='$'
         # $directiveName: generator arguments list
         generator = _directiveRegistry[key]
