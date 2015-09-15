@@ -24,11 +24,15 @@ module.exports = exports = class List extends BaseComponent
     i = startIndex; j = 0
     newChildrenLength = newChildren.length
     while j<newChildrenLength
+      child = children[i]
+      if child
+        child.container = null
+        child.listIndex = null
       child = children[i] = newChildren[j]
       child.container = @
       child.listIndex = @
       i++; j++
-    if i>children.length then @length = i
+    @length = children.length
     @
 
   createDom: ->

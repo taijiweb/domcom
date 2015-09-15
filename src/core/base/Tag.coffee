@@ -139,7 +139,7 @@ module.exports = class Tag extends BaseComponent
   bind: (eventNames, handler, before) ->
     names = eventNames.split('\s+')
     for name in names then @_addEventProp(name, handler, before)
-    return
+    @
 
   _addEventProp: (prop, handler, before) ->
     if prop[...2]!='on' then prop = 'on'+prop
@@ -156,7 +156,7 @@ module.exports = class Tag extends BaseComponent
   unbind: (eventNames, handler) ->
     names = eventNames.split('\s+')
     for name in names then @_removeEventHandlers(name, handler)
-    return
+    @
 
   _removeEventHandlers: (eventName, handler) ->
     if !@hasActiveEvents then return @
@@ -328,12 +328,6 @@ module.exports = class Tag extends BaseComponent
         spercialPropSet[prop](@, prop, value)
 
     return
-
-  updateWhen: (events..., components) ->
-    if isComponent(components) and components not instanceof Array
-      events.push components
-      components = @
-    dc.update(@, events, components)
 
   removeNode: ->
     if @parentNode

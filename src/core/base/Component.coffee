@@ -2,6 +2,8 @@ extend = require '../../extend'
 
 {normalizeDomElement} = require '../../dom-util'
 {newDcid} = require '../../util'
+isComponent = require './isComponent'
+dc = require '../../dc'
 
 componentId = 1
 mountList = []
@@ -126,6 +128,27 @@ module.exports = class Component
             myOffSpring[dcid] = comp
             @hasActiveOffspring = true
       return
+
+  # component.updateWhen [components, events] ...
+  # component.updateWhen components..., events...
+  # component.updateWhen setInterval, interval, options
+  # component.updateWhen dc.raf, options
+  updateWhen: (args...) ->
+    if args[0] instanceof Array
+      for item in args
+        dc.updateWhen(item..., [@])
+    else
+      i = 0; length = args.length
+      while i<length
+        if !isComponent(args[i]) then break
+        i++
+      if i>0 then dc.updateWhen(args.slice(0, i), args.slice(i), [@])
+      else
+        if args[0]==setInterval
+          if args[1]=='number' then dc.updateWhen(setInterval, args[1], [@], args[2])
+          else dc.updateWhen(setInterval, [@], args[1])
+        else if args[1]==dc.raf then dc.updateWhen(dc.raf, [@], args[1])
+    @
 
   setMountMode: (mode) ->
     @mountMode = mode

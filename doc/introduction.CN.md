@@ -67,4 +67,7 @@ angularjs 1.x 提供了一组复杂的概念框架，一方面提升了学习曲
 Domcom, template以及coffee-script
 
   
+  汝之蜜糖，吾之砒霜；
+  对人如此，对机亦然。
+
   Domcom用coffee-script实现，Domcom喜欢coffee-script。

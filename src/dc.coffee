@@ -3,7 +3,6 @@
  * @param element
 ###
 DomNode = require './DomNode'
-Component = require './core/base/component'
 {requestAnimationFrame} = require  './dom-util'
 {newDcid} = require './util'
 {componentCache, readyFnList, _updateComponentMap} = require './config'
@@ -51,26 +50,36 @@ window.$document = componentCache[dcid] = new DomNode(document)
 dcid = document.body.dcid = newDcid()
 window.$body = componentCache[dcid] = new DomNode(document.body)
 
+# dc.updateWhen components, events, updateComponentList, options
+# dc.updateWhen setInterval, interval, components..., {clear: -> clearInterval test}
 dc.updateWhen = (components, events, updateList, options) ->
   if updateList not instanceof Array then updateList = [updateList]
   if components instanceof Array
     if events instanceof Array
-      for component in events
+      for component in components
         for event in events
-          _updateWhen(components, event, updateList)
+          _updateWhenComponent(component, event, updateList)
     else
       for component in components
-        _updateWhen(component, events, updateList)
+        _updateWhenComponent(component, events, updateList)
+  else if components == setInterval
+    if isComponent(events) then addSetIntervalUpdater(events, updateList) # updateList is options
+    else if events instanceof Array
+      for component in events then addSetIntervalUpdater(events, updateList)
+    else if typeof events == 'number'
+      options = options or {}
+      options.interval = events
+      addSetIntervalUpdater(updateList, options)
   else if events instanceof Array
     for event in events
-      _updateWhen(components, event, updateList)
+      _updateWhenComponent(components, event, updateList)
   else
-    _updateWhen(components, events, updateList)
+    _updateWhenComponent(components, events, updateList)
+  return
 
 isComponent = require './core/base/isComponent'
 
-_updateWhen = (component, event, updateList, options) ->
-  if isComponent(component)
+_updateWhenComponent = (component, event, updateList, options) ->
     if event[...2]!='on' then event = 'on'+event
     if options
       component.eventUpdateConfig[event] = for comp in updateList
@@ -83,11 +92,6 @@ _updateWhen = (component, event, updateList, options) ->
       for [comp, _] in updateList
         comp.setUpdateRoot()
     return
-  else if component == setInterval
-    if isComponent(event) then addSetIntervalUpdater(event, updateList) # updateList is options
-    else for component in event then addSetIntervalUpdater(event, updateList)
-    return
-  return
 
 addSetIntervalUpdater = (component, options) ->
   handler = null
@@ -97,6 +101,12 @@ addSetIntervalUpdater = (component, options) ->
     if clear and clear() then clearInterval handler
   handler = setInterval(fn, interval or 16)
 
+# usage:
+# tag {
+#  onEvent: updating comp, (event, comp) -> ...
+#  }
+# this is a bad design, will be deprecated!
+# the new component.updateWhen is better than this
 dc.updating = (components..., eventHandler) ->
   if !components.length
     eventHandler.processHandler = (component, key) ->
