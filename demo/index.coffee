@@ -1,12 +1,13 @@
 # domcom demo
-{select, options} = dc
+{select, see2, case_, list} = dc
 
 {eachDemo1, eachDemo2, eachDemo3} = require 'domcom/demo/demo-each'
 {demoArrow, demoCombo} = require 'domcom/demo/demo-builtins'
 splitterDemo = require 'domcom/demo/demo-splitter'
+accordion = require 'domcom/demo/demo-accordion'
 
 exports.demoMap = demoMap =
-  accordion: require 'domcom/demo/demo-accordion'
+  accordion: accordion
   arrow:demoArrow
   combo:demoCombo
   "show hide": require 'domcom/demo/demo-show-hide'
@@ -25,24 +26,13 @@ exports.demoMap = demoMap =
   'auto width edit': require 'domcom/demo/demo-auto-width-edit'
 
 
-exports.runDemo = runDemo = (demoMap, initItem='accordion') ->
-  current = initItem
-  currentComp = demoMap[current]()
-  demoSelect = select({
-    $options: [Object.keys(demoMap)]
-    value: current
-    onchange: ->
-      if @value!=current
-        currentComp.unmount()
-        current = @value
-        currentComp = demoMap[current]()
-        currentComp.mount()
-  })
-  demoSelect.mount()
-  currentComp.mount()
+exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem='accordion') ->
+  currentItem = see2 initItem
+  list demoSelect = select({$options: [Object.keys(demoMap)], $model:currentItem}),
+    case_(currentItem, demoMap, accordion).updateWhen(demoSelect, 'change')
 
 exports.runDomComDemo = window.runDomComDemo = ->
-#  runDemo demoMap, 'accordion'
-  comp = splitterDemo()
+#  comp = splitterDemo()
+  comp = makeDemoComponent(demoMap, accordion)
   comp.mount()
 

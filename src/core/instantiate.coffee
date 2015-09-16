@@ -2,6 +2,7 @@
 Nothing
 Tag, Text, Comment,
 If, Case, Func, List, Each} = require './base'
+{isEven} = require '../util'
 
 isAttrs = (item) ->
   typeof item == 'object' and item!=null and !isComponent(item) and item not instanceof Array
@@ -61,6 +62,25 @@ exports.if_ = (attrs, test, then_, else_, options) ->
 exports.case_ = (attrs, test, map, else_, options) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Case(test, map, else_, options)])
   else new Case(attrs, test, map, else_)
+
+arrangeCondArgs = (condComponents, else_, options) ->
+  if !isEven(condComponents)
+    condComponents.push else_
+    if options and (isComponent(options) or typeof options != 'object')
+      else_ = options; options = {}
+    else else_ = null
+  else if options and (isComponent(options) or typeof options != 'object')
+      condComponents.push.apply(condComponents, [else_, options])
+  [condComponents, else_, options]
+
+exports.cond = (attrs, condComponents..., else_, options) ->
+  if isAttrs(attrs)
+    [condComponents, else_, options] = arrangeCondArgs(condComponents, else_, options)
+    new Tag('div', attrs, [new Cond(condComponents, else_, options)])
+  else
+    condComponents.unshift(attrs)
+    [condComponents, else_, options] = arrangeCondArgs(condComponents, else_, options)
+    new Cond(condComponents, else_, options)
 
 exports.func = (attrs, fn, options) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Func(fn, options)])
