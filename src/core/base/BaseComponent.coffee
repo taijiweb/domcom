@@ -7,6 +7,7 @@ module.exports = class BaseComponent extends Component
     super(options)
     @activeOffspring = null
     @isBaseComponent = true
+    @baseComponent = @
 
   getBaseComponent: ->
     @mountCallbackComponentList = if @mountCallbackList then [@] else []

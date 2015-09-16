@@ -24,11 +24,11 @@ exports.demoMap = demoMap =
   sum: require 'domcom/demo/demo-sum'
   'text model': require 'domcom/demo/demo-text-model'
   'auto width edit': require 'domcom/demo/demo-auto-width-edit'
-
+  'mount/unmount': require 'domcom/demo/demo-mount-unmount'
 
 exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem='accordion') ->
   currentItem = see2 initItem
-  list demoSelect = select({$options: [Object.keys(demoMap)], $model:currentItem}),
+  list demoSelect = select($options: [Object.keys(demoMap)], $model:currentItem),
     case_(currentItem, demoMap, accordion).updateWhen(demoSelect, 'change')
 
 exports.runDomComDemo = window.runDomComDemo = ->

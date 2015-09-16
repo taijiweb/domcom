@@ -1,12 +1,11 @@
-{dialog, div} = dc
+{dialog, list, div} = dc
 
 module.exports = ->
-  onOk = ->
-    alert('onOk')
-    dlg.close()
-  dlg = dialog({
-      overlay:true,
-      showClose:true
-    },
-    div({class:'message'}, 'a message', div({onclick:onOk}, 'OK')))
-  #dlg.open()
+  dlg = dialog
+    overlay:true,
+    showClose:true
+
+    div class: 'message',
+      'click to close me',
+      div onclick: (-> dlg.close()),
+        'OK'
