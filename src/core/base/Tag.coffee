@@ -327,11 +327,6 @@ module.exports = class Tag extends BaseComponent
 
     return
 
-  removeNode: ->
-    if @parentNode
-      @parentNode.removeChild(@node)
-      @parentNode = null
-
   clone: (options=@options) ->
     result = new Tag(@tagName, @attrs, @children.clone(), options or @options)
     result.copyLifeCallback(@)

@@ -1,4 +1,4 @@
-{Component, list, div}  = dc
+{Component, list, if_, see, div}  = dc
 
 globalID = 0
 
@@ -8,14 +8,19 @@ module.exports = (options, template) ->
   if options.overlay
     template = list(div({class:"dcdialog-overlay",style:{"z-index":10000}}), div({class:"dcdialog-content",style:{position:'absolute', "z-index":10001}},template))
   else template = div({class:"dcdialog-content",style:{"z-index":10001}},template)
-  dlg = div({id:'dcdialog' + (++globalID), class:"dcdialog",style:{position:'absolute', top:'0px', left:'0px', "z-index":9999}}, template)
+  opened = see !options.closed
+  dlg = if_ opened, div({id:'dcdialog' + (++globalID), class:"dcdialog",style:{position:'absolute', top:'0px', left:'0px', "z-index":9999}}, template)
   openCallback = options.openCallback
   dlg.open = ->
     openCallback and openCallback()
-    dlg.mount()
+    # do not use Component.mount, it's not allowed to mount/unmount sub Component
+    opened true
+    dlg.update()
   closeCallback = options.closeCallback
   dlg.close = ->
-    dlg.unmount()
+    # do not use Component.unmount, it's not allowed to mount/unmount sub Component
+    opened false
+    dlg.update()
     closeCallback and closeCallback()
   if options.escClose
     dlg.on 'onMount', ->

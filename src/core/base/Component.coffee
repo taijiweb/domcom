@@ -59,14 +59,19 @@ module.exports = class Component
     !cbs.length and @updateCallbackList = null
     @
 
+  ### if mountNode is given, it should not the node of any Component
+  only use beforeNode if mountNode is given
+  ###
   mount: (mountNode, beforeNode) ->
-    @mountNode = normalizeDomElement(mountNode)
+    if @container
+      throw new Error 'do not mount/unmount sub component'
+    mountNode = normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]
     if @isBaseComponent then @isHolder = true
-    if @parentNode && @parentNode!=@mountNode
-      @unmount()
+    if @parentNode and @parentNode!=mountNode
+      @mounted and @unmount()
+    @parentNode = mountNode
     @mountMode = 'mounting'
-    @parentNode = @mountNode
-    @mountBeforeNode = beforeNode
+    @mountBeforeNode = beforeNode or @mountBeforeNode
     @render(true) # mounting = true
     @
 
@@ -78,7 +83,7 @@ module.exports = class Component
       if @listIndex? then @container.removeChild(@listIndex) #notSetFirstLast
       @mountMode = null
       return
-    @baseComponent = baseComponent = @getBaseComponent()
+    baseComponent = @getBaseComponent()
     baseComponent.parentNode = @parentNode
     if oldBaseComponent and baseComponent!=oldBaseComponent
       oldBaseComponent.replace(baseComponent, @) # pass the root container
@@ -105,6 +110,8 @@ module.exports = class Component
       for callback in @updateCallbackList then callback()
     @render()
 
+  ### to ensure that the component can be mounted back again, this method should not change container and listIndex,
+  ###
   unmount: ->
     @baseComponent.remove()
     if @listIndex? then @container.removeChild(@listIndex)
@@ -129,10 +136,11 @@ module.exports = class Component
             @hasActiveOffspring = true
       return
 
-  # component.updateWhen [components, events] ...
-  # component.updateWhen components..., events...
-  # component.updateWhen setInterval, interval, options
-  # component.updateWhen dc.raf, options
+  ### component.updateWhen [components, events] ...
+  component.updateWhen components..., events...
+  component.updateWhen setInterval, interval, options
+  component.updateWhen dc.raf, options
+  ###
   updateWhen: (args...) ->
     if args[0] instanceof Array
       for item in args

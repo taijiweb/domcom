@@ -7,7 +7,7 @@ exports.requestAnimationFrame = exports.raf = _raf or (callback) ->
 exports.normalizeDomElement = (domElement) ->
   if typeof domElement == 'string'
     domElement = document.querySelector(domElement)
-  domElement or document.getElementsByTagName('body')[0]
+  domElement
 
 exports.insertNode = insertNode = (parent, child, beforeNode) ->
   if !parent then return

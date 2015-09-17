@@ -1,7 +1,7 @@
 BaseComponent = require './BaseComponent'
 
 module.exports = class Nothing extends BaseComponent
-  constructor: ->
+  constructor: -> super
   createDom: ->
   updateDom: ->
   getNode: ->

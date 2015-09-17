@@ -28,7 +28,7 @@ module.exports = class TransformComponent extends Component
     content = @content = @getContentComponent()
     content.container = @
     content.mountBeforeNode = @mountBeforeNode
-    baseComponent = content.getBaseComponent()
+    @baseComponent = baseComponent = content.getBaseComponent()
     if @mountCallbackList then baseComponent.mountCallbackComponentList.unshift @
     if @unmountCallbackList then baseComponent.unmountCallbackComponentList.push @
     baseComponent

@@ -104,6 +104,18 @@ describe 'demo', ->
       expect(comp.getNode().length).to.equal(2)
       comp.unmount()
 
+  describe 'mount/unmount', ->
+    it 'should not mount/unmount sub component', ->
+      div1 = div 'toggle me'
+      buttons = list  \
+        div onclick: (-> div1.mount()), 'mount',
+        div onclick: (-> div1.unmount()), 'unmount'
+      comp = list buttons, div1
+      expect(->div1.mount()).to.throw()
+      expect(->div1.unmount()).to.throw()
+      comp.mount()
+      comp.unmount()
+
   describe 'todomvc', ->
     it 'should construct and create components', ->
       comp = li(a({className:{selected: 1}, href:"#/"}, "All"))

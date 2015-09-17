@@ -85,7 +85,6 @@ describe 'if, case, func', ->
       x = see 0
       comp = list(text(x), c0=if_(x, c1=div(1), c2=div(2)))
       comp.mount()
-      expect(comp.mountNode).to.equal document.body
       expect(comp.parentNode).to.equal document.body
       expect(comp.getNode()[1].innerHTML).to.equal '2'
       expect(c0.parentNode).to.equal comp.parentNode

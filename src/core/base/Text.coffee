@@ -28,8 +28,6 @@ module.exports = class Text extends BaseComponent
       @node.textContent = text
     @
 
-  removeNode: -> @parentNode.removeChild(@node)
-
   clone: (options) -> (new @constructor(@text, options)).copyLifeCallback(@)
 
   toString: (indent=2, noNewLine) -> newLine(funcString(@text), indent, noNewLine)

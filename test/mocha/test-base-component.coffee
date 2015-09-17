@@ -35,7 +35,6 @@ describe "test base component", ->
       baseComponent = d.getBaseComponent()
       expect(baseComponent).to.equal d
       expect(baseComponent.children).to.be.instanceof Tag
-      d.baseComponent = null # otherwise d.mount() will do d.update()
       d.mount()
       baseComponent = d.getBaseComponent()
       expect(baseComponent.baseComponent).to.equal d

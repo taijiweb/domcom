@@ -78,9 +78,9 @@ module.exports = class BaseComponent extends Component
     return
 
   removeNode: ->
-    if @parentNode
-      @parentNode.removeChild(@node)
-      @parentNode = null
+    if !@parentNode or @unmounted then return
+    @parentNode.removeChild(@node)
+    @unmounted = true
 
   executeMountCallback: ->
     for component in @mountCallbackComponentList
