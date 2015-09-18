@@ -108,6 +108,7 @@ module.exports = class Component
   update: ->
     if @updateCallbackList
       for callback in @updateCallbackList then callback()
+    @invalid = true
     @render()
 
   ### to ensure that the component can be mounted back again, this method should not change container and listIndex,
@@ -141,28 +142,25 @@ module.exports = class Component
   component.updateWhen setInterval, interval, options
   component.updateWhen dc.raf, options
   ###
-  updateWhen: (args...) ->
+  updateWhen: (args...) -> @_renderWhenBy('update', args)
+  renderWhen: (args...) -> @_renderWhenBy('render', args)
+
+  _renderWhenBy: (method, args) ->
     if args[0] instanceof Array
       for item in args
-        dc.updateWhen(item..., [@])
+        dc._renderWhenBy(method, item..., [@])
     else
       i = 0; length = args.length
       while i<length
         if !isComponent(args[i]) then break
         i++
-      if i>0 then dc.updateWhen(args.slice(0, i), args.slice(i), [@])
+      if i>0 then dc._renderWhenBy(method, args.slice(0, i), args.slice(i), [@])
       else
         if args[0]==setInterval
-          if args[1]=='number' then dc.updateWhen(setInterval, args[1], [@], args[2])
-          else dc.updateWhen(setInterval, [@], args[1])
-        else if args[1]==dc.raf then dc.updateWhen(dc.raf, [@], args[1])
+          if args[1]=='number' then dc._renderWhenBy(method, setInterval, args[1], [@], args[2])
+          else dc._renderWhenBy(setInterval, [@], args[1])
+        else if args[1]==dc.raf then dc._renderWhenBy(method, dc.raf, [@], args[1])
     @
-
-  setMountMode: (mode) ->
-    @mountMode = mode
-    @invalidate()
-
-  hasLifeTimeEvent: -> false
 
   copyLifeCallback: (srcComponent) ->
     @beforeMountCallbackList = srcComponent.beforeMountCallbackList

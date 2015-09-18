@@ -109,7 +109,9 @@ module.exports = exports = class List extends BaseComponent
 
   getNode: -> for child in @children then child.getNode()
 
-  attachNode: -> # children will attach themself
+  attachNode: ->
+    @unmounted = false
+    # children will attach themself
 
   removeNode: ->
     if !@parentNode or @unmounted then return

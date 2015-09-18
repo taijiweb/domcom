@@ -14,7 +14,9 @@ module.exports = class BaseComponent extends Component
     @unmountCallbackComponentList = if @unmountCallbackList then [@] else []
     @
 
-  attachNode: (nextNode) -> @parentNode and @parentNode.insertBefore(@node, nextNode)
+  attachNode: (nextNode) ->
+    @unmounted = false
+    @parentNode and @parentNode.insertBefore(@node, nextNode)
 
   # this method will be called after updateProperties and before updating chidlren or activeOffspring
   resetHolderHookUpdater: ->

@@ -52,52 +52,60 @@ window.$body = componentCache[dcid] = new DomNode(document.body)
 
 # dc.updateWhen components, events, updateComponentList, options
 # dc.updateWhen setInterval, interval, components..., {clear: -> clearInterval test}
-dc.updateWhen = (components, events, updateList, options) ->
-  if updateList not instanceof Array then updateList = [updateList]
+dc.updateWhen =  (components, events, updateList, options) ->
+  dc._renderWhenBy('update', components, events, updateList, options)
+
+dc.renderWhen =  (components, events, updateList, options) ->
+  dc._renderWhenBy('render', components, events, updateList, options)
+
+dc._renderWhenBy = (method, components, events, updateList, options) ->
   if components instanceof Array
+    if updateList not instanceof Array then updateList = [updateList]
     if events instanceof Array
       for component in components
         for event in events
-          _updateWhenComponent(component, event, updateList)
+          _renderComponentWhenBy(method, component, event, updateList)
     else
       for component in components
-        _updateWhenComponent(component, events, updateList)
+        _renderComponentWhenBy(method, component, events, updateList)
   else if components == setInterval
-    if isComponent(events) then addSetIntervalUpdater(events, updateList) # updateList is options
+    if isComponent(events) then addSetIntervalUpdater(method, events, updateList) # updateList is options
     else if events instanceof Array
-      for component in events then addSetIntervalUpdater(events, updateList)
+      for component in events then addSetIntervalUpdater(method, events, updateList)
     else if typeof events == 'number'
       options = options or {}
       options.interval = events
-      addSetIntervalUpdater(updateList, options)
+      addSetIntervalUpdater(method, updateList, options)
   else if events instanceof Array
+    if updateList not instanceof Array then updateList = [updateList]
     for event in events
-      _updateWhenComponent(components, event, updateList)
+      _renderComponentWhenBy(method, components, event, updateList)
   else
-    _updateWhenComponent(components, events, updateList)
+    if updateList not instanceof Array then updateList = [updateList]
+    _renderComponentWhenBy(method, components, events, updateList)
   return
 
 isComponent = require './core/base/isComponent'
 
-_updateWhenComponent = (component, event, updateList, options) ->
+_renderComponentWhenBy = (method, component, event, updateList, options) ->
     if event[...2]!='on' then event = 'on'+event
     if options
       component.eventUpdateConfig[event] = for comp in updateList
         comp.setUpdateRoot()
         [comp, options]
     else
-      updateList = for item in updateList
-        if isComponent(item) then [item, {}] else item
+      for item, i in updateList
+        updateList[i] = if isComponent(item) then [item, {}] else item
       component.eventUpdateConfig[event] = updateList
       for [comp, _] in updateList
         comp.setUpdateRoot()
     return
 
-addSetIntervalUpdater = (component, options) ->
+addSetIntervalUpdater = (method, component, options) ->
   handler = null
   {test, interval, clear} = options
   fn = ->
-    if !test or test() then component.render()
+    if !test or test() then component[method]()
     if clear and clear() then clearInterval handler
   handler = setInterval(fn, interval or 16)
 

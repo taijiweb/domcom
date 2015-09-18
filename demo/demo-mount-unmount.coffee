@@ -1,8 +1,7 @@
-{list, div} = dc
+{list, div, see, if_} = dc
 
 module.exports = ->
-  div1 = div 'toggle me'
-  buttons = list \
-    div onclick: (-> div1.mount()), 'mount',
-    div onclick: (-> div1.unmount()), 'unmount'
-  list buttons, div1
+  active = see true
+  comp = list div(onclick: (-> active true; comp.update()), 'mount'),
+    div(onclick: (-> active false; comp.update()), 'unmount'),
+    div1 = if_ active, div 'toggle me'
