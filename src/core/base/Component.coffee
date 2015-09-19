@@ -63,10 +63,10 @@ module.exports = class Component
   only use beforeNode if mountNode is given
   ###
   mount: (mountNode, beforeNode) ->
-    if @container
+    if @holder
       throw new Error 'do not mount/unmount sub component'
     mountNode = normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]
-    if @isBaseComponent then @isHolder = true
+    if @isBaseComponent then @isContainer = true
     if @parentNode and @parentNode!=mountNode
       @mounted and @unmount()
     @parentNode = mountNode
@@ -80,13 +80,13 @@ module.exports = class Component
     mountMode = @mountMode
     if mountMode=='unmounting'
       oldBaseComponent.remove()
-      if @listIndex? then @container.removeChild(@listIndex) #notSetFirstLast
+      if @listIndex? then @holder.removeChild(@listIndex) #notSetFirstLast
       @mountMode = null
       return
     baseComponent = @getBaseComponent()
     baseComponent.parentNode = @parentNode
     if oldBaseComponent and baseComponent!=oldBaseComponent
-      oldBaseComponent.replace(baseComponent, @) # pass the root container
+      oldBaseComponent.replace(baseComponent, @) # pass the root holder
     else
       if !baseComponent.node
         nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
@@ -111,11 +111,11 @@ module.exports = class Component
     @invalid = true
     @render()
 
-  ### to ensure that the component can be mounted back again, this method should not change container and listIndex,
+  ### to ensure that the component can be mounted back again, this method should not change holder and listIndex,
   ###
   unmount: ->
     @baseComponent.remove()
-    if @listIndex? then @container.removeChild(@listIndex)
+    if @listIndex? then @holder.removeChild(@listIndex)
     @mountMode = null
     return
 
@@ -123,7 +123,7 @@ module.exports = class Component
     if !@noop
       if !@isUpdateRoot
         @isUpdateRoot = true
-        # remove me from my hooked ancestor container
+        # remove me from my hooked ancestor holder
         # move my active offSpring to meself
         hookUpdater = @hookUpdater
         @hookUpdater = @

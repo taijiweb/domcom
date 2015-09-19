@@ -11,22 +11,22 @@ module.exports = class TransformComponent extends Component
     if @invalid then return
     @invalid = true
     activeChild = @
-    container = @container
-    while container and !container.isHolder
-      if container.isTransformComponent
-        container.invalid = true
-        activeChild = container
-      container = container.container
-    if container and container.isHolder
-      container.activeOffspring = container.activeOffspring or Object.create(null)
-      container.activeOffspring[activeChild.dcid] = activeChild
-      container.invalidate()
+    holder = @holder
+    while holder and !holder.isContainer
+      if holder.isTransformComponent
+        holder.invalid = true
+        activeChild = holder
+      holder = holder.holder
+    if holder and holder.isContainer
+      holder.activeOffspring = holder.activeOffspring or Object.create(null)
+      holder.activeOffspring[activeChild.dcid] = activeChild
+      holder.invalidate()
 
   getBaseComponent: ->
     if !@invalid then return @baseComponent
     @invalid = false
     content = @content = @getContentComponent()
-    content.container = @
+    content.holder = @
     content.mountBeforeNode = @mountBeforeNode
     @baseComponent = baseComponent = content.getBaseComponent()
     if @mountCallbackList then baseComponent.mountCallbackComponentList.unshift @

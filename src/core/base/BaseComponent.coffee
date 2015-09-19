@@ -19,20 +19,20 @@ module.exports = class BaseComponent extends Component
     @parentNode and @parentNode.insertBefore(@node, nextNode)
 
   # this method will be called after updateProperties and before updating chidlren or activeOffspring
-  resetHolderHookUpdater: ->
+  resetContainerHookUpdater: ->
     @noop = !@hasActiveProperties and !@mountCallbackComponentList.length # will always be set again while offspring is changed
-    if !@container or @container.isTransformComponent
-      @isHolder = true
+    if !@holder or @holder.isTransformComponent
+      @isContainer = true
       # do not need to hook updater, just to be itself
     else if !@noop or @isUpdateRoot
-      @isHolder = true
-      container = @container
-      # the condition for isHolder ensure reaching baseComponent before transformCompnent or null
-      while !container.isHolder then container = container.container
-      @hookUpdater = container
-      container.activeOffspring = container.activeOffspring or Object.create(null)
-      container.activeOffspring[dcid] = @
-      container.noop = false # offspring update container.noop!!!
+      @isContainer = true
+      holder = @holder
+      # the condition for isContainer ensure reaching baseComponent before transformCompnent or null
+      while !holder.isContainer then holder = holder.holder
+      @hookUpdater = holder
+      holder.activeOffspring = holder.activeOffspring or Object.create(null)
+      holder.activeOffspring[dcid] = @
+      holder.noop = false # offspring update holder.noop!!!
 
   updateOffspring: () ->
     {activeOffspring} = @
@@ -45,13 +45,13 @@ module.exports = class BaseComponent extends Component
   invalidate: ->
     if !@noop then return
     @noop = false
-    container = @container
-    while container and !container.isHolder
-      container = container.container
-    if !container then return
-    container.activeOffspring = container.activeOffspring or Object.create(null)
-    container.activeOffspring[@dcid] = @
-    container.invalidate()
+    holder = @holder
+    while holder and !holder.isContainer
+      holder = holder.holder
+    if !holder then return
+    holder.activeOffspring = holder.activeOffspring or Object.create(null)
+    holder.activeOffspring[@dcid] = @
+    holder.invalidate()
 
   replace: (baseComponent, rootContainer) ->
     @removeNode()
@@ -60,11 +60,11 @@ module.exports = class BaseComponent extends Component
     nextNodeComponent = @nextNodeComponent
     firstNodeComponent = baseComponent.firstNodeComponent
     if firstNodeComponent
-      container = baseComponent.container
+      holder = baseComponent.holder
       if prevNodeComponent then prevNodeComponent.nextNodeComponent = firstNodeComponent
-      else container and container.firstNodeComponent = firstNodeComponent
+      else holder and holder.firstNodeComponent = firstNodeComponent
       if nextNodeComponent then nextNodeComponent.prevNodeComponent = baseComponent.lastNodeComponent
-      else container and container.lastNodeComponent = baseComponent.lastNodeComponent
+      else holder and holder.lastNodeComponent = baseComponent.lastNodeComponent
     if !baseComponent.node then baseComponent.createDom()
     else if !baseComponent.noop then baseComponent.updateDom(true) # mounting = true
     baseComponent.attachNode(@nextNodeComponent and @nextNodeComponent.node or rootContainer.mountBeforeNode)

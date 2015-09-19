@@ -46,8 +46,8 @@ module.exports = exports = class List extends BaseComponent
   constructor: (@children, options) ->
     options = options or {}
     for child, i in children
-      children[i] = toComponent(child)
-      children[i].container = @
+      children[i] = child = toComponent(child)
+      child.holder = child.container = @
     @isList = true
     @length = children.length
     super(options)
@@ -59,7 +59,7 @@ module.exports = exports = class List extends BaseComponent
     children = @children
     newChildren = for child in newChildren
       child = toComponent child
-      child.container = @
+      child.holder = child.container = @
       child
     newChildrenLength = newChildren.length
     if !@node
@@ -74,7 +74,7 @@ module.exports = exports = class List extends BaseComponent
       if child # maybe newChildren will be more than the left children
         if child.mounted then child.unmount()
       child = children[i] = newChildren[j]
-      child.container = @
+      child.holder = @
       child.listIndex = @
       i++; j++
     @length = children.length
@@ -89,7 +89,7 @@ module.exports = exports = class List extends BaseComponent
     @
 
   createDom: ->
-    @resetHolderHookUpdater()
+    @resetContainerHookUpdater()
     children = @children
     listLength = children.length
     for child, i in children
@@ -103,7 +103,7 @@ module.exports = exports = class List extends BaseComponent
     return
 
   updateDom: (mounting) ->
-    @resetHolderHookUpdater()
+    @resetContainerHookUpdater()
     @updateOffspring(mounting)
     @children.length = @length
 
@@ -156,21 +156,21 @@ module.exports = exports = class List extends BaseComponent
     if removedFirst==@firstNodeComponent
       newFirst = replaced and replaced.firstNodeComponent or removed.nextNodeComponent
       @firstNodeComponent = newFirst
-      me = @; container = @container
+      me = @; holder = @holder
       while me.listIndex
-        if removedFirst!=container.firstNodeComponent then break
-        container.firstNodeComponent = newFirst
-        me = container; container = @container
+        if removedFirst!=holder.firstNodeComponent then break
+        holder.firstNodeComponent = newFirst
+        me = holder; holder = @holder
     removedLast = removed.lastNodeComponent
     if !removedLast then return
     if removedLast==@lastNodeComponent
       newLast = replaced and replaced.lastNodeComponent or removed.prevNodeComponent
       @lastNodeComponent = newLast
-      me = @; container = @container
+      me = @; holder = @holder
       while me.listIndex
-        if removedLast==container.lastNodeComponent then break
-        container.firstNodeComponent = newLast
-        me = container; container = @container
+        if removedLast==holder.lastNodeComponent then break
+        holder.firstNodeComponent = newLast
+        me = holder; holder = @holder
     return
 
   toString: (indent=0, noNewLine) ->

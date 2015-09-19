@@ -23,12 +23,13 @@ module.exports = class Tag extends BaseComponent
     @isTag = true
     if children instanceof Array
       if children.length==1
-        @children = toComponent(children[0])
+        children = toComponent(children[0])
       else if children.length==0
-        @children = new Nothing()
-      else @children = new List(children, {})
-    else @children = toComponent(children)
-    @children.container = @
+        children = new Nothing()
+      else children = new List(children, {})
+    else children = toComponent(children)
+    children.holder = children.container = @
+    @children = children
     @processAttrs()
     @firstNodeComponent = @lastNodeComponent = @
     return
@@ -263,7 +264,7 @@ module.exports = class Tag extends BaseComponent
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
     @updateProperties()
-    @resetHolderHookUpdater()
+    @resetContainerHookUpdater()
     {children} = @
     children.parentNode = node
     children.render(true) # need mounting
@@ -274,7 +275,7 @@ module.exports = class Tag extends BaseComponent
   updateDom: (mounting) ->
     @noop = true
     @updateProperties()
-    @resetHolderHookUpdater()
+    @resetContainerHookUpdater()
     @updateOffspring()
 
   updateProperties: ->

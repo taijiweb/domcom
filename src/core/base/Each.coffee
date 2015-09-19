@@ -40,7 +40,7 @@ module.exports = class Each extends TransformComponent
     @cacheComponents = Object.create(null)
     @cacheChildren = []
     @listComponent = new List(@children=[])
-    @listComponent.isHolder = true
+    @listComponent.isContainer = true
     return
 
   reset: (options) ->
@@ -104,7 +104,7 @@ module.exports = class Each extends TransformComponent
           result
 
         child = children[i] = cacheChildren[i] = new Func childReactives[i]
-        child.container = listComponent
+        child.holder = listComponent
         child.listIndex = i
         child.parentNode = @parentNode
         if listComponent.node then child.mountMode = 'mounting'
