@@ -17,6 +17,14 @@ module.exports = class Cond extends TransformComponent
       i += 2
     else_ = toComponent else_
 
+    i = 1;
+    families = []
+    while i<length
+      families.push  condComponentList[i].family
+      i += 2
+    families.push else_.family
+    @family = family = intersect(families)
+
     @getContentComponent = ->
       for [test, component] in condComponentList
         if test() then return component

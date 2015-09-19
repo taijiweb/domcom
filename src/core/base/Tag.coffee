@@ -9,6 +9,7 @@ List = require './List'
 {domValue} = require '../../dom-util'
 {_directiveRegistry} = require '../../directives/register'
 Nothing = require './Nothing'
+Ref = require './Ref'
 toComponent = require './toComponent'
 
 module.exports = class Tag extends BaseComponent
@@ -28,6 +29,10 @@ module.exports = class Tag extends BaseComponent
         children = new Nothing()
       else children = new List(children, {})
     else children = toComponent(children)
+    @family = family = Object.create(null)
+    for dcid of children.family then family[dcid] = true
+    family[@dcid] = true
+    children.container and !children.isRef and children = new Ref(children)
     children.holder = children.container = @
     @children = children
     @processAttrs()

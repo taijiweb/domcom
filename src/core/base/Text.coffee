@@ -9,6 +9,8 @@ module.exports = class Text extends BaseComponent
     if typeof text == 'function'
       text.onInvalidate -> me.invalidate()
     super(options)
+    @family = Object.create(null)
+    @family[@dcid] = true
     @firstNodeComponent = @lastNodeComponent = @
 
   processText: ->

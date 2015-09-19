@@ -11,13 +11,38 @@ a, p, span, text, div} = dc
 describe 'ref, clone', ->
 
   describe 'Ref', ->
-    it 'should throw error while constucting conflicted component without ref: if_((-> x), t1=txt(1), Ref(t1))', ->
-      t1 = txt(1)
-      expect(-> list(p(t1), if_(1, t1, t1))).to.not.throw Error
+    it 'should throw error while constucting conflicted component list(t, t))', ->
+      t = txt(1)
+      expect(-> list(t, t)).to.throw Error
 
-    it 'should getBaseComponent of if_((-> x), t1=txt(1), Ref(t1))', ->
+    it 'should throw error while constucting conflicted component list(t, p(t)))', ->
+      t = txt(1)
+      expect(-> list(t, p(t))).to.throw Error
+
+    it 'should throw error while conflicted component in list(p(t), if_(1, t, 0))', ->
+      t = txt(1)
+      #if_(1, t, 0) is converted to t for optimization
+      expect(-> list(p(t), if_(1, t, 0))).to.throw Error
+
+    it 'should throw error while conflicted component in list(p(t), if_(0, 2, t))', ->
+      t = txt(1)
+      #if_(0, 2, t)is converted to t for optimization
+      expect(-> list(p(t), if_(0, 2, t))).to.throw Error
+
+    it 'should throw error while conflicted component in list(p(t), if_(-> x, t, t))', ->
+      t = txt(1)
+      x = 0
+      # if_(-> x, t, t) is converted to t for optimization
+      expect(-> list(p(t), if_((-> x),  t, t))).to.throw Error
+
+    it 'should throw error while conflicted component in list(p(t), if_(-> x, p(t), t))', ->
+      t = txt(1)
+      x = 0
+      expect(-> list(p(t), if_((-> x),  p(t), t))).to.throw Error
+
+    it 'should getBaseComponent of if_((-> x), t=txt(1), Ref(t))', ->
       x = see 0
-      comp = if_(x, t1=txt(1), t1)
+      comp = if_(x, t=txt(1), t)
       comp.mount()
       comp.update()
 

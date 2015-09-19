@@ -1,8 +1,9 @@
 toComponent = require './toComponent'
 BaseComponent = require './BaseComponent'
 Text = require './Text'
-{checkContainer} = require '../../util'
-{newLine} = require '../../util'
+Ref = require './Ref'
+{checkContainer, newLine} = require '../../util'
+{checkConflictOffspring} = require '../../dom-util'
 
 getFirstLastComponent = (children) ->
   length = children.length
@@ -45,12 +46,17 @@ getFirstLastComponent = (children) ->
 module.exports = exports = class List extends BaseComponent
   constructor: (@children, options) ->
     options = options or {}
+    super(options)
+    @family = family = Object.create(null)
+    family[@dcid] = true
     for child, i in children
       children[i] = child = toComponent(child)
-      child.holder = child.container = @
+      checkConflictOffspring(family, child)
+      child.container and !child.isRef and child = new Ref(child, @, i)
+      child.holder = @
+      child.container = @
     @isList = true
     @length = children.length
-    super(options)
     return
 
   clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
@@ -59,6 +65,8 @@ module.exports = exports = class List extends BaseComponent
     children = @children
     newChildren = for child in newChildren
       child = toComponent child
+      if child.container
+        child = new Ref(child, @, i)
       child.holder = child.container = @
       child
     newChildrenLength = newChildren.length
@@ -122,6 +130,9 @@ module.exports = exports = class List extends BaseComponent
   insertChild: (index, child) ->
     children = @children
     if !@node
+      child = toComponent(child, @, index)
+      if child.container
+        child = new Ref(child, container, i)
       children.splice(index, 0, child)
       @length++
       return @

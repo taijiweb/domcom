@@ -12,6 +12,7 @@ module.exports = class Component
   constructor: (options) ->
     @listeners = {}
     @baseComponent = null
+    @refComponent = @
     @parentNode = null
     @node = null
     @options = options or {}

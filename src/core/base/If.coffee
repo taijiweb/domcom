@@ -1,6 +1,6 @@
 toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
-{funcString, newLine} = require '../../util'
+{funcString, newLine, intersect} = require '../../util'
 {renew} = require '../../flow'
 
 mergeThenElseValue = (test, thenValue, elseValue) ->
@@ -40,12 +40,16 @@ module.exports = class If extends TransformComponent
 
     if typeof test != 'function'
       return if test then then_ else else_
+    else if then_==else_ then return then_
+
+    super(options)
+
+    @family = family = intersect([then_.family, else_.family])
+    family[@dcid] = true
 
     if !test.invalidate then test = renew(test)
 
     test.onInvalidate(@invalidate.bind(@))
-
-    super(options)
 
     @getContentComponent = -> if test() then then_ else else_
 

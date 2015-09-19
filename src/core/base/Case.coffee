@@ -1,12 +1,10 @@
 toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
-{funcString, newLine} = require '../../util'
+{funcString, newLine, intersect} = require '../../util'
 {renew} = require '../../flow'
 
 module.exports = class Case extends TransformComponent
   constructor: (test, map, else_, options={}) ->
-    super(options)
-
     if typeof test != 'function'
       if map.hasOwnPoperty(test) then return toComponent(map[key])
       else return toComponent(else_)
@@ -15,6 +13,13 @@ module.exports = class Case extends TransformComponent
       for key, value of map
         else_ = new  If((->test()==key), value, else_)
       return else_
+
+    super(options)
+
+    families = for _, value of map then value.family
+    families.push else_.family
+    @family = family = intersect(families)
+    family[@dcid] = true
 
     if !test.invalidate then test = renew(test)
     test.onInvalidate(@invalidate.bind(@))

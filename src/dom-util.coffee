@@ -63,7 +63,7 @@ createUpdateHtml = ->
 
 exports.getBindProp = (component)  ->
   {tagName} = component
-  if !tagName then throw new Error 'trying to bind wrong Component'
+  if !tagName then throw new Error 'trying to bind a Component which is not a Tag'
   else if tagName=='textarea' or tagName=='select' then return 'value'
   else if component.attrs.type=='checkbox' then return 'checked'
   else return 'value'
@@ -75,3 +75,14 @@ exports.domValue = (val) ->
   if typeof val != 'function' then return val
   if !val.invalidate then return renew(val)
   val
+
+# family do not consider exceeding TransformComponent
+# a BaseComponent can have only one reference of one component in all of its family
+# it's the responsiblility of the user program of domcom to keep no conflicting reference while exceeding TransformComponent
+exports.checkConflictOffspring = (family, child) ->
+  childDcid = child.dcid
+  for dcid of child.family
+    if family[dcid]
+      throw new Error 'do not allow to have the same component to be referenced in different location of one List'
+    family[dcid] = true
+  return

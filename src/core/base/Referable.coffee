@@ -1,14 +1,14 @@
 toComponent = require './toComponent'
-TransformComponent = require './BaseComponent'
+TransformComponent = require './TransformComponent'
 {funcString, newLine} = require '../../util'
 
-module.exports = class Referable extends BaseComponent
-  constructor: (baseComponent) ->
+module.exports = class Referable extends TransformComponent
+  constructor: (component) ->
     super(options)
     @refs = Object.create(null)
     @ref = null
 
-    @geBaseComponent = ->
+    @getContentComponent = ->
       if !baseComponent.node
         baseComponent.ref = @
         baseComponent

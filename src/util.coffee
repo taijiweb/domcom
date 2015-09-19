@@ -71,3 +71,15 @@ exports.matchCurvedString = (str, i) ->
     else if ch==')'
       if level==0 then return ++i
       else level--
+
+exports.intersect = (maps) ->
+  result = Object.create(null)
+  m = maps[0]
+  for key of m
+    isMember = true
+    for m2 in maps[1...]
+      if !m2[key]
+        isMember = false
+        break
+    isMember and result[key] = m[key]
+  result

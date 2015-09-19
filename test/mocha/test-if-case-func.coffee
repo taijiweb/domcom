@@ -11,6 +11,18 @@ a, p, span, text, div} = dc
 describe 'if, case, func', ->
 
   describe 'If', ->
+    it 'should optimize if_', ->
+      t = txt(1)
+      x = 0
+      expect(if_((-> x),  t, t)).to.equal t
+      expect(if_(0, 1, t)).to.equal t
+      expect(if_(1, t, 0)).to.equal t
+
+    it 'should compute if_((-> x),  p(t), t).family', ->
+      t = txt(1)
+      x = 0
+      expect(if_((-> x),  p(t), t).family[t.dcid]).to.equal true
+
     it 'should getBaseComponent of if_(->x, txt(1), txt(2))', ->
       x = see 0
       comp = if_(x, txt(1), txt(2))
