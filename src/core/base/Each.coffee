@@ -90,7 +90,7 @@ module.exports = class Each extends TransformComponent
       else
         childReactives[i] = react ->
           items = me._items
-          item = items[i]
+          item = items[i]  # todo: change item to reative function !!!
           index = child.listIndex
           result =
             if me.isArrayItems

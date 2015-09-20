@@ -12,7 +12,6 @@ module.exports = class Component
   constructor: (options) ->
     @listeners = {}
     @baseComponent = null
-    @refComponent = @
     @parentNode = null
     @node = null
     @options = options or {}
@@ -75,34 +74,6 @@ module.exports = class Component
     @mountBeforeNode = beforeNode or @mountBeforeNode
     @render(true) # mounting = true
     @
-
-  render: (mounting) ->
-    oldBaseComponent = @baseComponent
-    mountMode = @mountMode
-    if mountMode=='unmounting'
-      oldBaseComponent.remove()
-      if @listIndex? then @holder.removeChild(@listIndex) #notSetFirstLast
-      @mountMode = null
-      return
-    baseComponent = @getBaseComponent()
-    baseComponent.parentNode = @parentNode
-    if oldBaseComponent and baseComponent!=oldBaseComponent
-      oldBaseComponent.replace(baseComponent, @) # pass the root holder
-    else
-      if !baseComponent.node
-        nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
-        baseComponent.executeMountCallback()
-        baseComponent.createDom(mounting)
-        baseComponent.attachNode(nextNode)
-      else
-        mounting = @mountMode=='mounting' or mounting
-        if mounting
-          nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
-          baseComponent.executeMountCallback()
-          if !baseComponent.noop then baseComponent.updateDom(mounting)
-          baseComponent.attachNode(nextNode)
-          @mountMode = null
-        else if !baseComponent.noop then baseComponent.updateDom(mounting)
 
   create: -> @render()
 

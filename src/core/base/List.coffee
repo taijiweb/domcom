@@ -52,9 +52,7 @@ module.exports = exports = class List extends BaseComponent
     for child, i in children
       children[i] = child = toComponent(child)
       checkConflictOffspring(family, child)
-      child.container and !child.isRef and child = new Ref(child, @, i)
-      child.holder = @
-      child.container = @
+      child.setRefContainer(@)
     @isList = true
     @length = children.length
     return

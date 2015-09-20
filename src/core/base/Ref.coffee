@@ -25,12 +25,7 @@ module.exports = class Ref extends TransformComponent
       content.mountBeforeNode = @mountBeforeNode
       @baseComponent = baseComponent = content.getBaseComponent()
       if baseComponent!=oldBaseComponent then return baseComponent
-      if baseComponent.container
-        if (baseComponent.container != @container or baseComponent.listPath!=@listPath) and !baseComponent.referable
-          throw new Error 'do not mount unreferable component in mutlitple places'
-      else
-        baseComponent.container = @container
-        baseCompnent.listPath = @listPath
+      baseComponent.container = @container
       if @mountCallbackList then baseComponent.mountCallbackComponentList.unshift @
       if @unmountCallbackList then baseComponent.unmountCallbackComponentList.push @
       baseComponent = content.getBaseComponent()

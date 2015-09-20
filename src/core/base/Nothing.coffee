@@ -10,7 +10,10 @@ module.exports = class Nothing extends BaseComponent
     if cacheNothing then return cacheNothing
     super
     @family = Object.create(null)
+    @isNothing = true
     cacheNothing = @
+
+  render: ->
   createDom: ->
   updateDom: ->
   getNode: ->

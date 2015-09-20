@@ -7,7 +7,32 @@ module.exports = class BaseComponent extends Component
     super(options)
     @activeOffspring = null
     @isBaseComponent = true
+    @refs = Object.create(null)
     @baseComponent = @
+
+  render: (mounting) ->
+    @mountCallbackComponentList = if @mountCallbackList then [@] else []
+    @unmountCallbackComponentList = if @unmountCallbackList then [@] else []
+    mountMode = @mountMode
+    if mountMode=='unmounting'
+      @remove()
+      if @listIndex? then @holder.removeChild(@listIndex) #notSetFirstLast
+      @mountMode = null
+      return
+    if !@node
+      nextNode = @nextNodeComponent and @nextNodeComponent.node or @mountBeforeNode
+      @executeMountCallback()
+      @createDom(mounting)
+      @attachNode(nextNode)
+    else
+      mounting = @mountMode=='mounting' or mounting
+      if mounting
+        nextNode = @nextNodeComponent and @nextNodeComponent.node or @mountBeforeNode
+        @executeMountCallback()
+        if !@noop then @updateDom(mounting)
+        @attachNode(nextNode)
+        @mountMode = null
+      else if !@noop then @updateDom(mounting)
 
   getBaseComponent: ->
     @mountCallbackComponentList = if @mountCallbackList then [@] else []
@@ -20,7 +45,8 @@ module.exports = class BaseComponent extends Component
 
   # this method will be called after updateProperties and before updating chidlren or activeOffspring
   resetContainerHookUpdater: ->
-    @noop = !@hasActiveProperties and !@mountCallbackComponentList.length # will always be set again while family is changed
+    # @noop will always be set again while offspring is changed
+    @noop = !@hasActiveProperties and !@mountCallbackComponentList.length
     if !@holder or @holder.isTransformComponent
       @isContainer = true
       # do not need to hook updater, just to be itself
@@ -52,6 +78,12 @@ module.exports = class BaseComponent extends Component
     holder.activeOffspring = holder.activeOffspring or Object.create(null)
     holder.activeOffspring[@dcid] = @
     holder.invalidate()
+
+  setRefContainer: (container) ->
+    @refs[container.dcid] = container
+    @container = container
+    @holder = container
+    @
 
   replace: (baseComponent, rootContainer) ->
     @removeNode()

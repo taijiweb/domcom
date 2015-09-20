@@ -7,6 +7,11 @@ module.exports = class TransformComponent extends Component
     @valid = false
     @isTransformComponent = true
 
+  setRefContainer: (container) ->
+    @container = container
+    @holder = container
+    @
+
   invalidate: ->
     if !@valid then return
     @valid = false
@@ -22,6 +27,34 @@ module.exports = class TransformComponent extends Component
       holder.activeOffspring[activeChild.dcid] = activeChild
       holder.invalidate()
 
+  render: (mounting) ->
+    oldBaseComponent = @baseComponent
+    mountMode = @mountMode
+    if mountMode=='unmounting'
+      oldBaseComponent.remove()
+      if @listIndex? then @holder.removeChild(@listIndex) #notSetFirstLast
+      @mountMode = null
+      return
+    baseComponent = @getBaseComponent()
+    baseComponent.parentNode = @parentNode
+    if oldBaseComponent and baseComponent!=oldBaseComponent
+      oldBaseComponent.replace(baseComponent, @) # pass the root holder
+    else
+      if !baseComponent.node
+        nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
+        baseComponent.executeMountCallback()
+        baseComponent.createDom(mounting)
+        baseComponent.attachNode(nextNode)
+      else
+        mounting = @mountMode=='mounting' or mounting
+        if mounting
+          nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
+          baseComponent.executeMountCallback()
+          if !baseComponent.noop then baseComponent.updateDom(mounting)
+          baseComponent.attachNode(nextNode)
+          @mountMode = null
+        else if !baseComponent.noop then baseComponent.updateDom(mounting)
+
   getBaseComponent: ->
     if @valid then return @baseComponent
     @valid = true
@@ -34,9 +67,7 @@ module.exports = class TransformComponent extends Component
         throw new Error 'do not mount unreferable component in mutlitple places'
     else
       baseComponent.container = @container
-      baseComponent.listPath = @listPath
       content.container = @container
-      content.listPath = @listPath
     if @mountCallbackList then baseComponent.mountCallbackComponentList.unshift @
     if @unmountCallbackList then baseComponent.unmountCallbackComponentList.push @
     baseComponent

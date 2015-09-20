@@ -1,8 +1,8 @@
 Each Component uses reactive closure as item or key and value argument
   2015-9-20 5:30
     recently lose sleeping because thinking taijiweb, especially on how to extend domcom to server side...
-    below is the spark got just a moment ago:
-    # so cool idea:
+    below is the spark being gotten just a moment ago:
+    # cool idea:
     (item, i, list) ->
        # pass reative closure as item, item is duplex reactive function, item(value) will set list[i] = value
        if sorting, i is the index after sorting

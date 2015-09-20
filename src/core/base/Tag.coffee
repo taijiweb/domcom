@@ -32,8 +32,7 @@ module.exports = class Tag extends BaseComponent
     @family = family = Object.create(null)
     for dcid of children.family then family[dcid] = true
     family[@dcid] = true
-    children.container and !children.isRef and children = new Ref(children, @, null) # container, listIndex
-    children.holder = children.container = @
+    children.setRefContainer(@)
     @children = children
     @processAttrs()
     @firstNodeComponent = @lastNodeComponent = @
