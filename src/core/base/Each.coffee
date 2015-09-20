@@ -77,15 +77,15 @@ module.exports = class Each extends TransformComponent
     {listComponent, cacheChildren, children, childReactives, cacheComponents, keyFunction, itemFn} = @
     if i>=@_items.length
       child = cacheChildren[i]
-      child.invalid = true
+      child.valid = false
       child.mountMode = 'unmounting'
     else
       if i<children.length
         child = children[i]
-        child.invalid = true
+        child.valid = false
       else if i<cacheChildren.length
         child = children[i] = cacheChildren[i]
-        child.invalid = true
+        child.valid = false
         child.mountMode = 'mounting'
       else
         childReactives[i] = react ->

@@ -1,5 +1,9 @@
 BaseComponent = require './BaseComponent'
 
+###
+  Nothing is a singleton
+###
+
 cacheNothing = null
 module.exports = class Nothing extends BaseComponent
   constructor: ->

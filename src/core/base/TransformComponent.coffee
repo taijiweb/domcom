@@ -4,17 +4,17 @@ Component = require './component'
 module.exports = class TransformComponent extends Component
   constructor: (options) ->
     super(options)
-    @invalid = true
+    @valid = false
     @isTransformComponent = true
 
   invalidate: ->
-    if @invalid then return
-    @invalid = true
+    if !@valid then return
+    @valid = false
     activeChild = @
     holder = @holder
     while holder and !holder.isContainer
       if holder.isTransformComponent
-        holder.invalid = true
+        holder.valid = false
         activeChild = holder
       holder = holder.holder
     if holder and holder.isContainer
@@ -23,8 +23,8 @@ module.exports = class TransformComponent extends Component
       holder.invalidate()
 
   getBaseComponent: ->
-    if !@invalid then return @baseComponent
-    @invalid = false
+    if @valid then return @baseComponent
+    @valid = true
     content = @content = @getContentComponent()
     content.holder = @
     content.mountBeforeNode = @mountBeforeNode

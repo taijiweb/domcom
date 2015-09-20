@@ -148,11 +148,11 @@ describe 'demo', ->
       child0 = comp.cacheChildren[0]
       status.hash = 'completed'
       comp.listComponent.node = true
-      child0.invalid = false
+      child0.valid = true
       comp.listComponent.activeOffspring = null
       comp.getBaseComponent()
       expect(comp.listComponent.activeOffspring[child0.dcid]).to.equal child0, 'completed'
-      child0.invalid = false
+      child0.valid = true
       comp.listComponent.activeOffspring = null
       status.hash = 'all'
       comp.getBaseComponent()

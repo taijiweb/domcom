@@ -109,7 +109,7 @@ module.exports = class Component
   update: ->
     if @updateCallbackList
       for callback in @updateCallbackList then callback()
-    @invalid = true
+    @valid = false
     @render()
 
   ### to ensure that the component can be mounted back again, this method should not change holder and listIndex,

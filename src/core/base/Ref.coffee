@@ -8,16 +8,19 @@ module.exports = class Ref extends TransformComponent
     if content==new Nothing() then return content
     if content.isRef then return content
     super()
+    @isRef = true
     @refComponent = content
     @family = content.family
 
-    refs = content.refs or content.refs = Object.create(null)
+    if !refs = content.refs
+      refs =  content.refs = Object.create(null)
+      refs[content.container.dcid] = content.container
     refs[container.dcid] = container
     content.holder = @
 
     @getBaseComponent = ->
-      if !@invalid then return @baseComponent
-      @invalid = false
+      if @valid then return @baseComponent
+      @valid = true
       oldBaseComponent = @baseComponent
       content.mountBeforeNode = @mountBeforeNode
       @baseComponent = baseComponent = content.getBaseComponent()
@@ -47,9 +50,7 @@ module.exports = class Ref extends TransformComponent
         for ref in refs
           ref.invalidate()
 
-    @clone = (options) ->
-      throw new Error 'not implemented'
-      #baseComponent.clone(options)
+    @clone = (options) -> throw new Error 'not implemented'
 
     @toString = (indent=0, noNewLine='') ->  baseComponent.toString(indent, noNewLine)
 

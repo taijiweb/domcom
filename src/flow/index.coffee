@@ -2,7 +2,7 @@
 
 react = (method) ->
 
-  method.invalid = true
+  method.valid = false
 
   invalidateCallbacks = []
 
@@ -21,7 +21,7 @@ react = (method) ->
     if !invalidateCallbacks then return
     for callback in invalidateCallbacks
      callback()
-    method.invalid = true
+    method.valid = false
     return
 
   method
@@ -31,8 +31,8 @@ dependent = (computation) ->
 
   method = ->
     if !arguments.length
-      if method.invalid
-        method.invalid = false
+      if !method.valid
+        method.valid = true
         cacheValue = computation()
       else cacheValue
     else throw new Error 'flow.dependent is not allowed to accept arguments'

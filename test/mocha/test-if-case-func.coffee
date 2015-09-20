@@ -23,7 +23,12 @@ describe 'if, case, func', ->
       x = 0
       expect(if_((-> x),  p(t), t).family[t.dcid]).to.equal true
 
-    it 'should getBaseComponent of if_(->x, txt(1), txt(2))', ->
+    it 'should construct if_(x, p(t1), list(p(t2), t1))', ->
+      x = see 0
+      t1 = txt 1; t2 = txt 2
+      comp = if_(x, p(t1), list(t2, p(t1)))
+
+    it 'should render if_(see something, txt(1), txt(2))', ->
       x = see 0
       comp = if_(x, txt(1), txt(2))
       comp.mount()
@@ -37,10 +42,47 @@ describe 'if, case, func', ->
       comp.update()
       expect(comp.getNode().textContent).to.equal '2', 'update x 0'
 
-    it 'should render If component', ->
+    it 'should render if_(x, list(t1, t2), list(t2, t1))', ->
+      x = see 0
+      t1 = txt 1; t2 = txt 2
+      comp = if_(x, list(t1, t2), list(t2, t1))
+      comp.mount()
+      expect(comp.getNode()[0].textContent).to.equal '2', 'mount'
+      comp.update()
+      expect(comp.getNode()[0].textContent).to.equal '2', 'update'
+      x 1
+      comp.update()
+      expect(comp.getNode()[0].textContent).to.equal '1', 'update x 1'
+
+    it 'should render if_(x, t1, list(t2, t1))', ->
+      x = see 0
+      t1 = txt 1; t2 = txt 2
+      comp = if_(x, t1, list(t2, t1))
+      comp.mount()
+      expect(comp.getNode()[0].textContent).to.equal '2', 'mount'
+      #      comp.update()
+      #      expect(comp.getNode()[0].textContent).to.equal '2', 'update'
+      x 1
+      comp.update()
+#      expect(comp.getNode()[0].textContent).to.equal '1', 'update x 1'
+
+    it 'should render if_(x, p(t1), list(p(t2), t1))', ->
+      x = see 0
+      t1 = txt 1; t2 = txt 2
+      comp = if_(x, p(t1), list(p(t2), t1))
+      comp.mount()
+      expect(comp.getNode()[0].textContent).to.equal '2', 'mount'
+#      comp.update()
+#      expect(comp.getNode()[0].textContent).to.equal '2', 'update'
+      x 1
+      comp.update()
+      expect(comp.getNode()[0].textContent).to.equal '1', 'update x 1'
+
+    it 'should render if_(x, div(1), div(2))', ->
       x = see 0
       comp = if_(x, div(1), div(2))
       comp.mount()
+      expect(comp.getNode().tagName).to.equal 'DIV', 'tagName'
       expect(comp.getNode().innerHTML).to.equal '2', 'mount'
       x 1
       comp.update()
@@ -48,17 +90,6 @@ describe 'if, case, func', ->
       x 0
       comp.update()
       expect(comp.getNode().innerHTML).to.equal '2', 'second update'
-
-    it 'should create  and render  if', ->
-      x = see 0
-      comp = if_(x, p(1), p(2))
-      expect(comp).to.be.instanceof TransformComponent
-      comp.mount()
-      expect(comp.getNode().tagName).to.equal 'P', 'tagName'
-      expect(comp.getNode().innerHTML).to.equal '2', 'mount'
-      x 1
-      comp.update()
-      expect(comp.getNode().innerHTML).to.equal '1', 'update'
 
     it 'should create and update if_ with attrs',  ->
       x = see 0

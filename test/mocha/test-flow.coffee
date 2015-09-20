@@ -85,13 +85,13 @@ describe 'reactive flow', ->
     a2 = bind(m, 'a'); b2 = bind(m, 'b')
     sum = flow.add a1, b1
     expect(sum()).to.equal 3, 'sum 1'
-    expect(sum.invalid).to.equal false, 'invalid 1'
+    expect(sum.valid).to.equal true, 'valid 1'
     a2 3
-    expect(sum.invalid).to.equal true, 'invalid 2'
+    expect(sum.valid).to.equal false, 'valid 2'
     expect(sum()).to.equal 5, 'sum 2'
     sum = flow.add a2, b2
     expect(sum()).to.equal 5, 'sum 3'
-    expect(sum.invalid).to.equal false, 'invalid 3'
+    expect(sum.valid).to.equal true, 'valid 3'
     a2 1
-    expect(sum.invalid).to.equal true, 'invalid 4'
+    expect(sum.valid).to.equal false, 'valid 4'
     expect(sum()).to.equal 3, 'sum 4'

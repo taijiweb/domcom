@@ -48,7 +48,7 @@ exports.classFn = classFn = (items...) ->
   method = ->
     if !arguments.length
       lst = []
-      method.invalid = false
+      method.valid = true
       for klass, value of classMap
         if typeof value == 'function'
           value = value()
@@ -98,7 +98,7 @@ exports.classFn = classFn = (items...) ->
   react method
   extendClassMap(items)
   method.classMap = classMap
-  method.invalid = !!Object.keys(classMap).length
+  method.valid = !Object.keys(classMap).length
   method.removeClass = (items...) -> for item in items then processClassValue(item, false)
   method.extend = (items...) -> extendClassMap(items)
   method

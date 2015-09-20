@@ -32,7 +32,7 @@ module.exports = class Tag extends BaseComponent
     @family = family = Object.create(null)
     for dcid of children.family then family[dcid] = true
     family[@dcid] = true
-    children.container and !children.isRef and children = new Ref(children)
+    children.container and !children.isRef and children = new Ref(children, @, null) # container, listIndex
     children.holder = children.container = @
     @children = children
     @processAttrs()
@@ -47,9 +47,9 @@ module.exports = class Tag extends BaseComponent
     @className = className = classFn(attrs.className, attrs.class)
     delete attrs.className
     delete attrs['class']
-    if className.invalid then @hasActiveProperties = true
+    if !className.valid then @hasActiveProperties = true
     className.onInvalidate ->
-      if !className.invalid
+      if className.valid
         me.hasActiveProperties = true
         me.invalidate()
         me.noop = false
@@ -175,14 +175,14 @@ module.exports = class Tag extends BaseComponent
 
   addClass: (items...) ->
     @className.extend(items)
-    if @className.invalid
+    if !@className.valid
       @hasActiveProperties = true
       @invalidate()
     this
 
   removeClass: (items...) ->
     @className.removeClass(items...)
-    if @className.invalid
+    if !@className.valid
       @hasActiveProperties = true
       @invalidate()
     this
@@ -289,8 +289,7 @@ module.exports = class Tag extends BaseComponent
     @hasActiveProperties = false
 
     {node, className} = @
-    if className.invalid
-
+    if !className.valid
       classValue = className()
       if classValue!=@cacheClassName
         @cacheClassName = node.className = classValue
