@@ -54,29 +54,48 @@ describe 'if, case, func', ->
       comp.update()
       expect(comp.getNode()[0].textContent).to.equal '1', 'update x 1'
 
-    it 'should render if_(x, t1, list(t2, t1))', ->
+    iit 'should render if_(x, t1, list(t2, t1))', ->
       x = see 0
       t1 = txt 1; t2 = txt 2
-      comp = if_(x, t1, list(t2, t1))
+      comp = p if_(x, t1, list(t2, t1))
       comp.mount()
-      expect(comp.getNode()[0].textContent).to.equal '2', 'mount'
-      #      comp.update()
-      #      expect(comp.getNode()[0].textContent).to.equal '2', 'update'
+      expect(comp.node.innerHTML).to.equal '21', 'mount'
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '21', 'update'
       x 1
       comp.update()
-#      expect(comp.getNode()[0].textContent).to.equal '1', 'update x 1'
+      expect(comp.node.innerHTML).to.equal '1', 'update x 1'
+      x 0
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '21', 'update x 0'
 
     it 'should render if_(x, p(t1), list(p(t2), t1))', ->
       x = see 0
       t1 = txt 1; t2 = txt 2
-      comp = if_(x, p(t1), list(p(t2), t1))
+      comp = p if1=if_(x, p1=p(t1), list(p(t2), t1))
       comp.mount()
-      expect(comp.getNode()[0].textContent).to.equal '2', 'mount'
-#      comp.update()
-#      expect(comp.getNode()[0].textContent).to.equal '2', 'update'
+      expect(comp.node.innerHTML).to.equal '<p>2</p>1', 'mount'
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '<p>2</p>1', 'update'
       x 1
       comp.update()
-      expect(comp.getNode()[0].textContent).to.equal '1', 'update x 1'
+      expect(comp.node.innerHTML).to.equal '<p>1</p>', 'update x 1'
+      x 0
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '<p>2</p>1', 'update x 0'
+
+    it 'should render if_(x, p(t1), p list(p(t2), t1))', ->
+      x = see 0
+      t1 = txt 1; t2 = txt 2
+      comp = if_(x, p1=p(t1), p2=p(list(p(t2), t1)))
+      comp.mount()
+      expect(p2.node.innerHTML).to.equal '<p>2</p>1', 'mount'
+      x 1
+      comp.render()
+      expect(comp.getNode().innerHTML).to.equal '1', 'update x 1'
+      x 0
+      comp.render()
+      expect(p2.node.innerHTML).to.equal '<p>2</p>1', 'mount'
 
     it 'should render if_(x, div(1), div(2))', ->
       x = see 0

@@ -274,6 +274,7 @@ module.exports = class Tag extends BaseComponent
     children.render(true) # need mounting
     if compList=children.baseComponent.unmountCallbackComponentList
       @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
+    @created = true
     @
 
   updateDom: (mounting) ->
@@ -330,6 +331,9 @@ module.exports = class Tag extends BaseComponent
         spercialPropSet[prop](@, prop, value)
 
     return
+
+  getFirstNodeComponent: -> @
+  getLastNodeCompnent: -> @
 
   clone: (options=@options) ->
     result = new Tag(@tagName, @attrs, @children.clone(), options or @options)

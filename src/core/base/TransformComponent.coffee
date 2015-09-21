@@ -37,10 +37,11 @@ module.exports = class TransformComponent extends Component
       return
     baseComponent = @getBaseComponent()
     baseComponent.parentNode = @parentNode
+    created = baseComponent.created
     if oldBaseComponent and baseComponent!=oldBaseComponent
       oldBaseComponent.replace(baseComponent, @) # pass the root holder
     else
-      if !baseComponent.node
+      if !created
         nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
         baseComponent.executeMountCallback()
         baseComponent.createDom(mounting)
@@ -60,17 +61,12 @@ module.exports = class TransformComponent extends Component
     @valid = true
     content = @content = @getContentComponent()
     content.holder = @
+    content.container = @container
     content.mountBeforeNode = @mountBeforeNode
-    @baseComponent = baseComponent = content.getBaseComponent()
-    if baseComponent.container
-      if (baseComponent.container != @container or baseComponent.listPath!=@listPath) and !baseComponent.referable
-        throw new Error 'do not mount unreferable component in mutlitple places'
-    else
-      baseComponent.container = @container
-      content.container = @container
+    baseComponent = content.getBaseComponent()
     if @mountCallbackList then baseComponent.mountCallbackComponentList.unshift @
     if @unmountCallbackList then baseComponent.unmountCallbackComponentList.push @
-    baseComponent
+    @baseComponent = baseComponent
 
   getNode: -> @content and @content.getNode()
 

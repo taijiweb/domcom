@@ -39,9 +39,32 @@ module.exports = class BaseComponent extends Component
     @unmountCallbackComponentList = if @unmountCallbackList then [@] else []
     @
 
+  getNextNodeComponent: ->
+    next = @nextNodeComponent
+    while next and next.detached or !next.getFirstNodeComponent()
+      next = next.nextNodeComponent
+    @nextNodeComponent = next
+
+  getPrevNodeComponent: ->
+    prev = @prevNodeComponent
+    while prev and prev.detached or !prev.getLastNodeComponent()
+      prev = prev.prevNodeComponent
+    @prevNodeComponent = prev
+
+  # the two method below should be implemented in sub components
+  getFirstNodeComponent: ->
+    throw new Error 'BaseComponent.getFirstNodeComponent should be implemented in sub components'
+
+  getLastNodeCompnent: ->
+    throw new Error 'BaseComponent.getLastNodeComponent should be implemented in sub components'
+
   attachNode: (nextNode) ->
     @unmounted = false
-    @parentNode and @parentNode.insertBefore(@node, nextNode)
+    if @parentNode
+      container = @container
+      if container and container.isList and (!container.node or container.detached)
+        return
+      @parentNode.insertBefore(@node, nextNode)
 
   # this method will be called after updateProperties and before updating chidlren or activeOffspring
   resetContainerHookUpdater: ->

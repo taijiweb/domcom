@@ -60,39 +60,18 @@ module.exports = exports = class List extends BaseComponent
   clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
 
   setChildren: (startIndex, newChildren...) ->
+    if @node and startIndex<children.length
+      throw new Error 'do not allow set children after the Dom of List Component was created'
     children = @children
     newChildren = for child in newChildren
       child = toComponent child
-      if child.container
-        child = new Ref(child, @, i)
-      child.holder = child.container = @
+      child.setRefContainer(@)
+      child.holder = @
       child
     newChildrenLength = newChildren.length
-    if !@node
-      children.splice(startIndex, newChildrenLength, newChildren...)
-      @length = children.length
-      return @
-    if startIndex<children.length
-      throw new Error 'do not allow set children after the Dom of List Component was created'
-    i = startIndex; j = 0
-    while j<newChildrenLength
-      child = children[i]
-      if child # maybe newChildren will be more than the left children
-        if child.mounted then child.unmount()
-      child = children[i] = newChildren[j]
-      child.holder = @
-      child.listIndex = @
-      i++; j++
+    children.splice(startIndex, newChildrenLength, newChildren...)
     @length = children.length
-    first = newChildren[0]
-    [_, prev] = getFirstLastComponent(children.slice(0, startIndex))
-    first.prevNodeComponent = prev
-    prev and prev.nextNodeComponent = first
-    last = newChildren[newChildrenLength-1]
-    [next, _] = getFirstLastComponent(children.slice(i))
-    next and next.prevNodeComponent = last
-    last.nextNodeComponent = next
-    @
+    return @
 
   createDom: ->
     @resetContainerHookUpdater()
@@ -106,6 +85,7 @@ module.exports = exports = class List extends BaseComponent
     [first, last] = getFirstLastComponent(children)
     @firstNodeComponent = first
     @lastNodeComponent = last
+    @created = true
     return
 
   updateDom: (mounting) ->
@@ -117,7 +97,11 @@ module.exports = exports = class List extends BaseComponent
 
   attachNode: ->
     @unmounted = false
-    # children will attach themself
+    if !@parentNode then return
+    container = @container
+    if container and container.isList and (!container.created or container.detached)
+      return
+    @parentNode.insertBefore(@node, nextNode)
 
   removeNode: ->
     if !@parentNode or @unmounted then return
@@ -126,28 +110,14 @@ module.exports = exports = class List extends BaseComponent
     return
 
   insertChild: (index, child) ->
+    if @node
+      throw new Error 'do not allow set children after the Dom of List Component was created'
     children = @children
-    if !@node
-      child = toComponent(child, @, index)
-      if child.container
-        child = new Ref(child, container, i)
-      children.splice(index, 0, child)
-      @length++
-      return @
-    throw new Error 'do not allow set children after the Dom of List Component was created'
-    i = index+1; length = children.length
-    @length = length
-    while i<length
-      children[i].listIndex = i
-    first = child.baseComponent.firstNodeComponent
-    if first
-      [_, prev] = getFirstLastComponent(children.slice(0, startIndex))
-      first.prevNodeComponent = prev
-      prev and prev.nextNodeComponent = first
-      [next, _] = getFirstLastComponent(children.slice(i))
-      next and next.prevNodeComponent = last
-      last.nextNodeComponent = next
-
+    child = toComponent(child, @, index)
+    child.setRefContainer(container)
+    children.splice(index, 0, child)
+    @length++
+    @
 
   removeChild: (index, notSetFirstLast) ->
     children = @children
@@ -158,6 +128,7 @@ module.exports = exports = class List extends BaseComponent
       children[index].listIndex = index
       index++
     if !notSetFirstLast then @setFirstLast(removedChild.baseComponent)
+    @
 
   setFirstLast: (removed, replaced) ->
     removedFirst = removed.firstNodeComponent
@@ -181,6 +152,21 @@ module.exports = exports = class List extends BaseComponent
         holder.firstNodeComponent = newLast
         me = holder; holder = @holder
     return
+
+  getFirstNodeComponent: ->
+    children = @children; len = children.length; i = 0
+    while i<len
+      child = children[i]
+      if child.node and child.detached
+        first = children[i].getFirstNodeComponent()
+      i++
+    first
+
+  getLastNodeCompnent: ->
+    children = @children; len = children.length; i = 0
+    while i<len
+      last = children[i].getLastNodeComponent()
+    last
 
   toString: (indent=0, noNewLine) ->
     s = newLine("<List>", indent, noNewLine)
