@@ -5,7 +5,6 @@
 
 {
 bindings,
-Nothing
 Tag, Text, List, txt, list
 p, div,
 classFn, styleFrom,
@@ -114,8 +113,8 @@ describe "test base component", ->
       expect(t3.prevNodeComponent).to.equal t2, 't2.prevNodeComponent'
       expect(comp.node.childNodes.length).to.equal 3
 
-    it 'tag shoud createDom and calc prev/nextNodeCompnoent with Nothing', ->
-      comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t4=new Nothing(), t3=new Text(3)]) #
+    it 'tag shoud createDom and calc prev/nextNodeCompnoent with empty Text', ->
+      comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t4=new Text(''), t3=new Text(3)]) #
       expect(comp.children.children.length).to.equal 4
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()

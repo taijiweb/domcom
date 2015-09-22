@@ -3,14 +3,14 @@
 {bindings, see
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func, each
-ref, clone
+clone
 a, p, span, text, div} = dc
 
 {$a, $b, _a, _b} = bindings({a: 1, b: 2})
 
-describe 'ref, clone', ->
+describe 'Component.refs, clone', ->
 
-  describe 'Ref', ->
+  describe 'refs', ->
     it 'should throw error while constucting conflicted component list(t, t))', ->
       t = txt(1)
       expect(-> list(t, t)).to.throw Error
@@ -40,7 +40,7 @@ describe 'ref, clone', ->
       x = 0
       expect(-> list(p(t), if_((-> x),  p(t), t))).to.throw Error
 
-    it 'should getBaseComponent of if_((-> x), t=txt(1), Ref(t))', ->
+    it 'should getBaseComponent of if_((-> x), t=txt(1), t)', ->
       x = see 0
       comp = if_(x, t=txt(1), t)
       comp.mount()

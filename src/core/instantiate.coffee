@@ -1,5 +1,4 @@
 {Component, toComponent, isComponent,
-Nothing
 Tag, Text, Comment,
 If, Case, Func, List, Each} = require './base'
 {isEven} = require '../util'
@@ -40,14 +39,6 @@ tag = exports.tag = (tagName, args...) ->
 exports.nstag = (tagName, namespace, args...) ->
   [attrs, children] = attrsChildren(args)
   new Tag(tagName, attrs, toTagChildren(children), namespace)
-
-exports.nothing = (attrs, options) ->
-  if isAttrs(attrs) then new Tag('div', attrs, new Nothing(), options)
-  else new Nothing()
-
-#exports.ref = (attrs, src, options) ->
-#  if isAttrs(attrs) then new Tag('div', attrs, [new Ref(src, options)])
-#  else new Ref(attrs, src)
 
 exports.clone = (attrs, src, options) ->
   [attrs, options] =

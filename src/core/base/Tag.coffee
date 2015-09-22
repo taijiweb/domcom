@@ -3,13 +3,12 @@ extend = require '../../extend'
 dc = require '../../dc'
 {classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require '../property'
 BaseComponent = require './BaseComponent'
+Text = require './Text'
 List = require './List'
 {funcString, newLine, cloneObject} = require '../../util'
 {flow} = require '../../flow'
 {domValue} = require '../../dom-util'
 {_directiveRegistry} = require '../../directives/register'
-Nothing = require './Nothing'
-Ref = require './Ref'
 toComponent = require './toComponent'
 
 module.exports = class Tag extends BaseComponent
@@ -26,7 +25,7 @@ module.exports = class Tag extends BaseComponent
       if children.length==1
         children = toComponent(children[0])
       else if children.length==0
-        children = new Nothing()
+        children = new Text('')
       else children = new List(children, {})
     else children = toComponent(children)
     @family = family = Object.create(null)

@@ -1,7 +1,6 @@
 toComponent = require './toComponent'
 BaseComponent = require './BaseComponent'
 Text = require './Text'
-Ref = require './Ref'
 {checkContainer, newLine} = require '../../util'
 {checkConflictOffspring} = require '../../dom-util'
 
