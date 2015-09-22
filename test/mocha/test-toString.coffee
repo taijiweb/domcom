@@ -13,7 +13,7 @@ describe 'toString', ->
     x = 0
     comp = list(t1=text({onchange: -> x = parseInt(@value); comp.update()}, x), pIf=if_((->x), div(1), div(2)))
     console.log(comp.toString())
-    expect(comp.toString()).to.equal  '\n<List>\n  <input type="text" value=0><text ''/></input>\n  <if renew: fn:x>\n    <div>\n      1</div>\n    <div>\n      2</div>\n  </if>\n</List>'
+    expect(comp.toString()).to.equal  '\n<List>\n  <input type="text" value=0>\n    ""</input>\n  <if renew: fn:x>\n    <div>\n      1</div>\n    <div>\n      2</div>\n  </if>\n</List>'
 
   it 'should toString  tag with props', ->
     x = 0

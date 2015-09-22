@@ -34,18 +34,25 @@ module.exports = class TransformComponent extends Component
       oldBaseComponent.remove()
       if @listIndex? then @holder.removeChild(@listIndex) #notSetFirstLast
       @mountMode = null
-      return
+      @node
     baseComponent = @getBaseComponent()
     baseComponent.parentNode = @parentNode
     created = baseComponent.created
     if oldBaseComponent and baseComponent!=oldBaseComponent
       oldBaseComponent.replace(baseComponent, @) # pass the root holder
+      if @listIndex?
+        @container.node[@listIndex] = baseComponent.node
+      @node
     else
       if !created
         nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
         baseComponent.executeMountCallback()
         baseComponent.createDom(mounting)
         baseComponent.attachNode(nextNode)
+        baseComponent.created = true
+        @firstNodeComponent = baseComponent.firstNodeComponent
+        @lastNodeComponent = baseComponent.lastNodeComponent
+        @node = baseComponent.node
       else
         mounting = @mountMode=='mounting' or mounting
         if mounting
@@ -54,6 +61,7 @@ module.exports = class TransformComponent extends Component
           if !baseComponent.noop then baseComponent.updateDom(mounting)
           baseComponent.attachNode(nextNode)
           @mountMode = null
+          @node
         else if !baseComponent.noop then baseComponent.updateDom(mounting)
 
   getBaseComponent: ->

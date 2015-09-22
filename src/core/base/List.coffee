@@ -2,45 +2,7 @@ toComponent = require './toComponent'
 BaseComponent = require './BaseComponent'
 Text = require './Text'
 {checkContainer, newLine} = require '../../util'
-{checkConflictOffspring} = require '../../dom-util'
-
-getFirstLastComponent = (children) ->
-  length = children.length
-  if !length then return [null, null]
-  if length==1
-    baseComponent = children[0].baseComponent
-    return [baseComponent.firstNodeComponent, baseComponent.lastNodeComponent]
-  i = 0
-  while i < length-1
-    lastNodeComponent = children[i].baseComponent.lastNodeComponent
-    if !lastNodeComponent then i++; continue
-    last = lastNodeComponent
-    j = i+1
-    while j<length
-      firstNodeComponent = children[j].baseComponent.firstNodeComponent
-      if firstNodeComponent
-        last = children[j].baseComponent.lastNodeComponent
-        break
-      j++
-    if !firstNodeComponent then break
-    lastNodeComponent.nextNodeComponent = firstNodeComponent
-    i = j
-  i = length-1
-  while i
-    firstNodeComponent = children[i].baseComponent.firstNodeComponent
-    if !firstNodeComponent then i--; continue
-    first = firstNodeComponent
-    j = i-1
-    while j>=0
-      lastNodeComponent = children[j].baseComponent.lastNodeComponent
-      if lastNodeComponent
-        first = children[j].baseComponent.firstNodeComponent
-        break
-      j--
-    if !lastNodeComponent then break
-    firstNodeComponent.prevNodeComponent = lastNodeComponent
-    i = j
-  [first, last]
+{checkConflictOffspring, insertNode} = require '../../dom-util'
 
 module.exports = exports = class List extends BaseComponent
   constructor: (@children, options) ->
@@ -76,31 +38,46 @@ module.exports = exports = class List extends BaseComponent
     @resetContainerHookUpdater()
     children = @children
     listLength = children.length
+    if !listLength
+      @lastNodeComponent = @firstNodeComponent = @emptyPlaceHolder = none = new Text('')
+      @node = [ none.createDom()]
+      return
+    @node = node = []
     for child, i in children
       child.listIndex = i
       child.parentNode = @parentNode
-      child.render(true)
-    @node = true # prevent createDom this List again
-    [first, last] = getFirstLastComponent(children)
-    @firstNodeComponent = first
-    @lastNodeComponent = last
-    @created = true
-    return
+      node[i] = child.render(true)
+    i = 0; lastIndex = listLength-1
+    # do not need set firstNode and lastNode for ListComponent
+    # we always use component.firstNodeComponent.firstNode and component.lastNodeComponent.LastNode
+    @firstNodeComponent = children[0].firstNodeComponent
+    @lastNodeComponent = children[lastIndex].lastNodeComponent
+    while i<lastIndex
+      children[i].lastNodeComponent.nextNodeComponent = children[i+1].firstNodeComponent
+      i++
+    while i
+      children[i].firstNodeComponent.prevNodeComponent = children[i-1].lastNodeComponent
+      i--
+    node
 
   updateDom: (mounting) ->
     @resetContainerHookUpdater()
     @updateOffspring(mounting)
     @children.length = @length
+    @node
 
-  getNode: -> for child in @children then child.getNode()
+  getNode: -> @node
 
-  attachNode: ->
+  attachNode: (nextNode) ->
     @unmounted = false
     if !@parentNode then return
     container = @container
-    if container and container.isList and (!container.created or container.detached)
-      return
-    @parentNode.insertBefore(@node, nextNode)
+    if container and container.isList
+      container.node[@listIndex] = @node
+      if !container.created or container.detached then  return @node
+    if @created and !@detached then return @node
+    @detached = false
+    insertNode(@parentNode, @node, nextNode)
 
   removeNode: ->
     if !@parentNode or @unmounted then return
@@ -131,7 +108,6 @@ module.exports = exports = class List extends BaseComponent
 
   setFirstLast: (removed, replaced) ->
     removedFirst = removed.firstNodeComponent
-    if !removedFirst then return
     if removedFirst==@firstNodeComponent
       newFirst = replaced and replaced.firstNodeComponent or removed.nextNodeComponent
       @firstNodeComponent = newFirst
@@ -141,7 +117,6 @@ module.exports = exports = class List extends BaseComponent
         holder.firstNodeComponent = newFirst
         me = holder; holder = @holder
     removedLast = removed.lastNodeComponent
-    if !removedLast then return
     if removedLast==@lastNodeComponent
       newLast = replaced and replaced.lastNodeComponent or removed.prevNodeComponent
       @lastNodeComponent = newLast
@@ -151,21 +126,6 @@ module.exports = exports = class List extends BaseComponent
         holder.firstNodeComponent = newLast
         me = holder; holder = @holder
     return
-
-  getFirstNodeComponent: ->
-    children = @children; len = children.length; i = 0
-    while i<len
-      child = children[i]
-      if child.node and child.detached
-        first = children[i].getFirstNodeComponent()
-      i++
-    first
-
-  getLastNodeCompnent: ->
-    children = @children; len = children.length; i = 0
-    while i<len
-      last = children[i].getLastNodeComponent()
-    last
 
   toString: (indent=0, noNewLine) ->
     s = newLine("<List>", indent, noNewLine)

@@ -114,11 +114,11 @@ describe "test base component", ->
       expect(comp.node.childNodes.length).to.equal 3
 
     it 'tag shoud createDom and calc prev/nextNodeCompnoent with empty Text', ->
-      comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t4=new Text(''), t3=new Text(3)]) #
+      comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t3=new Text(3), t4=new Text('')]) #
       expect(comp.children.children.length).to.equal 4
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()
-      expect(comp.node.childNodes.length).to.equal 3
+      expect(comp.node.childNodes.length).to.equal 4
       expect(t1.nextNodeComponent).to.equal t2, 't1.nextNodeComponent'
       expect(t2.prevNodeComponent).to.equal t1, 't2.prevNodeComponent'
       expect(t2.nextNodeComponent).to.equal t3, 't2.nextNodeComponent'

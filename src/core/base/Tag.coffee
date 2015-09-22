@@ -274,13 +274,15 @@ module.exports = class Tag extends BaseComponent
     if compList=children.baseComponent.unmountCallbackComponentList
       @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
     @created = true
-    @
+    node
 
   updateDom: (mounting) ->
     @noop = true
     @updateProperties()
     @resetContainerHookUpdater()
     @updateOffspring()
+    @detached = false
+    @node
 
   updateProperties: ->
     if !@hasActiveProperties then return
@@ -330,9 +332,6 @@ module.exports = class Tag extends BaseComponent
         spercialPropSet[prop](@, prop, value)
 
     return
-
-  getFirstNodeComponent: -> @
-  getLastNodeCompnent: -> @
 
   clone: (options=@options) ->
     result = new Tag(@tagName, @attrs, @children.clone(), options or @options)

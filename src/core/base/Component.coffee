@@ -73,7 +73,6 @@ module.exports = class Component
     @mountMode = 'mounting'
     @mountBeforeNode = beforeNode or @mountBeforeNode
     @render(true) # mounting = true
-    @
 
   create: -> @render()
 

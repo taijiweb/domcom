@@ -21,18 +21,14 @@ module.exports = class Text extends BaseComponent
     @noop = true
     if @mountCallbackComponentList.length then @invalidate()
     @firstNode = @lastNode = @node = document.createTextNode(@processText())
-    @created = true
-    @
+    @node
 
   updateDom: ->
     @noop = true
     if @mountCallbackComponentList.length then @invalidate()
     if (text=@processText())!=@node.textContent
       @node.textContent = text
-    @
-
-  getFirstNodeComponent: -> @
-  getLastNodeCompnent: -> @
+    @node
 
   clone: (options) -> (new @constructor(@text, options)).copyLifeCallback(@)
 

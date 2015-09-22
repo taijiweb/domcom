@@ -10,17 +10,10 @@ exports.normalizeDomElement = (domElement) ->
   domElement
 
 exports.insertNode = insertNode = (parent, child, beforeNode) ->
-  if !parent then return
-  if parent instanceof Array then parent.push(child)
-  else if child instanceof Array
-    child.parentNode = parent
+  if child instanceof Array
     for item in child then insertNode(parent, item, beforeNode)
-  else
-    if child instanceof Node
-      if beforeNode and beforeNode.parentNode==parent then parent.insertBefore(child, beforeNode)
-      #else if !child.parentNode then parent.appendChild(child)
-      else parent.appendChild(child)
-  return
+  else parent.insertBefore(child, beforeNode)
+  child
 
 exports.removeNode = removeNode = (parent, child) ->
   if child instanceof Array

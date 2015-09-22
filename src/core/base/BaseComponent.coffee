@@ -24,6 +24,8 @@ module.exports = class BaseComponent extends Component
       @executeMountCallback()
       @createDom(mounting)
       @attachNode(nextNode)
+      @created = true
+      @node
     else
       mounting = @mountMode=='mounting' or mounting
       if mounting
@@ -32,6 +34,7 @@ module.exports = class BaseComponent extends Component
         if !@noop then @updateDom(mounting)
         @attachNode(nextNode)
         @mountMode = null
+        @node
       else if !@noop then @updateDom(mounting)
 
   getBaseComponent: ->
@@ -39,32 +42,16 @@ module.exports = class BaseComponent extends Component
     @unmountCallbackComponentList = if @unmountCallbackList then [@] else []
     @
 
-  getNextNodeComponent: ->
-    next = @nextNodeComponent
-    while next and next.detached or !next.getFirstNodeComponent()
-      next = next.nextNodeComponent
-    @nextNodeComponent = next
-
-  getPrevNodeComponent: ->
-    prev = @prevNodeComponent
-    while prev and prev.detached or !prev.getLastNodeComponent()
-      prev = prev.prevNodeComponent
-    @prevNodeComponent = prev
-
-  # the two method below should be implemented in sub components
-  getFirstNodeComponent: ->
-    throw new Error 'BaseComponent.getFirstNodeComponent should be implemented in sub components'
-
-  getLastNodeCompnent: ->
-    throw new Error 'BaseComponent.getLastNodeComponent should be implemented in sub components'
-
   attachNode: (nextNode) ->
     @unmounted = false
+    @detached = false
     if @parentNode
       container = @container
-      if container and container.isList and (!container.node or container.detached)
-        return
+      if container and  container.isList
+        container.node[@listIndex] = @node
+        if !container.created or container.detached then return @node
       @parentNode.insertBefore(@node, nextNode)
+      @node
 
   # this method will be called after updateProperties and before updating chidlren or activeOffspring
   resetContainerHookUpdater: ->
@@ -110,19 +97,30 @@ module.exports = class BaseComponent extends Component
 
   replace: (baseComponent, rootContainer) ->
     @removeNode()
+    @detached = true
     @executeUnmountCallback()
     prevNodeComponent = @prevNodeComponent
+    if prevNodeComponent then prevNodeComponent.nextNodeComponent = baseComponent.firstNodeComponent
     nextNodeComponent = @nextNodeComponent
-    firstNodeComponent = baseComponent.firstNodeComponent
-    if firstNodeComponent
-      holder = baseComponent.holder
-      if prevNodeComponent then prevNodeComponent.nextNodeComponent = firstNodeComponent
-      else holder and holder.firstNodeComponent = firstNodeComponent
-      if nextNodeComponent then nextNodeComponent.prevNodeComponent = baseComponent.lastNodeComponent
-      else holder and holder.lastNodeComponent = baseComponent.lastNodeComponent
-    if !baseComponent.node then baseComponent.createDom()
-    else if !baseComponent.noop then baseComponent.updateDom(true) # mounting = true
-    baseComponent.attachNode(@nextNodeComponent and @nextNodeComponent.node or rootContainer.mountBeforeNode)
+    if nextNodeComponent then nextNodeComponent.prevNodeComponent = baseComponent.lastNodeComponent
+    holder = @holder
+    firstNodeComponent = @firstNodeComponent
+    lastNodeComponent = @lastNodeComponent
+    while holder
+      if holder.firstNodeComponent==firstNodeComponent
+        holder.firstNodeComponent = baseComponent.firstNodeComponent
+      if holder.lastNodeComponent==lastNodeComponent
+        holder.lastNodeComponent = baseComponent.lastNodeComponent
+      holder = holder.holder
+    if !baseComponent.node
+      baseComponent.createDom()
+      baseComponent.attachNode(nextNodeComponent and nextNodeComponent.node or rootContainer.mountBeforeNode)
+      baseComponent.detached = false
+      baseComponent.created = true
+    else
+      if !baseComponent.noop then baseComponent.updateDom(true) # mounting = true
+      baseComponent.attachNode(nextNodeComponent and nextNodeComponent.node or rootContainer.mountBeforeNode)
+      baseComponent.detached = false
     return
 
   remove: ->
