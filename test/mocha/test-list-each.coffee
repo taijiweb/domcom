@@ -32,8 +32,8 @@ describe 'list, each', ->
     it 'should create list', ->
       lst = list(1, 2)
       lst.mount()
-      expect(lst.getNode()[0].textContent).to.equal '1'
-      expect(lst.getNode()[1].textContent).to.equal '2'
+      expect(lst.node[0].textContent).to.equal '1'
+      expect(lst.node[1].textContent).to.equal '2'
 
     it 'should create list with attrs', ->
       x = 2
@@ -56,12 +56,7 @@ describe 'list, each', ->
       comp = new List([txt(1)])
       comp.mount()
       expect(comp.node[0].textContent).to.equal '1'
-      comp.setChildren(1, t2=txt(2))
-      expect(comp.valid).to.equal false
-      expect(comp.activeOffspring[t2.dcid]).to.equal t2
-      comp.update()
-      expect(comp.children[1].node.textContent).to.equal '2', 'children[1].node.textContent'
-      expect(comp.node[1].textContent).to.equal '2'
+      expect(->comp.setChildren(1, t2=txt(2))).to.throw()
 
     it 'list setChildren: similar to splitter', ->
       comp = new List([txt(1), t3=txt(3)])
@@ -87,54 +82,54 @@ describe 'list, each', ->
     it  'should create each component', ->
       comp = each(lst = ['each', 'simple'], (item, i) -> p(item))
       comp.mount()
-      expect(comp.getNode()).to.be.instanceof Array
-      expect(comp.getNode()[0]).to.be.instanceof Element
+      expect(comp.node).to.be.instanceof Array
+      expect(comp.node[0]).to.be.instanceof Element
 
     it 'should mount and render each component',  ->
       document.getElementById('demo').innerHTML = ''
       comp = each(lst=['each', 'simple'], (item, i) -> p(item))
       comp.mount("#demo")
-      expect(comp.getNode()[0].innerHTML).to.equal 'each'
-      expect(comp.getNode()[1].innerHTML).to.equal 'simple'
+      expect(comp.node[0].innerHTML).to.equal 'each'
+      expect(comp.node[1].innerHTML).to.equal 'simple'
       lst.setItem 0,  3
       comp.update()
-      expect(comp.getNode()[0].innerHTML).to.equal '3', 'update node 0'
+      expect(comp.node[0].innerHTML).to.equal '3', 'update node 0'
       lst.setItem 1, 4
       comp.update()
-      expect(comp.getNode()[1].innerHTML).to.equal '4', 'update node 1'
+      expect(comp.node[1].innerHTML).to.equal '4', 'update node 1'
       lst.setItem 2, 5
       comp.update()
-      expect(comp.getNode()[2].innerHTML).to.equal '5', 'update list[2] = 5'
+      expect(comp.node[2].innerHTML).to.equal '5', 'update list[2] = 5'
       lst.setLength 0
       comp.update()
       expect(comp.listComponent.children.length).to.equal 0, 'comp.listComponent.children.length = 0'
-      expect(comp.getNode().length).to.equal 1, 'lst.length = 1'
+      expect(comp.node.length).to.equal 1, 'lst.length = 1'
 
     it 'should process immutable template in each component', ->
       document.getElementById('demo').innerHTML = ''
       comp = each(lst = [{text:'a'}, {text:'b'}], ((item, i) -> p(txt(bind item, 'text'))), {itemTemplateImmutable:true})
       comp.mount("#demo")
-      expect(comp.getNode()[0].textContent).to.equal 'a'
-      expect(comp.getNode()[1].textContent).to.equal 'b'
+      expect(comp.node[0].textContent).to.equal 'a'
+      expect(comp.node[1].textContent).to.equal 'b'
       lst[0].text = 'c'
       comp.update()
-      expect(comp.getNode()[0].textContent).to.equal 'c', 'update c'
+      expect(comp.node[0].textContent).to.equal 'c', 'update c'
       lst[1].text = 'd'
       comp.update()
-      expect(comp.getNode()[1].textContent).to.equal 'd', 'update d'
+      expect(comp.node[1].textContent).to.equal 'd', 'update d'
       lst.setItem 2, {text: 'e'}
       comp.update()
-      expect(comp.getNode()[2].textContent).to.equal 'e'
+      expect(comp.node[2].textContent).to.equal 'e'
 #      lst.setLength 0
 #      comp.update()
-#      expect(comp.getNode().length).to.equal 0
+#      expect(comp.node.length).to.equal 0
 
     it 'should process itemTemplateImmutable each component ', ->
       comp = each(lst = ['a', 'b'], ((item, i, list) -> p(txt(-> list[i]))), {itemTemplateImmutable:true})
       comp.mount()
       lst.setItem 0, 'c'
       comp.update()
-      expect(comp.getNode()[0].textContent).to.equal 'c'
+      expect(comp.node[0].textContent).to.equal 'c'
 
     it 'should process tag with each', ->
       x = 1
@@ -145,28 +140,28 @@ describe 'list, each', ->
       x = 2
       comp.update()
       expect(text1.node.textContent).to.equal('2', 'update, 2')
-      expect(each1.getNode()[0].textContent).to.equal('2')
+      expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '2'
 
     it  'should create and update renew function as list of Each', ->
       x = 1
       comp = each((-> [x]), (item) -> txt(item))
       comp.mount()
-      expect(comp.getNode()[0].textContent).to.equal '1'
+      expect(comp.node[0].textContent).to.equal '1'
       x = 2
       comp.update()
-      expect(comp.getNode()[0].textContent).to.equal('2', 'update 2')
+      expect(comp.node[0].textContent).to.equal('2', 'update 2')
 
     it  'should create and update deeper embedded each', ->
       x = 1
       comp =  div({}, span1=new Tag('span', {}, [each1=each((-> [x]), (item) -> txt(item))]))
       comp.mount()
       expect(each1.listComponent.parentNode).to.equal(span1.node)
-      expect(each1.getNode()[0].textContent).to.equal '1'
+      expect(each1.node[0].textContent).to.equal '1'
       x = 2
       comp.update()
       expect(each1.listComponent.parentNode).to.equal(span1.node)
-      expect(each1.getNode()[0].textContent).to.equal('2')
+      expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<span>2</span>'
 
     it  'should create and update embedded each in 3 layer', ->
@@ -174,11 +169,11 @@ describe 'list, each', ->
       comp =  div({}, div({}, span1=new Tag('span', {}, [each1=each([1], (item) -> txt(x))])))
       comp.mount()
       expect(each1.listComponent.parentNode).to.equal(span1.node)
-      expect(each1.getNode()[0].textContent).to.equal '1'
+      expect(each1.node[0].textContent).to.equal '1'
       x 2
       comp.update()
       expect(each1.listComponent.parentNode).to.equal(span1.node)
-      expect(each1.getNode()[0].textContent).to.equal('2')
+      expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<div><span>2</span></div>'
 
     it  'should create and update embedded each in 3  layer', ->
@@ -186,11 +181,11 @@ describe 'list, each', ->
       comp =  div({}, div({}, span1=new Tag('span', {}, [each1=each((-> [x]), (item) -> txt(item))])))
       comp.mount()
       expect(each1.listComponent.parentNode).to.equal(span1.node)
-      expect(each1.getNode()[0].textContent).to.equal '1'
+      expect(each1.node[0].textContent).to.equal '1'
       x = 2
       comp.update()
       expect(each1.listComponent.parentNode).to.equal(span1.node)
-      expect(each1.getNode()[0].textContent).to.equal('2')
+      expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<div><span>2</span></div>'
 
     it  'should process each under each', ->
@@ -199,11 +194,11 @@ describe 'list, each', ->
       comp = div({}, each1=each([1], -> each2=each((-> [x]), (item) -> item)))
       comp.mount()
       expect(each1.listComponent.parentNode).to.equal(comp.node)
-      expect(each2.getNode()[0].textContent).to.equal '1'
+      expect(each2.node[0].textContent).to.equal '1'
       x = 2
       comp.update()
       expect(each1.listComponent.parentNode).to.equal(comp.node)
-      expect(each2.getNode()[0].textContent).to.equal('2')
+      expect(each2.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '2'
 
     it  'should mount and update each', ->
@@ -216,9 +211,9 @@ describe 'list, each', ->
     it  'should update each with component as the item of list 1', ->
       comp = each([txt(1)], (item) -> item)
       comp.mount()
-      expect(comp.getNode()[0].textContent).to.equal s='1'
+      expect(comp.node[0].textContent).to.equal s='1'
       comp.update()
-      expect(comp.getNode()[0].textContent).to.equal '1'
+      expect(comp.node[0].textContent).to.equal '1'
 
     it  'should update each with component as the item of list 2', ->
       comp = div(each([txt(1)], (item) -> item))

@@ -101,7 +101,7 @@ describe 'demo', ->
     it 'should mount controls and others', ->
       comp = controls()
       comp.mount('#demo')
-      expect(comp.getNode().length).to.equal(2)
+      expect(comp.node.length).to.equal(2)
       comp.unmount()
 
   describe 'mount/unmount', ->
@@ -138,7 +138,7 @@ describe 'demo', ->
       todos = []
       comp = makeTodo todos, status={hash:'all'}
       comp.mount()
-      expect(comp.getNode().length).to.equal 0
+      expect(comp.node.length).to.equal 0
 
     it 'should invalidate children to listComponent', ->
       todos = [{title:'do this'}]
@@ -162,14 +162,14 @@ describe 'demo', ->
       todos = [{title:'do this'}]
       comp = makeTodo todos, status={hash:'all'}
       comp.mount()
-      expect(comp.getNode().length).to.equal 1
+      expect(comp.node.length).to.equal 1
       status.hash = 'completed'
       comp.update()
-      expect(comp.getNode().length).to.equal 0
+      expect(comp.node.length).to.equal 0
       status.hash = 'all'
       comp.getContentComponent()
       child0 = comp.listComponent.children[0]
       expect(comp.listComponent.activeOffspring[child0.dcid]).to.equal child0
       comp.update()
       expect(comp.listComponent.length).to.equal 1
-      expect(comp.getNode().length).to.equal 1
+      expect(comp.node.length).to.equal 1

@@ -32,18 +32,22 @@ module.exports = class TransformComponent extends Component
     mountMode = @mountMode
     if mountMode=='unmounting'
       oldBaseComponent.remove()
-      if @listIndex? then @holder.removeChild(@listIndex) #notSetFirstLast
+      if @listIndex? then @holder.removeChild(@listIndex)
       @mountMode = null
       @node
     baseComponent = @getBaseComponent()
     baseComponent.parentNode = @parentNode
-    created = baseComponent.created
     if oldBaseComponent and baseComponent!=oldBaseComponent
       oldBaseComponent.replace(baseComponent, @) # pass the root holder
-      if @listIndex?
-        @container.node[@listIndex] = baseComponent.node
+      @node = node = baseComponent.node
+      @listIndex? and @container.node[@listIndex] = node
+      holder = @holder
+      while holder and holder.isTransformComponent
+        holder.node = node
+        holder = holder.holder
       @node
     else
+      created = baseComponent.created
       if !created
         nextNode = oldBaseComponent and oldBaseComponent.nextLeaf and oldBaseComponent.nextLeaf.node or @mountBeforeNode
         baseComponent.executeMountCallback()
@@ -76,7 +80,4 @@ module.exports = class TransformComponent extends Component
     if @mountCallbackList then baseComponent.mountCallbackComponentList.unshift @
     if @unmountCallbackList then baseComponent.unmountCallbackComponentList.push @
     @baseComponent = baseComponent
-
-  getNode: -> @content and @content.getNode()
-
 

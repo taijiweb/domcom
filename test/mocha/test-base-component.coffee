@@ -67,7 +67,7 @@ describe "test base component", ->
       comp = p(-> 1)
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()
-      expect(comp.getNode().innerHTML).to.equal '1'
+      expect(comp.node.innerHTML).to.equal '1'
       expect(!!baseComponent.noop).to.equal false
 
     it 'should creatDom of p(p(p(t=txt(->1))))', ->
@@ -146,4 +146,4 @@ describe "test base component", ->
       comp =  new List([new Tag('span',  {}, [new Text('adf')]), new Text(-> undefined)])
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()
-      expect(comp.getNode()[0].tagName).to.equal 'SPAN'
+      expect(comp.node[0].tagName).to.equal 'SPAN'

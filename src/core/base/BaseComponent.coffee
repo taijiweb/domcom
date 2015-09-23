@@ -96,32 +96,29 @@ module.exports = class BaseComponent extends Component
     @holder = container
     @
 
-  replace: (baseComponent, rootContainer) ->
+  replace: (newBaseComponent, rootContainer) ->
     @removeNode()
     @detached = true
     @executeUnmountCallback()
-    prevLeaf = @prevLeaf
-    if prevLeaf then prevLeaf.nextLeaf = baseComponent.firstLeaf
-    nextLeaf = @nextLeaf
-    if nextLeaf then nextLeaf.prevLeaf = baseComponent.lastLeaf
-    holder = @holder
-    firstLeaf = @firstLeaf
-    lastLeaf = @lastLeaf
+    {prevLeaf, nextLeaf} = @
+    if prevLeaf then prevLeaf.nextLeaf = newBaseComponent.firstLeaf
+    if nextLeaf then nextLeaf.prevLeaf = newBaseComponent.lastLeaf
+    if !newBaseComponent.node
+      newBaseComponent.createDom()
+      newBaseComponent.attachNode(nextLeaf and nextLeaf.node or rootContainer.mountBeforeNode)
+      newBaseComponent.detached = false
+      newBaseComponent.created = true
+    else
+      if !newBaseComponent.noop then newBaseComponent.updateDom(true) # mounting = true
+      newBaseComponent.attachNode(nextLeaf and nextLeaf.node or rootContainer.mountBeforeNode)
+      newBaseComponent.detached = false
+    {holder, firstLeaf, lastLeaf} = @
     while holder
       if holder.firstLeaf==firstLeaf
-        holder.firstLeaf = baseComponent.firstLeaf
+        holder.firstLeaf = newBaseComponent.firstLeaf
       if holder.lastLeaf==lastLeaf
-        holder.lastLeaf = baseComponent.lastLeaf
+        holder.lastLeaf = newBaseComponent.lastLeaf
       holder = holder.holder
-    if !baseComponent.node
-      baseComponent.createDom()
-      baseComponent.attachNode(nextLeaf and nextLeaf.node or rootContainer.mountBeforeNode)
-      baseComponent.detached = false
-      baseComponent.created = true
-    else
-      if !baseComponent.noop then baseComponent.updateDom(true) # mounting = true
-      baseComponent.attachNode(nextLeaf and nextLeaf.node or rootContainer.mountBeforeNode)
-      baseComponent.detached = false
     return
 
   remove: ->
@@ -147,5 +144,3 @@ module.exports = class BaseComponent extends Component
     for component in @unmountCallbackComponentList
       for cb in component.unmountCallbackList then cb()
     return
-
-  getNode: -> @node

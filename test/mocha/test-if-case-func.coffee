@@ -32,27 +32,27 @@ describe 'if, case, func', ->
       x = see 0
       comp = if_(x, txt(1), txt(2))
       comp.mount()
-      expect(comp.getNode().textContent).to.equal '2', 'mount'
+      expect(comp.node.textContent).to.equal '2', 'mount'
       comp.update()
-      expect(comp.getNode().textContent).to.equal '2', 'update'
+      expect(comp.node.textContent).to.equal '2', 'update'
       x 1
       comp.update()
-      expect(comp.getNode().textContent).to.equal '1', 'update x 1'
+      expect(comp.node.textContent).to.equal '1', 'update x 1'
       x 0
       comp.update()
-      expect(comp.getNode().textContent).to.equal '2', 'update x 0'
+      expect(comp.node.textContent).to.equal '2', 'update x 0'
 
     it 'should render if_(x, list(t1, t2), list(t2, t1))', ->
       x = see 0
       t1 = txt 1; t2 = txt 2
       comp = if_(x, list(t1, t2), list(t2, t1))
       comp.mount()
-      expect(comp.getNode()[0].textContent).to.equal '2', 'mount'
+      expect(comp.node[0].textContent).to.equal '2', 'mount'
       comp.update()
-      expect(comp.getNode()[0].textContent).to.equal '2', 'update'
+      expect(comp.node[0].textContent).to.equal '2', 'update'
       x 1
       comp.update()
-      expect(comp.getNode()[0].textContent).to.equal '1', 'update x 1'
+      expect(comp.node[0].textContent).to.equal '1', 'update x 1'
 
     it 'should render if_(x, t1, list(t2, t1))', ->
       x = see 0
@@ -92,7 +92,7 @@ describe 'if, case, func', ->
       expect(p2.node.innerHTML).to.equal '<p>2</p>1', 'mount'
       x 1
       comp.render()
-      expect(comp.getNode().innerHTML).to.equal '1', 'update x 1'
+      expect(comp.node.innerHTML).to.equal '1', 'update x 1'
       x 0
       comp.render()
       expect(p2.node.innerHTML).to.equal '<p>2</p>1', 'mount'
@@ -101,14 +101,14 @@ describe 'if, case, func', ->
       x = see 0
       comp = if_(x, div(1), div(2))
       comp.mount()
-      expect(comp.getNode().tagName).to.equal 'DIV', 'tagName'
-      expect(comp.getNode().innerHTML).to.equal '2', 'mount'
+      expect(comp.node.tagName).to.equal 'DIV', 'tagName'
+      expect(comp.node.innerHTML).to.equal '2', 'mount'
       x 1
       comp.update()
-      expect(comp.getNode().innerHTML).to.equal '1', 'first update'
+      expect(comp.node.innerHTML).to.equal '1', 'first update'
       x 0
       comp.update()
-      expect(comp.getNode().innerHTML).to.equal '2', 'second update'
+      expect(comp.node.innerHTML).to.equal '2', 'second update'
 
     it 'should create and update if_ with attrs',  ->
       x = see 0
@@ -116,18 +116,18 @@ describe 'if, case, func', ->
       expect(comp).to.be.instanceof Tag
       expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties before mounting'
       comp.mount()
-      expect(comp.getNode().tagName).to.equal 'DIV'
-      expect(comp.getNode().fakeProp).to.equal 0, 'mount fakeProp'
-      expect(comp.getNode().childNodes[0].innerHTML).to.equal '2', 'mount innerHTML'
-      expect(comp.getNode().childNodes[0].tagName).to.equal 'P', 'mount C1 tagName'
+      expect(comp.node.tagName).to.equal 'DIV'
+      expect(comp.node.fakeProp).to.equal 0, 'mount fakeProp'
+      expect(comp.node.childNodes[0].innerHTML).to.equal '2', 'mount innerHTML'
+      expect(comp.node.childNodes[0].tagName).to.equal 'P', 'mount C1 tagName'
       expect(comp.hasActiveProperties).to.equal false, 'hasActiveProperties after mounting'
       x 1
       expect(comp.props.fakeProp).to.equal x, 'see invalidate fakeProp'
       expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties'
       comp.update()
-      expect(comp.getNode().fakeProp).to.equal 1, 'update fakeProp'
-      expect(comp.getNode().childNodes[0].innerHTML).to.equal '1', 'update innerHTML'
-      expect(comp.getNode().childNodes[0]).to.equal c1.node
+      expect(comp.node.fakeProp).to.equal 1, 'update fakeProp'
+      expect(comp.node.childNodes[0].innerHTML).to.equal '1', 'update innerHTML'
+      expect(comp.node.childNodes[0]).to.equal c1.node
 
     it 'should create and render if followed by other node ', ->
       demo2Node = document.getElementById('demo2')
@@ -135,73 +135,73 @@ describe 'if, case, func', ->
       x = see 0
       comp = list(pIf=if_(x, p1=p(1), p2=p(2)), p3=p(3))
       comp.mount(demo2Node)
-      expect(pIf.getNode().innerHTML).to.equal '2'
+      expect(pIf.node.innerHTML).to.equal '2'
       expect(demo2Node.innerHTML).to.equal '<p>2</p><p>3</p>'
       x 1
       comp.update()
-      expect(pIf.getNode().innerHTML).to.equal '1' , 'pif update'
+      expect(pIf.node.innerHTML).to.equal '1' , 'pif update'
       expect(demo2Node.innerHTML).to.equal '<p>1</p><p>3</p>', 'demo2Node update'
-      expect(comp.getNode()[0].innerHTML).to.equal '1', 'comp update'
+      expect(comp.node[0].innerHTML).to.equal '1', 'comp update'
 
     it 'should create and render embedded if', ->
       x = see 0
       comp = list(text(x), c0=if_(x, c1=div(1), c2=div(2)))
       comp.mount()
       expect(comp.parentNode).to.equal document.body
-      expect(comp.getNode()[1].innerHTML).to.equal '2'
+      expect(comp.node[1].innerHTML).to.equal '2'
       expect(c0.parentNode).to.equal comp.parentNode
       x 1
       comp.update()
       expect(c0.parentNode).to.equal comp.parentNode
-      expect(c0.getNode().innerHTML).to.equal '1'
+      expect(c0.node.innerHTML).to.equal '1'
       expect(c2.node.innerHTML).to.equal '2'
-      expect(c0.getNode()).to.equal c1.node
-      expect(comp.getNode()[1]).to.equal c1.node
+      expect(c0.node).to.equal c1.node
+      expect(comp.node[1]).to.equal c1.node
 
     it 'should process event in embedded if 2', ->
       x = see 0
       comp = list(t1=text({onchange: -> x parseInt(@value); comp.update()}, x), pIf=if_(x, div(1), div(2)))
       comp.mount()
-      expect(pIf.getNode().innerHTML).to.equal '2'
+      expect(pIf.node.innerHTML).to.equal '2'
       t1.node.value = 1
       t1.node.onchange()
-      expect(pIf.getNode().innerHTML).to.equal '1'
+      expect(pIf.node.innerHTML).to.equal '1'
       t1.node.value = 0
       t1.node.onchange()
-      expect(pIf.getNode().innerHTML).to.equal '2'
+      expect(pIf.node.innerHTML).to.equal '2'
 
     it 'should process embedded if 2', ->
       x = see 0
       comp = list(t1=text(x), pIf=if_(x, div(1), div(2)))
       comp.mount()
-      expect(pIf.getNode().innerHTML).to.equal '2'
+      expect(pIf.node.innerHTML).to.equal '2'
       x 1
       comp.update()
-      expect(pIf.getNode().innerHTML).to.equal '1'
+      expect(pIf.node.innerHTML).to.equal '1'
       x 0
       comp.update()
-      expect(pIf.getNode().innerHTML).to.equal '2'
+      expect(pIf.node.innerHTML).to.equal '2'
 
   describe 'Case', ->
     it 'should create and render case_', ->
       x = see 0
       comp = case_(x, {1:p(1), 2:p(2), 3:p(3)}, 'others')
       comp.mount()
-      expect(comp.getNode()).to.be.instanceof window.Text
-      expect(comp.getNode().textContent).to.equal 'others'
+      expect(comp.node).to.be.instanceof window.Text
+      expect(comp.node.textContent).to.equal 'others'
       x 1
       comp.update()
-      expect(comp.getNode().innerHTML).to.equal '1'
+      expect(comp.node.innerHTML).to.equal '1'
 
   describe 'Func', ->
     it 'func(->12) ', ->
       comp = func(->12)
       comp.mount()
-      expect(comp.getNode().textContent).to.equal '12'
+      expect(comp.node.textContent).to.equal '12'
       comp.update()
-      expect(comp.getNode().textContent).to.equal '12'
+      expect(comp.node.textContent).to.equal '12'
       comp.update()
-      expect(comp.getNode().textContent).to.equal '12'
+      expect(comp.node.textContent).to.equal '12'
 
     it 'p(-> a))', ->
       a = see 1
@@ -209,49 +209,49 @@ describe 'if, case, func', ->
       comp.mount()
       a 2
       comp.update()
-      expect(comp.getNode().innerHTML).to.equal '2', 'update a 2'
+      expect(comp.node.innerHTML).to.equal '2', 'update a 2'
       a 3
       comp.update()
       a 4
       comp.update()
-      expect(comp.getNode().innerHTML).to.equal '4', 'update a 4'
+      expect(comp.node.innerHTML).to.equal '4', 'update a 4'
 
     it 'should  create func component',  ->
       x = see 1
       comp = func(x)
       comp.mount()
-      expect(comp.getNode()).to.be.instanceof(window.Text)
-      expect(comp.getNode().textContent).to.equal('1')
+      expect(comp.node).to.be.instanceof(window.Text)
+      expect(comp.node.textContent).to.equal('1')
 
     it 'should create and  render func', ->
       x = see 0
       comp = func(flow(x, -> {1:p(1), 2:p(2), 3:p(3)}[x()] or  'others'))
       comp.mount()
-      expect(comp.getNode()).to.be.instanceof window.Text
-      expect(comp.getNode().textContent).to.equal 'others'
+      expect(comp.node).to.be.instanceof window.Text
+      expect(comp.node.textContent).to.equal 'others'
       x 1
       comp.update()
-      expect(comp.getNode().innerHTML).to.equal '1'
+      expect(comp.node.innerHTML).to.equal '1'
       x 2
       comp.update()
-      expect(comp.getNode().innerHTML).to.equal '2'
+      expect(comp.node.innerHTML).to.equal '2'
 
     it 'should create and update func with  attrs',  ->
       x = see 1
       comp = func({class:'main', fakeProp:x}, x)
       comp.mount()
-      expect(comp.getNode().tagName).to.equal 'DIV'
-      expect(comp.getNode().fakeProp).to.equal 1
-      expect(comp.getNode()).to.be.instanceof(Element)
-      expect(comp.getNode().childNodes[0].textContent).to.equal('1')
+      expect(comp.node.tagName).to.equal 'DIV'
+      expect(comp.node.fakeProp).to.equal 1
+      expect(comp.node).to.be.instanceof(Element)
+      expect(comp.node.childNodes[0].textContent).to.equal('1')
       x 2
       comp.update()
-      expect(comp.getNode().fakeProp).to.equal 2
-      expect(comp.getNode().childNodes[0].textContent).to.equal '2'
+      expect(comp.node.fakeProp).to.equal 2
+      expect(comp.node.childNodes[0].textContent).to.equal '2'
 
     it 'should process tag with function', ->
       comp = p( txt(-> 1))
       expect(comp.children).to.be.instanceof Text
       comp.mount()
-      expect(comp.getNode().innerHTML).to.equal '1'
+      expect(comp.node.innerHTML).to.equal '1'
 

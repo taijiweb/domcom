@@ -17,7 +17,6 @@ module.exports = exports = class List extends BaseComponent
       checkConflictOffspring(family, child)
       child.setRefContainer(@)
     @isList = true
-    @length = children.length
     return
 
   clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
@@ -35,9 +34,7 @@ module.exports = exports = class List extends BaseComponent
       child.parentNode = @parentNode
       child.listIndex = i
       children[i] = child
-      child
       i++
-    @length = children.length
     return @
 
   createDom: ->
@@ -69,10 +66,7 @@ module.exports = exports = class List extends BaseComponent
   updateDom: (mounting) ->
     @resetContainerHookUpdater()
     @updateOffspring(mounting)
-    @children.length = @length
     @node
-
-  getNode: -> @node
 
   attachNode: (nextNode) ->
     @unmounted = false
@@ -98,7 +92,6 @@ module.exports = exports = class List extends BaseComponent
     child = toComponent(child, @, index)
     child.setRefContainer(container)
     children.splice(index, 0, child)
-    @length++
     @
 
   removeChild: (index) ->
@@ -106,27 +99,6 @@ module.exports = exports = class List extends BaseComponent
       throw new Error 'do not allow set children after the Dom of List Component was created'
     @children.splice(index, 1)
     @
-
-  setFirstLast: (removed, replaced) ->
-    removedFirst = removed.firstLeaf
-    if removedFirst==@firstLeaf
-      newFirst = replaced and replaced.firstLeaf or removed.nextLeaf
-      @firstLeaf = newFirst
-      me = @; holder = @holder
-      while me.listIndex
-        if removedFirst!=holder.firstLeaf then break
-        holder.firstLeaf = newFirst
-        me = holder; holder = @holder
-    removedLast = removed.lastLeaf
-    if removedLast==@lastLeaf
-      newLast = replaced and replaced.lastLeaf or removed.prevLeaf
-      @lastLeaf = newLast
-      me = @; holder = @holder
-      while me.listIndex
-        if removedLast==holder.lastLeaf then break
-        holder.firstLeaf = newLast
-        me = holder; holder = @holder
-    return
 
   toString: (indent=0, noNewLine) ->
     s = newLine("<List>", indent, noNewLine)
