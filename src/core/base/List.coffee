@@ -27,7 +27,6 @@ module.exports = exports = class List extends BaseComponent
     if created
       throw new Error 'do not allow set children after the Dom of List Component was created'
     created and @invalidate()
-    @activeOffspring = @activeOffspring or  activeOffspring = Object.create(null)
     i = startIndex
     for child in newChildren
       child = toComponent child
@@ -36,7 +35,6 @@ module.exports = exports = class List extends BaseComponent
       child.parentNode = @parentNode
       child.listIndex = i
       children[i] = child
-      activeOffspring[child.dcid] = child
       child
       i++
     @length = children.length
@@ -47,7 +45,7 @@ module.exports = exports = class List extends BaseComponent
     children = @children
     listLength = children.length
     if !listLength
-      @lastNodeComponent = @firstNodeComponent = @emptyPlaceHolder = none = new Text('')
+      @lastLeaf = @firstLeaf = @emptyPlaceHolder = none = new Text('')
       @node = [ none.createDom()]
       return
     @node = node = []
@@ -56,15 +54,15 @@ module.exports = exports = class List extends BaseComponent
       child.parentNode = @parentNode
       node[i] = child.render(true)
     i = 0; lastIndex = listLength-1
-    # do not need set firstNode and lastNode for ListComponent
-    # we always use component.firstNodeComponent.firstNode and component.lastNodeComponent.LastNode
-    @firstNodeComponent = children[0].firstNodeComponent
-    @lastNodeComponent = children[lastIndex].lastNodeComponent
+    # do not need set firstNode and lastNode for List Component
+    # we always use component.firstLeaf.firstNode and component.lastLeaf.LastNode
+    @firstLeaf = children[0].firstLeaf
+    @lastLeaf = children[lastIndex].lastLeaf
     while i<lastIndex
-      children[i].lastNodeComponent.nextNodeComponent = children[i+1].firstNodeComponent
+      children[i].lastLeaf.nextLeaf = children[i+1].firstLeaf
       i++
     while i
-      children[i].firstNodeComponent.prevNodeComponent = children[i-1].lastNodeComponent
+      children[i].firstLeaf.prevLeaf = children[i-1].lastLeaf
       i--
     node
 
@@ -110,23 +108,23 @@ module.exports = exports = class List extends BaseComponent
     @
 
   setFirstLast: (removed, replaced) ->
-    removedFirst = removed.firstNodeComponent
-    if removedFirst==@firstNodeComponent
-      newFirst = replaced and replaced.firstNodeComponent or removed.nextNodeComponent
-      @firstNodeComponent = newFirst
+    removedFirst = removed.firstLeaf
+    if removedFirst==@firstLeaf
+      newFirst = replaced and replaced.firstLeaf or removed.nextLeaf
+      @firstLeaf = newFirst
       me = @; holder = @holder
       while me.listIndex
-        if removedFirst!=holder.firstNodeComponent then break
-        holder.firstNodeComponent = newFirst
+        if removedFirst!=holder.firstLeaf then break
+        holder.firstLeaf = newFirst
         me = holder; holder = @holder
-    removedLast = removed.lastNodeComponent
-    if removedLast==@lastNodeComponent
-      newLast = replaced and replaced.lastNodeComponent or removed.prevNodeComponent
-      @lastNodeComponent = newLast
+    removedLast = removed.lastLeaf
+    if removedLast==@lastLeaf
+      newLast = replaced and replaced.lastLeaf or removed.prevLeaf
+      @lastLeaf = newLast
       me = @; holder = @holder
       while me.listIndex
-        if removedLast==holder.lastNodeComponent then break
-        holder.firstNodeComponent = newLast
+        if removedLast==holder.lastLeaf then break
+        holder.firstLeaf = newLast
         me = holder; holder = @holder
     return
 

@@ -34,7 +34,7 @@ module.exports = class Tag extends BaseComponent
     children.setRefContainer(@)
     @children = children
     @processAttrs()
-    @firstNodeComponent = @lastNodeComponent = @
+    @firstLeaf = @lastLeaf = @
     return
 
   processAttrs: ->

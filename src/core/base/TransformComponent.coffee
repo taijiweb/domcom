@@ -45,18 +45,18 @@ module.exports = class TransformComponent extends Component
       @node
     else
       if !created
-        nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
+        nextNode = oldBaseComponent and oldBaseComponent.nextLeaf and oldBaseComponent.nextLeaf.node or @mountBeforeNode
         baseComponent.executeMountCallback()
         baseComponent.createDom(mounting)
         baseComponent.attachNode(nextNode)
         baseComponent.created = true
-        @firstNodeComponent = baseComponent.firstNodeComponent
-        @lastNodeComponent = baseComponent.lastNodeComponent
+        @firstLeaf = baseComponent.firstLeaf
+        @lastLeaf = baseComponent.lastLeaf
         @node = baseComponent.node
       else
         mounting = @mountMode=='mounting' or mounting
         if mounting
-          nextNode = oldBaseComponent and oldBaseComponent.nextNodeComponent and oldBaseComponent.nextNodeComponent.node or @mountBeforeNode
+          nextNode = oldBaseComponent and oldBaseComponent.nextLeaf and oldBaseComponent.nextLeaf.node or @mountBeforeNode
           baseComponent.executeMountCallback()
           if !baseComponent.noop then baseComponent.updateDom(mounting)
           baseComponent.attachNode(nextNode)

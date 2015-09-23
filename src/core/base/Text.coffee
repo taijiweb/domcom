@@ -11,7 +11,7 @@ module.exports = class Text extends BaseComponent
     super(options)
     @family = Object.create(null)
     @family[@dcid] = true
-    @firstNodeComponent = @lastNodeComponent = @
+    @firstLeaf = @lastLeaf = @
 
   processText: ->
     if typeof @text == 'function'then domValue @text()

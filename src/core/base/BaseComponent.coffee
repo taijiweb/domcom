@@ -20,7 +20,7 @@ module.exports = class BaseComponent extends Component
       @mountMode = null
       return
     if !@node
-      nextNode = @nextNodeComponent and @nextNodeComponent.node or @mountBeforeNode
+      nextNode = @nextLeaf and @nextLeaf.node or @mountBeforeNode
       @executeMountCallback()
       @createDom(mounting)
       @attachNode(nextNode)
@@ -29,7 +29,7 @@ module.exports = class BaseComponent extends Component
     else
       mounting = @mountMode=='mounting' or mounting
       if mounting
-        nextNode = @nextNodeComponent and @nextNodeComponent.node or @mountBeforeNode
+        nextNode = @nextLeaf and @nextLeaf.node or @mountBeforeNode
         @executeMountCallback()
         if !@noop then @updateDom(mounting)
         @attachNode(nextNode)
@@ -100,37 +100,37 @@ module.exports = class BaseComponent extends Component
     @removeNode()
     @detached = true
     @executeUnmountCallback()
-    prevNodeComponent = @prevNodeComponent
-    if prevNodeComponent then prevNodeComponent.nextNodeComponent = baseComponent.firstNodeComponent
-    nextNodeComponent = @nextNodeComponent
-    if nextNodeComponent then nextNodeComponent.prevNodeComponent = baseComponent.lastNodeComponent
+    prevLeaf = @prevLeaf
+    if prevLeaf then prevLeaf.nextLeaf = baseComponent.firstLeaf
+    nextLeaf = @nextLeaf
+    if nextLeaf then nextLeaf.prevLeaf = baseComponent.lastLeaf
     holder = @holder
-    firstNodeComponent = @firstNodeComponent
-    lastNodeComponent = @lastNodeComponent
+    firstLeaf = @firstLeaf
+    lastLeaf = @lastLeaf
     while holder
-      if holder.firstNodeComponent==firstNodeComponent
-        holder.firstNodeComponent = baseComponent.firstNodeComponent
-      if holder.lastNodeComponent==lastNodeComponent
-        holder.lastNodeComponent = baseComponent.lastNodeComponent
+      if holder.firstLeaf==firstLeaf
+        holder.firstLeaf = baseComponent.firstLeaf
+      if holder.lastLeaf==lastLeaf
+        holder.lastLeaf = baseComponent.lastLeaf
       holder = holder.holder
     if !baseComponent.node
       baseComponent.createDom()
-      baseComponent.attachNode(nextNodeComponent and nextNodeComponent.node or rootContainer.mountBeforeNode)
+      baseComponent.attachNode(nextLeaf and nextLeaf.node or rootContainer.mountBeforeNode)
       baseComponent.detached = false
       baseComponent.created = true
     else
       if !baseComponent.noop then baseComponent.updateDom(true) # mounting = true
-      baseComponent.attachNode(nextNodeComponent and nextNodeComponent.node or rootContainer.mountBeforeNode)
+      baseComponent.attachNode(nextLeaf and nextLeaf.node or rootContainer.mountBeforeNode)
       baseComponent.detached = false
     return
 
   remove: ->
     @removeNode()
     @executeUnmountCallback()
-    prevNodeComponent = @prevNodeComponent
-    nextNodeComponent = @nextNodeComponent
-    prevNodeComponent and prevNodeComponent.nextNodeComponent = nextNodeComponent
-    nextNodeComponent and nextNodeComponent.prevNodeComponent = prevNodeComponent
+    prevLeaf = @prevLeaf
+    nextLeaf = @nextLeaf
+    prevLeaf and prevLeaf.nextLeaf = nextLeaf
+    nextLeaf and nextLeaf.prevLeaf = prevLeaf
     return
 
   removeNode: ->
