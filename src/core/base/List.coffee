@@ -5,7 +5,9 @@ Text = require './Text'
 {checkConflictOffspring, insertNode} = require '../../dom-util'
 
 module.exports = exports = class List extends BaseComponent
-  constructor: (@children, options) ->
+  constructor: (children, options) ->
+    if !children.length then return new Text('')
+    @children = children
     options = options or {}
     super(options)
     @family = family = Object.create(null)
@@ -21,16 +23,22 @@ module.exports = exports = class List extends BaseComponent
   clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
 
   setChildren: (startIndex, newChildren...) ->
-    if @node and startIndex<children.length
+    {children, created} = @
+    if created
       throw new Error 'do not allow set children after the Dom of List Component was created'
-    children = @children
-    newChildren = for child in newChildren
+    created and @invalidate()
+    @activeOffspring = @activeOffspring or  activeOffspring = Object.create(null)
+    i = startIndex
+    for child in newChildren
       child = toComponent child
       child.setRefContainer(@)
       child.holder = @
+      child.parentNode = @parentNode
+      child.listIndex = i
+      children[i] = child
+      activeOffspring[child.dcid] = child
       child
-    newChildrenLength = newChildren.length
-    children.splice(startIndex, newChildrenLength, newChildren...)
+      i++
     @length = children.length
     return @
 
@@ -86,7 +94,7 @@ module.exports = exports = class List extends BaseComponent
     return
 
   insertChild: (index, child) ->
-    if @node
+    if @created
       throw new Error 'do not allow set children after the Dom of List Component was created'
     children = @children
     child = toComponent(child, @, index)
@@ -95,15 +103,10 @@ module.exports = exports = class List extends BaseComponent
     @length++
     @
 
-  removeChild: (index, notSetFirstLast) ->
-    children = @children
-    removedChild = children[index]
-    children.splice(index, 1)
-    childrenLengh = children.length
-    while index<childrenLengh
-      children[index].listIndex = index
-      index++
-    if !notSetFirstLast then @setFirstLast(removedChild.baseComponent)
+  removeChild: (index) ->
+    if @created
+      throw new Error 'do not allow set children after the Dom of List Component was created'
+    @children.splice(index, 1)
     @
 
   setFirstLast: (removed, replaced) ->

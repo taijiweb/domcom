@@ -81,6 +81,7 @@ module.exports = class BaseComponent extends Component
   invalidate: ->
     if !@noop then return
     @noop = false
+    @valid = false
     holder = @holder
     while holder and !holder.isContainer
       holder = holder.holder

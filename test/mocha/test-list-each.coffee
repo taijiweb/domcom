@@ -3,7 +3,7 @@
 {bindings
 isComponent
 Component, TransformComponent, Tag, Text,
-txt, list, func, if_, case_, func, each
+txt, list, List, func, if_, case_, func, each
 accordionGroup, accordion
 a, p, span, text, div
 bind, pour, see} = dc
@@ -47,27 +47,39 @@ describe 'list, each', ->
       expect(comp.node.fakeProp).to.equal 3
       expect(comp.node.childNodes[1].textContent).to.equal '3', 'textContent update'
 
-  describe 'list', ->
     it 'list(txt(->12))', ->
       comp = list(txt(->12))
       comp.mount()
-      comp.update()
-      comp.update()
-      comp.update()
       expect(comp.node.textContent).to.equal '12'
+
+    it 'list setChildren after mounting', ->
+      comp = new List([txt(1)])
+      comp.mount()
+      expect(comp.node[0].textContent).to.equal '1'
+      comp.setChildren(1, t2=txt(2))
+      expect(comp.valid).to.equal false
+      expect(comp.activeOffspring[t2.dcid]).to.equal t2
+      comp.update()
+      expect(comp.children[1].node.textContent).to.equal '2', 'children[1].node.textContent'
+      expect(comp.node[1].textContent).to.equal '2'
+
+    it 'list setChildren: similar to splitter', ->
+      comp = new List([txt(1), t3=txt(3)])
+      comp.setChildren(1, t2=txt(2), t3)
+      comp.mount()
+      expect(comp.node[0].textContent).to.equal '1'
+      expect(comp.node[1].textContent).to.equal '2'
+      expect(comp.node[2].textContent).to.equal '3'
 
     it 'list(p(txt(->12))) ', ->
       comp = list(p(txt(->12)))
       comp.mount()
-      comp.update()
-      comp.update()
       comp.update()
       expect(comp.node.innerHTML).to.equal '12'
 
     it 'list(p(->12)) ', ->
       comp = list(p(->12))
       comp.mount()
-      comp.update()
       comp.update()
       expect(comp.node.innerHTML).to.equal '12'
 
@@ -96,7 +108,7 @@ describe 'list, each', ->
       lst.setLength 0
       comp.update()
       expect(comp.listComponent.children.length).to.equal 0, 'comp.listComponent.children.length = 0'
-      expect(comp.getNode().length).to.equal 0, 'lst.length = 0'
+      expect(comp.getNode().length).to.equal 1, 'lst.length = 1'
 
     it 'should process immutable template in each component', ->
       document.getElementById('demo').innerHTML = ''
@@ -113,9 +125,9 @@ describe 'list, each', ->
       lst.setItem 2, {text: 'e'}
       comp.update()
       expect(comp.getNode()[2].textContent).to.equal 'e'
-      lst.setLength 0
-      comp.update()
-      expect(comp.getNode().length).to.equal 0
+#      lst.setLength 0
+#      comp.update()
+#      expect(comp.getNode().length).to.equal 0
 
     it 'should process itemTemplateImmutable each component ', ->
       comp = each(lst = ['a', 'b'], ((item, i, list) -> p(txt(-> list[i]))), {itemTemplateImmutable:true})
