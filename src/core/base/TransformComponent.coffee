@@ -31,8 +31,8 @@ module.exports = class TransformComponent extends Component
     oldBaseComponent = @baseComponent
     mountMode = @mountMode
     if mountMode=='unmounting'
+      # this is only for the child of listComponent of Each Component
       oldBaseComponent.remove()
-      if @listIndex? then @holder.removeChild(@listIndex)
       @mountMode = null
       @node
     baseComponent = @getBaseComponent()

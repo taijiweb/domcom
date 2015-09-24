@@ -147,7 +147,7 @@ describe 'demo', ->
       expect(comp.listComponent.activeOffspring).to.equal null, 'all 1'
       child0 = comp.cacheChildren[0]
       status.hash = 'completed'
-      comp.listComponent.node = true
+      comp.listComponent.created = true
       child0.valid = true
       comp.listComponent.activeOffspring = null
       comp.getBaseComponent()

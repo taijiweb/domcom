@@ -1,7 +1,7 @@
 # domcom demo
 {select, see2, case_, list} = dc
 
-{eachDemo1, eachDemo2, eachDemo3} = require 'domcom/demo/demo-each'
+{eachDemo1, eachDemo2, eachDemo3, eachDemo4} = require 'domcom/demo/demo-each'
 {demoArrow, demoCombo} = require 'domcom/demo/demo-builtins'
 splitterDemo = require 'domcom/demo/demo-splitter'
 accordion = require 'domcom/demo/demo-accordion'
@@ -19,6 +19,7 @@ exports.demoMap = demoMap =
   each1: eachDemo1
   each2: eachDemo2
   each3: eachDemo3
+  each4: eachDemo4
   'switch 1 2 3 4': require 'domcom/demo/demo-switch-1-2-3-4'
   splitter: splitterDemo
   sum: require 'domcom/demo/demo-sum'

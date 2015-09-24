@@ -197,11 +197,11 @@ describe 'list, each', ->
       expect(each1.listComponent.parentNode).to.equal(comp.node)
       expect(each1.node[0][0].textContent).to.equal '1'
       expect(each2.node[0].textContent).to.equal '1'
-#      x = 2
-#      comp.update()
-#      expect(each1.listComponent.parentNode).to.equal(comp.node)
-#      expect(each2.node[0].textContent).to.equal('2')
-#      expect(comp.node.innerHTML).to.equal '2'
+      x = 2
+      comp.update()
+      expect(each1.listComponent.parentNode).to.equal(comp.node)
+      expect(each2.node[0].textContent).to.equal('2')
+      expect(comp.node.innerHTML).to.equal '2'
 
     it  'should mount and update each', ->
       comp = new Tag('span', {}, [each([1], (item) -> txt(1))])
@@ -209,6 +209,17 @@ describe 'list, each', ->
       expect(comp.node.innerHTML).to.equal '1'
       comp.update()
       expect(comp.node.innerHTML).to.equal '1'
+
+    iit  'should push and setLength of each', ->
+      lst = [1, 2, 3, 4, 5, 6]
+      comp = each(lst, (item) -> txt item)
+      comp.mount()
+      lst.push 7
+      comp.update()
+      expect(comp.node.length).to.equal 7, 'push 7'
+      lst.setLength 4
+      comp.update()
+      expect(comp.node.length).to.equal 4, 'setLength 4'
 
     it  'should update each with component as the item of list 1', ->
       comp = each([txt(1)], (item) -> item)
