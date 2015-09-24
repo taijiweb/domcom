@@ -82,11 +82,11 @@ module.exports = class Component
     @valid = false
     @render()
 
-  ### to ensure that the component can be mounted back again, this method should not change holder and listIndex,
-  ###
+  # do not unmount sub component
   unmount: ->
+    if @holder
+      throw new Error 'do not allow to unmount sub component'
     @baseComponent.remove()
-    if @listIndex? then @holder.removeChild(@listIndex)
     @mountMode = null
     return
 

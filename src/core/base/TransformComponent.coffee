@@ -39,12 +39,6 @@ module.exports = class TransformComponent extends Component
     baseComponent.parentNode = @parentNode
     if oldBaseComponent and baseComponent!=oldBaseComponent
       oldBaseComponent.replace(baseComponent, @) # pass the root holder
-      @node = node = baseComponent.node
-      @listIndex? and @container.node[@listIndex] = node
-      holder = @holder
-      while holder and holder.isTransformComponent
-        holder.node = node
-        holder = holder.holder
       @node
     else
       created = baseComponent.created
@@ -73,9 +67,7 @@ module.exports = class TransformComponent extends Component
     @valid = true
     content = @content = @getContentComponent()
     content.holder = @
-    content.container = @container
     content.mountBeforeNode = @mountBeforeNode
-    content.listIndex = @listIndex
     baseComponent = content.getBaseComponent()
     if @mountCallbackList then baseComponent.mountCallbackComponentList.unshift @
     if @unmountCallbackList then baseComponent.unmountCallbackComponentList.push @

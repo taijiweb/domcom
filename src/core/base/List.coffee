@@ -2,7 +2,7 @@ toComponent = require './toComponent'
 BaseComponent = require './BaseComponent'
 Text = require './Text'
 {checkContainer, newLine} = require '../../util'
-{checkConflictOffspring, insertNode} = require '../../dom-util'
+{checkConflictOffspring} = require '../../dom-util'
 
 module.exports = exports = class List extends BaseComponent
   constructor: (children, options) ->
@@ -67,17 +67,6 @@ module.exports = exports = class List extends BaseComponent
     @resetContainerHookUpdater()
     @updateOffspring(mounting)
     @node
-
-  attachNode: (nextNode) ->
-    @unmounted = false
-    if !@parentNode then return
-    container = @container
-    if container and container.isList
-      container.node[@listIndex] = @node
-      if !container.created or container.detached then  return @node
-    if @created and !@detached then return @node
-    @detached = false
-    insertNode(@parentNode, @node, nextNode)
 
   removeNode: ->
     if !@parentNode or @unmounted then return

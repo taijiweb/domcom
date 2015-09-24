@@ -3,6 +3,7 @@ toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
 List = require './List'
 Func = require './Func'
+Text = require './Text'
 {funcString, newLine} = require '../../util'
 {react, renew, flow} = require '../../flow/index'
 {watchEachList, watchEachObject} = require '../../flow/watch-list'
@@ -39,7 +40,9 @@ module.exports = class Each extends TransformComponent
     @childReactives = []
     @cacheComponents = Object.create(null)
     @cacheChildren = []
-    @listComponent = new List(@children=[])
+    # let listComponent has at least on child, otherwise @listComponent will become new Text('')
+    @listComponent = new List(@children=[''])
+    @children.length = 0
     @listComponent.isContainer = true
     return
 
@@ -67,9 +70,10 @@ module.exports = class Each extends TransformComponent
     listComponent.parentNode = @parentNode
     if listComponent.node then listComponent.noop = true
     @getItems()
+    if !@_items.length
+      return @emptyPlaceHolder = @emptyPlaceHolder or new Text('')
     length = Math.max(@_items.length, @children.length)
     length and @invalidateChildren(0, length)
-    listComponent.length = @_items.length
     listComponent
 
   getChild: (i) ->
@@ -123,6 +127,11 @@ module.exports = class Each extends TransformComponent
       listComponent.noop = true
       listComponent.invalidate()
     return
+
+  render: (mounting) ->
+    super(mounting)
+    @listComponent.children.length = @_items.length
+    @node
 
   clone: (options) -> (new Each(@items, @itemFn, options or @options)).copyLifeCallback(@)
 

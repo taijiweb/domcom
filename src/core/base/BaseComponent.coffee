@@ -1,5 +1,5 @@
 Component = require './component'
-{insertNode, removeNode} = require '../../dom-util'
+{insertNode} = require '../../dom-util'
 {cloneObject} = require '../../util'
 
 module.exports = class BaseComponent extends Component
@@ -44,14 +44,27 @@ module.exports = class BaseComponent extends Component
 
   attachNode: (nextNode) ->
     @unmounted = false
+    detached = @detached
     @detached = false
-    if @parentNode
-      container = @container
-      if container and  container.isList
-        container.node[@listIndex] = @node
-        if !container.created or container.detached then return @node
-      @parentNode.insertBefore(@node, nextNode)
-      @node
+    node = @node
+    child = @; holder = @holder
+    while 1
+      if child.listIndex?
+        holder.node[child.listIndex] = node
+        break
+      if !holder then break
+      if !holder.isTransformComponent then break
+      holder.node = node
+      child = holder; holder = holder.holder
+    if !@parentNode then return
+    # if below, then should wait List container to attach
+    if holder and  holder.isList and (!holder.created or holder.detached) then return node
+    # especially for List Component, if below, then child component should have attach themself
+    if @isList
+      if @created and !detached then return node
+      else insertNode(@parentNode, node, nextNode)
+    else @parentNode.insertBefore(node, nextNode)
+    node
 
   # this method will be called after updateProperties and before updating chidlren or activeOffspring
   resetContainerHookUpdater: ->
