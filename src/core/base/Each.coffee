@@ -38,7 +38,8 @@ module.exports = class Each extends TransformComponent
       else if key? then (item, i) -> item[key]
 
     @childReactives = []
-    @cacheComponents = Object.create(null)
+    @memoComponents = Object.create(null)
+    @memoToChild = Object.create(null) # the map from memo key to active child component, only one child from a key is allowed
     @cacheChildren = []
     # let listComponent has at least on child, otherwise @listComponent will become new Text('')
     @listComponent = new List(@children=[''])
@@ -78,40 +79,66 @@ module.exports = class Each extends TransformComponent
 
   getChild: (i) ->
     me = @
-    {listComponent, cacheChildren, children, childReactives, cacheComponents, keyFunction, itemFn} = @
+    if keyFunction
+      memoKey = if @isArrayItems then keyFunction(_items[i], i) else keyFunction(_items[i][0], _items[i][1], i)
+    {listComponent, cacheChildren, children, childReactives, keyFunction, itemFn} = @
     if i>=@_items.length
       child = cacheChildren[i]
       child.valid = false
       child.mountMode = 'unmounting'
-    else
-      if i<children.length
-        child = children[i]
-        child.valid = false
-      else if i<cacheChildren.length
-        child = children[i] = cacheChildren[i]
+      if keyFunction
+        delete @memoToChild[memoKey]
+      return child
+    if keyFunction
+      if @memoToChild[memoKey]
+        throw new Error 'duplicated memo key in Each Component'
+      if child=@memoComponents[memoKey]
         child.valid = false
         child.mountMode = 'mounting'
-      else
-        childReactives[i] = react ->
-          items = me._items
-          item = items[i]  # todo: change item to reative function !!!
-          index = child.listIndex
-          result =
-            if me.isArrayItems
-              if keyFunction then cacheComponents[keyFunction(item, index)] or itemFn(item, index, items, me)
-              else itemFn(item, i, items, me)
-            else
-              [key, value] = item
-              if keyFunction then cacheComponents[keyFunction(value, key, index)] or itemFn(value, key, index, items, me)
-              else itemFn(value, key, i, items, me)
-          if itemFn.pouring then child.invalidate()
-          result
-
-        child = children[i] = cacheChildren[i] = new Func childReactives[i]
-        child.holder = child.container = listComponent
+        children[i] = cacheChildren[i] = child
         child.listIndex = i
+        @memoToChild[memoKey] = child
         child.parentNode = @parentNode
-        if listComponent.node then child.mountMode = 'mounting'
+        return child
+    if i<children.length
+        child = children[i]
+        child.valid = false
+    else if i<cacheChildren.length
+      child = children[i] = cacheChildren[i]
+      child.valid = false
+      child.mountMode = 'mounting'
+    else
+      _items = @_items
+      if me.isArrayItems
+        if !me.isFunctionItems and !me.needSort
+          itemBinding = react (value) ->
+            if arguments.length==1 then me._items[i] = value
+            else me._items[i]
+        else itemBinding = react (value) -> _items[i]
+        if keyFunction
+          @memoToChild[memoKey] = memoComponents[memoKey] = child = toComponent(itemFn(itemBinding, i, me))
+        else
+          childReactives[i] = ->  itemFn(itemBinding, i, me)
+          child = new Func childReactives[i]
+      else
+        # [key, value] = @_items[i]
+        valueBinding = react (v) ->
+          if arguments.length==1
+            @_items.setItem(@_items[i][0], v)
+          else @_items[i][1]
+        keyBinding = react -> @_items[i][0]
+        _itemsBinding = -> @_items
+        childReactives[i] = -> itemFn(valueBinding, keyBinding, i, me)
+        if keyFunction
+          @memoToChild[memoKey] = memoComponents[memoKey] = child = toComponent(itemFn(valueBinding, keyBinding, i, me))
+        else
+          childReactives[i] = ->  itemFn(valueBinding, keyBinding, i, me)
+          child = new Func childReactives[i]
+      child = children[i] = cacheChildren[i] = new Func childReactives[i]
+      child.holder = child.container = listComponent
+      child.listIndex = i
+      child.parentNode = @parentNode
+      if listComponent.node then child.mountMode = 'mounting'
 
     child
 
@@ -130,7 +157,11 @@ module.exports = class Each extends TransformComponent
 
   render: (mounting) ->
     super(mounting)
-    @listComponent.children.length = @_items.length
+    itemsLength = @_items.length
+    listComponent = @listComponent
+    listComponent.children.length = itemsLength
+    listComponent.node and listComponent.node.length = itemsLength
+    @node.length = itemsLength
     @node
 
   clone: (options) -> (new Each(@items, @itemFn, options or @options)).copyLifeCallback(@)

@@ -106,9 +106,9 @@ describe 'list, each', ->
       #  comp.node is Text(''), comp.node.length is the TextNode.length ,which is also 0 :)
       expect(comp.node.length).to.equal 0, 'lst.length == TextNode.length == 0'
 
-    it 'should process immutable template in each component', ->
+    it 'should process item() in item template function', ->
       document.getElementById('demo').innerHTML = ''
-      comp = each(lst = [{text:'a'}, {text:'b'}], ((item, i) -> p(txt(bind item, 'text'))), {itemTemplateImmutable:true})
+      comp = each(lst = [{text:'a'}, {text:'b'}], ((item, i) -> p(txt(bind item(), 'text'))))
       comp.mount("#demo")
       expect(comp.node[0].textContent).to.equal 'a'
       expect(comp.node[1].textContent).to.equal 'b'
@@ -125,8 +125,8 @@ describe 'list, each', ->
       comp.update()
       expect(comp.node.length).to.equal 0
 
-    it 'should process itemTemplateImmutable each component ', ->
-      comp = each(lst = ['a', 'b'], ((item, i, list) -> p(txt(-> list[i]))), {itemTemplateImmutable:true})
+    it 'should process template which use each components itself as parameter', ->
+      comp = each(lst = ['a', 'b'], ((item, i, eachComponent) -> p(txt(-> eachComponent.items[i]))))
       comp.mount()
       lst.setItem 0, 'c'
       comp.update()
@@ -210,7 +210,7 @@ describe 'list, each', ->
       comp.update()
       expect(comp.node.innerHTML).to.equal '1'
 
-    iit  'should push and setLength of each', ->
+    it  'should push and setLength of each', ->
       lst = [1, 2, 3, 4, 5, 6]
       comp = each(lst, (item) -> txt item)
       comp.mount()
