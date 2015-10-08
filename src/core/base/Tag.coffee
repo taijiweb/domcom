@@ -31,7 +31,7 @@ module.exports = class Tag extends BaseComponent
     @family = family = Object.create(null)
     for dcid of children.family then family[dcid] = true
     family[@dcid] = true
-    children.setRefContainer(@)
+    children.container = children.holder = @
     @children = children
     @processAttrs()
     @firstLeaf = @lastLeaf = @
@@ -235,32 +235,6 @@ module.exports = class Tag extends BaseComponent
   showOn: (test, display) -> @showHide(true, test, display)
   hideOn: (test, display) -> @showHide(false, test, display)
 
-  top: ->
-    elm = @node
-    if !elm then return 0
-    rect = elm.getBoundingClientRect()
-    rect.top
-
-  bottom: ->
-    elm = @node
-    if !elm then return 0
-    rect = elm.getBoundingClientRect()
-    rect.bottom
-
-  height: ->
-    elm = @node
-    if !elm then return 0
-    rect = elm.getBoundingClientRect()
-    rect.height
-
-  width: ->
-    elm = @node
-    if !elm then return 0
-    rect = elm.getBoundingClientRect()
-    rect.width
-
-  getSpecialProp: (prop) ->
-
   createDom: ->
     @noop = true
     @firstNode = @lastNode = @node = node =
@@ -270,6 +244,12 @@ module.exports = class Tag extends BaseComponent
     @resetContainerHookUpdater()
     {children} = @
     children.parentNode = node
+    children.container = children.holder = @
+    for key, ref of children.refs
+      if ref!=@
+        ref.invalidate()
+        ref.activeOffspring = ref.activeOffspring or Object.create(null)
+        ref.activeOffspring[children.dcid] = children
     children.render(true) # need mounting
     if compList=children.baseComponent.unmountCallbackComponentList
       @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)

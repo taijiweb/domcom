@@ -7,7 +7,6 @@ module.exports = class BaseComponent extends Component
     super(options)
     @activeOffspring = null
     @isBaseComponent = true
-    @refs = Object.create(null)
     @baseComponent = @
 
   render: (mounting) ->
@@ -58,10 +57,13 @@ module.exports = class BaseComponent extends Component
       child = holder; holder = holder.holder
     if !@parentNode then return
     # if below, then should wait List container to attach
-    if holder and  holder.isList and (!holder.created or holder.detached) then return node
-    # especially for List Component, if below, then child component should have attach themself
+    if holder and  holder.isList and (!holder.created or holder.detached)
+      @parentNode = holder.parentNode
+      return node
     if @isList
-      if @created and !detached then return node
+      if @created and !detached
+        # child component should have attached themself
+        return node
       else insertNode(@parentNode, node, nextNode)
     else @parentNode.insertBefore(node, nextNode)
     node
@@ -104,6 +106,7 @@ module.exports = class BaseComponent extends Component
     holder.invalidate()
 
   setRefContainer: (container) ->
+    @refs = @refs or Object.create(null)
     @refs[container.dcid] = container
     @container = container
     @holder = container

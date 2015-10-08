@@ -16,6 +16,7 @@ module.exports = class Component
     @node = null
     @options = options or {}
     @hookUpdater = @
+    @refs = null
     @dcid = newDcid()
 
   setOptions: (@options) -> @
@@ -51,7 +52,7 @@ module.exports = class Component
     cbs.push.apply(cbs, fns)
     @
 
-  unbindUpdate: (fns...) ->
+  offUpdate: (fns...) ->
     cbs = @updateCallbackList
     for fn in cbs
       if cbs.indexOf(fn)==-1 then continue

@@ -1,4 +1,4 @@
-{expect, iit, idescribe, nit, ndescribe} = require('./helper')
+{expect, iit, idescribe, nit, ndescribe, newDemoNode} = require('./helper')
 
 {bindings, see, flow
 Component, TransformComponent, Tag, Text,
@@ -18,7 +18,7 @@ describe 'if, case, func', ->
       expect(if_(0, 1, t)).to.equal t
       expect(if_(1, t, 0)).to.equal t
 
-    it 'should compute if_((-> x),  p(t), t).family', ->
+    it 'should compute if_((-> x), p(t), t).family', ->
       t = txt(1)
       x = 0
       expect(if_((-> x),  p(t), t).family[t.dcid]).to.equal true
@@ -54,25 +54,58 @@ describe 'if, case, func', ->
       comp.update()
       expect(comp.node[0].textContent).to.equal '1', 'update x 1'
 
-    it 'should render if_(x, t1, list(t2, t1))', ->
+    iit 'should render if_(x, t1, list(t2, t1))', ->
       x = see 0
       t1 = txt 1; t2 = txt 2
       comp = p if_(x, t1, list(t2, t1))
       comp.mount()
       expect(comp.node.innerHTML).to.equal '21', 'mount'
-      comp.update()
-      expect(comp.node.innerHTML).to.equal '21', 'update'
+#      comp.update()
+#      expect(comp.node.innerHTML).to.equal '21', 'update'
       x 1
       comp.update()
       expect(comp.node.innerHTML).to.equal '1', 'update x 1'
-      x 0
-      comp.update()
-      expect(comp.node.innerHTML).to.equal '21', 'update x 0'
+#      x 0
+#      comp.update()
+#      expect(comp.node.innerHTML).to.equal '21', 'update x 0'
 
     it 'should render if_(x, p(t1), list(p(t2), t1))', ->
       x = see 0
       t1 = txt 1; t2 = txt 2
-      comp = p if1=if_(x, p1=p(t1), list(p(t2), t1))
+      comp = if_(x, p1=p(t1), list(p(t2), t1))
+      comp.mount(demoNode=newDemoNode('if-ref'))
+      expect(demoNode.innerHTML).to.equal '<p>2</p>1', 'mount'
+      x 1
+      comp.update()
+      expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1'
+      x 0
+      comp.update()
+      expect(demoNode.innerHTML).to.equal '<p>2</p>1', 'update x 0'
+      x 1
+      comp.update()
+      expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1 again'
+
+    it 'should render if_(x, p(t1), div(t2))', ->
+      x = see 0
+      t1 = txt 1
+      comp = if_(x, p(t1), div(t1))
+      comp.mount(demoNode=newDemoNode('if-ref'))
+      expect(demoNode.innerHTML).to.equal '<div>1</div>', 'mount'
+      x 1
+      comp.update()
+      expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1'
+      x 0
+      comp.update()
+      expect(demoNode.innerHTML).to.equal '<div>1</div>', 'update x 0'
+#      x 1
+#      comp.update()
+#      expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1 again'
+
+
+    it 'should render p(if_(x, p(t1), list(p(t2), t1)))', ->
+      x = see 0
+      t1 = txt 1; t2 = txt 2
+      comp = p(if1=if_(x, p1=p(t1), list(p(t2), t1)))
       comp.mount()
       expect(comp.node.innerHTML).to.equal '<p>2</p>1', 'mount'
       comp.update()
@@ -83,6 +116,9 @@ describe 'if, case, func', ->
       x 0
       comp.update()
       expect(comp.node.innerHTML).to.equal '<p>2</p>1', 'update x 0'
+      x 1
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '<p>1</p>', 'update x 1 again'
 
     it 'should render if_(x, p(t1), p list(p(t2), t1))', ->
       x = see 0

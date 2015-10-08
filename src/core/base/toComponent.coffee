@@ -4,8 +4,13 @@ Text = require './Text'
 
 module.exports = toComponent = (x) ->
   if arguments.length!=1 then throw new Error('toComponent: wrong arguments length')
-  if isComponent(x) then x
+  if isComponent(x)
+    if x.container
+      Ref = require './Ref'
+      new Ref(x)
+    else x
   else if typeof x == 'function'
+    # todo: use Text instead
     Func = require './Func'
     new Func(x)
   else if x instanceof Array
