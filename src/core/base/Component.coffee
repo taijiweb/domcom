@@ -16,7 +16,6 @@ module.exports = class Component
     @node = null
     @options = options or {}
     @Updatehook = @
-    @refs = null
     @dcid = newDcid()
 
   setOptions: (@options) -> @

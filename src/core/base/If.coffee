@@ -47,8 +47,6 @@ module.exports = class If extends TransformComponent
     @family = family = intersect([then_.family, else_.family])
     family[@dcid] = true
 
-    #then_.container = else_.container = then_.holder = else_.holder = @
-
     if !test.invalidate then test = renew(test)
 
     test.onInvalidate(@invalidate.bind(@))

@@ -7,11 +7,6 @@ module.exports = class TransformComponent extends Component
     @valid = false
     @isTransformComponent = true
 
-  setRefContainer: (container) ->
-    @container = container
-    @holder = container
-    @
-
   invalidate: ->
     if !@valid then return
     @valid = false
@@ -24,7 +19,7 @@ module.exports = class TransformComponent extends Component
       holder = holder.holder
     if holder and holder.isUpdateHook
       holder.activeOffspring = holder.activeOffspring or Object.create(null)
-      holder.activeOffspring[activeChild.dcid] = [activeChild, activeChild.container]
+      holder.activeOffspring[activeChild.dcid] = [activeChild, activeChild.holder]
       holder.invalidate()
 
   render: (mounting) ->
@@ -65,10 +60,11 @@ module.exports = class TransformComponent extends Component
   getBaseComponent: ->
     if @valid then return @baseComponent
     @valid = true
-    content = @content = @getContentComponent()
+    content = @getContentComponent()
+    baseComponent = content.getBaseComponent()
     content.holder = @
     content.mountBeforeNode = @mountBeforeNode
-    baseComponent = content.getBaseComponent()
+    @content = content
     if @mountCallbackList then baseComponent.mountCallbackComponentList.unshift @
     if @unmountCallbackList then baseComponent.unmountCallbackComponentList.push @
     @baseComponent = baseComponent

@@ -15,7 +15,7 @@ module.exports = exports = class List extends BaseComponent
     for child, i in children
       children[i] = child = toComponent(child)
       checkConflictOffspring(family, child)
-      child.container = child.holder = @
+      child.holder = @
     @isList = true
     return
 
@@ -29,8 +29,8 @@ module.exports = exports = class List extends BaseComponent
     i = startIndex
     for child in newChildren
       child = toComponent child
-      child.container = child.holder = @
       child.parentNode = @parentNode
+      child.holder = @
       child.listIndex = i
       children[i] = child
       i++
@@ -48,7 +48,7 @@ module.exports = exports = class List extends BaseComponent
     for child, i in children
       child.listIndex = i
       child.parentNode = @parentNode
-      child.container = child.holder = @
+      child.holder = @
       node[i] = child.render(true)
     i = 0; lastIndex = listLength-1
     # do not need set firstNode and lastNode for List Component
@@ -79,7 +79,7 @@ module.exports = exports = class List extends BaseComponent
       throw new Error 'do not allow set children after the Dom of List Component was created'
     children = @children
     child = toComponent(child)
-    child.container = child.holder = @
+    child.holder = @
     child.listIndex = index
     children.splice(index, 0, child)
     @

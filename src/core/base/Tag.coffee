@@ -31,7 +31,7 @@ module.exports = class Tag extends BaseComponent
     @family = family = Object.create(null)
     for dcid of children.family then family[dcid] = true
     family[@dcid] = true
-    children.container = children.holder = @
+    children.holder = @
     @children = children
     @processAttrs()
     @firstLeaf = @lastLeaf = @
@@ -244,12 +244,7 @@ module.exports = class Tag extends BaseComponent
     @resetUpdateStatusAndHook()
     {children} = @
     children.parentNode = node
-    children.container = children.holder = @
-#    for key, ref of children.refs
-#      if ref!=@
-#        ref.invalidate()
-#        ref.activeOffspring = ref.activeOffspring or Object.create(null)
-#        ref.activeOffspring[children.dcid] = [children, children.container]
+    children.holder = @
     children.render(true) # need mounting
     if compList=children.baseComponent.unmountCallbackComponentList
       @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)

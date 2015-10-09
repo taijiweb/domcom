@@ -14,11 +14,9 @@ module.exports = class Cond extends TransformComponent
       test.onInvalidate @invalidate.bind(@)
       condComponentList[i] = test
       condComponentList[i+1] = toComponent(condComponentList[i+1])  #comp =
-      #comp.container = comp.holder = @
       i += 2
     else_ = toComponent else_
 
-    #else_.container = else_.holder = @
 
     i = 1
     families = []

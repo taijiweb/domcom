@@ -135,7 +135,7 @@ module.exports = class Each extends TransformComponent
           childReactives[i] = ->  itemFn(valueBinding, keyBinding, i, me)
           child = new Func childReactives[i]
       child = children[i] = cacheChildren[i] = new Func childReactives[i]
-      child.holder = child.container = listComponent
+      child.holder = listComponent
       child.listIndex = i
       child.parentNode = @parentNode
       if listComponent.node then child.mountMode = 'mounting'

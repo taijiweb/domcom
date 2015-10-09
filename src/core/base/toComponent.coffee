@@ -4,11 +4,7 @@ Text = require './Text'
 
 module.exports = toComponent = (x) ->
   if arguments.length!=1 then throw new Error('toComponent: wrong arguments length')
-  if isComponent(x)
-    if x.container
-      Ref = require './Ref'
-      new Ref(x)
-    else x
+  if isComponent(x) then x
   else if typeof x == 'function'
     # todo: use Text instead
     Func = require './Func'
