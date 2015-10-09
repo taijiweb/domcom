@@ -37,7 +37,7 @@ module.exports = exports = class List extends BaseComponent
     return @
 
   createDom: ->
-    @resetContainerHookUpdater()
+    @resetUpdateStatusAndHook()
     children = @children
     listLength = children.length
     if !listLength
@@ -64,7 +64,7 @@ module.exports = exports = class List extends BaseComponent
     node
 
   updateDom: (mounting) ->
-    @resetContainerHookUpdater()
+    @resetUpdateStatusAndHook()
     @updateOffspring(mounting)
     @node
 

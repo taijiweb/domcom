@@ -87,6 +87,7 @@ route.Router = class Router extends TransformComponent
   constructor: (routeList, otherwise, baseIndex) ->
     for patternRoute in routeList
       patternRoute[0] = getRoutePattern(patternRoute[0])
+
     @getContent = ->
       path = @getPath()
       for item in routeList

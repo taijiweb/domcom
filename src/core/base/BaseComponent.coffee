@@ -69,27 +69,27 @@ module.exports = class BaseComponent extends Component
     node
 
   # this method will be called after updateProperties and before updating chidlren or activeOffspring
-  resetContainerHookUpdater: ->
+  resetUpdateStatusAndHook: ->
     # @noop will always be set again while offspring is changed
     @noop = !@hasActiveProperties and !@mountCallbackComponentList.length
     if !@holder or @holder.isTransformComponent
-      @isContainer = true
-      # do not need to hook updater, just to be itself
+      # do not need to other updateHook, just to be itself
+      @isUpdateHook = true
     else if !@noop or @isUpdateRoot
-      @isContainer = true
+      @isUpdateHook = true
       holder = @holder
-      # the condition for isContainer ensure reaching baseComponent before transformCompnent or null
-      while !holder.isContainer then holder = holder.holder
-      @hookUpdater = holder
+      # the condition for isUpdateHook ensure reaching baseComponent before transformCompnent or null
+      while !holder.isUpdateHook then holder = holder.holder
+      @Updatehook = holder
       holder.activeOffspring = holder.activeOffspring or Object.create(null)
-      holder.activeOffspring[dcid] = @
+      holder.activeOffspring[dcid] = [@, @container]
       holder.noop = false # family update holder.noop!!!
 
   updateOffspring: () ->
     {activeOffspring} = @
     if !activeOffspring then return
     @activeOffspring = null
-    for dcid, component of activeOffspring
+    for dcid, [component,_] of activeOffspring
       component.render()
     return
 
@@ -98,11 +98,11 @@ module.exports = class BaseComponent extends Component
     @noop = false
     @valid = false
     holder = @holder
-    while holder and !holder.isContainer
+    while holder and !holder.isUpdateHook
       holder = holder.holder
     if !holder then return
     holder.activeOffspring = holder.activeOffspring or Object.create(null)
-    holder.activeOffspring[@dcid] = @
+    holder.activeOffspring[@dcid] = [@, @container]
     holder.invalidate()
 
   setRefContainer: (container) ->

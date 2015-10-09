@@ -17,14 +17,14 @@ module.exports = class TransformComponent extends Component
     @valid = false
     activeChild = @
     holder = @holder
-    while holder and !holder.isContainer
+    while holder and !holder.isUpdateHook
       if holder.isTransformComponent
         holder.valid = false
         activeChild = holder
       holder = holder.holder
-    if holder and holder.isContainer
+    if holder and holder.isUpdateHook
       holder.activeOffspring = holder.activeOffspring or Object.create(null)
-      holder.activeOffspring[activeChild.dcid] = activeChild
+      holder.activeOffspring[activeChild.dcid] = [activeChild, activeChild.container]
       holder.invalidate()
 
   render: (mounting) ->

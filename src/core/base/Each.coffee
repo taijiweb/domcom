@@ -44,7 +44,7 @@ module.exports = class Each extends TransformComponent
     # let listComponent has at least on child, otherwise @listComponent will become new Text('')
     @listComponent = new List(@children=[''])
     @children.length = 0
-    @listComponent.isContainer = true
+    @listComponent.isUpdateHook = true
     return
 
   reset: (options) ->
@@ -148,7 +148,7 @@ module.exports = class Each extends TransformComponent
     if node then activeOffspring = listComponent.activeOffspring = listComponent.activeOffspring or Object.create(null)
     while start<stop
       child = @getChild(start)
-      node and activeOffspring[child.dcid] = child
+      node and activeOffspring[child.dcid] = [child, listComponent]
       start++
     if node
       listComponent.noop = true

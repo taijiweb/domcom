@@ -54,20 +54,20 @@ describe 'if, case, func', ->
       comp.update()
       expect(comp.node[0].textContent).to.equal '1', 'update x 1'
 
-    iit 'should render if_(x, t1, list(t2, t1))', ->
+    it 'should render if_(x, t1, list(t2, t1))', ->
       x = see 0
       t1 = txt 1; t2 = txt 2
-      comp = p if_(x, t1, list(t2, t1))
-      comp.mount()
-      expect(comp.node.innerHTML).to.equal '21', 'mount'
+      comp = if_(x, t1, lst=list(t2, t1))
+      comp.mount(demoNode=newDemoNode('if-ref'))
+      expect(demoNode.innerHTML).to.equal '21', 'mount'
 #      comp.update()
-#      expect(comp.node.innerHTML).to.equal '21', 'update'
+#      expect(demoNode.innerHTML).to.equal '21', 'update'
       x 1
       comp.update()
-      expect(comp.node.innerHTML).to.equal '1', 'update x 1'
+      expect(demoNode.innerHTML).to.equal '1', 'update x 1'
 #      x 0
 #      comp.update()
-#      expect(comp.node.innerHTML).to.equal '21', 'update x 0'
+#      expect(demoNode.innerHTML).to.equal '21', 'update x 0'
 
     it 'should render if_(x, p(t1), list(p(t2), t1))', ->
       x = see 0

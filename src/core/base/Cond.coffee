@@ -13,11 +13,14 @@ module.exports = class Cond extends TransformComponent
       if !test.invalidate then test = renew test
       test.onInvalidate @invalidate.bind(@)
       condComponentList[i] = test
-      condComponentList[i+1] = toComponent(condComponentList[i+1])
+      condComponentList[i+1] = toComponent(condComponentList[i+1])  #comp =
+      #comp.container = comp.holder = @
       i += 2
     else_ = toComponent else_
 
-    i = 1;
+    #else_.container = else_.holder = @
+
+    i = 1
     families = []
     while i<length
       families.push  condComponentList[i].family

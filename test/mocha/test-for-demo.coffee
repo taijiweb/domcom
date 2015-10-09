@@ -151,12 +151,12 @@ describe 'demo', ->
       child0.valid = true
       comp.listComponent.activeOffspring = null
       comp.getBaseComponent()
-      expect(comp.listComponent.activeOffspring[child0.dcid]).to.equal child0, 'completed'
+      expect(comp.listComponent.activeOffspring[child0.dcid][0]).to.equal child0, 'completed'
       child0.valid = true
       comp.listComponent.activeOffspring = null
       status.hash = 'all'
       comp.getBaseComponent()
-      expect(comp.listComponent.activeOffspring[child0.dcid]).to.equal child0, 'all 2'
+      expect(comp.listComponent.activeOffspring[child0.dcid][0]).to.equal child0, 'all 2'
 
     it 'should process getTodos and Each correctly', ->
       todos = [{title:'do this'}]
@@ -169,7 +169,7 @@ describe 'demo', ->
       status.hash = 'all'
       comp.getContentComponent()
       child0 = comp.listComponent.children[0]
-      expect(comp.listComponent.activeOffspring[child0.dcid]).to.equal child0
+      expect(comp.listComponent.activeOffspring[child0.dcid][0]).to.equal child0
       comp.update()
 #      expect(comp.listComponent.length).to.equal 1
       expect(comp.node.length).to.equal 1

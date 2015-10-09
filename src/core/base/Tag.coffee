@@ -241,15 +241,15 @@ module.exports = class Tag extends BaseComponent
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
     @updateProperties()
-    @resetContainerHookUpdater()
+    @resetUpdateStatusAndHook()
     {children} = @
     children.parentNode = node
     children.container = children.holder = @
-    for key, ref of children.refs
-      if ref!=@
-        ref.invalidate()
-        ref.activeOffspring = ref.activeOffspring or Object.create(null)
-        ref.activeOffspring[children.dcid] = children
+#    for key, ref of children.refs
+#      if ref!=@
+#        ref.invalidate()
+#        ref.activeOffspring = ref.activeOffspring or Object.create(null)
+#        ref.activeOffspring[children.dcid] = [children, children.container]
     children.render(true) # need mounting
     if compList=children.baseComponent.unmountCallbackComponentList
       @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
@@ -259,7 +259,7 @@ module.exports = class Tag extends BaseComponent
   updateDom: (mounting) ->
     @noop = true
     @updateProperties()
-    @resetContainerHookUpdater()
+    @resetUpdateStatusAndHook()
     @updateOffspring()
     @detached = false
     @node

@@ -25,8 +25,10 @@ module.exports = class Case extends TransformComponent
     test.onInvalidate(@invalidate.bind(@))
 
     for key, value of map
-      map[key] = toComponent(value)
+      map[key] = toComponent(value) #comp =
+      #comp.container = comp.holder = @
     else_ = toComponent(else_)
+    #else_.container = else_.holder = @
 
     @getContentComponent = -> map[test()] or else_
 

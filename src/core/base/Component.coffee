@@ -15,7 +15,7 @@ module.exports = class Component
     @parentNode = null
     @node = null
     @options = options or {}
-    @hookUpdater = @
+    @Updatehook = @
     @refs = null
     @dcid = newDcid()
 
@@ -67,7 +67,7 @@ module.exports = class Component
     if @holder
       throw new Error 'do not mount/unmount sub component'
     mountNode = normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]
-    if @isBaseComponent then @isContainer = true
+    if @isBaseComponent then @isUpdateHook = true
     if @parentNode and @parentNode!=mountNode
       @mounted and @unmount()
     @parentNode = mountNode
@@ -97,9 +97,9 @@ module.exports = class Component
         @isUpdateRoot = true
         # remove me from my hooked ancestor holder
         # move my active offSpring to meself
-        hookUpdater = @hookUpdater
-        @hookUpdater = @
-        {activeOffSpring} = hookUpdater
+        Updatehook = @Updatehook
+        @Updatehook = @
+        {activeOffSpring} = Updatehook
         myOffSpring = @activeOffSpring
         #@hasActiveOffspring = false
         for dcid, comp of activeOffSpring
