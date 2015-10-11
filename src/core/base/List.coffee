@@ -41,11 +41,12 @@ module.exports = exports = class List extends BaseComponent
     children = @children
     listLength = children.length
     if !listLength
-      @lastLeaf = @firstLeaf = @emptyPlaceHolder = none = new Text('')
-      @node = [ none.createDom()]
+      @lastLeaf = @firstLeaf = @emptyPlaceHolder = emptyText = new Text('')
+      @node = [emptyText.createDom()]
       return
     @node = node = []
     for child, i in children
+      if child.holder!=@ then child.invalidate()
       child.listIndex = i
       child.parentNode = @parentNode
       child.holder = @
@@ -72,6 +73,12 @@ module.exports = exports = class List extends BaseComponent
     if !@parentNode or @unmounted then return
     for child in @children
       child.baseComponent.removeNode()
+    return
+
+  setUnmounted: (value) ->
+    @unmounted = value
+    for child in @children
+      child.baseComponent.setUnmounted(value)
     return
 
   insertChild: (index, child) ->

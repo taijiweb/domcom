@@ -46,6 +46,8 @@ module.exports = class BaseComponent extends Component
     detached = @detached
     @detached = false
     node = @node
+
+    # propogating node: set node of all holder which is TransformCompnent or List
     child = @; holder = @holder
     while 1
       if child.listIndex?
@@ -55,18 +57,26 @@ module.exports = class BaseComponent extends Component
       if !holder.isTransformComponent then break
       holder.node = node
       child = holder; holder = holder.holder
+
     if !@parentNode then return
+
     # if below, then should wait List holder to attach
     if holder and  holder.isList and (!holder.created or holder.detached)
       @parentNode = holder.parentNode
       return node
+
     if @isList
       if @created and !detached
         # child component should have attached themself
         return node
-      else insertNode(@parentNode, node, nextNode)
+      else
+        insertNode(@parentNode, node, nextNode)
+        @setUnmounted(false)
     else @parentNode.insertBefore(node, nextNode)
+
     node
+
+  setUnmounted: (value) -> @unmounted = value
 
   # this method will be called after updateProperties and before updating chidlren or activeOffspring
   resetUpdateStatusAndHook: ->
@@ -82,15 +92,25 @@ module.exports = class BaseComponent extends Component
       while !holder.isUpdateHook then holder = holder.holder
       @Updatehook = holder
       holder.activeOffspring = holder.activeOffspring or Object.create(null)
-      holder.activeOffspring[dcid] = [@, @holder]
+      holder.activeOffspring[dcid] = [@, @holder, @listIndex]
       holder.noop = false # family update holder.noop!!!
 
   updateOffspring: () ->
     {activeOffspring} = @
     if !activeOffspring then return
     @activeOffspring = null
-    for dcid, [component,_] of activeOffspring
-      component.render()
+    for dcid, [component, holder, listIndex] of activeOffspring
+      if holder!=component.holder
+        component.invalidate()
+        component.holder = holder
+        component.listIndex = listIndex
+        component.render()
+        if holder.isTag then component.parentNode = holder.node
+        else component.parentNode = holder.parentNode
+        baseComponent = component.baseComponent
+        nextNode = baseComponent.nextLeaf and baseComponent.nextLeaf.node
+        component.baseComponent.attachNode(nextNode)
+      else component.render()
     return
 
   invalidate: ->
@@ -102,7 +122,7 @@ module.exports = class BaseComponent extends Component
       holder = holder.holder
     if !holder then return
     holder.activeOffspring = holder.activeOffspring or Object.create(null)
-    holder.activeOffspring[@dcid] = [@, @holder]
+    holder.activeOffspring[@dcid] = [@, @holder, @listIndex]
     holder.invalidate()
 
   replace: (newBaseComponent, rootContainer) ->

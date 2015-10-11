@@ -19,7 +19,7 @@ module.exports = class TransformComponent extends Component
       holder = holder.holder
     if holder and holder.isUpdateHook
       holder.activeOffspring = holder.activeOffspring or Object.create(null)
-      holder.activeOffspring[activeChild.dcid] = [activeChild, activeChild.holder]
+      holder.activeOffspring[activeChild.dcid] = [activeChild, activeChild.holder, activeChild.listIndex]
       holder.invalidate()
 
   render: (mounting) ->

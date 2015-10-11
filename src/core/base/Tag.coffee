@@ -243,6 +243,7 @@ module.exports = class Tag extends BaseComponent
     @updateProperties()
     @resetUpdateStatusAndHook()
     {children} = @
+    if children.holder!=@ then children.invalidate()
     children.parentNode = node
     children.holder = @
     children.render(true) # need mounting

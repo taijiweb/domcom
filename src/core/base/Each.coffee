@@ -148,7 +148,7 @@ module.exports = class Each extends TransformComponent
     if node then activeOffspring = listComponent.activeOffspring = listComponent.activeOffspring or Object.create(null)
     while start<stop
       child = @getChild(start)
-      node and activeOffspring[child.dcid] = [child, listComponent]
+      node and activeOffspring[child.dcid] = [child, listComponent, @listIndex]
       start++
     if node
       listComponent.noop = true
