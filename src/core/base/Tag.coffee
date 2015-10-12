@@ -34,7 +34,6 @@ module.exports = class Tag extends BaseComponent
     children.holder = @
     @children = children
     @processAttrs()
-    @firstLeaf = @lastLeaf = @
     return
 
   processAttrs: ->
@@ -237,11 +236,10 @@ module.exports = class Tag extends BaseComponent
 
   createDom: ->
     @noop = true
-    @firstNode = @lastNode = @node = node =
+    @firstNode = @node = node =
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
     @updateProperties()
-    @resetUpdateStatusAndHook()
     {children} = @
     if children.holder!=@ then children.invalidate()
     children.parentNode = node
@@ -255,8 +253,13 @@ module.exports = class Tag extends BaseComponent
   updateDom: (mounting) ->
     @noop = true
     @updateProperties()
-    @resetUpdateStatusAndHook()
-    @updateOffspring()
+    {children} = @
+    if children.holder!=@
+      children.invalidate()
+      children.parentNode = node
+      children.holder = @
+      children.render(true)
+    else children.render()
     @detached = false
     @node
 

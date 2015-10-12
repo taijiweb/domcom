@@ -10,19 +10,28 @@ module.exports = class TransformComponent extends Component
   invalidate: ->
     if !@valid then return
     @valid = false
-    activeChild = @
-    holder = @holder
-    while holder and !holder.isUpdateHook
-      if holder.isTransformComponent
-        holder.valid = false
-        activeChild = holder
-      holder = holder.holder
-    if holder and holder.isUpdateHook
-      holder.activeOffspring = holder.activeOffspring or Object.create(null)
-      holder.activeOffspring[activeChild.dcid] = [activeChild, activeChild.holder, activeChild.listIndex]
-      holder.invalidate()
+    holder.invalidateContent(@)
 
-  render: (mounting) ->
+  invalidateContent: (content) ->
+    @invalidate()
+
+  invalidateTransform: ->
+    @transformValid = false
+    @invalidate()
+
+  invalidateAttachStatus: ->
+    @invalidate()
+
+  render: (oldBaseComponent) ->
+    if @valid then return @node
+    @valid = true
+    if !oldBaseComponent
+      if @mountCallbackList
+        for cb in @mountCallbackList then cb()
+    if !@transformValid then @content = @getContentComponent()
+    @content.render(oldBaseComponent)
+
+  xxxrender: (mounting) ->
     oldBaseComponent = @baseComponent
     mountMode = @mountMode
     if mountMode=='unmounting'
@@ -56,16 +65,4 @@ module.exports = class TransformComponent extends Component
           @mountMode = null
           @node
         else if !baseComponent.noop then baseComponent.updateDom(mounting)
-
-  getBaseComponent: ->
-    if @valid then return @baseComponent
-    @valid = true
-    content = @getContentComponent()
-    baseComponent = content.getBaseComponent()
-    content.holder = @
-    content.mountBeforeNode = @mountBeforeNode
-    @content = content
-    if @mountCallbackList then baseComponent.mountCallbackComponentList.unshift @
-    if @unmountCallbackList then baseComponent.unmountCallbackComponentList.push @
-    @baseComponent = baseComponent
 

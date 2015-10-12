@@ -144,7 +144,7 @@ describe 'demo', ->
       todos = [{title:'do this'}]
       comp = makeTodo todos, status={hash:'all'}
       comp.getBaseComponent()
-      expect(comp.listComponent.activeOffspring).to.equal null, 'all 1'
+      expect(comp.listComponent.invalidIndexes.length).to.be.undefined
       child0 = comp.cacheChildren[0]
       status.hash = 'completed'
       comp.listComponent.created = true

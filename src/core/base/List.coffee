@@ -1,7 +1,7 @@
 toComponent = require './toComponent'
 BaseComponent = require './BaseComponent'
 Text = require './Text'
-{checkContainer, newLine} = require '../../util'
+{checkContainer, newLine, binarySearch} = require '../../util'
 {checkConflictOffspring} = require '../../dom-util'
 
 module.exports = exports = class List extends BaseComponent
@@ -12,62 +12,55 @@ module.exports = exports = class List extends BaseComponent
     super(options)
     @family = family = Object.create(null)
     family[@dcid] = true
+    @invalidIndexes = invalidIndexes = []
     for child, i in children
       children[i] = child = toComponent(child)
       checkConflictOffspring(family, child)
       child.holder = @
+      invalidIndexes.unshift i
     @isList = true
+    @createDom = @_renderDom.bind(@)
+    @updateDom = @_renderDom.bind(@)
     return
 
-  clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
-
-  setChildren: (startIndex, newChildren...) ->
-    {children, created} = @
-    if created
-      throw new Error 'do not allow set children after the Dom of List Component was created'
-    created and @invalidate()
-    i = startIndex
-    for child in newChildren
-      child = toComponent child
-      child.parentNode = @parentNode
-      child.holder = @
-      child.listIndex = i
-      children[i] = child
-      i++
-    return @
+  invalidateContent: (child) ->
+    @valid = false
+    @contentValid = false
+    [index, found] = binarySearch(child.listIndex, @invalidIndexes)
+    if !found then @invalidIndexes.splice(index, 0, child.listIndex)
+    @holder and @holder.invalidateContent(@)
 
   createDom: ->
-    @resetUpdateStatusAndHook()
+    @node = []
     children = @children
-    listLength = children.length
-    if !listLength
-      @lastLeaf = @firstLeaf = @emptyPlaceHolder = emptyText = new Text('')
-      @node = [emptyText.createDom()]
-      return
-    @node = node = []
-    for child, i in children
+    if !children.length
+      @firstNode = null
+      return @node
+    index = children.length-1
+    while index>=0
+      child = children[index]
       if child.holder!=@ then child.invalidate()
+      child.holder = @
       child.listIndex = i
       child.parentNode = @parentNode
-      child.holder = @
-      node[i] = child.render(true)
-    i = 0; lastIndex = listLength-1
-    # do not need set firstNode and lastNode for List Component
-    # we always use component.firstLeaf.firstNode and component.lastLeaf.LastNode
-    @firstLeaf = children[0].firstLeaf
-    @lastLeaf = children[lastIndex].lastLeaf
-    while i<lastIndex
-      children[i].lastLeaf.nextLeaf = children[i+1].firstLeaf
-      i++
-    while i
-      children[i].firstLeaf.prevLeaf = children[i-1].lastLeaf
-      i--
-    node
-
-  updateDom: (mounting) ->
-    @resetUpdateStatusAndHook()
-    @updateOffspring(mounting)
+      child.render(mounting)
+      index--
+    @firstNode = children[0].firstNode
     @node
+
+  updateDom: ->
+    children = @children
+    invalidIndexes = for index in @invalidIndexes then index
+    @invalidIndexes = []
+    index = invalidChildren.length-1
+    for index in invalidIndexes
+      child = children[index]
+      if child.holder!=@ then child.invalidate()
+      child.holder = @
+      child.listIndex = i
+      child.parentNode = @parentNode
+      child.render(mounting)
+    node
 
   removeNode: ->
     if !@parentNode or @unmounted then return
@@ -75,27 +68,43 @@ module.exports = exports = class List extends BaseComponent
       child.baseComponent.removeNode()
     return
 
-  setUnmounted: (value) ->
+  xxxsetUnmounted: (value) ->
     @unmounted = value
     for child in @children
       child.baseComponent.setUnmounted(value)
     return
 
   insertChild: (index, child) ->
-    if @created
-      throw new Error 'do not allow set children after the Dom of List Component was created'
-    children = @children
-    child = toComponent(child)
-    child.holder = @
-    child.listIndex = index
-    children.splice(index, 0, child)
+    @invalidate()
+    {invalidIndexes} = @
+    insertLocation = binarySearch(index, invalidIndexes)
+    invalidIndexes.splice(insertLocation, 0, index)
+    length = invalidIndexes.length
+    while insertLocation<length
+      insertLocation[insertLocation]++
+      insertLocation++
+    @children.splice(index, 0, toComponent(child))
     @
 
   removeChild: (index) ->
-    if @created
-      throw new Error 'do not allow set children after the Dom of List Component was created'
-    @children.splice(index, 1)
+    @invalidate()
+    [insertLocation, found] = binarySearch(child.listIndex, @invalidIndexes)
+    if !found then @invalidIndexes.splice(insertLocation, 0, index)
+    # todo: remove child from @children and node from @node while @updateDom()
+    @children[index].setRemoving()
     @
+
+  setChildren: (startIndex, newChildren...) ->
+    @invalidate()
+    insertLocation = binarySearch(startIndex, @invalidIndexes)
+    {children, invalidIndexes} = @
+    for child in newChildren
+      if invalidIndexes[inserLocation]!=startIndex then invalidIndexes.splice(insertLocation, 0, startIndex)
+      if invalidIndexes[insertLocation] insertLocation++
+      children[startIndex++] = toComponent child
+    return @
+
+  clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
 
   toString: (indent=0, noNewLine) ->
     s = newLine("<List>", indent, noNewLine)

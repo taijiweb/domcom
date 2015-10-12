@@ -11,7 +11,7 @@ module.exports = class Text extends BaseComponent
     super(options)
     @family = Object.create(null)
     @family[@dcid] = true
-    @firstLeaf = @lastLeaf = @
+    @
 
   processText: ->
     if typeof @text == 'function'then domValue @text()
@@ -20,7 +20,7 @@ module.exports = class Text extends BaseComponent
   createDom: ->
     @noop = true
     if @mountCallbackComponentList.length then @invalidate()
-    @firstNode = @lastNode = @node = document.createTextNode(@processText())
+    @firstNode = @node = document.createTextNode(@processText())
     @node
 
   updateDom: ->

@@ -107,10 +107,6 @@ describe "test base component", ->
       expect(comp.children.children.length).to.equal 3
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()
-      expect(t1.nextLeaf).to.equal t2, 't1.nextLeaf'
-      expect(t2.prevLeaf).to.equal t1, 't2.prevLeaf'
-      expect(t2.nextLeaf).to.equal t3, 't2.nextLeaf'
-      expect(t3.prevLeaf).to.equal t2, 't2.prevLeaf'
       expect(comp.node.childNodes.length).to.equal 3
 
     it 'tag shoud createDom and calc prev/nextNodeCompnoent with empty Text', ->
@@ -119,10 +115,6 @@ describe "test base component", ->
       baseComponent = comp.getBaseComponent()
       baseComponent.createDom()
       expect(comp.node.childNodes.length).to.equal 4
-      expect(t1.nextLeaf).to.equal t2, 't1.nextLeaf'
-      expect(t2.prevLeaf).to.equal t1, 't2.prevLeaf'
-      expect(t2.nextLeaf).to.equal t3, 't2.nextLeaf'
-      expect(t3.prevLeaf).to.equal t2, 't2.prevLeaf'
 
     it 'should create  tag with children', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')])])

@@ -145,17 +145,20 @@ module.exports = class Each extends TransformComponent
   invalidateChildren: (start, stop) ->
     {listComponent} = @
     node = listComponent.node
-    if node then activeOffspring = listComponent.activeOffspring = listComponent.activeOffspring or Object.create(null)
     while start<stop
       child = @getChild(start)
-      node and activeOffspring[child.dcid] = [child, listComponent, @listIndex]
-      start++
+      index = binarySearch(start, listComponent.invalidIndexes)
+      indexes = []
+      while i<stop
+        indexes.push i
+        i++
+      listComponent.invalidIndexes.splice(index, 0, indexes...)
     if node
       listComponent.noop = true
       listComponent.invalidate()
     return
 
-  render: (mounting) ->
+  render: (parentNode, nextNode) ->
     super(mounting)
     itemsLength = @_items.length
     listComponent = @listComponent

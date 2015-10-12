@@ -72,15 +72,15 @@ module.exports = class Component
     @parentNode = mountNode
     @mountMode = 'mounting'
     @mountBeforeNode = beforeNode or @mountBeforeNode
-    @render(true) # mounting = true
+    @render(mountNode, beforeNode) # mounting = true
 
-  create: -> @render()
+  create: (parentNode, nextNode) -> @render(parentNode or @parentNode, nextNode or @nextNode)
 
   update: ->
     if @updateCallbackList
       for callback in @updateCallbackList then callback()
     @valid = false
-    @render()
+    @render(@parentNode, @nextNode)
 
   # do not unmount sub component
   unmount: ->
