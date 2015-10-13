@@ -32,6 +32,8 @@ module.exports = exports = class List extends BaseComponent
 
   createDom: ->
     @node = []
+    @invalidIndexes = []
+    @removeIndexes = Object.create(null)
     children = @children
     if !children.length
       @firstNode = null
@@ -52,6 +54,7 @@ module.exports = exports = class List extends BaseComponent
     children = @children
     invalidIndexes = for index in @invalidIndexes then index
     @invalidIndexes = []
+    @removeIndexes = Object.create(null)
     index = invalidChildren.length-1
     for index in invalidIndexes
       child = children[index]
@@ -68,12 +71,6 @@ module.exports = exports = class List extends BaseComponent
       child.baseComponent.removeNode()
     return
 
-  xxxsetUnmounted: (value) ->
-    @unmounted = value
-    for child in @children
-      child.baseComponent.setUnmounted(value)
-    return
-
   insertChild: (index, child) ->
     @invalidate()
     {invalidIndexes} = @
@@ -88,20 +85,36 @@ module.exports = exports = class List extends BaseComponent
 
   removeChild: (index) ->
     @invalidate()
-    [insertLocation, found] = binarySearch(child.listIndex, @invalidIndexes)
-    if !found then @invalidIndexes.splice(insertLocation, 0, index)
+    {children, invalidIndexes} = @
+    insertLocation = binarySearch(index, invalidIndexes)
+    if insertLocation[insertLocation]!=index then invalidIndexes.splice(insertLocation, 0, index)
     # todo: remove child from @children and node from @node while @updateDom()
-    @children[index].setRemoving()
+    child = children[index]
+    substractSet(family, child.family)
+    @removeIndexes[index] = true
     @
 
   setChildren: (startIndex, newChildren...) ->
     @invalidate()
+    {children, invalidIndexes, removeIndexes, family} = @
     insertLocation = binarySearch(startIndex, @invalidIndexes)
-    {children, invalidIndexes} = @
-    for child in newChildren
-      if invalidIndexes[inserLocation]!=startIndex then invalidIndexes.splice(insertLocation, 0, startIndex)
-      if invalidIndexes[insertLocation] insertLocation++
-      children[startIndex++] = toComponent child
+    stopIndex = startIndex+newChildren.length
+    indexOut = false
+    while startIndex<stop
+      oldChild = children[startIndex]
+      child = toComponent newChildren[startIndex]
+      substractSet(family, oldChild.family)
+      checkConflictOffspring(family, child)
+      delete removeIndexes[startIndex]
+      children[startIndex] = child
+      if indexOut then invalidIndexes.splice(insertLocation, 0, startIndex)
+      else
+        invalidIndex = invalidIndexes[inserLocation]
+        if invalidIndex>stopIndex
+          indexOut = true
+          invalidIndexes.splice(insertLocation, 0, startIndex)
+        else if invalidIndex>startIndex then invalidIndexes.splice(insertLocation, 0, startIndex)
+      insertLocation++
     return @
 
   clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)

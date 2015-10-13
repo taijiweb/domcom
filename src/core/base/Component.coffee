@@ -63,31 +63,18 @@ module.exports = class Component
   only use beforeNode if mountNode is given
   ###
   mount: (mountNode, beforeNode) ->
-    if @holder
-      throw new Error 'do not mount/unmount sub component'
-    mountNode = normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]
-    if @isBaseComponent then @isUpdateHook = true
-    if @parentNode and @parentNode!=mountNode
-      @mounted and @unmount()
-    @parentNode = mountNode
-    @mountMode = 'mounting'
-    @mountBeforeNode = beforeNode or @mountBeforeNode
-    @render(mountNode, beforeNode) # mounting = true
+    @renderDom(@baseComponent, {parentNode:normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]})
 
-  create: (parentNode, nextNode) -> @render(parentNode or @parentNode, nextNode or @nextNode)
+  create: (parentNode, nextNode) -> @renderDom(@baseComponent, {})
 
   update: ->
     if @updateCallbackList
       for callback in @updateCallbackList then callback()
-    @valid = false
-    @render(@parentNode, @nextNode)
+    @renderDom(@baseComponent)
 
   # do not unmount sub component
   unmount: ->
-    if @holder
-      throw new Error 'do not allow to unmount sub component'
     @baseComponent.remove()
-    @mountMode = null
     return
 
   setUpdateRoot: ->

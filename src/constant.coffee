@@ -5,3 +5,8 @@ exports.renderMode = {
   PATCH_ALL: 3 # patch all cached properties
   #KEEP: 4 # keep the node in dom not changing
 }
+
+exports.mountMode = {
+  AUTO: undefined
+  UNMOUNT: 1
+}

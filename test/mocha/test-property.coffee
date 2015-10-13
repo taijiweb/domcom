@@ -129,7 +129,7 @@ describe 'properties ', ->
           clearInterval handle
       handle = setInterval(styleFn, 5)
 
-  it 'bidirectional bind checkbox', ->
+  iit 'bidirectional bind checkbox', ->
     model1 = {a: 1}
     bb = duplex(model1, 'a')
     cbx = checkbox({$model:bb})

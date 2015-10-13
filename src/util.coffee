@@ -84,6 +84,10 @@ exports.intersect = (maps) ->
     isMember and result[key] = m[key]
   result
 
+exports.substractSet = (from, part) ->
+  for key of part then delete from[key]
+  from
+
 exports.binarySearch = (item, items) ->
   length = items.length
   if !length then return [0, false]

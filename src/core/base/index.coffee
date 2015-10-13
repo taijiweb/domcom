@@ -9,6 +9,7 @@ module.exports =
   Text: require './Text'
   Comment: require './Comment'
   Html: require './Html'
+  Nothing: require './Nothing'
   TransformComponent: require './TransformComponent'
   If: require './If'
   Case: require './Case'
