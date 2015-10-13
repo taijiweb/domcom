@@ -88,11 +88,6 @@ module.exports = class Tag extends BaseComponent
     for directive in directives then directive(@)
     return
 
-  getBaseComponent: ->
-    @mountCallbackComponentList = if @mountCallbackList then [@] else []
-    @unmountCallbackComponentList = if @unmountCallbackList then [@] else []
-    @
-
   prop: (args...) -> @_prop(args, @props, 'Props')
 
   css: (args...) -> @_prop(args, @style, 'Style')
@@ -234,34 +229,27 @@ module.exports = class Tag extends BaseComponent
   showOn: (test, display) -> @showHide(true, test, display)
   hideOn: (test, display) -> @showHide(false, test, display)
 
-  createDom: ->
-    @noop = true
+  createDom: (options) ->
     @firstNode = @node = node =
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
     @updateProperties()
     {children} = @
     if children.holder!=@ then children.invalidate()
-    children.parentNode = node
     children.holder = @
-    children.render(true) # need mounting
-    if compList=children.baseComponent.unmountCallbackComponentList
-      @unmountCallbackComponentList = compList.concat(@unmountCallbackComponentList)
-    @created = true
+    children.renderDom(children.baseComponent, {parentNode:@node})
     node
 
   updateDom: (mounting) ->
-    @noop = true
     @updateProperties()
-    {children} = @
+    {children, node} = @
     if children.holder!=@
       children.invalidate()
-      children.parentNode = node
       children.holder = @
-      children.render(true)
-    else children.render()
-    @detached = false
-    @node
+      children.renderDom(children.baseComponent, {parentNode:node})
+      children.parentNode = node
+    else children.renderDom(children.baseComponent, {parentNode:node})
+    node
 
   updateProperties: ->
     if !@hasActiveProperties then return

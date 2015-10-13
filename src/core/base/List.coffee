@@ -19,8 +19,6 @@ module.exports = exports = class List extends BaseComponent
       child.holder = @
       invalidIndexes.unshift i
     @isList = true
-    @createDom = @_renderDom.bind(@)
-    @updateDom = @_renderDom.bind(@)
     return
 
   invalidateContent: (child) ->
@@ -30,7 +28,7 @@ module.exports = exports = class List extends BaseComponent
     if !found then @invalidIndexes.splice(index, 0, child.listIndex)
     @holder and @holder.invalidateContent(@)
 
-  createDom: ->
+  createDom: (oldBaseComponent, options) ->
     @node = []
     @invalidIndexes = []
     @removeIndexes = Object.create(null)
@@ -39,30 +37,32 @@ module.exports = exports = class List extends BaseComponent
       @firstNode = null
       return @node
     index = children.length-1
+    {parentNode, nextNode} = options
     while index>=0
       child = children[index]
       if child.holder!=@ then child.invalidate()
       child.holder = @
-      child.listIndex = i
+      child.renderDom(child.baseComponent, {parentNode, nextNode})
       child.parentNode = @parentNode
-      child.render(mounting)
+      nextNode = child.firstNode or nextNode
       index--
     @firstNode = children[0].firstNode
     @node
 
-  updateDom: ->
+  updateDom: (oldBaseComponent, options) ->
     children = @children
     invalidIndexes = for index in @invalidIndexes then index
     @invalidIndexes = []
     @removeIndexes = Object.create(null)
     index = invalidChildren.length-1
+    {parentNode, nextNode} = options
     for index in invalidIndexes
       child = children[index]
       if child.holder!=@ then child.invalidate()
       child.holder = @
       child.listIndex = i
       child.parentNode = @parentNode
-      child.render(mounting)
+      child.renderDom(child.baseComponent, {parentNode, nextNode})
     node
 
   removeNode: ->

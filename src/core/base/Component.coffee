@@ -70,7 +70,7 @@ module.exports = class Component
   update: ->
     if @updateCallbackList
       for callback in @updateCallbackList then callback()
-    @renderDom(@baseComponent)
+    @renderDom(@baseComponent, {})
 
   # do not unmount sub component
   unmount: ->

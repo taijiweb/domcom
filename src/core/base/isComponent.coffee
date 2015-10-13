@@ -1,1 +1,1 @@
-module.exports = (x) -> x and x.getBaseComponent
+module.exports = (x) -> x and x.renderDom

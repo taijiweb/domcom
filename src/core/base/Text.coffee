@@ -18,14 +18,10 @@ module.exports = class Text extends BaseComponent
     else @text
 
   createDom: ->
-    @noop = true
-    if @mountCallbackComponentList.length then @invalidate()
     @firstNode = @node = document.createTextNode(@processText())
     @node
 
   updateDom: ->
-    @noop = true
-    if @mountCallbackComponentList.length then @invalidate()
     if (text=@processText())!=@node.textContent
       @node.textContent = text
     @node
