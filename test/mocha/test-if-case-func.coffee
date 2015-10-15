@@ -54,7 +54,7 @@ describe 'if, case, func', ->
       comp.update()
       expect(comp.node[0].textContent).to.equal '1', 'update x 1'
 
-    it 'should render if_(x, t1, list(t2, t1))', ->
+    iit 'should render if_(x, t1, list(t2, t1))', ->
       x = see 0
       t1 = txt 1; t2 = txt 2
       comp = if_(x, t1, lst=list(t2, t1))

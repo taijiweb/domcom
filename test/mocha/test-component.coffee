@@ -10,21 +10,21 @@ describe "component  ", ->
   describe 'construct component', ->
     it 'component shoud have children', ->
       comp = p(Object.create(null), [1, 2])
-      expect(comp.children.children.length).to.equal 2
+      expect(comp.children.length).to.equal 2
 
     it 'should construct component', ->
       p1 = new Tag('p', {}, [])
       d = new Tag('div', {}, [p1])
-      expect(d.children.children[0]).to.equal p1
+      expect(d.children[0]).to.equal p1
 
     it 'tag shoud have children 1', ->
       comp = new Tag('span', {}, [new Text('adf')])
-      expect(comp.children.children[0].text).to.equal 'adf'
+      expect(comp.children[0].text).to.equal 'adf'
 
     it 'tag shoud have children 2', ->
       span1 = new Tag('span', {}, [new Text('adf')])
       comp = new Tag('div', {className:classFn('some class'), style:styleFrom("width:1px;")}, [span1])
-      expect(comp.children.children[0]).to.equal span1
+      expect(comp.children[0]).to.equal span1
 
   describe 'component.append', ->
     # Now components have the api for appending, etc...
@@ -99,7 +99,7 @@ describe "component  ", ->
       comp =  div button({id:"search-ok", type:"submit", onclick:spy})
       comp.mount()
       expect(spy.called).to.equal false
-      comp.children.node.onclick()
+      comp.children[0].node.onclick()
       expect(spy.called).to.equal true
 
     it 'should create tag with attribute', ->
@@ -118,11 +118,11 @@ describe "component  ", ->
 
     it 'component shoud have children 2', ->
       comp = span('adf')
-      expect(comp.children.text).to.equal 'adf'
+      expect(comp.children[0].text).to.equal 'adf'
 
     it 'should create tag with children', ->
       comp =  p({className:'some class', style:"width:1px;"}, span1=span(['adf']))
-      expect(comp.children).to.equal span1
+      expect(comp.children[0]).to.equal span1
       comp.mount()
       expect(comp.node.getElementsByTagName('span').length).to.equal 1
 

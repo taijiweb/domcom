@@ -13,7 +13,7 @@ module.exports = class BaseComponent extends Component
 
   renderDom: (oldBaseComponent, options) ->
     if options.mountMode==UNMOUNT then @removeNode()
-    else if @!=oldBaseComponent
+    else if oldBaseComponent and @!=oldBaseComponent
       @valid = true
       @replace(oldBaseComponent, options)
     else if !@node
@@ -21,31 +21,30 @@ module.exports = class BaseComponent extends Component
       if @mountCallbackList
         for cb in @mountCallbackList then cb()
       @createDom(options)
-      @attachNode(options.parentNode, options.nextNode)
+      @attachNode(@parentNode, @nextNode)
     else if !@valid
       @valid = true
       @updateDom(options)
     @
 
-  attachNode: (parentNode, nextNode) ->
+  attachNode: ->
     node = @node
-    if @parentNode == parentNode then return node
-    parentNode.insertBefore(node, nextNode)
-    @parentNode = parentNode
+    if @parentNode == node.parentNode then return node
+    @parentNode.insertBefore(node, @nextNode)
     node
 
   invalidate: ->
     if !@valid then return
     @valid = false
-    @hodler and @holder.invalidateContent(@)
+    @holder and @holder.invalidateContent(@)
 
   replace: (oldBaseComponent, options) ->
     oldBaseComponent.removeNode()
     if oldBaseComponent.unmountCallbackList
       for cb in oldBaseComponent.unmountCallbackList then cb()
-    if !@node then @createDom(options)
-    else @updateDom(options)
-    @attachNode(options.parentNode, options.nextNode)
+    if !@node then @createDom({})
+    else @updateDom({})
+    @attachNode(@parentNode,@nextNode)
     @
 
   remove: ->
@@ -55,6 +54,5 @@ module.exports = class BaseComponent extends Component
     return
 
   removeNode: ->
-    if !@parentNode then return
-    @parentNode.removeChild(@node)
-    @parentNode = null
+    if @node and !@node.parentNode then return
+    @node.parentNode.removeChild(@node)

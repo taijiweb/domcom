@@ -11,7 +11,7 @@ module.exports = class TransformComponent extends Component
   invalidate: ->
     if !@valid then return
     @valid = false
-    holder.invalidateContent(@)
+    @holder and @holder.invalidateContent(@)
 
   invalidateContent: (content) ->
     @invalidate()
@@ -23,8 +23,12 @@ module.exports = class TransformComponent extends Component
   renderDom: (oldBaseComponent, options) ->
     if @valid then return @node
     @valid = true
-    if !@node
-      if @mountCallbackList
-        for cb in @mountCallbackList then cb()
-    if !@transformValid then @content = @getContentComponent()
-    @content.renderDom(oldBaseComponent, options)
+    if !@node and @mountCallbackList
+      for cb in @mountCallbackList then cb()
+    if !@transformValid
+      content = @content = @getContentComponent()
+      content.parentNode = @parentNode
+    else content = @content
+    content.renderDom(oldBaseComponent, options)
+    @node = content.node
+    @baseComponent = content.baseComponent

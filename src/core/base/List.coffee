@@ -16,6 +16,7 @@ module.exports = exports = class List extends BaseComponent
       children[i] = child = toComponent(child)
       checkConflictOffspring(family, child)
       child.holder = @
+      child.listIndex = i
       invalidIndexes.unshift i
     @isList = true
     return
@@ -23,44 +24,48 @@ module.exports = exports = class List extends BaseComponent
   invalidateContent: (child) ->
     @valid = false
     @contentValid = false
-    [index, found] = binarySearch(child.listIndex, @invalidIndexes)
-    if !found then @invalidIndexes.splice(index, 0, child.listIndex)
+    {invalidIndexes} = @
+    listIndex = child.listIndex
+    index = binarySearch(listIndex, invalidIndexes)
+    if invalidIndexes[index]!=listIndex then invalidIndexes.splice(index, 0, listIndex)
     @holder and @holder.invalidateContent(@)
 
   createDom: (options) ->
+    if length=@children.length
+      {parentNode, children} = @
+      children[length-1].nextNode = @nextNode
+      for child in children then child.parentNode = parentNode
     node = @createChildrenDom(options)
+    @firstNode = @childFristNode
     @node = node
 
   createChildrenDom: (options) ->
     @childrenNode = node = []
+    {invalidIndexes, removeIndexes, children} = @
     @invalidIndexes = []
     @removeIndexes = Object.create(null)
-    children = @children
-    if !children.length
-      @firstNode = null
-      return node
     index = children.length-1
-    {parentNode, nextNode} = options
-    children[index].nextNode = nextNode
     firstNode = null
     while index>=0
       child = children[index]
       if child.holder!=@
         child.invalidate()
         child.holder = @
-      child.renderDom(child.baseComponent, {parentNode, nextNode:child.nextNode})
-      child.parentNode = @parentNode
+        child.listIndex = index
+      child.renderDom(child.baseComponent, {})
       node.unshift(child.node)
       firstNode = child.firstNode or firstNode
-      index and child[index-1] = firstNode or nextNode
+      index and children[index-1].nextNode = firstNode or child.nextNode
       index--
-    @firstNode = firstNode
+    node.parentNode = @parentNode
+    @childFristNode = firstNode
     node
 
   updateDom: (options) ->
-    node = @updateChildrenDom(options)
-    child0 = @children[0]
-    @node = node
+    {children, parentNode, invalidIndexes} = @
+    for index in invalidIndexes
+      children[invalidIndexes[index]].parentNode = parentNode
+    @updateChildrenDom(options)
 
   updateChildrenDom: (options) ->
     {invalidIndexes, childrenNode} = @
@@ -68,23 +73,27 @@ module.exports = exports = class List extends BaseComponent
     {children, removeIndexes} = @
     @invalidIndexes = []
     @removeIndexes = Object.create(null)
-    {parentNode, nextNode} = options
+    {parentNode, nextNode} = @
     parentNextNode = nextNode
     index = invalidIndexes.length-1
     children[children.length-1].nextNode = options.nextNode
     while index>=0
-      child = children[index]
+      listIndex = invalidIndexes[index]
+      child = children[listIndex]
       if child.holder!=@
         child.invalidate()
         child.holder = @
-      child.renderDom(child.baseComponent, {parentNode, nextNode:child.nextNode})
-      childrenNode[index] = child.node
-      index and children[index-1].nextNode = nextNode
+        child.listIndex = listIndex
+      child.renderDom(child.baseComponent, {})
+      childrenNode[listIndex] = child.node
+      index and children[listIndex-1].nextNode = nextNode
       index--
+    childrenNode.parentNode = parentNode
     childrenNode
 
   removeNode: ->
-    if !@parentNode or @unmounted then return
+    if !@node.parentNode then return
+    @node.parentNode = null
     for child in @children
       child.baseComponent.removeNode()
     return
@@ -136,7 +145,10 @@ module.exports = exports = class List extends BaseComponent
     return @
 
   # Tag, Comment, Html, Text should have attached themself in advace
-  attachNode: (parentNode, nextNode) -> @node
+  attachNode: () ->
+    if @parentNode!=@node.parentNode
+      for child in @children then child.attachNode()
+    @node
 
   clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
 

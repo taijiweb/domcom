@@ -63,9 +63,10 @@ module.exports = class Component
   only use beforeNode if mountNode is given
   ###
   mount: (mountNode, beforeNode) ->
-    @renderDom(@baseComponent, {parentNode:normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]})
+    @parentNode = normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]
+    @renderDom(@baseComponent, {})
 
-  create: (parentNode, nextNode) -> @renderDom(@baseComponent, {})
+  create: -> @renderDom(@baseComponent, {})
 
   update: ->
     if @updateCallbackList

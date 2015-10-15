@@ -82,13 +82,15 @@ exports.substractSet = (from, part) ->
 
 exports.binarySearch = (item, items) ->
   length = items.length
-  if !length then return [0, false]
-  if length==1 then return if items[0]>=item then 0 else 1
+  if !length then return -1
+  if length==1 then return (if items[0]<=item then 0 else -1)
   start = 0; end = length-1
   while 1
     index = start+Math.floor((end-start)/2)
-    if item==items[index] then return index
-    else if item==item[index+1] then return index+1
+    if start==end
+      if items[index]<=item then return index
+      else return index-1
+    else if item==items[index+1] then return index+1
     else if item<items[index] then end = index
     else if item>items[index+1] then start = index+1
     else return index

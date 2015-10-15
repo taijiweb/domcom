@@ -224,20 +224,25 @@ module.exports = class Tag extends List
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
     @hasActiveProperties and @updateProperties()
-    @createChildrenDom({parentNode:@node})
+    {children} = @
+    for child in children then child.parentNode = node
+    if length=children.length then children[length-1].nextNode = null
+    @createChildrenDom({})
     @firstNode = node
     node
 
   updateDom: (options) ->
     @hasActiveProperties and @updateProperties()
-    @updateChildrenDom({parentNode:@node})
+    {children, node, invalidIndexes} = @
+    for index in invalidIndexes
+      children[invalidIndexes[index]].parentNode = node
+    @updateChildrenDom({})
     @firstNode = @node
 
-  attachNode: (parentNode, nextNode) ->
+  attachNode: ->
     node = @node
-    if @parentNode == parentNode then return node
-    parentNode.insertBefore(node, nextNode)
-    @parentNode = parentNode
+    if @parentNode == node.parentNode then return node
+    @parentNode.insertBefore(node, @nextNode)
     node
 
   updateProperties: ->
