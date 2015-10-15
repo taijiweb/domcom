@@ -28,4 +28,4 @@ module.exports = class Text extends BaseComponent
 
   clone: (options) -> (new @constructor(@text, options)).copyLifeCallback(@)
 
-  toString: (indent=2, noNewLine) -> newLine(funcString(@text), indent, noNewLine)
+  toString: (indent=2, addNewLine) -> newLine(funcString(@text), indent, addNewLine)

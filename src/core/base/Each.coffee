@@ -169,4 +169,4 @@ module.exports = class Each extends TransformComponent
 
   clone: (options) -> (new Each(@items, @itemFn, options or @options)).copyLifeCallback(@)
 
-  toString: (indent=0, noNewLine) -> newLine("<Each #{funcString(@items)} #{funcString(@itemFn)}/>", indent, noNewLine)
+  toString: (indent=0, addNewLine) -> newLine("<Each #{funcString(@items)} #{funcString(@itemFn)}/>", indent, addNewLine)

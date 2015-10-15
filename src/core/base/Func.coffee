@@ -15,6 +15,6 @@ module.exports = class Func extends TransformComponent
 
     @clone = (options) -> (new Func((-> toComponent(func()).clone()), options)).copyLifeCallback(@)
 
-    @toString = (indent=2, noNewLine) -> newLine("<Func #{funcString(func)}/>",  indent, noNewLine)
+    @toString = (indent=2, addNewLine) -> newLine("<Func #{funcString(func)}/>",  indent, addNewLine)
 
     this

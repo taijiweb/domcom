@@ -8,7 +8,7 @@ bindings,
 Tag, Text, List, txt, list
 p, div,
 classFn, styleFrom,
-VirtualNode
+Nothing
 } = dc
 
 {$a, $b, _a, _b} = bindings({a: 1, b: 2})
@@ -21,7 +21,7 @@ describe "test base component", ->
 
     it 'should have correct children', ->
       comp = p(0)
-      expect(comp.baseComponent.children.text).to.equal 0
+      expect(comp.children[0].text).to.equal 0
 
   describe 'process getBaseComponent of Tag',  ->
 
@@ -29,11 +29,11 @@ describe "test base component", ->
       p1 = new Tag('p', Object.create(null), [])
       d = new Tag('div', Object.create(null), [p1])
       expect(d.baseComponent).to.equal d
-      expect(d.baseComponent.children).to.be.instanceof Tag
+      expect(d.children[0]).to.be.instanceof Tag
       d.mount()
       expect(d.baseComponent.baseComponent).to.equal d
 
-    it 'should text.noop to be true', ->
+    it 'should text.valid to be true', ->
       comp = txt(1)
       comp.mount()
       expect(!!comp.valid).to.equal true
@@ -41,71 +41,68 @@ describe "test base component", ->
   describe 'process creatDom',  ->
     it 'should creatDom of p(1)', ->
       comp = p(1)
-      comp.createDom()
+      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.innerHTML).to.equal '1'
-      expect(comp.baseComponent.valid).to.equal true
 
     it 'should creatDom of p(->1)', ->
       comp = p(-> 1)
-      comp.createDom()
+      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.innerHTML).to.equal '1'
-      expect(!!baseComponent.noop).to.equal false
 
     it 'should creatDom of p(p(p(t=txt(->1))))', ->
       comp = p(p(p(t=txt(->1))))
-      comp.createDom()
+      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.innerHTML).to.equal '<p><p>1</p></p>'
-      expect(!!baseComponent.noop).to.equal false
 
     it 'should createDom Text with text is  0', ->
       n = new Text(0)
-      n.createDom()
+      n.createDom(n) # just for convienence in tests by using baseComponent itself as options
       expect(n.node.textContent).to.equal '0'
 
     it 'should createDom tag',  ->
       p = new Tag('p', {}, [])
-      p.createDom()
+      p.createDom(p) # just for convienence in tests by using baseComponent itself as options
       expect(p.node.tagName).to.equal 'P'
 
     it 'should createDom  tag with attribute', ->
       p = new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [])
-      p.createDom()
+      p.createDom(p) # just for convienence in tests by using baseComponent itself as options
       expect(p.node.className).to.equal 'some class'
       expect(p.node.getAttribute('className')).to.equal null
 
     it 'process bind as value', ->
       comp = new Tag('input', {type:'text', value:  _a}, [new Text(_a)])
-      comp.createDom()
+      comp.createDom(@) # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.value).to.equal '1'
 
-    it 'tag shoud createDom and calc prev/nextNodeCompnoent', ->
+    it 'tag shoud createDom with multiple children ', ->
       comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t3=new Text(3)]) #
-      expect(comp.children.children.length).to.equal 3
-      comp.createDom()
+      expect(comp.children.length).to.equal 3
+      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.childNodes.length).to.equal 3
 
-    it 'tag shoud createDom and calc prev/nextNodeCompnoent with empty Text', ->
-      comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t3=new Text(3), t4=new Text('')]) #
-      expect(comp.children.children.length).to.equal 4
-      comp.createDom()
-      expect(comp.node.childNodes.length).to.equal 4
+    it 'tag shoud createDom with Nothing child', ->
+      comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t3=new Text(3), t4=new Nothing()]) #
+      expect(comp.children.length).to.equal 4
+      comp.createDom(@) # just for convienence in tests by using baseComponent itself as options
+      expect(comp.node.childNodes.length).to.equal 3
 
-    it 'should create  tag with children', ->
+    it 'should create tag with children', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')])])
-      comp.createDom()
+      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.getElementsByTagName('span').length).to.equal 1
 
     it 'should createDom tag 2', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')])])
-      comp.createDom()
+      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.className).to.equal 'some class'
 
     it 'should createDom for tag with children', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')]), new Text(->)])
-      comp.createDom()
+      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.className).to.equal 'some class'
 
     it 'should createDom list with children', ->
       comp =  new List([new Tag('span',  {}, [new Text('adf')]), new Text(-> undefined)])
-      comp.createDom()
+      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
       expect(comp.node[0].tagName).to.equal 'SPAN'

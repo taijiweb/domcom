@@ -24,17 +24,9 @@ exports.dupStr = dupStr = (str, n) ->
   while i++<n then s += str
   s
 
-exports.newLine = (str, indent, noNewLine) ->
-  if typeof str == 'number'
-    if indent then ''  #str means indent, indent means noNewLine
-    else '\n'+dupStr(' ', str)
-  else
-    if typeof indent == 'number'
-      if noNewLine then str
-      else '\n' + dupStr(' ', indent) + str
-    else
-      if indent then str #indent means noNewLine
-      else '\n' + dupStr(' ', indent) + str
+exports.newLine = (str, indent, addNewLine) ->
+  if addNewLine then '\n' + dupStr(' ', indent) + str
+  else str
 
 exports.funcString = (fn) ->
   if typeof fn != 'function'

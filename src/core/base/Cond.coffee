@@ -40,10 +40,10 @@ module.exports = class Cond extends TransformComponent
       newElse = else_.clone()
       new Cond(newCondComponentList, else_, options or @options).copyLifeCallback(@)
 
-    @toString = (indent=0, noNewLine) ->
-      s = newLine(indent, noNewLine)+'<Cond '+funcString(test)+'>'
+    @toString = (indent=0, addNewLine) ->
+      s = newLine('', indent, addNewLine)+'<Cond '+funcString(test)+'>'
       for test, comp in condComponentList
-        s += newLine(funcString(test)+': '+comp.toString(indent+2, true), indent+2)
-      s += else_.toString(indent+2)+newLine('</Cond>', indent)
+        s += newLine(funcString(test)+': '+comp.toString(indent+2), indent+2)
+      s += else_.toString(indent+2)+newLine('</Cond>', indent, true)
 
     this

@@ -8,4 +8,4 @@ module.exports = class Html extends Text
     @node = document.createDocumenutFragment @processText()
     @
 
-  toString: (indent=2, noNewLine) -> newLine("<Html #{funcString(@text)}/>", indent, noNewLine)
+  toString: (indent=2, addNewLine) -> newLine("<Html #{funcString(@text)}/>", indent, addNewLine)

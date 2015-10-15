@@ -55,7 +55,7 @@ module.exports = class If extends TransformComponent
 
     @clone = (options) -> (new If(test, then_.clone(), else_clone(), options or @options)).copyLifeCallback(@)
 
-    @toString = (indent=0, noNewLine='') ->
-      newLine(indent, noNewLine)+'<if '+funcString(test)+'>' + then_.toString(indent+2) + else_.toString(indent+2)+newLine('</if>', indent)
+    @toString = (indent=0, addNewLine='') ->
+      newLine('', indent, addNewLine)+'<if '+funcString(test)+'>' + then_.toString(indent+2, true) + else_.toString(indent+2, true)+newLine('</if>', indent, true)
 
     this

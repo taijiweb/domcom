@@ -1,12 +1,11 @@
 toComponent = require './toComponent'
 BaseComponent = require './BaseComponent'
-Text = require './Text'
+Nothing = require './Nothing'
 {checkContainer, newLine, binarySearch} = require '../../util'
 {checkConflictOffspring} = require '../../dom-util'
 
 module.exports = exports = class List extends BaseComponent
   constructor: (children, options) ->
-    if !children.length then return new Text('')
     @children = children
     options = options or {}
     super(options)
@@ -28,42 +27,61 @@ module.exports = exports = class List extends BaseComponent
     if !found then @invalidIndexes.splice(index, 0, child.listIndex)
     @holder and @holder.invalidateContent(@)
 
-  createDom: (oldBaseComponent, options) ->
-    @node = []
+  createDom: (options) ->
+    node = @createChildrenDom(options)
+    @node = node
+
+  createChildrenDom: (options) ->
+    @childrenNode = node = []
     @invalidIndexes = []
     @removeIndexes = Object.create(null)
     children = @children
     if !children.length
       @firstNode = null
-      return @node
+      return node
     index = children.length-1
     {parentNode, nextNode} = options
+    children[index].nextNode = nextNode
+    firstNode = null
     while index>=0
       child = children[index]
-      if child.holder!=@ then child.invalidate()
-      child.holder = @
-      child.renderDom(child.baseComponent, {parentNode, nextNode})
+      if child.holder!=@
+        child.invalidate()
+        child.holder = @
+      child.renderDom(child.baseComponent, {parentNode, nextNode:child.nextNode})
       child.parentNode = @parentNode
-      nextNode = child.firstNode or nextNode
+      node.unshift(child.node)
+      firstNode = child.firstNode or firstNode
+      index and child[index-1] = firstNode or nextNode
       index--
-    @firstNode = children[0].firstNode
-    @node
+    @firstNode = firstNode
+    node
 
-  updateDom: (oldBaseComponent, options) ->
-    children = @children
-    invalidIndexes = for index in @invalidIndexes then index
+  updateDom: (options) ->
+    node = @updateChildrenDom(options)
+    child0 = @children[0]
+    @node = node
+
+  updateChildrenDom: (options) ->
+    {invalidIndexes, childrenNode} = @
+    if !invalidIndexes.length then return childrenNode
+    {children, removeIndexes} = @
     @invalidIndexes = []
     @removeIndexes = Object.create(null)
-    index = invalidChildren.length-1
     {parentNode, nextNode} = options
-    for index in invalidIndexes
+    parentNextNode = nextNode
+    index = invalidIndexes.length-1
+    children[children.length-1].nextNode = options.nextNode
+    while index>=0
       child = children[index]
-      if child.holder!=@ then child.invalidate()
-      child.holder = @
-      child.listIndex = i
-      child.parentNode = @parentNode
-      child.renderDom(child.baseComponent, {parentNode, nextNode})
-    node
+      if child.holder!=@
+        child.invalidate()
+        child.holder = @
+      child.renderDom(child.baseComponent, {parentNode, nextNode:child.nextNode})
+      childrenNode[index] = child.node
+      index and children[index-1].nextNode = nextNode
+      index--
+    childrenNode
 
   removeNode: ->
     if !@parentNode or @unmounted then return
@@ -117,10 +135,15 @@ module.exports = exports = class List extends BaseComponent
       insertLocation++
     return @
 
+  # Tag, Comment, Html, Text should have attached themself in advace
+  attachNode: (parentNode, nextNode) -> @node
+
   clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
 
-  toString: (indent=0, noNewLine) ->
-    s = newLine("<List>", indent, noNewLine)
-    for child in @children
-      s += child.toString(indent+2)
-    s += newLine('</List>', indent)
+  toString: (indent=0, addNewLine) ->
+    if !@children.length then newLine("<List/>", indent, addNewLine)
+    else
+      s = newLine("<List>", indent, addNewLine)
+      for child in @children
+        s += child.toString(indent+2, true)
+      s += newLine('</List>', indent, true)

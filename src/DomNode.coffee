@@ -61,5 +61,5 @@ module.exports = class DomNode
         n.removeEventListener(name, handler)
     return
 
-  toString: (indent=0, noNewLine) ->
-    newLine(indent, noNewLine)+'<DomNode>'+newLine(@node.toString(), indent+2)+newLine('</DomNode>', indent)
+  toString: (indent=0, addNewLine) ->
+    newLine('', indent, addNewLine)+'<DomNode>'+newLine(@node.toString(), indent+2, true)+newLine('</DomNode>', indent, true)

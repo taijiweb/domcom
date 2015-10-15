@@ -15,16 +15,16 @@ describe "component  ", ->
     it 'should construct component', ->
       p1 = new Tag('p', {}, [])
       d = new Tag('div', {}, [p1])
-      expect(d.children).to.equal p1
+      expect(d.children.children[0]).to.equal p1
 
     it 'tag shoud have children 1', ->
       comp = new Tag('span', {}, [new Text('adf')])
-      expect(comp.children.text).to.equal 'adf'
+      expect(comp.children.children[0].text).to.equal 'adf'
 
     it 'tag shoud have children 2', ->
       span1 = new Tag('span', {}, [new Text('adf')])
       comp = new Tag('div', {className:classFn('some class'), style:styleFrom("width:1px;")}, [span1])
-      expect(comp.children).to.equal span1
+      expect(comp.children.children[0]).to.equal span1
 
   describe 'component.append', ->
     # Now components have the api for appending, etc...

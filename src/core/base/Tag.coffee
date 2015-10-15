@@ -11,28 +11,18 @@ List = require './List'
 {_directiveRegistry} = require '../../directives/register'
 toComponent = require './toComponent'
 
-module.exports = class Tag extends BaseComponent
+module.exports = class Tag extends List
   constructor: (tagName, attrs={}, children, options) ->
-    super(options)
+    super(children, options)
     @tagName = tagName = tagName.toLowerCase()
     @namespace = attrs.namespace
     if !@namespace
       if tagName=='svg' then @namespace = "http://www.w3.org/2000/svg"
       else if tagName=='math' then @namespace = "http://www.w3.org/1998/Math/MathML"
     @attrs = attrs
+    delete @isList
     @isTag = true
-    if children instanceof Array
-      if children.length==1
-        children = toComponent(children[0])
-      else if children.length==0
-        children = new Text('')
-      else children = new List(children, {})
-    else children = toComponent(children)
-    @family = family = Object.create(null)
-    for dcid of children.family then family[dcid] = true
-    family[@dcid] = true
     children.holder = @
-    @children = children
     @processAttrs()
     return
 
@@ -230,30 +220,27 @@ module.exports = class Tag extends BaseComponent
   hideOn: (test, display) -> @showHide(false, test, display)
 
   createDom: (options) ->
-    @firstNode = @node = node =
+    @node = node =
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
-    @updateProperties()
-    {children} = @
-    if children.holder!=@ then children.invalidate()
-    children.holder = @
-    children.renderDom(children.baseComponent, {parentNode:@node})
+    @hasActiveProperties and @updateProperties()
+    @createChildrenDom({parentNode:@node})
+    @firstNode = node
     node
 
-  updateDom: (mounting) ->
-    @updateProperties()
-    {children, node} = @
-    if children.holder!=@
-      children.invalidate()
-      children.holder = @
-      children.renderDom(children.baseComponent, {parentNode:node})
-      children.parentNode = node
-    else children.renderDom(children.baseComponent, {parentNode:node})
+  updateDom: (options) ->
+    @hasActiveProperties and @updateProperties()
+    @updateChildrenDom({parentNode:@node})
+    @firstNode = @node
+
+  attachNode: (parentNode, nextNode) ->
+    node = @node
+    if @parentNode == parentNode then return node
+    parentNode.insertBefore(node, nextNode)
+    @parentNode = parentNode
     node
 
   updateProperties: ->
-    if !@hasActiveProperties then return
-
     @hasActiveProperties = false
 
     {node, className} = @
@@ -304,8 +291,8 @@ module.exports = class Tag extends BaseComponent
     result = new Tag(@tagName, @attrs, @children.clone(), options or @options)
     result.copyLifeCallback(@)
 
-  toString: (indent=0, noNewLine) ->
-    s = newLine("<#{@tagName}", indent, noNewLine)
+  toString: (indent=0, addNewLine) ->
+    s = newLine("<#{@tagName}", indent, addNewLine)
     for key, value of @props then s += ' '+key+'='+funcString(value)
     if @hasActiveStyle
       s += ' style={'
@@ -316,5 +303,12 @@ module.exports = class Tag extends BaseComponent
           s += ' '+key+'='+funcString(v)
       s += '}'
     s += '>'
-    s += @children.toString(indent+2)
-    s += newLine("</#{@tagName}>", indent+2, 'noNewLine')
+    children = @children
+    if children.length>1
+      for child in @children
+        s += child.toString(indent+2, true)
+      s += newLine("</#{@tagName}>", indent+2, true)
+    else
+      if children.length==1
+        s += children[0].toString(indent+2)
+      s += newLine("</#{@tagName}>", indent+2)

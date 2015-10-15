@@ -1,4 +1,4 @@
-BaseComponent = require './TransformComponent'
+BaseComponent = require './BaseComponent'
 {newLine} = require '../../util'
 
 module.exports = class Nothing extends BaseComponent
@@ -9,8 +9,12 @@ module.exports = class Nothing extends BaseComponent
     @family = Object.create(null)
     @baseComponent = @
 
-    @clone = (options) -> (new Nothing())
+  createDom: -> @node = []
 
-    @toString = (indent=2, noNewLine) -> newLine("<Nothing/>",  indent, noNewLine)
+  updateDom: -> @node
 
-    this
+  attachNode: (parentNode, nextNode) -> @node
+
+  clone: (options) -> (new Nothing())
+
+  toString: (indent=2, addNewLine) -> newLine("<Nothing/>",  indent, addNewLine)

@@ -36,10 +36,10 @@ module.exports = class Case extends TransformComponent
         cloneMap[key] = value.clone()
       (new Case(test, cloneMap, else_clone(), options or @options)).copyLifeCallback(@)
 
-    @toString = (indent=0, noNewLine) ->
-      s = newLine(indent, noNewLine)+'<Case '+funcString(test)+'>'
+    @toString = (indent=0, addNewLine) ->
+      s = newLine('', indent, addNewLine)+'<Case '+funcString(test)+'>'
       for key, comp of map
-        s += newLine(key+': '+comp.toString(indent+2, true), indent+2)
-      s += else_.toString(indent+2)+newLine('</Case>', indent)
+        s += newLine(key+': '+comp.toString(indent+2, false), indent+2, true)
+      s += else_.toString(indent+2, true)+newLine('</Case>', indent, true)
 
     this
