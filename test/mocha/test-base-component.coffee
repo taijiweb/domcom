@@ -41,68 +41,68 @@ describe "test base component", ->
   describe 'process creatDom',  ->
     it 'should creatDom of p(1)', ->
       comp = p(1)
-      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
+      comp.mount() # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.innerHTML).to.equal '1'
 
     it 'should creatDom of p(->1)', ->
       comp = p(-> 1)
-      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
+      comp.mount() # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.innerHTML).to.equal '1'
 
     it 'should creatDom of p(p(p(t=txt(->1))))', ->
       comp = p(p(p(t=txt(->1))))
-      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
+      comp.mount() # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.innerHTML).to.equal '<p><p>1</p></p>'
 
-    it 'should createDom Text with text is  0', ->
+    it 'should mount Text with text is 0', ->
       n = new Text(0)
-      n.createDom(n) # just for convienence in tests by using baseComponent itself as options
+      n.mount() # just for convienence in tests by using baseComponent itself as options
       expect(n.node.textContent).to.equal '0'
 
-    it 'should createDom tag',  ->
+    it 'should mount tag',  ->
       p = new Tag('p', {}, [])
-      p.createDom(p) # just for convienence in tests by using baseComponent itself as options
+      p.mount() # just for convienence in tests by using baseComponent itself as options
       expect(p.node.tagName).to.equal 'P'
 
-    it 'should createDom  tag with attribute', ->
+    it 'should mount  tag with attribute', ->
       p = new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [])
-      p.createDom(p) # just for convienence in tests by using baseComponent itself as options
+      p.mount() # just for convienence in tests by using baseComponent itself as options
       expect(p.node.className).to.equal 'some class'
       expect(p.node.getAttribute('className')).to.equal null
 
     it 'process bind as value', ->
       comp = new Tag('input', {type:'text', value:  _a}, [new Text(_a)])
-      comp.createDom(@) # just for convienence in tests by using baseComponent itself as options
+      comp.mount() # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.value).to.equal '1'
 
-    it 'tag shoud createDom with multiple children ', ->
+    it 'tag shoud mount with multiple children ', ->
       comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t3=new Text(3)]) #
       expect(comp.children.length).to.equal 3
-      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
+      comp.mount() # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.childNodes.length).to.equal 3
 
-    it 'tag shoud createDom with Nothing child', ->
+    it 'tag shoud mount with Nothing child', ->
       comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t3=new Text(3), t4=new Nothing()]) #
       expect(comp.children.length).to.equal 4
-      comp.createDom(@) # just for convienence in tests by using baseComponent itself as options
+      comp.mount() # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.childNodes.length).to.equal 3
 
     it 'should create tag with children', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')])])
-      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
+      comp.mount() # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.getElementsByTagName('span').length).to.equal 1
 
-    it 'should createDom tag 2', ->
+    it 'should mount tag 2', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')])])
-      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
+      comp.mount() # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.className).to.equal 'some class'
 
-    it 'should createDom for tag with children', ->
+    it 'should mount for tag with children', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')]), new Text(->)])
-      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
+      comp.mount() # just for convienence in tests by using baseComponent itself as options
       expect(comp.node.className).to.equal 'some class'
 
-    it 'should createDom list with children', ->
+    it 'should mount list with children', ->
       comp =  new List([new Tag('span',  {}, [new Text('adf')]), new Text(-> undefined)])
-      comp.createDom(comp) # just for convienence in tests by using baseComponent itself as options
+      comp.mount() # just for convienence in tests by using baseComponent itself as options
       expect(comp.node[0].tagName).to.equal 'SPAN'

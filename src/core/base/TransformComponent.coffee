@@ -1,5 +1,6 @@
 Component = require './component'
-{insertNode} = require '../../dom-util'
+{mountMode} = require '../../constant'
+{UNMOUNT} = mountMode
 
 module.exports = class TransformComponent extends Component
   constructor: (options) ->
@@ -20,15 +21,41 @@ module.exports = class TransformComponent extends Component
     @transformValid = false
     @invalidate()
 
-  renderDom: (oldBaseComponent, options) ->
-    if @valid then return @node
+  renderDom: ->
+    if !@parentNode
+      if @node and @node.parentNode
+        return @removeDom()
+      else return @
+    if @valid then return @
     @valid = true
+    if !@parentNode and @node.parentNode
+      @removeDom()
     if !@node and @mountCallbackList
       for cb in @mountCallbackList then cb()
     if !@transformValid
-      content = @content = @getContentComponent()
-      content.parentNode = @parentNode
+      @transformValid = true
+      content = @getContentComponent()
+      if @content and content!=@content
+        @content.parentNode = null
+        @content.removeDom()
+      @content = content
     else content = @content
-    content.renderDom(oldBaseComponent, options)
+    content.holder = @
+    content.parentNode = @parentNode
+    content.nextNode = @nextNode
+    content.renderDom()
     @node = content.node
+    @firstNode = content.firstNode
     @baseComponent = content.baseComponent
+    @
+
+  removeDom: ->
+    if !@node or !@node.parentNode or @parentNode then return @
+    content = @content
+    if content.holder==@
+      content.parentNode = null
+      content.removeDom()
+    if @unmountCallbackList
+      for cb in @unmountCallbackList then cb()
+    @
+

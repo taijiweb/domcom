@@ -64,37 +64,20 @@ module.exports = class Component
   ###
   mount: (mountNode, beforeNode) ->
     @parentNode = normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]
-    @renderDom(@baseComponent, {})
+    @renderDom({})
 
-  create: -> @renderDom(@baseComponent, {})
+  create: -> @renderDom()
+
+  render: -> @renderDom()
 
   update: ->
     if @updateCallbackList
       for callback in @updateCallbackList then callback()
-    @renderDom(@baseComponent, {})
+    @renderDom()
 
-  # do not unmount sub component
-  unmount: ->
-    @baseComponent.remove()
-    return
+  unmount: -> @removeDom()
 
-  setUpdateRoot: ->
-    if !@noop
-      if !@isUpdateRoot
-        @isUpdateRoot = true
-        # remove me from my hooked ancestor holder
-        # move my active offSpring to meself
-        Updatehook = @Updatehook
-        @Updatehook = @
-        {activeOffSpring} = Updatehook
-        myOffSpring = @activeOffSpring
-        #@hasActiveOffspring = false
-        for dcid, comp of activeOffSpring
-          if comp.isOffSpringOf(@)
-            delete offSpring[dcid]
-            myOffSpring[dcid] = comp
-            @hasActiveOffspring = true
-      return
+  remove: ->  @removeDom()
 
   ### component.updateWhen [components, events] ...
   component.updateWhen components..., events...

@@ -76,21 +76,44 @@ exports.intersect = (maps) ->
     isMember and result[key] = m[key]
   result
 
-exports.substractSet = (from, part) ->
-  for key of part then delete from[key]
-  from
+exports.substractSet = (whole, part) ->
+  for key of part then delete whole[key]
+  whole
 
 exports.binarySearch = (item, items) ->
   length = items.length
-  if !length then return -1
-  if length==1 then return (if items[0]<=item then 0 else -1)
+  if !length then return 0
+  if length==1
+    if items[0]>=item then 0
+    else 1
   start = 0; end = length-1
   while 1
     index = start+Math.floor((end-start)/2)
     if start==end
-      if items[index]<=item then return index
-      else return index-1
-    else if item==items[index+1] then return index+1
+      if items[index]>=item then return index
+      else return index+1
+    else if item==items[index] then return index
+    if item==items[index+1] then return index+1
     else if item<items[index] then end = index
     else if item>items[index+1] then start = index+1
-    else return index
+    else return index+1
+
+exports.binaryInsert = (item, items) ->
+  length = items.length
+  if !length then items[0] = item; return 0
+  if length==1
+    if items[0]==item then return 0
+    else if items[0]>item then items[1] = items[0]; items[0] = item; return 0
+    else items[1] = item; return 1
+  start = 0; end = length-1
+  while 1
+    index = start+Math.floor((end-start)/2)
+    if start==end
+      if items[index]==item then return index
+      else if items[index]>item then items.splice(index, 0, item); return index
+      else items.splice(index+1, 0, item); return index+1
+    else if item==items[index] then return index
+    if item==items[index+1] then return index+1
+    else if item<items[index] then end = index
+    else if item>items[index+1] then start = index+1
+    else items.splice(index+1, 0, item); return index+1

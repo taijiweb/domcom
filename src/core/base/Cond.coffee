@@ -11,7 +11,7 @@ module.exports = class Cond extends TransformComponent
     while i<length
       test = condComponentList[i]
       if !test.invalidate then test = renew test
-      test.onInvalidate @invalidate.bind(@)
+      test.onInvalidate @invalidateTransform.bind(@)
       condComponentList[i] = test
       condComponentList[i+1] = toComponent(condComponentList[i+1])  #comp =
       i += 2

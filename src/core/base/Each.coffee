@@ -18,8 +18,8 @@ module.exports = class Each extends TransformComponent
     me = this
 
     if typeof items == 'function'
-      if !items.invalidate then items = renew(items)
-      items.onInvalidate -> me.invalidate()
+      !items.invalidate and items = renew(items)
+      items.onInvalidate @invalidateTransform.bind(@)
 
     @items = items
 
@@ -39,15 +39,11 @@ module.exports = class Each extends TransformComponent
 
     @childReactives = []
     @memoComponents = Object.create(null)
-    @memoToChild = Object.create(null) # the map from memo key to active child component, only one child from a key is allowed
+    @memoChildMap = Object.create(null) # the map from memo key to active child component, only one child from a key is allowed
     @cacheChildren = []
-    # let listComponent has at least on child, otherwise @listComponent will become new Text('')
-    @listComponent = new List(@children=[''])
-    @children.length = 0
-    @listComponent.isUpdateHook = true
+    @listComponent = new List([])
+    @listComponent.holder = @
     return
-
-  reset: (options) ->
 
   getItems: ->
     {items} = @
@@ -57,10 +53,10 @@ module.exports = class Each extends TransformComponent
       if !items or typeof(items)!='object' then throw new Error 'Each Component need an array or object'
     if items not instanceof Array
       @isArrayItems = false
-      if !@notWatch and !isFunction and !@needSort then watchEachObject items, @
+      if !@notWatch and !isFunction and !@needSort and !@watched then watchEachObject items, @
       items = for key, value of items then [key, value]
     else
-      if !@notWatch and !isFunction and !@needSort then watchEachList items, @
+      if !@notWatch and !isFunction and !@needSort and !@watched then watchEachList items, @
       @isArrayItems = true
     if @needSort then items = items.sort(@sortFunction)
     @_items = items
@@ -68,45 +64,40 @@ module.exports = class Each extends TransformComponent
   getContentComponent: ->
     me = @
     {listComponent} = @
-    listComponent.parentNode = @parentNode
-    if listComponent.node then listComponent.noop = true
     @getItems()
-    if !@_items.length
-      return @emptyPlaceHolder = @emptyPlaceHolder or new Text('')
-    length = Math.max(@_items.length, @children.length)
-    length and @invalidateChildren(0, length)
+    length = @_items.length
+    if length<listComponent.children.length then listComponent.setLength(length)
+    length and @_invalidateChildren(0, length)
     listComponent
 
   getChild: (i) ->
     me = @
+
     if keyFunction
       memoKey = if @isArrayItems then keyFunction(_items[i], i) else keyFunction(_items[i][0], _items[i][1], i)
+
     {listComponent, cacheChildren, children, childReactives, keyFunction, itemFn} = @
-    if i>=@_items.length
-      child = cacheChildren[i]
-      child.valid = false
-      child.mountMode = 'unmounting'
-      if keyFunction
-        delete @memoToChild[memoKey]
-      return child
+    children = listComponent.children
+
     if keyFunction
-      if @memoToChild[memoKey]
+      if @memoChildMap[memoKey]
         throw new Error 'duplicated memo key in Each Component'
+
       if child=@memoComponents[memoKey]
         child.valid = false
-        child.mountMode = 'mounting'
+        child.transformValid = false
         children[i] = cacheChildren[i] = child
-        child.listIndex = i
-        @memoToChild[memoKey] = child
-        child.parentNode = @parentNode
+        @memoChildMap[memoKey] = child
         return child
+
     if i<children.length
-        child = children[i]
-        child.valid = false
+      child = children[i]
+      child.valid = false
+      child.transformValid = false
     else if i<cacheChildren.length
       child = children[i] = cacheChildren[i]
       child.valid = false
-      child.mountMode = 'mounting'
+      child.transformValid = false
     else
       _items = @_items
       if me.isArrayItems
@@ -116,9 +107,13 @@ module.exports = class Each extends TransformComponent
             else me._items[i]
         else itemBinding = react (value) -> _items[i]
         if keyFunction
-          @memoToChild[memoKey] = memoComponents[memoKey] = child = toComponent(itemFn(itemBinding, i, me))
+          @memoChildMap[memoKey] = memoComponents[memoKey] = child = toComponent(itemFn(itemBinding, i, me))
+          child.memoKey = memoKey
+          child
         else
-          childReactives[i] = ->  itemFn(itemBinding, i, me)
+          if itemFn.pouring then childReactives[i] = ->  itemFn(itemBinding, i, me)
+          # make childReactives[i] not to be renew by default
+          else  childReactives[i] = react ->  itemFn(itemBinding, i, me)
           child = new Func childReactives[i]
       else
         # [key, value] = @_items[i]
@@ -130,42 +125,40 @@ module.exports = class Each extends TransformComponent
         _itemsBinding = -> @_items
         childReactives[i] = -> itemFn(valueBinding, keyBinding, i, me)
         if keyFunction
-          @memoToChild[memoKey] = memoComponents[memoKey] = child = toComponent(itemFn(valueBinding, keyBinding, i, me))
+          @memoChildMap[memoKey] = memoComponents[memoKey] = child = toComponent(itemFn(valueBinding, keyBinding, i, me))
+          child.memoKey = memoKey
+          child
         else
-          childReactives[i] = ->  itemFn(valueBinding, keyBinding, i, me)
+          if itemFn.pouring then childReactives[i] = ->  itemFn(valueBinding, keyBinding, i, me)
+          # make childReactives[i] not to be renew by default
+          else childReactives[i] =  react ->  itemFn(valueBinding, keyBinding, i, me)
           child = new Func childReactives[i]
-      child = children[i] = cacheChildren[i] = new Func childReactives[i]
+      children[i] = cacheChildren[i] = child
+      listComponent.dcidIndexMap[child.dcid] = i
       child.holder = listComponent
-      child.listIndex = i
-      child.parentNode = @parentNode
-      if listComponent.node then child.mountMode = 'mounting'
 
     child
 
-  invalidateChildren: (start, stop) ->
-    {listComponent} = @
-    node = listComponent.node
-    while start<stop
-      child = @getChild(start)
-      index = binarySearch(start, listComponent.invalidIndexes)
-      indexes = []
-      while i<stop
-        indexes.push i
-        i++
-      listComponent.invalidIndexes.splice(index, 0, indexes...)
-    if node
-      listComponent.noop = true
-      listComponent.invalidate()
-    return
+  _invalidateChildren: (start, stop) ->
+    i = start
+    while i<stop
+      @getChild(i)
+      i++
+    @listComponent.invalidChildren(start, stop)
+    @
 
-  render: (parentNode, nextNode) ->
-    super(mounting)
-    itemsLength = @_items.length
+  _setLength: (length) ->
     listComponent = @listComponent
-    listComponent.children.length = itemsLength
-    listComponent.node and listComponent.node.length = itemsLength
-    @node.length = itemsLength
-    @node
+    oldLength = listComponent.children.length
+    if length==oldLength then @
+    else if length>oldLength then @_invalidateChildren(oldLength, length)
+    else
+      if @keyFunction
+        index = length
+        while index<oldLength
+          delete memoChildMap[children[index].memoKey]
+          index++
+      listComponent.setLength(length); @
 
   clone: (options) -> (new Each(@items, @itemFn, options or @options)).copyLifeCallback(@)
 

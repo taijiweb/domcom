@@ -1,4 +1,4 @@
-{expect, iit, idescribe, nit, ndescribe} = require('./helper')
+{expect, iit, idescribe, nit, ndescribe, newDemoNode} = require('./helper')
 
 {bindings
 isComponent
@@ -19,7 +19,7 @@ describe 'list, each', ->
     it 'should create list component', ->
       comp =  list([span(['adf'])])
       comp.mount()
-      expect(comp.node.tagName).to.equal 'SPAN'
+      expect(comp.node[0].tagName).to.equal 'SPAN'
 
     it 'component list should have length', ->
       lst = list([1, 2])
@@ -56,7 +56,7 @@ describe 'list, each', ->
       comp = new List([txt(1)])
       comp.mount()
       expect(comp.node[0].textContent).to.equal '1'
-      expect(->comp.setChildren(1, t2=txt(2))).to.throw()
+      expect(->comp.setChildren(1, t2=txt(2))).not.to.throw()
 
     it 'list setChildren: similar to splitter', ->
       comp = new List([txt(1), t3=txt(3)])
@@ -78,17 +78,44 @@ describe 'list, each', ->
       comp.update()
       expect(comp.node.innerHTML).to.equal '12'
 
+    it 'list(txt(1)) ', ->
+      comp = new List([txt(1)])
+      comp.mount(demoNode=newDemoNode('list'))
+      comp.update()
+      comp.setLength(0)
+      comp.update();
+      expect(demoNode.innerHTML).to.equal ''
+
   describe 'Each', ->
-    it  'should create each component', ->
+    it  'should create empty each component', ->
+      comp = each(lst = [], (item, i) -> p(item))
+      comp.mount()
+      expect(comp.node).to.be.instanceof Array
+      expect(comp.node.length).to.equal 0
+      comp.update()
+      expect(comp.node.length).to.equal 0
+
+    it  'should create each component with single item', ->
+      comp = each(lst = [1], (item, i) -> p(item))
+      comp.mount()
+      expect(comp.node).to.be.instanceof Array
+      expect(comp.node.length).to.equal 1
+      expect(comp.node[0].innerHTML).to.equal '1'
+      comp.update()
+      expect(comp.node.length).to.equal 1
+      expect(comp.node[0].innerHTML).to.equal '1'
+
+    it  'should create each component with two item', ->
       comp = each(lst = ['each', 'simple'], (item, i) -> p(item))
       comp.mount()
       expect(comp.node).to.be.instanceof Array
       expect(comp.node[0]).to.be.instanceof Element
+      expect(comp.node[1].innerHTML).to.equal 'simple'
 
     it 'should mount and render each component',  ->
       document.getElementById('demo').innerHTML = ''
       comp = each(lst=['each', 'simple'], (item, i) -> p(item))
-      comp.mount("#demo")
+      comp.mount(demoNode = newDemoNode("each"))
       expect(comp.node[0].innerHTML).to.equal 'each'
       expect(comp.node[1].innerHTML).to.equal 'simple'
       lst.setItem 0,  3
@@ -97,14 +124,14 @@ describe 'list, each', ->
       lst.setItem 1, 4
       comp.update()
       expect(comp.node[1].innerHTML).to.equal '4', 'update node 1'
+      expect(demoNode.innerHTML).to.equal '<p>3</p><p>4</p>', 'update innerHTML'
       lst.setItem 2, 5
       comp.update()
       expect(comp.node[2].innerHTML).to.equal '5', 'update list[2] = 5'
       lst.setLength 0
       comp.update()
       expect(comp.listComponent.children.length).to.equal 0, 'comp.listComponent.children.length = 0'
-      #  comp.node is Text(''), comp.node.length is the TextNode.length ,which is also 0 :)
-      expect(comp.node.length).to.equal 0, 'lst.length == TextNode.length == 0'
+      expect(comp.node.length).to.equal 0, 'node.length'
 
     it 'should process item() in item template function', ->
       document.getElementById('demo').innerHTML = ''
@@ -136,7 +163,7 @@ describe 'list, each', ->
       x = 1
       text1 = null
       comp = new Tag('div', {}, [each1=each([1], pour (item) -> text1 = txt(x))])
-      comp.create()
+      comp.mount()
       expect(comp.node.innerHTML).to.equal '1'
       x = 2
       comp.update()

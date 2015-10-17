@@ -49,7 +49,7 @@ module.exports = class If extends TransformComponent
 
     if !test.invalidate then test = renew(test)
 
-    test.onInvalidate(@invalidate.bind(@))
+    test.onInvalidate(@invalidateTransform.bind(@))
 
     @getContentComponent = -> if test() then then_ else else_
 

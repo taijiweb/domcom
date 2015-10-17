@@ -22,7 +22,7 @@ module.exports = class Case extends TransformComponent
     family[@dcid] = true
 
     if !test.invalidate then test = renew(test)
-    test.onInvalidate(@invalidate.bind(@))
+    test.onInvalidate(@invalidateTransform.bind(@))
 
     for key, value of map
       map[key] = toComponent(value) #comp =

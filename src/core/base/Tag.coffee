@@ -239,11 +239,22 @@ module.exports = class Tag extends List
     @updateChildrenDom({})
     @firstNode = @node
 
+  removeDom: ->
+    if !@node or !@node.parentNode or @parentNode then return @
+    @removeNode()
+    if @unmountCallbackList
+      for cb in @unmountCallbackList then cb()
+    @
+
   attachNode: ->
     node = @node
     if @parentNode == node.parentNode then return node
     @parentNode.insertBefore(node, @nextNode)
     node
+
+  removeNode: ->
+    if @node and !@node.parentNode then return
+    @node.parentNode.removeChild(@node)
 
   updateProperties: ->
     @hasActiveProperties = false

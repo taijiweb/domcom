@@ -9,7 +9,7 @@ module.exports = class Func extends TransformComponent
 
     if !func.invalidate then func = renew(func)
 
-    func.onInvalidate(@invalidate.bind(@))
+    func.onInvalidate(@invalidateTransform.bind(@))
 
     @getContentComponent = -> toComponent(func())
 
