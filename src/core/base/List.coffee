@@ -5,26 +5,26 @@ Nothing = require './Nothing'
 {checkConflictOffspring} = require '../../dom-util'
 
 module.exports = exports = class List extends BaseComponent
-  constructor: (children) ->
-    @children = children
+  constructor: (@children) ->
     super()
+
     @family = family = Object.create(null)
     family[@dcid] = true
     @dcidIndexMap = dcidIndexMap = Object.create(null)
+
     for child, i in children
       children[i] = child = toComponent(child)
       checkConflictOffspring(family, child)
       child.holder = @
       dcidIndexMap[child.dcid] = i
-    @invalidIndexes = []
-    @removedChildren = Object.create(null)
+
     @isList = true
     return
 
   invalidateContent: (child) ->
     @valid = false
     @contentValid = false
-    binaryInsert(@dcidIndexMap[child.dcid], @invalidIndexes)
+    @node and binaryInsert(@dcidIndexMap[child.dcid], @invalidIndexes)
     @holder and @holder.invalidateContent(@)
 
   createDom: ->
@@ -33,12 +33,17 @@ module.exports = exports = class List extends BaseComponent
       children[length-1].nextNode = @nextNode
       for child, i in children
         child.parentNode = parentNode
-    node = @createChildrenDom()
+
+    @node = @childNodes = node = []
+    node.parentNode = @parentNode
+    @createChildrenDom()
     @firstNode = @childFristNode
-    @node = node
+    @node
 
   createChildrenDom: ->
-    @childrenNode = node = []
+    node = @childNodes
+    @invalidIndexes = []
+    @removedChildren = Object.create(null)
     {children} = @
     index = children.length-1
     firstNode = null
@@ -52,8 +57,9 @@ module.exports = exports = class List extends BaseComponent
       firstNode = child.firstNode or firstNode
       index and children[index-1].nextNode = firstNode or child.nextNode
       index--
-    node.parentNode = @parentNode
+
     @childFristNode = firstNode
+
     node
 
   updateDom: ->
@@ -63,16 +69,18 @@ module.exports = exports = class List extends BaseComponent
     @updateChildrenDom()
 
   updateChildrenDom: ->
-    {invalidIndexes, childrenNode, removedChildren} = @
+    {invalidIndexes} = @
+
+
     if !invalidIndexes.length
-      @removedChildren = Object.create(null)
-      for _, child of removedChildren
+      for _, child of @removedChildren
         child.removeDom()
-      return childrenNode
+      @removedChildren = Object.create(null)
+      return childNodes
+
     {children} = @
     @invalidIndexes = []
-    @removedChildren = Object.create(null)
-    {parentNode, nextNode} = @
+    {parentNode, nextNode, childNodes} = @
     parentNextNode = nextNode
     i = invalidIndexes.length-1
     children[children.length-1].nextNode = @nextNode
@@ -83,51 +91,61 @@ module.exports = exports = class List extends BaseComponent
         child.invalidate()
         child.holder = @
       child.renderDom()
-      childrenNode[listIndex] = child.node
+      childNodes[listIndex] = child.node
       listIndex and children[listIndex-1].nextNode = child.firstNode or nextNode
       i--
-    for _, child of removedChildren
+
+    for _, child of @removedChildren
       child.removeDom()
-    childrenNode.parentNode = parentNode
-    childrenNode
+    @removedChildren = Object.create(null)
+
+    childNodes
 
   removeNode: ->
     @node.parentNode = null
     for child in @children
-
       child.baseComponent.removeNode()
     return
 
   insertChild: (index, child) ->
     @invalidate()
-    {invalidIndexes} = @
-    insertLocation = binaryInsert(index, invalidIndexes)
     child = toComponent(child)
+    @children.splice(index, 0, child)
     @dcidIndexMap[child.dcid] = index
 
-    # increment the indexes in the invalidInexes after insertLocation
-    length = invalidIndexes.length
-    insertLocation++
-    while insertLocation<length
-      invalidIndexes[insertLocation]++
+    if @node
+      {invalidIndexes} = @
+      insertLocation = binaryInsert(index, invalidIndexes)
+      # increment the indexes in the invalidInexes after insertLocation
+      length = invalidIndexes.length
       insertLocation++
+      while insertLocation<length
+        invalidIndexes[insertLocation]++
+        insertLocation++
 
-    @children.splice(index, 0, child)
     @
 
   removeChild: (index) ->
-    {children, invalidIndexes} = @
+    {children} = @
     if index>children.length then return @
+
     @invalidate()
-    invalidIndex = binarySearch(index, invalidIndexes)
-    if invalidIndexes[invalidIndex]==index then invalidIndexes.splice(invalidIndexes, 1)
     child = children[index]
+
+    # to tell child will be removed from DOM while child.renderDom()
     child.parentNode = null
+
     substractSet(@family, child.family)
-    @removedChildren[child.dcid] = child
     children.splice(index, 1)
     children[index-1] and children[index-1].nextNode = child.nextNode
-    @node and @node.splice(index, 1)
+
+    if @node
+      {invalidIndexes} = @
+      invalidIndex = binarySearch(index, invalidIndexes)
+      if invalidIndexes[invalidIndex]==index then invalidIndexes.splice(invalidIndexes, 1)
+      @node.splice(index, 1)
+      @removedChildren[child.dcid] = child
+
     @
 
   invalidChildren: (startIndex, stopIndex) ->
@@ -144,13 +162,17 @@ module.exports = exports = class List extends BaseComponent
 
   setChildren: (startIndex, newChildren...) ->
     @invalidate()
-    {children, invalidIndexes, removedChildren, family, node, dcidIndexMap} = @
-    if node then insertLocation = binarySearch(startIndex, @invalidIndexes)
+    {children, family, node, dcidIndexMap} = @
+
+    if node
+      {invalidIndexes, removedChildren} = @
+      insertLocation = binarySearch(startIndex, @invalidIndexes)
+
     stopIndex = startIndex+newChildren.length
     i = 0
     while startIndex<stopIndex
       child = toComponent newChildren[i]
-      dcidIndexMap[child.dcid] = startIndex
+
       oldChild = children[startIndex]
       if oldChild==child
         if node
@@ -162,10 +184,13 @@ module.exports = exports = class List extends BaseComponent
           if node then @removedChildren[oldChild.dcid] = oldChild
         checkConflictOffspring(family, child)
         children[startIndex] = child
+        dcidIndexMap[child.dcid] = startIndex
+
         if node
           invalidIndex = invalidIndexes[insertLocation]
           if invalidIndex!=startIndex then invalidIndexes.splice(insertLocation, 0, startIndex)
           insertLocation++
+
       startIndex++
       i++
     return @
@@ -181,16 +206,18 @@ module.exports = exports = class List extends BaseComponent
   # Tag, Comment, Html, Text should have attached themself in advace
   attachNode: () ->
     {children} = @
-    if parentNode!=@node.parentNode and children.length
-      {parentNode, nextNode} = @
-      index = children.length-1
-      children[index].nextNode = nextNode
-      while index>=0
-        child = children[index]
-        child.parentNode = parentNode
-        child.baseComponent.attachNode()
-        index and children[index-1].nextNode = child.firstNode or child.nextNode
-        index--
+    if (parentNode=@parentNode)!=@node.parentNode
+      @node.parentNode = parentNode
+      if children.length
+        {nextNode} = @
+        index = children.length-1
+        children[index].nextNode = nextNode
+        while index>=0
+          child = children[index]
+          child.parentNode = parentNode
+          child.baseComponent.attachNode()
+          index and children[index-1].nextNode = child.firstNode or child.nextNode
+          index--
     @node
 
   removeDom: ->

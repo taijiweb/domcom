@@ -146,7 +146,7 @@ describe 'demo', ->
     it 'should invalidate children to listComponent', ->
       todos = [{title:'do this'}]
       comp = makeTodo todos, status={hash:'all'}
-      expect(comp.listComponent.invalidIndexes.length).to.equal 0
+      expect(comp.listComponent.invalidIndexes).to.be.undefined
       comp.getContentComponent()
       child0 = comp.cacheChildren[0]
       status.hash = 'completed'

@@ -224,11 +224,14 @@ module.exports = class Tag extends List
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
     @hasActiveProperties and @updateProperties()
+
     {children} = @
     for child in children then child.parentNode = node
     if length=children.length then children[length-1].nextNode = null
+    @childNodes = []
     @createChildrenDom()
     @firstNode = node
+
     node
 
   updateDom: ->

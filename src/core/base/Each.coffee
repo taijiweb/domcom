@@ -66,8 +66,9 @@ module.exports = class Each extends TransformComponent
     {listComponent} = @
     @getItems()
     length = @_items.length
-    if length<listComponent.children.length then listComponent.setLength(length)
-    length and @_invalidateChildren(0, length)
+    if length<listComponent.children.length
+      @_setLength(length)
+    else length and @_invalidateChildren(0, length)
     listComponent
 
   getChild: (i) ->
