@@ -31,7 +31,15 @@ exports.nstag = (tagName, namespace, args...) ->
   [attrs, children] = attrsChildren(args)
   new Tag(tagName, attrs, toTagChildren(children), namespace)
 
-# this is for Html Component, which take some text as innerHTML
+exports.txt = (attrs, text) ->
+  if isAttrs(attrs) then new Tag('div', attrs, [new Text(text)])
+  else new Text(attrs)
+
+exports.comment = (attrs, text) ->
+  if isAttrs(attrs) then new Tag('div', attrs, [new Comment(text)])
+  else new Comment(attrs)
+
+# this is for Html Component, which takes some text as innerHTML
 # for <html> ... </html>, please use tagHtml instead
 exports.html = (attrs, text, transform) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Html(text, transform)])
@@ -61,14 +69,6 @@ exports.cond = (attrs, condComponents..., else_) ->
 exports.func = (attrs, fn) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Func(fn)])
   else new Func(attrs) # attrs become fn
-
-exports.txt = (attrs, text) ->
-  if isAttrs(attrs) then new Tag('div', attrs, [new Text(text)])
-  else new Text(attrs)
-
-exports.comment = (attrs, text) ->
-  if isAttrs(attrs) then new Tag('div', attrs, [new Comment(text)])
-  else new Comment(attrs)
 
 exports.list = list = (attrs, lst...) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new List(lst)])

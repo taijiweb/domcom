@@ -24,4 +24,32 @@ flow.mul = (x, y) -> binary(x, y, (x, y) -> x*y)
 flow.div = (x, y) -> binary(x, y, (x, y) -> x/y)
 flow.min = (x, y) -> binary(x, y, (x, y) -> Math.min(x, y))
 
-flow.toggle = (x) -> x(!x())
+flow.toggle = (x) ->
+  if x.invalidate then flow x, -> x(!x())
+  else -> x(!x())
+
+flow.if_ = (test, then_, else_) ->
+  if typeof test != 'function'
+    if test then then_ else else_
+  else if !test.invalidate
+    if typeof then_ == 'function' and typeof else_ == 'function'
+      -> if test() then then_() else else_()
+    else if then_ == 'function'
+      -> if test() then then_() else else_
+    else if else_ == 'function'
+      -> if test() then then_ else else_()
+    else if test() then then_ else else_
+  else
+    if typeof then_ == 'function' and typeof else_ == 'function'
+      if then_.invalidate and else_.invalidate then flow test, then_, else_, ->
+        if test() then then_() else else_()
+      else -> if test() then then_() else else_()
+    else if typeof then_ == 'function'
+      if then_.invalidate
+        flow test, then_, (-> if test() then then_() else else_)
+      else -> if test() then then_() else else_
+    else if typeof else_ == 'function'
+      if else_.invalidate
+        flow else_, (-> if test() then then_ else else_())
+      else -> if test() then then_ else else_()
+    else flow test, -> if test() then then_ else else_
