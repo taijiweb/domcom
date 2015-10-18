@@ -38,7 +38,7 @@ module.exports = class Cond extends TransformComponent
         newCondComponentList[i+1] = newCondComponentList[i+1].clone()
         i+=2
       newElse = else_.clone()
-      new Cond(newCondComponentList, else_, options or @options).copyLifeCallback(@)
+      new Cond(newCondComponentList, else_, options or @options).copyEventListeners(@)
 
     @toString = (indent=0, addNewLine) ->
       s = newLine('', indent, addNewLine)+'<Cond '+funcString(test)+'>'

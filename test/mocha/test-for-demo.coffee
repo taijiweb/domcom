@@ -27,9 +27,8 @@ describe 'demo', ->
       expect(_a()).to.equal('3', '_a')
       expect(_b()).to.equal('4', '_b')
       expect(sum()).to.equal('34', 'sum')
-      expect(!!comp.noop).to.equal false, 'comp.noop'
-      # z is not holder, not update root
-      expect(!!z.noop).to.equal true, 'z.noop'
+      expect(!!comp.valid).to.equal false, 'comp.valid'
+      expect(!!z.valid).to.equal false, 'z.valid'
       comp.update()
       expect(z.node.innerHTML).to.equal '34', 'update'
 
@@ -105,14 +104,18 @@ describe 'demo', ->
       comp.unmount()
 
   describe 'mount/unmount', ->
-    it 'should not mount/unmount sub component', ->
+    it 'should mount/unmount sub component', ->
       div1 = div 'toggle me'
       buttons = list  \
         div onclick: (-> div1.mount()), 'mount',
         div onclick: (-> div1.unmount()), 'unmount'
       comp = list buttons, div1
-      expect(->div1.mount()).to.throw()
-      expect(->div1.unmount()).to.throw()
+      div1.mount()
+      div1.unmount()
+      div1.remount()
+      div1.unmount()
+#      expect(->div1.mount()).not.to.throw()
+#      expect(->div1.unmount()).not.to.throw()
       comp.mount()
       comp.unmount()
 
@@ -120,8 +123,8 @@ describe 'demo', ->
     it 'should construct and create components', ->
       comp = li(a({className:{selected: 1}, href:"#/"}, "All"))
       comp.mount('#demo')
-      expect(comp.children.node.className).to.equal('selected')
-      expect(comp.children.node.href).to.match(/:\/\//)
+      expect(comp.children[0].node.className).to.equal('selected')
+      expect(comp.children[0].node.href).to.match(/:\/\//)
 
     makeTodo = (todos, status) ->
       status.hash = 'all'
@@ -143,20 +146,15 @@ describe 'demo', ->
     it 'should invalidate children to listComponent', ->
       todos = [{title:'do this'}]
       comp = makeTodo todos, status={hash:'all'}
-      comp.getBaseComponent()
-      expect(comp.listComponent.invalidIndexes.length).to.be.undefined
+      expect(comp.listComponent.invalidIndexes.length).to.equal 0
+      comp.getContentComponent()
       child0 = comp.cacheChildren[0]
       status.hash = 'completed'
-      comp.listComponent.created = true
+      child0.transfornValid = true
+      comp.getContentComponent()
       child0.valid = true
-      comp.listComponent.activeOffspring = null
-      comp.getBaseComponent()
-      expect(comp.listComponent.activeOffspring[child0.dcid][0]).to.equal child0, 'completed'
-      child0.valid = true
-      comp.listComponent.activeOffspring = null
       status.hash = 'all'
-      comp.getBaseComponent()
-      expect(comp.listComponent.activeOffspring[child0.dcid][0]).to.equal child0, 'all 2'
+      comp.getContentComponent()
 
     it 'should process getTodos and Each correctly', ->
       todos = [{title:'do this'}]
@@ -169,7 +167,5 @@ describe 'demo', ->
       status.hash = 'all'
       comp.getContentComponent()
       child0 = comp.listComponent.children[0]
-      expect(comp.listComponent.activeOffspring[child0.dcid][0]).to.equal child0
       comp.update()
-#      expect(comp.listComponent.length).to.equal 1
       expect(comp.node.length).to.equal 1

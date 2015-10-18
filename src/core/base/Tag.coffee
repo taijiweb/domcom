@@ -227,7 +227,7 @@ module.exports = class Tag extends List
     {children} = @
     for child in children then child.parentNode = node
     if length=children.length then children[length-1].nextNode = null
-    @createChildrenDom({})
+    @createChildrenDom()
     @firstNode = node
     node
 
@@ -235,15 +235,13 @@ module.exports = class Tag extends List
     @hasActiveProperties and @updateProperties()
     {children, node, invalidIndexes} = @
     for index in invalidIndexes
-      children[invalidIndexes[index]].parentNode = node
-    @updateChildrenDom({})
+      children[index].parentNode = node
+    @updateChildrenDom()
     @firstNode = @node
 
   removeDom: ->
-    if !@node or !@node.parentNode or @parentNode then return @
     @removeNode()
-    if @unmountCallbackList
-      for cb in @unmountCallbackList then cb()
+    @emit('afterRemoveDom')
     @
 
   attachNode: ->
@@ -253,7 +251,6 @@ module.exports = class Tag extends List
     node
 
   removeNode: ->
-    if @node and !@node.parentNode then return
     @node.parentNode.removeChild(@node)
 
   updateProperties: ->
@@ -304,8 +301,11 @@ module.exports = class Tag extends List
     return
 
   clone: (options=@options) ->
-    result = new Tag(@tagName, @attrs, @children.clone(), options or @options)
-    result.copyLifeCallback(@)
+    children = []
+    for child in @children
+      children.push child.clone()
+    result = new Tag(@tagName, @attrs, children, options or @options)
+    result.copyEventListeners(@)
 
   toString: (indent=0, addNewLine) ->
     s = newLine("<#{@tagName}", indent, addNewLine)

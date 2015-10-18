@@ -19,8 +19,7 @@ module.exports = class BaseComponent extends Component
       else return @
     if !@node
       @valid = true
-      if @mountCallbackList
-        for cb in @mountCallbackList then cb()
+      @emit('beforeAttach')
       @createDom()
     else if !@valid
       @valid = true
@@ -32,13 +31,3 @@ module.exports = class BaseComponent extends Component
     if !@valid then return
     @valid = false
     @holder and @holder.invalidateContent(@)
-
-  replace: (oldBaseComponent, options) ->
-    @valid = true
-    oldBaseComponent.removeNode()
-    if oldBaseComponent.unmountCallbackList
-      for cb in oldBaseComponent.unmountCallbackList then cb()
-    if !@node then @createDom({})
-    else @updateDom({})
-    @attachNode(@parentNode,@nextNode)
-    @

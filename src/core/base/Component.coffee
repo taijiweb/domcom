@@ -10,7 +10,7 @@ mountList = []
 
 module.exports = class Component
   constructor: (options) ->
-    @listeners = {}
+    @listeners = Object.create(null)
     @baseComponent = null
     @parentNode = null
     @node = null
@@ -20,64 +20,80 @@ module.exports = class Component
 
   setOptions: (@options) -> @
 
-  onMount: (fns...) ->
-    @mountCallbackList = cbs = @mountCallbackList or []
+  on: (event, fns...) ->
+    cbs = @listeners[event] or @listeners[event] = []
     cbs.push.apply(cbs, fns)
     @
 
-  offMount: (fns...) ->
-    cbs = @mountCallbackList
+  off: (event, fns...) ->
+    cbs = @listeners[event] or @listeners[event] = []
     for fn in cbs
       if cbs.indexOf(fn)==-1 then continue
       else cbs.splice(index, 1)
-    !cbs.length and @mountCallbackList = null
+    !cbs.length and @listeners[event] = null
     @
 
-  onUnmount: (fns...) ->
-    @unmountCallbackList = cbs = @unmountCallbackList or []
-    cbs.push.apply(cbs, fns)
-    @
-
-  offUnmount: (fns...) ->
-    cbs = @unmountCallbackList
-    for fn in cbs
-      if cbs.indexOf(fn)==-1 then continue
-      else cbs.splice(index, 1)
-    !cbs.length and @unmountCallbackList = null
-    @
-
-  onUpdate: (fns...) ->
-    @updateCallbackList = cbs = @updateCallbackList or []
-    cbs.push.apply(cbs, fns)
-    @
-
-  offUpdate: (fns...) ->
-    cbs = @updateCallbackList
-    for fn in cbs
-      if cbs.indexOf(fn)==-1 then continue
-      else cbs.splice(index, 1)
-    !cbs.length and @updateCallbackList = null
+  emit:(event, args...) ->
+    if !(cbs = @listeners[event]) then return
+    for cb in cbs then cb.apply(@, args)
     @
 
   ### if mountNode is given, it should not the node of any Component
   only use beforeNode if mountNode is given
   ###
   mount: (mountNode, beforeNode) ->
+    @emit('beforeMount')
     @parentNode = normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]
-    @renderDom({})
+    @renderDom()
+    @emit('afterMount')
+    @
 
   create: -> @renderDom()
 
   render: -> @renderDom()
 
   update: ->
-    if @updateCallbackList
-      for callback in @updateCallbackList then callback()
+    @emit('update')
     @renderDom()
+    @
 
-  unmount: -> @removeDom()
+  unmount: ->
+    @emit('beforeUnmount')
+    if !@node or !@node.parentNode
+      @emit('afterUnmount')
+      return @
+    child = @
+    holder = @holder
+    while holder and !holder.isBaseComponent
+      child = holder
+      holder = holder.holder
+    if holder and (holder.isList or holder.isTag)
+      holder.removeChild(holder.dcidIndexMap[child.dcid])
+    child.parentNode = null
+    if holder and (holder.isList or holder.isTag) then holder.renderDom()
+    else child.renderDom()
+    @emit('afterUnmount')
+    child
 
-  remove: ->  @removeDom()
+  remount: (parentNode) ->
+    @emit('beforeMount')
+    child = @
+    holder = @holder
+    while holder and !holder.isBaseComponent
+      child = holder
+      holder = holder.holder
+    if (holder.isList or holder.isTag) and index = holder.dcidIndexMap[child.dcid]
+      index = if index? then index else holder.children.length
+      holder.insertChild(index, child)
+    child.parentNode =
+      if holder then holder.parentNode
+      else if parentNode then parentNode
+      else document.body
+    child.invalidate()
+    if holder and (holder.isList or holder.isTag) then holder.renderDom()
+    else child.renderDom()
+    @emit('afterMount')
+    child
 
   ### component.updateWhen [components, events] ...
   component.updateWhen components..., events...
@@ -104,7 +120,9 @@ module.exports = class Component
         else if args[1]==dc.raf then dc._renderWhenBy(method, dc.raf, [@], args[1])
     @
 
-  copyLifeCallback: (srcComponent) ->
-    @beforeMountCallbackList = srcComponent.beforeMountCallbackList
-    @afterUnmountCallbackList = srcComponent.afterUnmountCallbackList
+  copyEventListeners: (srcComponent) ->
+    myListeners = @listeners
+    srcListeners = srcComponent.listeners
+    for event of srcListeners
+      srcListeners[event] and myListeners[event] = srcListeners[event].splice()
     @

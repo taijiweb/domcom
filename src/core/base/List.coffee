@@ -93,7 +93,6 @@ module.exports = exports = class List extends BaseComponent
     childrenNode
 
   removeNode: ->
-    if !@node.parentNode then return
     @node.parentNode = null
     for child in @children
 
@@ -102,29 +101,34 @@ module.exports = exports = class List extends BaseComponent
 
   insertChild: (index, child) ->
     @invalidate()
-    binaryInsert(index, @invalidIndexes)
-    @dcidListIndexMap[child.dcid] = index
+    {invalidIndexes} = @
+    insertLocation = binaryInsert(index, invalidIndexes)
+    child = toComponent(child)
+    @dcidIndexMap[child.dcid] = index
 
     # increment the indexes in the invalidInexes after insertLocation
     length = invalidIndexes.length
+    insertLocation++
     while insertLocation<length
-      insertLocation[insertLocation]++
+      invalidIndexes[insertLocation]++
       insertLocation++
 
-    @children.splice(index, 0, toComponent(child))
+    @children.splice(index, 0, child)
     @
 
   removeChild: (index) ->
-    {children} = @
+    {children, invalidIndexes} = @
     if index>children.length then return @
     @invalidate()
+    invalidIndex = binarySearch(index, invalidIndexes)
+    if invalidIndexes[invalidIndex]==index then invalidIndexes.splice(invalidIndexes, 1)
     child = children[index]
     child.parentNode = null
     substractSet(@family, child.family)
     @removedChildren[child.dcid] = child
     children.splice(index, 1)
     children[index-1] and children[index-1].nextNode = child.nextNode
-    @node.splice(index, 1)
+    @node and @node.splice(index, 1)
     @
 
   invalidChildren: (startIndex, stopIndex) ->
@@ -141,12 +145,13 @@ module.exports = exports = class List extends BaseComponent
 
   setChildren: (startIndex, newChildren...) ->
     @invalidate()
-    {children, invalidIndexes, removedChildren, family, node} = @
+    {children, invalidIndexes, removedChildren, family, node, dcidIndexMap} = @
     if node then insertLocation = binarySearch(startIndex, @invalidIndexes)
     stopIndex = startIndex+newChildren.length
     i = 0
     while startIndex<stopIndex
       child = toComponent newChildren[i]
+      dcidIndexMap[child.dcid] = startIndex
       oldChild = children[startIndex]
       if oldChild==child
         if node
@@ -190,18 +195,14 @@ module.exports = exports = class List extends BaseComponent
     @node
 
   removeDom: ->
-    # while we want to remove any component, its parentNode is be set null
-    # if it is attatched to DOM by other component again, its parentNode will be set again
-    if !@node or !@node.parentNode or @parentNode then return @
     @node.parentNode = null
     for child in @children
       child.parentNode = null
       child.removeDom()
-    if @unmountCallbackList
-      for cb in @unmountCallbackList then cb()
+    @emit('afterRemoveDom')
     @
 
-  clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyLifeCallback(@)
+  clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyEventListeners(@)
 
   toString: (indent=0, addNewLine) ->
     if !@children.length then newLine("<List/>", indent, addNewLine)

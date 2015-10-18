@@ -12,7 +12,7 @@ module.exports = class Ref extends TransformComponent
 
     @getContentComponent = -> @content
 
-    @clone = (options) -> (new Ref(@baseComponent)).copyLifeCallback(@)
+    @clone = (options) -> (new Ref(@baseComponent)).copyEventListeners(@)
 
     @toString = (indent=2, addNewLine) -> newLine("<Ref #{@content}/>",  indent, addNewLine)
 

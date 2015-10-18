@@ -91,14 +91,10 @@ _renderComponentWhenBy = (method, component, event, updateList, options) ->
     if event[...2]!='on' then event = 'on'+event
     if options
       component.eventUpdateConfig[event] = for comp in updateList
-        comp.setUpdateRoot()
         [comp, options]
     else
       for item, i in updateList
         updateList[i] = if isComponent(item) then [item, {}] else item
-      component.eventUpdateConfig[event] = updateList
-      for [comp, _] in updateList
-        comp.setUpdateRoot()
     return
 
 addSetIntervalUpdater = (method, component, options) ->

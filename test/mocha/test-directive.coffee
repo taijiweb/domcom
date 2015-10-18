@@ -88,7 +88,7 @@ describe 'directives', ->
       bounds = comp.node.getBoundingClientRect()
       expect(bounds.width>0).to.equal true
       expect(comp.node.innerHTML).to.match /splitbar/
-      children = comp.children.children
+      children = comp.children
       expect(children[1].node.getBoundingClientRect().top).to.equal comp.node.getBoundingClientRect().top
       children[1].node.onmousedown()
       comp.node.onmousemove({clientX:20, clientY:30, preventDefault:(->), stopPropagation:(->)})

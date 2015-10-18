@@ -96,7 +96,7 @@ describe 'route', ->
       comp = route '(\\w+)', (match) -> match.items[0]
       comp.getPath = -> 'a'
       expect(!!(content = comp.getContent())).to.equal true
-      expect(content.text).to.equal 'a'
+      expect(content.children[0].text).to.equal 'a'
     it "should not route '*' on path 'a/'", ->
       comp = route '*', (match) -> 1
       comp.getPath = -> 'a/'

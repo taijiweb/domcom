@@ -13,7 +13,7 @@ module.exports = class Func extends TransformComponent
 
     @getContentComponent = -> toComponent(func())
 
-    @clone = (options) -> (new Func((-> toComponent(func()).clone()), options)).copyLifeCallback(@)
+    @clone = (options) -> (new Func((-> toComponent(func()).clone()), options)).copyEventListeners(@)
 
     @toString = (indent=2, addNewLine) -> newLine("<Func #{funcString(func)}/>",  indent, addNewLine)
 

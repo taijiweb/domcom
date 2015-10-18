@@ -30,16 +30,19 @@ module.exports = class TransformComponent extends Component
     @valid = true
     if !@parentNode and @node.parentNode
       @removeDom()
-    if !@node and @mountCallbackList
-      for cb in @mountCallbackList then cb()
+    !@node and @emit('beforeAttach')
+    oldContent = @content
     if !@transformValid
       @transformValid = true
       content = @getContentComponent()
-      if @content and content!=@content
-        @content.parentNode = null
-        @content.removeDom()
+
+      if oldContent and content!=oldContent
+        @emit('contentChanged', oldContent, content)
+        oldContent.parentNode = null
+        if oldContent.node and oldContent.node.parentNode
+          oldContent.removeDom()
       @content = content
-    else content = @content
+    else content = oldContent
     content.holder = @
     content.parentNode = @parentNode
     content.nextNode = @nextNode
@@ -50,12 +53,10 @@ module.exports = class TransformComponent extends Component
     @
 
   removeDom: ->
-    if !@node or !@node.parentNode or @parentNode then return @
     content = @content
     if content.holder==@
       content.parentNode = null
       content.removeDom()
-    if @unmountCallbackList
-      for cb in @unmountCallbackList then cb()
+    @emit('afterRemoveDom')
     @
 

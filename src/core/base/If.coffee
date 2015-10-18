@@ -53,7 +53,7 @@ module.exports = class If extends TransformComponent
 
     @getContentComponent = -> if test() then then_ else else_
 
-    @clone = (options) -> (new If(test, then_.clone(), else_clone(), options or @options)).copyLifeCallback(@)
+    @clone = (options) -> (new If(test, then_.clone(), else_clone(), options or @options)).copyEventListeners(@)
 
     @toString = (indent=0, addNewLine='') ->
       newLine('', indent, addNewLine)+'<if '+funcString(test)+'>' + then_.toString(indent+2, true) + else_.toString(indent+2, true)+newLine('</if>', indent, true)

@@ -16,8 +16,7 @@ module.exports = registerDirective '$splitter', (direction) -> (comp) ->
 
   getSize = -> size or 600
 
-  childrenList = comp.children
-  children = childrenList.children
+  children = comp.children
   paneA = children[0]; paneB = children[1]
   minAWidth = attrs.minAWidth or 0; minBWidth = attrs.minBWidth or 0
   splitBarAttr = {
@@ -52,7 +51,7 @@ module.exports = registerDirective '$splitter', (direction) -> (comp) ->
   arrowB = div(arrawBAttr)
 
   splitBar = div(splitBarAttr, span(), arrowA, arrowB)
-  childrenList.setChildren 1, splitBar, paneB
+  comp.setChildren 1, splitBar, paneB
 
   splitBar.bind 'mousedown', (event) -> drag = true
   dc(document).bind 'mouseup', -> drag = false

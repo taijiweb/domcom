@@ -201,10 +201,10 @@ describe "component  ", ->
       comp.mount()
       expect(comp.node.innerHTML).to.equal '2'
 
-    it 'should execute component.remove', ->
+    it 'should execute component.unmount', ->
       comp = div(2)
       comp.mount()
-      comp.remove()
+      comp.unmount()
 
     it 'p(->12) ', ->
       comp = p(->12)

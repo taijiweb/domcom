@@ -31,10 +31,8 @@ module.exports = class Text extends BaseComponent
     @node
 
   removeDom: ->
-    if !@node or !@node.parentNode or @parentNode then return @
     @removeNode()
-    if @unmountCallbackList
-      for cb in @unmountCallbackList then cb()
+    @emit('afterRemoveDom')
     @
 
   attachNode: ->
@@ -47,6 +45,6 @@ module.exports = class Text extends BaseComponent
     if @node and !@node.parentNode then return
     @node.parentNode.removeChild(@node)
 
-  clone: (options) -> (new @constructor(@text, options)).copyLifeCallback(@)
+  clone: (options) -> (new @constructor(@text, options)).copyEventListeners(@)
 
   toString: (indent=2, addNewLine) -> newLine(funcString(@text), indent, addNewLine)

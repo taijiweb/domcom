@@ -160,6 +160,6 @@ module.exports = class Each extends TransformComponent
           index++
       listComponent.setLength(length); @
 
-  clone: (options) -> (new Each(@items, @itemFn, options or @options)).copyLifeCallback(@)
+  clone: (options) -> (new Each(@items, @itemFn, options or @options)).copyEventListeners(@)
 
   toString: (indent=0, addNewLine) -> newLine("<Each #{funcString(@items)} #{funcString(@itemFn)}/>", indent, addNewLine)
