@@ -1,5 +1,5 @@
 {Component, toComponent, isComponent,
-Tag, Text, Comment,
+Tag, Text, Comment, Html
 If, Case, Func, List, Each} = require './base'
 {isEven} = require '../util'
 
@@ -31,14 +31,15 @@ exports.nstag = (tagName, namespace, args...) ->
   [attrs, children] = attrsChildren(args)
   new Tag(tagName, attrs, toTagChildren(children), namespace)
 
-exports.clone = (attrs, src) ->
-  if isAttrs(attrs) then new Tag('div', attrs, [toComponent(src).clone()])
-  else toComponent(attrs).clone(src)
+# this is for Html Component, which take some text as innerHTML
+# for <html> ... </html>, please use tagHtml instead
+exports.html = (attrs, text, transform) ->
+  if isAttrs(attrs) then new Tag('div', attrs, [new Html(text, transform)])
+  else new Html(attrs, text)
 
 exports.if_ = (attrs, test, then_, else_) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new If(test, then_, else_)])
-  else
-    new If(attrs, test, then_, else_)
+  else new If(attrs, test, then_, else_)
 
 exports.case_ = (attrs, test, map, else_) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Case(test, map, else_)])
@@ -115,3 +116,8 @@ exports.all = (attrs, hash, itemFn) ->
       children.push itemFn(key, value, i, hash)
       i++
     new List(children)
+
+exports.clone = (attrs, src) ->
+  if isAttrs(attrs) then new Tag('div', attrs, [toComponent(src).clone()])
+  else toComponent(attrs).clone(src)
+

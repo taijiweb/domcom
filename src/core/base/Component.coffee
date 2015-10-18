@@ -14,7 +14,6 @@ module.exports = class Component
     @baseComponent = null
     @parentNode = null
     @node = null
-    @Updatehook = @
     @dcid = newDcid()
 
   on: (event, fns...) ->

@@ -4,12 +4,11 @@ BaseComponent = require './BaseComponent'
 
 module.exports = class Text extends BaseComponent
   constructor: (text) ->
+    super()
     me = @
     @text = text = domValue(text)
     if typeof text == 'function'
-      @textValid = false
       text.onInvalidate -> me.invalidate()
-    super()
     @family = Object.create(null)
     @family[@dcid] = true
     @
@@ -42,7 +41,6 @@ module.exports = class Text extends BaseComponent
     node
 
   removeNode: ->
-    if @node and !@node.parentNode then return
     @node.parentNode.removeChild(@node)
 
   clone: -> (new @constructor(@text)).copyEventListeners(@)
