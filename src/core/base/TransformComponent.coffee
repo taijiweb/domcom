@@ -1,8 +1,8 @@
 Component = require './component'
 
 module.exports = class TransformComponent extends Component
-  constructor: (options) ->
-    super(options)
+  constructor: ->
+    super()
     @valid = false
     @transformValid = false
     @isTransformComponent = true

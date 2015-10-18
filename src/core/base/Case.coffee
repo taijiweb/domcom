@@ -4,17 +4,12 @@ TransformComponent = require './TransformComponent'
 {renew} = require '../../flow'
 
 module.exports = class Case extends TransformComponent
-  constructor: (test, map, else_, options={}) ->
+  constructor: (test, map, else_) ->
     if typeof test != 'function'
       if map.hasOwnPoperty(test) then return toComponent(map[key])
       else return toComponent(else_)
 
-    if options.convertToIf
-      for key, value of map
-        else_ = new  If((->test()==key), value, else_)
-      return else_
-
-    super(options)
+    super()
 
     families = for _, value of map then value.family
     families.push else_.family
@@ -30,11 +25,11 @@ module.exports = class Case extends TransformComponent
 
     @getContentComponent = -> map[test()] or else_
 
-    @clone = (options) ->
+    @clone = ->
       cloneMap = Object.create(null)
       for key, value of map
         cloneMap[key] = value.clone()
-      (new Case(test, cloneMap, else_clone(), options or @options)).copyEventListeners(@)
+      (new Case(test, cloneMap, else_clone())).copyEventListeners(@)
 
     @toString = (indent=0, addNewLine) ->
       s = newLine('', indent, addNewLine)+'<Case '+funcString(test)+'>'

@@ -9,16 +9,13 @@ componentId = 1
 mountList = []
 
 module.exports = class Component
-  constructor: (options) ->
+  constructor: ->
     @listeners = Object.create(null)
     @baseComponent = null
     @parentNode = null
     @node = null
-    @options = options or {}
     @Updatehook = @
     @dcid = newDcid()
-
-  setOptions: (@options) -> @
 
   on: (event, fns...) ->
     cbs = @listeners[event] or @listeners[event] = []

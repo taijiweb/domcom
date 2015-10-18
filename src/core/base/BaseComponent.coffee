@@ -3,8 +3,8 @@ Component = require './component'
 {cloneObject} = require '../../util'
 
 module.exports = class BaseComponent extends Component
-  constructor: (options) ->
-    super(options)
+  constructor: ->
+    super()
     @isBaseComponent = true
     @baseComponent = @
 

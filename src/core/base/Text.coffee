@@ -3,13 +3,13 @@ BaseComponent = require './BaseComponent'
 {domValue} = require '../../dom-util'
 
 module.exports = class Text extends BaseComponent
-  constructor: (text, options) ->
+  constructor: (text) ->
     me = @
     @text = text = domValue(text)
     if typeof text == 'function'
       @textValid = false
       text.onInvalidate -> me.invalidate()
-    super(options)
+    super()
     @family = Object.create(null)
     @family[@dcid] = true
     @
@@ -45,6 +45,6 @@ module.exports = class Text extends BaseComponent
     if @node and !@node.parentNode then return
     @node.parentNode.removeChild(@node)
 
-  clone: (options) -> (new @constructor(@text, options)).copyEventListeners(@)
+  clone: -> (new @constructor(@text)).copyEventListeners(@)
 
   toString: (indent=2, addNewLine) -> newLine(funcString(@text), indent, addNewLine)

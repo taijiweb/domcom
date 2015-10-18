@@ -4,8 +4,8 @@ TransformComponent = require './TransformComponent'
 {renew} = require '../../flow'
 
 module.exports = class Cond extends TransformComponent
-  constructor: (condComponentList, else_, options={}) ->
-    super(options)
+  constructor: (condComponentList, else_) ->
+    super()
 
     i = 0; length = condComponentList.length
     while i<length
@@ -31,14 +31,14 @@ module.exports = class Cond extends TransformComponent
         if test() then return component
       else_
 
-    @clone = (options) ->
+    @clone = ->
       newCondComponentList = condComponentList.slice()
       i = 0; length = newCondComponentList.length
       while i<length
         newCondComponentList[i+1] = newCondComponentList[i+1].clone()
         i+=2
       newElse = else_.clone()
-      new Cond(newCondComponentList, else_, options or @options).copyEventListeners(@)
+      new Cond(newCondComponentList, else_).copyEventListeners(@)
 
     @toString = (indent=0, addNewLine) ->
       s = newLine('', indent, addNewLine)+'<Cond '+funcString(test)+'>'

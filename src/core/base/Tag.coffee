@@ -12,8 +12,8 @@ List = require './List'
 toComponent = require './toComponent'
 
 module.exports = class Tag extends List
-  constructor: (tagName, attrs={}, children, options) ->
-    super(children, options)
+  constructor: (tagName, attrs={}, children) ->
+    super(children)
     @tagName = tagName = tagName.toLowerCase()
     @namespace = attrs.namespace
     if !@namespace
@@ -219,7 +219,7 @@ module.exports = class Tag extends List
   showOn: (test, display) -> @showHide(true, test, display)
   hideOn: (test, display) -> @showHide(false, test, display)
 
-  createDom: (options) ->
+  createDom: ->
     @node = node =
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
@@ -231,7 +231,7 @@ module.exports = class Tag extends List
     @firstNode = node
     node
 
-  updateDom: (options) ->
+  updateDom: ->
     @hasActiveProperties and @updateProperties()
     {children, node, invalidIndexes} = @
     for index in invalidIndexes
@@ -300,12 +300,11 @@ module.exports = class Tag extends List
 
     return
 
-  clone: (options=@options) ->
+  clone: ->
     children = []
     for child in @children
       children.push child.clone()
-    result = new Tag(@tagName, @attrs, children, options or @options)
-    result.copyEventListeners(@)
+    new Tag(@tagName, @attrs, children).copyEventListeners(@)
 
   toString: (indent=0, addNewLine) ->
     s = newLine("<#{@tagName}", indent, addNewLine)

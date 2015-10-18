@@ -4,8 +4,8 @@ TransformComponent = require './TransformComponent'
 {renew} = require '../../flow'
 
 module.exports = class Func extends TransformComponent
-  constructor: (func, options) ->
-    super(options)
+  constructor: (func) ->
+    super()
 
     if !func.invalidate then func = renew(func)
 
@@ -13,7 +13,7 @@ module.exports = class Func extends TransformComponent
 
     @getContentComponent = -> toComponent(func())
 
-    @clone = (options) -> (new Func((-> toComponent(func()).clone()), options)).copyEventListeners(@)
+    @clone = () -> (new Func((-> toComponent(func()).clone()))).copyEventListeners(@)
 
     @toString = (indent=2, addNewLine) -> newLine("<Func #{funcString(func)}/>",  indent, addNewLine)
 

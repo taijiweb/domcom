@@ -13,7 +13,7 @@ Text = require './Text'
 # (value, key, items, component) -> Component
 module.exports = class Each extends TransformComponent
   constructor: (items, @itemFn, options={}) ->
-    super(options)
+    super()
 
     me = this
 

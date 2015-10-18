@@ -5,10 +5,9 @@ Nothing = require './Nothing'
 {checkConflictOffspring} = require '../../dom-util'
 
 module.exports = exports = class List extends BaseComponent
-  constructor: (children, options) ->
+  constructor: (children) ->
     @children = children
-    options = options or {}
-    super(options)
+    super()
     @family = family = Object.create(null)
     family[@dcid] = true
     @dcidIndexMap = dcidIndexMap = Object.create(null)
@@ -202,7 +201,7 @@ module.exports = exports = class List extends BaseComponent
     @emit('afterRemoveDom')
     @
 
-  clone: (options) -> (new List((for child in @children then child.clone()), options or @options)).copyEventListeners(@)
+  clone: -> (new List((for child in @children then child.clone()))).copyEventListeners(@)
 
   toString: (indent=0, addNewLine) ->
     if !@children.length then newLine("<List/>", indent, addNewLine)

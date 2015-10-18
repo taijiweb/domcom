@@ -15,6 +15,6 @@ module.exports = class Nothing extends BaseComponent
 
   attachNode: (parentNode, nextNode) -> @node
 
-  clone: (options) -> (new Nothing())
+  clone: -> (new Nothing())
 
   toString: (indent=2, addNewLine) -> newLine("<Nothing/>",  indent, addNewLine)
