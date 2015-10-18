@@ -1,6 +1,4 @@
 Component = require './component'
-{mountMode} = require '../../constant'
-{UNMOUNT} = mountMode
 
 module.exports = class TransformComponent extends Component
   constructor: (options) ->

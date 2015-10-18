@@ -2,9 +2,6 @@ Component = require './component'
 {insertNode} = require '../../dom-util'
 {cloneObject} = require '../../util'
 
-{mountMode} = require '../../constant'
-{UNMOUNT} = mountMode
-
 module.exports = class BaseComponent extends Component
   constructor: (options) ->
     super(options)
