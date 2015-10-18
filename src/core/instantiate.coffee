@@ -100,3 +100,33 @@ exports.list = list = (attrs, lst...) ->
 exports.each = (attrs, list, itemFn, options) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Each(list, itemFn, options)])
   else new Each(attrs, list, itemFn)
+
+exports.every = (attrs, list, itemFn) ->
+  if isAttrs(attrs)
+    children = []
+    for item, i in list
+      children.push itemFn(item, i, list)
+    new Tag('div', attrs, [new List(children)])
+  else
+    # attrs become list, list become itemFn
+    children = []
+    for item, i in attrs
+      children.push list(item, i, attrs)
+    new List(children)
+
+exports.all = (attrs, hash, itemFn) ->
+  if isAttrs(attrs)
+    children = []
+    i = 0
+    for key, value of hash
+      children.push itemFn(key, value, i, hash)
+      i++
+    new Tag('div', attrs, [new List(children)])
+  else
+    # attrs become list, list become itemFn
+    children = []
+    i = 0
+    for key, value of attrs
+      children.push itemFn(key, value, i, hash)
+      i++
+    new List(children)
