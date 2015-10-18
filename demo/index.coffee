@@ -46,7 +46,7 @@ exports.runDomComDemo = window.runDomComDemo = ->
 #  comp = demoMap["each2"]()
 #  comp = demoMap["each3"]()
 #  comp = demoMap["each4"]()
-#  comp = demoMap["switch 1 2 3 4"]()
+  comp = demoMap["switch 1 2 3 4"]()
 #  comp = demoMap["splitter"]()
 #  comp = demoMap["sum"]()
 #  comp = demoMap["text model"]()

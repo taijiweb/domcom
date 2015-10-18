@@ -87,14 +87,16 @@ dc._renderWhenBy = (method, components, events, updateList, options) ->
 
 isComponent = require './core/base/isComponent'
 
+# mtehod: 'update' or 'render'
 _renderComponentWhenBy = (method, component, event, updateList, options) ->
     if event[...2]!='on' then event = 'on'+event
     if options
-      component.eventUpdateConfig[event] = for comp in updateList
-        [comp, options]
+      options.method = method
+      component.eventUpdateConfig[event] = for comp in updateList then [comp, options]
     else
       for item, i in updateList
-        updateList[i] = if isComponent(item) then [item, {}] else item
+        updateList[i] = if isComponent(item) then [item, {method}] else item
+      component.eventUpdateConfig[event] = updateList
     return
 
 addSetIntervalUpdater = (method, component, options) ->

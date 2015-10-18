@@ -128,20 +128,19 @@ exports.styleFrom = styleFrom = (value) ->
 
 config = require '../config'
 
-exports.eventHandlerFromArray = (callbackList, prop, component) ->
+exports.eventHandlerFromArray = (callbackList, eventName, component) ->
   (event) ->
     node = component.node
     for fn in callbackList then fn and fn.call(node, event, component)
-    updateList = component.eventUpdateConfig[prop]
+    updateList = component.eventUpdateConfig[eventName]
     if updateList
       for [comp, options] in updateList
-        options = options or {}
-        if options.alwaysUpdating or !config.useSystemUpdating then comp.update()
+        # the comp is in updateList, so it need to be updated
+        # if config.useSystemUpdating then update this component in dc's system update scheme
+        if options.alwaysUpdating or !config.useSystemUpdating then comp[options.method]()
     if !event then return
-    if !event.executeDefault
-      event.preventDefault()
-    if !event.continuePropagation
-      event.stopPropagation()
+    !event.executeDefault and event.preventDefault()
+    !event.continuePropagation and event.stopPropagation()
     return
 
 exports._specialProperties = _specialProperties = {

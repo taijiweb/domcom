@@ -283,10 +283,10 @@ module.exports = class Tag extends List
 
     if @hasActiveEvents
       {events, cacheEvents} = @
-      for prop, value of events
-        cacheEvents[prop] = events[prop]
-        delete events[prop]
-        node[prop] = eventHandlerFromArray(value, prop, @)
+      for eventName, callbackList of events
+        cacheEvents[eventName] = events[eventName]
+        delete events[eventName]
+        node[eventName] = eventHandlerFromArray(callbackList, eventName, @)
     @hasActiveEvents = false
 
     if @hasActiveSpecials
