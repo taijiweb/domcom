@@ -27,13 +27,31 @@ exports.demoMap = demoMap =
   'auto width edit': require 'domcom/demo/demo-auto-width-edit'
   'mount/unmount': require 'domcom/demo/demo-mount-unmount'
 
-exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem='accordion') ->
+exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem='arrow') ->
   currentItem = see2 initItem
   list demoSelect = select($options: [Object.keys(demoMap)], $model:currentItem),
     case_(currentItem, demoMap, accordion).updateWhen(demoSelect, 'change')
 
 exports.runDomComDemo = window.runDomComDemo = ->
-#  comp = splitterDemo()
-  comp = makeDemoComponent(demoMap, accordion)
+  comp = accordion()
+#  comp = demoCombo()
+#  comp = demoArrow()
+#  comp = demoMap["show hide"]()
+#  comp = demoMap["counter"]()
+#  comp = demoMap["dialog"]()
+#  comp = demoMap["event"]()
+#  comp = demoMap["controls"]()
+#  comp = demoMap["if"]()
+#  comp = demoMap["each1"]()
+#  comp = demoMap["each2"]()
+#  comp = demoMap["each3"]()
+#  comp = demoMap["each4"]()
+#  comp = demoMap["switch 1 2 3 4"]()
+#  comp = demoMap["splitter"]()
+#  comp = demoMap["sum"]()
+#  comp = demoMap["text model"]()
+#  comp = demoMap["auto width edit"]()
+#  comp = demoMap["mount/unmount"]()
+#  comp = makeDemoComponent(demoMap, demoArrow)
   comp.mount()
 
