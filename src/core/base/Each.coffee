@@ -100,43 +100,24 @@ module.exports = class Each extends TransformComponent
       child.valid = false
       child.transformValid = false
     else
-      _items = @_items
-      if me.isArrayItems
-        if !me.isFunctionItems and !me.needSort
-          itemBinding = react (value) ->
-            if arguments.length==1 then me._items[i] = value
-            else me._items[i]
-        else itemBinding = react (value) -> _items[i]
-        if keyFunction
-          @memoChildMap[memoKey] = memoComponents[memoKey] = child = toComponent(itemFn(itemBinding, i, me))
-          child.memoKey = memoKey
-          child
-        else
-          if itemFn.pouring then childReactives[i] = ->  itemFn(itemBinding, i, me)
-          # make childReactives[i] not to be renew by default
-          else  childReactives[i] = react ->  itemFn(itemBinding, i, me)
-          child = new Func childReactives[i]
-      else
-        # [key, value] = @_items[i]
-        valueBinding = react (v) ->
-          if arguments.length==1
-            @_items.setItem(@_items[i][0], v)
-          else @_items[i][1]
-        keyBinding = react -> @_items[i][0]
-        _itemsBinding = -> @_items
-        childReactives[i] = -> itemFn(valueBinding, keyBinding, i, me)
-        if keyFunction
-          @memoChildMap[memoKey] = memoComponents[memoKey] = child = toComponent(itemFn(valueBinding, keyBinding, i, me))
-          child.memoKey = memoKey
-          child
-        else
-          if itemFn.pouring then childReactives[i] = ->  itemFn(valueBinding, keyBinding, i, me)
-          # make childReactives[i] not to be renew by default
-          else childReactives[i] =  react ->  itemFn(valueBinding, keyBinding, i, me)
-          child = new Func childReactives[i]
-      children[i] = cacheChildren[i] = child
-      listComponent.dcidIndexMap[child.dcid] = i
-      child.holder = listComponent
+        childReactives[i] = react ->
+          items = me._items
+          item = items[i]
+
+          # if item.pouring, always invalidate child component
+          # so do not move this line after "... child = new Func childReactives[i]"
+          if itemFn.pouring
+            child.invalidateTransform()
+
+          result =
+            if me.isArrayItems then itemFn(item, i, items, me)
+            else
+              [key, value] = item
+              itemFn(value, key, index, items, me)
+
+        children[i] = cacheChildren[i] = child = new Func childReactives[i]
+        child.holder = listComponent
+        listComponent.dcidIndexMap[child.dcid] = i
 
     child
 

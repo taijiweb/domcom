@@ -133,9 +133,9 @@ describe 'list, each', ->
       expect(comp.listComponent.children.length).to.equal 0, 'comp.listComponent.children.length = 0'
       expect(comp.node.length).to.equal 0, 'node.length'
 
-    it 'should process item() in item template function', ->
+    it 'should process binding on item', ->
       document.getElementById('demo').innerHTML = ''
-      comp = each(lst = [{text:'a'}, {text:'b'}], ((item, i) -> p(txt(bind item(), 'text'))))
+      comp = each(lst = [{text:'a'}, {text:'b'}], ((item, i) -> p(txt(bind item, 'text'))))
       comp.mount("#demo")
       expect(comp.node[0].textContent).to.equal 'a'
       expect(comp.node[1].textContent).to.equal 'b'
@@ -152,8 +152,8 @@ describe 'list, each', ->
       comp.update()
       expect(comp.node.length).to.equal 0
 
-    it 'should process template which use each components itself as parameter', ->
-      comp = each(lst = ['a', 'b'], ((item, i, eachComponent) -> p(txt(-> eachComponent.items[i]))))
+    it 'should process items in template function', ->
+      comp = each(lst = ['a', 'b'], ((item, i, items, eachComponent) -> p(txt(-> items[i]))))
       comp.mount()
       lst.setItem 0, 'c'
       comp.update()

@@ -11,7 +11,7 @@ module.exports = exports = accordion = (attrs, accordionGroupList, options) ->
   attrs = extendAttrs {class:"panel-group"}, attrs  or Object.create(null)
   accordionOptions = options or Object.create(null)
   comp = div(attrs, each(accordionGroupList, (group, index) ->
-      [groupAttrs, heading, content, groupOptions] = group()
+      [groupAttrs, heading, content, groupOptions] = group
       groupOptions = groupOptions or Object.create(null)
       groupOptions.toggleOpen = ->
         groupOptions.opened = !groupOptions.opened
