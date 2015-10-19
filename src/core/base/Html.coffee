@@ -14,15 +14,10 @@ Text = require './Text'
 module.exports = class Html extends Text
   constructor: (text, @transform) ->  super(text)
 
-  processHtml: ->
-    html = @processText()
-    @transform and html = @transform(html)
-    html
-
   createDom: ->
     @textValid = true
     node = document.createElement('DIV')
-    node.innerHTML = @processHtml()
+    node.innerHTML = @transform and @transform(@processText()) or @processText()
     # when the node in createElement('div').childNodes is inserted to dom, it is removed from the active childNodes
     # so they should be keep in an inative array
     @node = for node in node.childNodes then node
@@ -34,7 +29,7 @@ module.exports = class Html extends Text
     @textValid = true
     if @parentNode then @removeNode()
     node = document.createElement('DIV')
-    node.innerHTML = @processHtml()
+    node.innerHTML = @transform and @transform(@processText()) or @processText()
     @node = node.childNodes
     @firstNode = @node[0]
     @

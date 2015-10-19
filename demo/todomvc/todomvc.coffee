@@ -1,6 +1,6 @@
 {bindings, bind, duplex,
 section, h1, header, form, text, checkbox, div, ul, li, p, a, label, button, footer, strong, span
-each, txt
+list, each, txt
 extend} = dc
 
 # store
@@ -99,7 +99,8 @@ todoHeader = header({id:"header"}
   )
 )
 
-todoItems = each(getTodos, (todo, index) ->
+#todoItems = each((-> [1,2]), (todo, index) -> li index
+todoItems = each(getTodos, (todo, index) -> # li index
   window.todoItemComp = li({className:{ completed: (-> todo.completed), editing: -> todo==editingTodo}},
     div({class:"view"},
       checkbox({className:"toggle", checked: (-> todo and todo.completed), onchange:(-> toggleCompleted(todo))})
@@ -126,7 +127,7 @@ todoEditArea = section({id:"main", $show: -> todos.length}
   })
   label({"for":"toggle-all"}, "Mark all as complete")
   ul({id:"todo-list"}, todoItems)
-  footer({id:"footer", $show:(-> todos.length)},
+  footer({id:"footer"}, #, $show:(-> todos.length)
     span({id:"todo-count"}, strong(remainingCount), pluralize(remainingCount, ' item'), ' left')
     ul({id:"filters"}
       li(a({className:{selected: -> viewStatusHash == ''}, href:"#/all"}, "All"))
@@ -149,10 +150,13 @@ view = section({id:"todoapp"},
   todoFooter
 )
 
+#view = todoEditArea
+
 # run the app
 module.exports = window.runTodoMvc = ->
   todos = fetch()
   view.mount('#todo-app')
+#  view.update()
   setView(document.location.hash)
   window.addEventListener 'hashchange',  ->
     setView(document.location.hash)

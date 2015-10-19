@@ -169,3 +169,18 @@ describe 'demo', ->
       child0 = comp.listComponent.children[0]
       comp.update()
       expect(comp.node.length).to.equal 1
+
+    it 'should todoEditArea', ->
+      {section, ul, footer} = dc
+
+      todoItems = each([1,2], (todo, index) -> li(1)
+      )
+
+      comp = todoEditArea = section({id:"main"}
+        ul({id:"todo-list"}, todoItems)
+        footer({id:"footer"}
+        )
+      )
+      comp.mount()
+      comp.update()
+

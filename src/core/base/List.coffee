@@ -71,7 +71,6 @@ module.exports = exports = class List extends BaseComponent
   updateChildrenDom: ->
     {invalidIndexes} = @
 
-
     if !invalidIndexes.length
       for _, child of @removedChildren
         child.removeDom()
@@ -83,7 +82,7 @@ module.exports = exports = class List extends BaseComponent
     {parentNode, nextNode, childNodes} = @
     parentNextNode = nextNode
     i = invalidIndexes.length-1
-    children[children.length-1].nextNode = @nextNode
+    children[children.length-1].nextNode = @childrenNextNode
     while i>=0
       listIndex = invalidIndexes[i]
       child = children[listIndex]
@@ -137,12 +136,12 @@ module.exports = exports = class List extends BaseComponent
 
     substractSet(@family, child.family)
     children.splice(index, 1)
-    children[index-1] and children[index-1].nextNode = child.nextNode
 
     if @node
       {invalidIndexes} = @
       invalidIndex = binarySearch(index, invalidIndexes)
       if invalidIndexes[invalidIndex]==index then invalidIndexes.splice(invalidIndexes, 1)
+      children[index-1] and children[index-1].nextNode = child.nextNode
       @node.splice(index, 1)
       @removedChildren[child.dcid] = child
 
@@ -204,6 +203,7 @@ module.exports = exports = class List extends BaseComponent
     @
 
   # Tag, Comment, Html, Text should have attached themself in advace
+  # But if the children is valid, and the List Component has been removeDom before, it must attachNode of all the children to the parentNode
   attachNode: () ->
     {children} = @
     if (parentNode=@parentNode)!=@node.parentNode

@@ -24,9 +24,9 @@ flow.mul = (x, y) -> binary(x, y, (x, y) -> x*y)
 flow.div = (x, y) -> binary(x, y, (x, y) -> x/y)
 flow.min = (x, y) -> binary(x, y, (x, y) -> Math.min(x, y))
 
-flow.toggle = (x) ->
-  if x.invalidate then flow x, -> x(!x())
-  else -> x(!x())
+# this is intended to be called directly
+# e.g.div {onclick: -> toggle x; comp.update()}
+flow.toggle = (x) -> x(!x())
 
 flow.if_ = (test, then_, else_) ->
   if typeof test != 'function'
