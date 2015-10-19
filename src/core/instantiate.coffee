@@ -1,7 +1,7 @@
 {Component, toComponent, isComponent,
 Tag, Text, Comment, Html
 If, Case, Func, List, Each} = require './base'
-{isEven} = require '../util'
+{isEven, numbers} = require '../util'
 
 isAttrs = (item) ->
   typeof item == 'object' and item!=null and !isComponent(item) and item not instanceof Array
@@ -87,7 +87,7 @@ exports.each = (attrs, list, itemFn) ->
   # attrs become list, list become itemFn
   else new Each(attrs, list)
 
-exports.every = (attrs, list, itemFn) ->
+exports.every = every = (attrs, list, itemFn) ->
   if isAttrs(attrs)
     children = []
     for item, i in list
@@ -117,7 +117,16 @@ exports.all = (attrs, hash, itemFn) ->
       i++
     new List(children)
 
+exports.nItems = (attrs, n, itemFn) ->
+  if isAttrs
+    if typeof n == 'function'
+      new Tag('div', attrs, [new Each(numbers(n), itemFn)])
+    else new Tag('div', every(numbers(n), itemFn))
+  else
+    if typeof atrrs == 'function'
+      new Each(numbers(atrrs), n)
+    else every(numbers(atrrs), n)
+
 exports.clone = (attrs, src) ->
   if isAttrs(attrs) then new Tag('div', attrs, [toComponent(src).clone()])
   else toComponent(attrs).clone(src)
-

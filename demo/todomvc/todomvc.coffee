@@ -1,6 +1,8 @@
 {bindings, bind, duplex,
 section, h1, header, form, text, checkbox, div, ul, li, p, a, label, button, footer, strong, span
-list, each, txt
+list, each,
+flow
+txt
 extend} = dc
 
 # store
@@ -99,8 +101,7 @@ todoHeader = header({id:"header"}
   )
 )
 
-#todoItems = each((-> [1,2]), (todo, index) -> li index
-todoItems = each(getTodos, (todo, index) -> # li index
+todoItems = each(getTodos, flow.pour (todo, index) ->
   window.todoItemComp = li({className:{ completed: (-> todo.completed), editing: -> todo==editingTodo}},
     div({class:"view"},
       checkbox({className:"toggle", checked: (-> todo and todo.completed), onchange:(-> toggleCompleted(todo))})
@@ -150,13 +151,10 @@ view = section({id:"todoapp"},
   todoFooter
 )
 
-#view = todoEditArea
-
 # run the app
 module.exports = window.runTodoMvc = ->
   todos = fetch()
   view.mount('#todo-app')
-#  view.update()
   setView(document.location.hash)
   window.addEventListener 'hashchange',  ->
     setView(document.location.hash)

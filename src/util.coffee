@@ -117,3 +117,21 @@ exports.binaryInsert = (item, items) ->
     else if item<items[index] then end = index
     else if item>items[index+1] then start = index+1
     else items.splice(index+1, 0, item); return index+1
+
+exports.numbers = (n) ->
+  if typeof n == 'function'
+    ->
+      i = 0
+      result = []
+      length = n()
+      while i<length
+        result.push i
+        i++
+      result
+  else
+    i = 0
+    result = []
+    while i<n
+      result.push i
+      i++
+    result
