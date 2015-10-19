@@ -197,6 +197,9 @@ module.exports = exports = class List extends BaseComponent
   setLength: (newLength) ->
     children = @children
     last = children.length-1
+    if @node
+      insertLocation = binarySearch(newLength, @invalidIndexes)
+      @invalidIndexes = @invalidIndexes.slice(0, insertLocation)
     while last>=newLength
       @removeChild(last)
       last--
