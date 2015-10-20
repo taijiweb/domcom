@@ -78,10 +78,10 @@ revertEdits = (todo) ->
 clearCompletedTodos = ->
   valid = true
 
-  i = todos.length-1
+  i = todos.length - 1
   while i>=0
     if todos[i].completed
-      todos.splice i
+      todos.splice i, 1
       valid = false
     i--
 
@@ -90,7 +90,7 @@ clearCompletedTodos = ->
     view.update()
 
 setView = (locationHash) ->
-  viewStatusHash =  locationHash.split('/')[1] || ''
+  viewStatusHash = locationHash.split('/')[1] || ''
   view.update()
 
 #######################################################################################################################

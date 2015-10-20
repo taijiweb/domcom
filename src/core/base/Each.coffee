@@ -46,19 +46,28 @@ module.exports = class Each extends TransformComponent
     return
 
   getItems: ->
+
     {items} = @
     if typeof items == 'function'
       isFunction = true
       items = items()
       if !items or typeof(items)!='object' then throw new Error 'Each Component need an array or object'
+
+    if @needSort
+      items.sort(@sortFunction)
+      @_items = items
+      return
+
+    _items = @_items
+    _items and _items.watchingComponents and delete _items.watchingComponents[@dcid]
+    watchingMe = items and items.watchingComponents and items.watchingComponents[@dcid]
     if items not instanceof Array
       @isArrayItems = false
-      if !@notWatch and !isFunction and !@needSort and !@watched then watchEachObject items, @
+      if !@notWatch and !watchingMe then watchEachObject items, @
       items = for key, value of items then [key, value]
     else
-      if !@notWatch and !@needSort and !@watched then watchEachList items, @
+      if !@notWatch and !watchingMe  then watchEachList items, @
       @isArrayItems = true
-    if @needSort then items = items.sort(@sortFunction)
     @_items = items
 
   getContentComponent: ->
