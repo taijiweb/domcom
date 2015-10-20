@@ -18,6 +18,7 @@ module.exports = class Each extends TransformComponent
     me = this
 
     if typeof items == 'function'
+      @isFunction = true
       !items.invalidate and items = renew(items)
       items.onInvalidate @invalidateTransform.bind(@)
 
@@ -47,44 +48,44 @@ module.exports = class Each extends TransformComponent
 
   getItems: ->
 
-    {items} = @
-    if typeof items == 'function'
-      isFunction = true
+  getContentComponent: ->
+    {listComponent, items, isFunction, needSort} = @
+
+    if isFunction
       items = items()
       if !items or typeof(items)!='object' then throw new Error 'Each Component need an array or object'
 
-    if @needSort
-      items.sort(@sortFunction)
-      @_items = items
-      return
-
-    _items = @_items
-    _items and _items.watchingComponents and delete _items.watchingComponents[@dcid]
-    watchingMe = items and items.watchingComponents and items.watchingComponents[@dcid]
-    if items not instanceof Array
-      @isArrayItems = false
-      if !@notWatch and !watchingMe then watchEachObject items, @
+    if !(@isArrayItems = items instanceof Array)
       items = for key, value of items then [key, value]
+
+    if needSort
+      items.sort(@sortFunction)
+
     else
-      if !@notWatch and !watchingMe  then watchEachList items, @
-      @isArrayItems = true
+      _items = @_items
+      _items and _items.watchingComponents and delete _items.watchingComponents[@dcid]
+      watchingMe = items and items.watchingComponents and items.watchingComponents[@dcid]
+      if !@notWatch and !watchingMe
+        if @isArrayItems then watchEachList items, @
+        else watchEachObject items, @
+
     @_items = items
 
-  getContentComponent: ->
-    me = @
-    {listComponent} = @
-    @getItems()
-    length = @_items.length
+    length = items.length
     if length<listComponent.children.length
       @_setLength(length)
-    else length and @invalidateChildren(0, length)
+      if isFunction or needSort or !@isArrayItems
+        @invalidateChildren(0, length)
+
+    else @invalidateChildren(0, length)
+
     listComponent
 
-  getChild: (i) ->
+  getChild: (index) ->
     me = @
 
     if keyFunction
-      memoKey = if @isArrayItems then keyFunction(_items[i], i) else keyFunction(_items[i][0], _items[i][1], i)
+      memoKey = if @isArrayItems then keyFunction(_items[index], index) else keyFunction(_items[index][0], _items[index][1], index)
 
     {listComponent, cacheChildren, children, childReactives, keyFunction, itemFn} = @
     children = listComponent.children
@@ -96,37 +97,37 @@ module.exports = class Each extends TransformComponent
       if child=@memoComponents[memoKey]
         child.valid = false
         child.transformValid = false
-        children[i] = cacheChildren[i] = child
+        children[index] = cacheChildren[index] = child
         @memoChildMap[memoKey] = child
         return child
 
-    if i<children.length
-      child = children[i]
+    if index<children.length
+      child = children[index]
       child.valid = false
       child.transformValid = false
-    else if i<cacheChildren.length
-      child = children[i] = cacheChildren[i]
+    else if index<cacheChildren.length
+      child = children[index] = cacheChildren[index]
       child.valid = false
       child.transformValid = false
     else
-        childReactives[i] = react ->
+        childReactives[index] = react ->
           items = me._items
-          item = items[i]
+          item = items[index]
 
           # if item.pouring, always invalidate child component
-          # so do not move this line after "... child = new Func childReactives[i]"
+          # so do not move this line after "... child = new Func childReactives[index]"
           if itemFn.pouring
             child.invalidateTransform()
 
           result =
-            if me.isArrayItems then itemFn(item, i, items, me)
+            if me.isArrayItems then itemFn(item, index, items, me)
             else
               [key, value] = item
               itemFn(value, key, index, items, me)
 
-        children[i] = cacheChildren[i] = child = new Func childReactives[i]
+        children[index] = cacheChildren[index] = child = new Func childReactives[index]
         child.holder = listComponent
-        listComponent.dcidIndexMap[child.dcid] = i
+        listComponent.dcidIndexMap[child.dcid] = index
 
     child
 
