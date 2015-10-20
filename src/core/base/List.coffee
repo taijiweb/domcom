@@ -148,6 +148,7 @@ module.exports = exports = class List extends BaseComponent
     @
 
   invalidChildren: (startIndex, stopIndex) ->
+    if !stopIndex? then stopIndex = startIndex+1
     if !@node then return @
     @invalidate()
     {invalidIndexes} = @

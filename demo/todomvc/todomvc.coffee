@@ -101,7 +101,7 @@ todoHeader = header({id:"header"}
   )
 )
 
-todoItems = each(getTodos, flow.pour (todo, index) ->
+todoItems = each(getTodos, (todo, index) ->
   window.todoItemComp = li({className:{ completed: (-> todo.completed), editing: -> todo==editingTodo}},
     div({class:"view"},
       checkbox({className:"toggle", checked: (-> todo and todo.completed), onchange:(-> toggleCompleted(todo))})
@@ -119,7 +119,7 @@ todoItems = each(getTodos, flow.pour (todo, index) ->
   )
 )
 
-todoEditArea = section({id:"main", $show: -> todos.length}
+todoEditArea = section({id:"main"}
   checkbox({
     id: "toggle-all",
     className:"toggle",
@@ -128,7 +128,7 @@ todoEditArea = section({id:"main", $show: -> todos.length}
   })
   label({"for":"toggle-all"}, "Mark all as complete")
   ul({id:"todo-list"}, todoItems)
-  footer({id:"footer"}, #, $show:(-> todos.length)
+  footer({id:"footer", $show:(-> todos.length)},
     span({id:"todo-count"}, strong(remainingCount), pluralize(remainingCount, ' item'), ' left')
     ul({id:"filters"}
       li(a({className:{selected: -> viewStatusHash == ''}, href:"#/all"}, "All"))

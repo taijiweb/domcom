@@ -56,7 +56,7 @@ module.exports = class Each extends TransformComponent
       if !@notWatch and !isFunction and !@needSort and !@watched then watchEachObject items, @
       items = for key, value of items then [key, value]
     else
-      if !@notWatch and !isFunction and !@needSort and !@watched then watchEachList items, @
+      if !@notWatch and !@needSort and !@watched then watchEachList items, @
       @isArrayItems = true
     if @needSort then items = items.sort(@sortFunction)
     @_items = items
@@ -68,7 +68,7 @@ module.exports = class Each extends TransformComponent
     length = @_items.length
     if length<listComponent.children.length
       @_setLength(length)
-    else length and @_invalidateChildren(0, length)
+    else length and @invalidateChildren(0, length)
     listComponent
 
   getChild: (i) ->
@@ -121,7 +121,8 @@ module.exports = class Each extends TransformComponent
 
     child
 
-  _invalidateChildren: (start, stop) ->
+  invalidateChildren: (start, stop) ->
+    if !stop? then stop = start+1
     i = start
     while i<stop
       @getChild(i)
@@ -133,7 +134,7 @@ module.exports = class Each extends TransformComponent
     listComponent = @listComponent
     oldLength = listComponent.children.length
     if length==oldLength then @
-    else if length>oldLength then @_invalidateChildren(oldLength, length)
+    else if length>oldLength then @invalidateChildren(oldLength, length)
     else
       if @keyFunction
         index = length

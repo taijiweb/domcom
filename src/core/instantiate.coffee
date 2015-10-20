@@ -117,6 +117,8 @@ exports.all = (attrs, hash, itemFn) ->
       i++
     new List(children)
 
+# each(0...n , itemFn) if n is function
+# otherwise every(0...n, itemFn)
 exports.nItems = (attrs, n, itemFn) ->
   if isAttrs
     if typeof n == 'function'

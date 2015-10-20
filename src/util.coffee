@@ -118,6 +118,8 @@ exports.binaryInsert = (item, items) ->
     else if item>items[index+1] then start = index+1
     else items.splice(index+1, 0, item); return index+1
 
+# [0...n)
+# or [0...n()), if n is function
 exports.numbers = (n) ->
   if typeof n == 'function'
     ->
