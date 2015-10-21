@@ -143,15 +143,6 @@ exports.eventHandlerFromArray = (callbackList, eventName, component) ->
     !event.continuePropagation and event.stopPropagation()
     return
 
-exports._specialProperties = _specialProperties = {
-}
-
-# special property handler: (baseComponent, prop, value) ->
-#  if arguments.length == 2 then return the computed value of baseComponent's prop
-#  else if arguments == 3 then set the computed value of baseComponent's porp
-#  else error
-exports.registerSpecial = (key, handler) -> _specialProperties[key] = handler
-
 attrPropNameMap = {'for':'htmlFor'}
 exports.attrToPropName = (name) ->
   if newName=attrPropNameMap[name] then newName
@@ -163,8 +154,3 @@ exports.attrToPropName = (name) ->
     pieces[i] = pieces[i][0].toUpperCase()+pieces[i][1...]
     i++
   pieces.join('')
-
-# attach a processHandler for an eventHandler
-exports.process = (processHandler, eventHandler) ->
-  eventHandler.processHandler = processHandler
-  eventHandler

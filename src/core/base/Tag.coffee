@@ -13,21 +13,24 @@ toComponent = require './toComponent'
 module.exports = class Tag extends List
   constructor: (tagName, attrs={}, children) ->
     super(children)
+
+    delete @isList
+    @isTag = true
+
     @tagName = tagName = tagName.toLowerCase()
     @namespace = attrs.namespace
     if !@namespace
       if tagName=='svg' then @namespace = "http://www.w3.org/2000/svg"
       else if tagName=='math' then @namespace = "http://www.w3.org/1998/Math/MathML"
+
     @attrs = attrs
-    delete @isList
-    @isTag = true
-    children.holder = @
     @processAttrs()
     return
 
   processAttrs: ->
     me = @
     @hasActiveProperties = false
+
     attrs = @attrs
     @cacheClassName = ""
     @className = className = classFn(attrs.className, attrs.class)
@@ -38,10 +41,11 @@ module.exports = class Tag extends List
       if className.valid
         me.hasActiveProperties = true
         me.invalidate()
-        me.noop = false
+
     @hasActiveProps = false
     @cacheProps = Object.create(null)
     @props = props = Object.create(null)
+
     @['invalidateProps'] = Object.create(null)
     @hasActiveStyle = false
     @cacheStyle = Object.create(null)
@@ -50,31 +54,32 @@ module.exports = class Tag extends List
     attrStyle = styleFrom(attrs.style)
     for key, value of attrStyle then @setProp(key, value, style, 'Style')
     delete attrs.style
+
     @hasActiveEvents = false
     @cacheEvents = Object.create(null)
     @events = events = Object.create(null)
     @eventUpdateConfig = Object.create(null)
-    @hasActiveSpecials = false
-    @cacheSpecials = Object.create(null)
-    @['invalidateSpecials'] = Object.create(null)
-    @specials = specials = Object.create(null)
+
     directives = []
     for key, value of attrs
+
       if key[..1]=='on'
         if typeof value == 'function'
           events[key] = [value]
         else events[key] = value
         @hasActiveEvents = true
         @hasActiveProperties = true
+
       else if key[0]=='$'
         # $directiveName: generator arguments list
         generator = directiveRegistry[key]
         if value instanceof Array then handler = generator.apply(null, value)
         else handler = generator.apply(null, [value])
         directives.push(handler)
-      else if key[0]=='_' then @setProp(key, value, specials, 'Specials')
+
       else @setProp(key, value, props, 'Props')
     for directive in directives then directive(@)
+
     return
 
   prop: (args...) -> @_prop(args, @props, 'Props')
@@ -290,15 +295,6 @@ module.exports = class Tag extends List
         delete events[eventName]
         node[eventName] = eventHandlerFromArray(callbackList, eventName, @)
     @hasActiveEvents = false
-
-    if @hasActiveSpecials
-      {specials, cacheSpecials} = @
-      @hasActiveSpecials = false
-      for prop, value of specials
-        delete props[prop]
-        if typeof value == 'function' then value = value()
-        if !value? then value = ''
-        spercialPropSet[prop](@, prop, value)
 
     return
 
