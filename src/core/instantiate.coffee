@@ -1,6 +1,6 @@
 {Component, toComponent, isComponent,
 Tag, Text, Comment, Html
-If, Case, Func, List, Each} = require './base'
+If, Case, Func, List, Each, Defer} = require './base'
 {isEven, numbers} = require '../util'
 
 isAttrs = (item) ->
@@ -128,6 +128,14 @@ exports.nItems = (attrs, n, itemFn) ->
     if typeof atrrs == 'function'
       new Each(numbers(atrrs), n)
     else every(numbers(atrrs), n)
+
+# promise is a promise, which have .then and .catch the two method
+# fulfill: (value, promise, component) ->
+# reject: (reason, promise, component) ->
+# init: will be converted to component by toComponent
+exports.defer = (attrs, promise, fulfill, reject, init) ->
+  if isAttrs(attrs) then new Tag('div', attrs, [new Defer(promise, fulfill, reject, init)])
+  else new Defer(attrs, promise, fulfill, reject)
 
 exports.clone = (attrs, src) ->
   if isAttrs(attrs) then new Tag('div', attrs, [toComponent(src).clone()])

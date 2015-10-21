@@ -43,8 +43,3 @@ or
 
 ## LICENSE
 MIT, see [LICENSE](https://github.com/taijiweb/domcom/blob/master/LICENSE)
-
-## Todo
-* todo: browser compatibility
-* todo: promise
-* todo: template similar to JSX(reactjs), MSX(mithril.js), riotjs template

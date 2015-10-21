@@ -56,6 +56,6 @@ module.exports = class If extends TransformComponent
     @clone = -> (new If(test, then_.clone(), else_clone())).copyEventListeners(@)
 
     @toString = (indent=0, addNewLine='') ->
-      newLine('', indent, addNewLine)+'<if '+funcString(test)+'>' + then_.toString(indent+2, true) + else_.toString(indent+2, true)+newLine('</if>', indent, true)
+      newLine('', indent, addNewLine)+'<if '+funcString(test)+'>' + then_.toString(indent+2, true) + else_.toString(indent+2, true) + newLine('</if>', indent, true)
 
     this

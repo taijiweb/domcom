@@ -15,5 +15,6 @@ module.exports =
   Case: require './Case'
   Func: require './Func'
   Each: require './Each'
+  Defer: require './Defer'
   Router: route.Router
   route: route

@@ -61,13 +61,31 @@ exports.getBindProp = (component)  ->
   else if component.attrs.type=='checkbox' then return 'checked'
   else return 'value'
 
-{renew} = require './flow'
+{renew} = require './flow/index'
 
-exports.domValue = (val) ->
-  if !val? then return ''
-  if typeof val != 'function' then return val
-  if !val.invalidate then return renew(val)
-  val
+exports.domValue = (value) ->
+  if !value? then return ''
+
+  if typeof value != 'function'
+
+   if value.then and x.catch
+     fn = react -> fn.promiseResult
+
+     value.then (value) ->
+        fn.promiseResult = value
+        fn.invalidate()
+
+     .catch (error) ->
+        fn.promiseResult = error
+        fn.invalidate()
+
+     return fn
+
+   else return value
+
+  if !value.invalidate then return renew(value)
+
+  value
 
 # family do not consider exceeding TransformComponent
 # a BaseComponent can have only one reference of one component in all of its family
