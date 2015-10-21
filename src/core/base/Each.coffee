@@ -15,6 +15,8 @@ module.exports = class Each extends TransformComponent
   constructor: (items, @itemFn, options={}) ->
     super()
 
+    @family = Object.create(null)
+
     me = this
 
     if typeof items == 'function'

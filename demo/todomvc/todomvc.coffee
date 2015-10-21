@@ -118,11 +118,11 @@ todoItems = each getTodos, (todo, index) ->
   li className: { completed: (-> todo.completed), editing: -> todo==editingTodo},
 
     div class: "view",
-      checkbox({className:"toggle", checked: (-> todo and todo.completed), onchange:(-> toggleCompleted(todo))})
-      label({ondblclick:(-> editTodo(todo))}, (-> todo and todo.title))
-      button({className:"destroy", onclick:(-> removeTodo(todo))})
+      checkbox className: "toggle", checked: (-> todo and todo.completed), onchange:(-> toggleCompleted(todo))
+      label ondblclick:( -> editTodo(todo) ), (-> todo and todo.title)
+      button className: "destroy", onclick:(-> removeTodo(todo))
 
-    form {submit: -> save todos }
+    form {submit: -> save todos },
       text {
         className: "edit"
         trim: "false"
@@ -144,10 +144,12 @@ todoEditArea = section id: "main",
 
   footer { id: "footer", $show:(-> todos.length) },
     span { id:"todo-count" },  strong(remainingCount),   pluralize(remainingCount, ' item'),  ' left'
+
     ul id:"filters",
       li a {className: {selected: -> viewStatusHash == ''}, href: "#/all"}, "All"
       li a {className: {selected: -> viewStatusHash == 'active'}, href: "#/active"}, "Active"
       li a {className: {selected: -> viewStatusHash == 'completed'}, href: "#/completed"}, "Completed"
+
     button {id: "clear-completed", onclick: clearCompletedTodos, $show: completedCount },
       txt -> "Clear completed: "+completedCount()
 

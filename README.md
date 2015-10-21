@@ -17,7 +17,9 @@ the web framework to provide dom component
 * the root of the component may be multiple dom elements
 
 ## Sample
-There is some basic samples, and a todoMVC implementation. The code below give a taste of domcom:
+There is some [basic samples](https://github.com/taijiweb/domcom/tree/master/demo), and a [todoMVC implementation](https://github.com/taijiweb/domcom/tree/master/demo/todomvc).
+
+The code below give a taste of domcom:
 
     # domcom likes coffee-script
     {list, text, p, flow, see} = require 'domcom'
@@ -35,8 +37,6 @@ There is some basic samples, and a todoMVC implementation. The code below give a
 `npm install domcom`
 
 `<script src="path/to/domcom.js"/>`
-
-or
 
 `<script src="path/to/domcom.min.js"/>`
 
