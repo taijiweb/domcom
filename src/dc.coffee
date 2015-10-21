@@ -3,9 +3,10 @@
  * @param element
 ###
 DomNode = require './DomNode'
-{requestAnimationFrame} = require  './dom-util'
+{requestAnimationFrame, raf} = require  './dom-util'
 {newDcid, isEven} = require './util'
-{componentCache, readyFnList, _updateComponentMap, directiveRegistry} = require './config'
+{componentCache, readyFnList, _updateComponentMap, directiveRegistry, renderCallbackList, rootComponents} = require './config'
+isComponent = require './core/base/isComponent'
 
 module.exports = dc = (element, options={}) ->
   if typeof element == 'string'
@@ -50,8 +51,14 @@ dc.onReady = ->
 document.addEventListener 'DOMContentLoaded', dc.onReady, false
 
 dc.render = render = ->
-  for comp in rootComponents
-    comp.update()
+  for cb in renderCallbackList
+    cb()
+
+dc.onRender = (cb) ->
+  renderCallbackList.push cb
+
+dc.offRender = (cb) ->
+  renderCallbackList.indexOf(cb)>=0 and  renderCallbackList.splice(index, 1)
 
 dc.renderLoop = renderLoop = ->
   requestAnimFrame renderLoop
@@ -84,6 +91,7 @@ dc._renderWhenBy = (method, components, events, updateList, options) ->
     else
       for component in components
         _renderComponentWhenBy(method, component, events, updateList)
+
   else if components == setInterval
     if isComponent(events) then addSetIntervalUpdater(method, events, updateList) # updateList is options
     else if events instanceof Array
@@ -92,16 +100,22 @@ dc._renderWhenBy = (method, components, events, updateList, options) ->
       options = options or {}
       options.interval = events
       addSetIntervalUpdater(method, updateList, options)
+
+  else if components == raf
+    if isComponent(events) then addRafUpdater(method, events, updateList) # updateList is options
+    else if events instanceof Array
+      for component in events then addRafUpdater(method, events, updateList)
+
   else if events instanceof Array
     if updateList not instanceof Array then updateList = [updateList]
     for event in events
       _renderComponentWhenBy(method, components, event, updateList)
+
   else
     if updateList not instanceof Array then updateList = [updateList]
     _renderComponentWhenBy(method, components, events, updateList)
-  return
 
-isComponent = require './core/base/isComponent'
+  return
 
 # mtehod: 'update' or 'render'
 _renderComponentWhenBy = (method, component, event, updateList, options) ->
@@ -123,3 +137,9 @@ addSetIntervalUpdater = (method, component, options) ->
     if clear and clear() then clearInterval handler
   handler = setInterval(fn, interval or 16)
 
+addRafUpdater = (method, component, options) ->
+  {test, clear} = options
+  fn = ->
+    if !test or test() then component[method]()
+    if clear and clear() then dc.offRender fn
+  dc.onRender fn

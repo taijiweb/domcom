@@ -1,5 +1,4 @@
 Component = require './component'
-{insertNode} = require '../../dom-util'
 {cloneObject} = require '../../util'
 
 module.exports = class BaseComponent extends Component

@@ -4,3 +4,4 @@ module.exports =
   _updateComponentMap: Object.create(null)
   useSystemUpdating: false
   directiveRegistry: Object.create(null)
+  renderCallbackList: []

@@ -12,13 +12,7 @@ exports.pairListDict = (list...) ->
   while i<len then result[list[i]] = list[i+1]; i += 2
   result
 
-exports.listToDict = (list...) ->
-  if list.length==1 then list = list[0]
-  result = Object.create(null)
-  for item in list then result[item] = true
-  result
-
-exports.dupStr = dupStr = (str, n) ->
+dupStr = (str, n) ->
   s = ''
   i = 0
   while i++<n then s += str
@@ -46,6 +40,7 @@ exports.funcString = (fn) ->
   'fn:'+s
 
 globalDcid = 1
+
 exports.newDcid = -> globalDcid++
 
 exports.isEven = (n) ->

@@ -4,7 +4,6 @@ dc.extend = extend = require './extend'
 
 extend(dc,
 
-  require('./constant')
   require('./config')
 
   # utilities
@@ -15,7 +14,5 @@ extend(dc,
 
   # component
   require('./core/index'),
-
-  require('./directives/register')
 
 )

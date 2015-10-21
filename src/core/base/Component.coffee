@@ -16,22 +16,20 @@ module.exports = class Component
     @node = null
     @dcid = newDcid()
 
-  on: (event, fns...) ->
-    cbs = @listeners[event] or @listeners[event] = []
-    cbs.push.apply(cbs, fns)
+  on: (event, callback) ->
+    callbacks = @listeners[event] or @listeners[event] = []
+    callbacks.push(callback)
     @
 
-  off: (event, fns...) ->
-    cbs = @listeners[event] or @listeners[event] = []
-    for fn in cbs
-      if cbs.indexOf(fn)==-1 then continue
-      else cbs.splice(index, 1)
-    !cbs.length and @listeners[event] = null
+  off: (event, callback) ->
+    callbacks = @listeners[event] or @listeners[event] = []
+    callbacks.indexOf(callback)>=0 and  callbacks.splice(index, 1)
+    !callbacks.length and @listeners[event] = null
     @
 
   emit:(event, args...) ->
-    if !(cbs = @listeners[event]) then return
-    for cb in cbs then cb.apply(@, args)
+    if !(callbacks = @listeners[event]) then return
+    for cb in callbacks then cb.apply(@, args)
     @
 
   ### if mountNode is given, it should not the node of any Component
