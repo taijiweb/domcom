@@ -1,6 +1,8 @@
 # domcom demo
 {select, see2, case_, list, func} = dc
 
+dc.directives $options: dc.$options,  $model: dc.$model
+
 {eachDemo1, eachDemo2, eachDemo3, eachDemo4} = require 'domcom/demo/demo-each'
 {demoArrow, demoCombo} = require 'domcom/demo/demo-builtins'
 splitterDemo = require 'domcom/demo/demo-splitter'

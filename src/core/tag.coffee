@@ -1,7 +1,6 @@
 extend = require '../extend'
 
 {tag} = require('./instantiate')
-{extendEventValue} = require './property'
 {getBindProp} = require '../dom-util'
 
 tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl"+

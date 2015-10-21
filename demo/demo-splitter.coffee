@@ -1,6 +1,7 @@
 {div} = dc
 
 module.exports = ->
+  dc.directives $splitter: dc.$splitter
   comp = div({$splitter:'vertical', style:{height:'100%',width:'100%'}},
     div({style:{'background-color':"blue", height:'50%',width:'100%'}}, 1),
     div({$splitter:'horizontal', style:{'background-color':"grey", height:'50%',width:'100%'}},

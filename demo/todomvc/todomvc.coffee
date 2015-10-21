@@ -3,7 +3,9 @@ section, h1, header, form, text, checkbox, div, ul, li, p, a, label, button, foo
 each, txt
 extend} = dc
 
-################################################
+dc.directives $show: dc.$show
+
+#######################################################################################################################
 # store
 
 fetch = -> JSON.parse localStorage.getItem('dc') || '[]'

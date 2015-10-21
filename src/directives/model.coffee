@@ -1,4 +1,4 @@
-{extendEventValue, getBindProp} = dc
+{getBindProp} = dc
 
 module.exports = (binding, eventName) -> (comp) ->
   {props} = comp

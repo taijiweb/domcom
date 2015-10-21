@@ -2,6 +2,8 @@
 
 module.exports = (direction) -> (comp) ->
 
+  dc.directives $show: dc.$show
+
   attrs = comp.attrs
   direction = direction or 'vertical'
 
