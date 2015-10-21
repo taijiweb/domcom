@@ -5,8 +5,8 @@ extend = require '../../extend'
 {renew} = require '../../flow'
 
 INIT = 0
-FULFILLED = 1
-REJECTED = 2
+FULFILL = 1
+REJECT = 2
 
 module.exports = class Defer extends TransformComponent
   constructor: (@promise, fulfill, reject, init) ->

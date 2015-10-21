@@ -1,8 +1,7 @@
-{registerDirective} = require './register'
 {see, flow} = dc
 {toggle} = flow
 
-module.exports = registerDirective '$blink', (interval) -> (comp) ->
+module.exports = (interval) -> (comp) ->
   if !interval? then interval = 500
   timer = null
   comp.onMount (baseComponent) -> -> timer = setInterval (-> visible(!visible()); comp.update()), interval

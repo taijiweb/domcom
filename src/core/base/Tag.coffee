@@ -1,14 +1,13 @@
 extend = require '../../extend'
-{insertNode} = require '../../dom-util'
 dc = require '../../dc'
 {classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require '../property'
 BaseComponent = require './BaseComponent'
 Text = require './Text'
 List = require './List'
 {funcString, newLine, cloneObject} = require '../../util'
+{directiveRegistry} = require '../../config'
 {flow} = require '../../flow'
 {domValue} = require '../../dom-util'
-{_directiveRegistry} = require '../../directives/register'
 toComponent = require './toComponent'
 
 module.exports = class Tag extends List
@@ -69,7 +68,7 @@ module.exports = class Tag extends List
         @hasActiveProperties = true
       else if key[0]=='$'
         # $directiveName: generator arguments list
-        generator = _directiveRegistry[key]
+        generator = directiveRegistry[key]
         if value instanceof Array then handler = generator.apply(null, value)
         else handler = generator.apply(null, [value])
         directives.push(handler)

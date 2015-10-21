@@ -1,8 +1,6 @@
 {pairListDict, classFn, Component, div, span} = dc
 
-{registerDirective} = require './register'
-
-module.exports = registerDirective '$splitter', (direction) -> (comp) ->
+module.exports = (direction) -> (comp) ->
 
   attrs = comp.attrs
   direction = direction or 'vertical'

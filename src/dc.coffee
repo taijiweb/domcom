@@ -4,8 +4,8 @@
 ###
 DomNode = require './DomNode'
 {requestAnimationFrame} = require  './dom-util'
-{newDcid} = require './util'
-{componentCache, readyFnList, _updateComponentMap} = require './config'
+{newDcid, isEven} = require './util'
+{componentCache, readyFnList, _updateComponentMap, directiveRegistry} = require './config'
 
 module.exports = dc = (element, options={}) ->
   if typeof element == 'string'
@@ -24,6 +24,22 @@ module.exports = dc = (element, options={}) ->
 querySelector = (selector, all) ->
   if all then new DomNode(document.querySelectorAll(selector))
   else new DomNode(document.querySelector(selector))
+
+# register directive
+# directiveHandler: (...) -> (component) -> component
+dc.directives = (directives...) ->
+  if directives.length==1
+    for directiveName, directiveHandler of directives[0]
+      if directiveName[0]!='$' then directiveName = '$'+directiveName
+      directiveRegistry[directiveName] = directiveHandler
+  else
+    if !isEven(len=directives.length)
+      throw new Error 'missing directive handler for directives '+directives[len]
+    i = 0
+    while i<len
+      directiveRegistry[directives[i]] = directives[i+1]
+      i += 2
+  return
 
 dc.ready = (fn) -> readyFnList.push fn
 

@@ -130,6 +130,7 @@ describe 'properties ', ->
       handle = setInterval(styleFn, 5)
 
   it 'bidirectional bind checkbox', ->
+    dc.directives $model: dc.$model
     model1 = {a: 1}
     bb = duplex(model1, 'a')
     cbx = checkbox({$model:bb})

@@ -1,10 +1,13 @@
 {extend} = dc
 
+dc.builtinDirectives = require('./directives/index')
+
 extend(dc,
-  require('./directives/index')
+  dc.builtinDirectives
   require('./builtins/index')
   require('./addon-util')
 )
+
 
 {flow} = dc
 extend(flow,

@@ -10,6 +10,8 @@ $show, $hide, $splitter
 bindings, duplex
 see} = dc
 
+dc.directives dc.builtinDirectives
+
 {$a, $b, _a, _b} = bindings({a: 1, b: 2})
 
 describe 'directives', ->

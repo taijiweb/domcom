@@ -1,8 +1,6 @@
 {extendEventValue, getBindProp} = dc
 
-{registerDirective} = require './register'
-
-module.exports = registerDirective '$model', (binding, eventName) -> (comp) ->
+module.exports = (binding, eventName) -> (comp) ->
   {props} = comp
   bindProp = getBindProp(comp)
   comp.setProp(bindProp, binding, props, 'Props')
