@@ -18,18 +18,8 @@
 
 * `new Html(text, options)`
 
- 没有完全实现并且未经测试，目前请不要使用这个部件
-
-* `new DomNode(node, options)`
-
- 没有完全实现并且未经测试，目前请不要使用这个部件
-
-* `new DomNodeList(nodeList, options)`
-
- 没有完全实现并且未经测试，目前请不要使用这个部件
-
 ##### TransformComponent
-If, Case, Func, Repeat
+If, Case, Func, Each
 
 * `new If(test, then_, else_, options)`
 
@@ -37,14 +27,14 @@ If, Case, Func, Repeat
 
 * `new Func(fn, options)`
 
-* `new Repeat(items, ((item, index, list, component) -> ...), options)`
+* `new Each(items, ((item, index, list, component) -> ...), options)`
 
     todo: 支持将object作为items参数，使用如下的标签：
 
-    `new Repeat(obj, ((value, key, list, component) -> ...), options)`
+    `new Each(obj, ((value, key, list, component) -> ...), options)`
 
 #### src/core/instantiate.coffee
- tag, txt, comment, if_, case_, func, list, repeat
+ tag, txt, comment, if_, case_, func, list, each
 
  tag(tagName, attrs, children...)
 
@@ -66,9 +56,9 @@ If, Case, Func, Repeat
 
  list(children...)
 
- repeat(attrs, items, ((item, index, items, component) -> ...), options)
+ each(attrs, items, ((item, index, items, component) -> ...), options)
 
- repeat(items, ((item, index, items, component) -> ...), options)
+ each(items, ((item, index, items, component) -> ...), options)
 
 
 #### src/core/tag.coffee
@@ -127,20 +117,25 @@ table tbody td textarea tfoot th thead title tr tt ul var header footer section
 
     `value`: 形如"stylePropName:value; ..."的style字符串, 或者形如"stylePropName:value"的项的数组, 可包含空白字符, 或则形如[stylePropName, value]的项的数组
 
+
+辅助函数模块
+
+    #### 指令
+        指令是个函数，该函数以部件做参数，返回新部件。
+
+        指令只可以用于Tag部件
+
+        用法：`someTag(/*attrs=*/{..., directives:directive, ...}, children...)`
+
+    #### 指令生成器
+
+       指令生成器是个返回函数的函数，返回的函数可以被用作指令。
+
+        用法：`someTag(/*attrs=*/{..., directives:directiveGenerator(...),  ...}, children...)`
+
 ### src/core/directives/
-#### 指令
-    指令是个函数，该函数以部件做参数，返回新部件。
 
-    指令只可以用于Tag部件
-
-    用法：`someTag(/*attrs=*/{..., directives:directive, ...}, children...)`
-
-#### 指令生成器
-
-   指令生成器是个返回函数的函数，返回的函数可以被用作指令。
-
-    用法：`someTag(/*attrs=*/{..., directives:directiveGenerator(...),  ...}, children...)`
-
+一些内建的指令
 
 ##### domcom内建指令生成器模块
 model.coffee, bind.coffee, show-hide.coffee, blink.coffee, splitter.coffee, options.coffee
@@ -257,4 +252,63 @@ model, bind, show, hide, blink, splitter, options
 * Tag.hide
 
     `someTag.hide()`
+
+## API介绍
+
+### 部件及实例化函数
+
+Component
+
+BaseComponent
+
+TransformComponent
+
+
+Tag, tag
+  div, p, span, input, textarea, select, ...
+  input元素
+  text, number, checkbox, radio, email, date, tel
+
+Text, txt
+
+Comment, comment
+
+Html, html,
+
+UnescapeHtml, unescape
+
+List, list
+
+If, if_
+
+Case, case_
+
+Cond, cond
+
+Each, each
+
+Route, route
+
+Flow函数
+
+react
+
+renew
+
+flow
+
+depend
+
+see
+
+see2
+
+
+bind
+
+duplex
+
+reactive.invalidate
+
+### 工具函数
 

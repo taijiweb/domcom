@@ -4,29 +4,29 @@ Nothing = require './Nothing'
 Text = require './Text'
 {react} = require '../../flow/index'
 
-module.exports = toComponent = (x) ->
-  if isComponent(x) then x
+module.exports = toComponent = (item) ->
+  if isComponent(item) then item
 
-  else if typeof x == 'function' then new Text(x)
+  else if typeof item == 'function' then new Text(item)
 
-  else if x instanceof Array
+  else if item instanceof Array
     List = require './List' # avoid loop require
-    new List(for e in x then toComponent(e))
+    new List(for e in item then toComponent(e))
 
-  else if !x? then new Nothing()
+  else if !item? then new Nothing()
 
-  else if x.then and x.catch
+  else if item.then and item.catch
     Func = require './Func' # avoid loop require
     component = new Func react -> component.promiseResult
 
-    x.then (value) ->
+    item.then (value) ->
       component.promiseResult = value
       component.invalideTransform()
 
-    x.catch (error) ->
+    item.catch (error) ->
       component.promiseResult = error
       component.invalideTransform()
 
     component
 
-  else new Text(x)
+  else new Text(item)

@@ -2,21 +2,21 @@
 the web framework to provide dom component
 
 ## Features
-* diclarational composable component with reactive function
+* declarational composable components with reactive function
 
-* automatically render only the difference between the dom and the cache with fine granularity
+* automatically render only the invalidate parts in the dom with fine granularity
 
 * decouple with model and controller completely
 
 * simple but powerful router
 
-* support for promise
+* convenient support for promise
 
 * never pollute the dom because of the framework itself
 
 * the root of the component may be multiple dom elements
 
-## Sample
+## Samples
 There is [some  samples](https://github.com/taijiweb/domcom/tree/master/demo), and a [todoMVC implementation](https://github.com/taijiweb/domcom/tree/master/demo/todomvc).
 
 The code below give a taste of domcom:

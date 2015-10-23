@@ -1,6 +1,6 @@
 # Domcom  
 
-一个提供DOM部件的前端web框架
+提供DOM部件的前端web框架
 
 github.com/taijiweb/domcom
 
@@ -169,66 +169,6 @@ Domcom自带路由部件，其实现非常简单，然而提供了丰富强大�
 
 ### todoMVC
 
-## API介绍
-
-### 部件及实例化函数
-
-Component 
-
-BaseComponent
-
-TransformComponent
-
-
-Tag, tag
-  div, p, span, input, textarea, select, ...
-  input元素
-  text, number, checkbox, radio, email, date, tel
-
-Text, txt
-
-Comment, comment
-
-Html, html,
-
-UnescapeHtml, unescape
-
-List, list
-
-If, if_
-
-Case, case_
-
-Cond, cond
-
-Each, each
-
-Route, route
-
-Flow函数
-
-react 
-
-renew 
-
-flow
-
-depend
-
-see
-
-see2
-
-
-bind
-
-duplex
-
-reactive.invalidate
-
-### 工具函数
-
-
 ## 与其它框架的比较
 
 响应式
@@ -264,6 +204,6 @@ Domcom, template以及coffee-script
 
   Domcom用coffee-script实现，Domcom喜欢coffee-script。
 
-### 曙光在前
+### 下一步？ --  曙光在前
 
   Domcom为我们提供了一种新的组织Web应用的方式。前面的范例已经演示了Domcom的一些基本用法。我们现在可以学习Domcom提供的更多API，在最简捷地编写Web应用的同时追求最好的运行效率。
