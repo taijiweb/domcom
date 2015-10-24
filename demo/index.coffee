@@ -1,5 +1,5 @@
 # domcom demo
-{select, see2, case_, list, func} = dc
+{select, see, case_, list, func} = dc
 
 dc.directives $options: dc.$options,  $model: dc.$model
 
@@ -30,7 +30,7 @@ exports.demoMap = demoMap =
   'mount/unmount':  func require 'domcom/demo/demo-mount-unmount'
 
 exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem='arrow') ->
-  currentItem = see2 initItem
+  currentItem = see initItem
   list demoSelect = select($options: [Object.keys(demoMap)], $model:currentItem),
     case_(currentItem, demoMap, accordion).updateWhen(demoSelect, 'change')
 

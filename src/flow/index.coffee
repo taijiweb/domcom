@@ -74,17 +74,11 @@ flow.see = see = (value, transform) ->
         method.invalidate()
       value
 
+  method.isDuplex = true
   method.toString = () ->  "see: #{value}"
   react method
 
-flow.see2 = (value, transform) ->
-  if !value or !value.invalidate then reactive = see value, transform
-  else reactive = value
-  reactive.isDuplex = true
-  reactive.toString = () ->  "see2: #{value}"
-  reactive
-
-flow.seen = (computations...) ->
+flow.seeN = (computations...) ->
   for computation in computations then see computation
 
 flow.renew = (computation) ->

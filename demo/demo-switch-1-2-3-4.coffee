@@ -1,4 +1,4 @@
-{func, see2, flow, each, list, div, number} = dc
+{func, see, flow, each, list, div, number} = dc
 
 module.exports = ->
   x = 0
@@ -19,7 +19,7 @@ module.exports = ->
 
 # by using flow, it can be improved like below
 module.exports = ->
-  x = see2 0
+  x = see 0
   #comp = list(number(x).bind('change', -> pane.update()), pane=func(flow x, -> v = x(); if v>=0 and v<=3 then div v))
   #  comp = list(number(x).bind('change', pane.update.bind(pane)), pane=func(flow x, -> v = x(); if v>=0 and v<=3 then div v))
   #list(num=number(x), func(flow x, -> v = x(); if v>=0 and v<=3 then div v)).updateWhen(num, 'change')

@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings, duplex, flow, see, see2
+{bindings, duplex, flow, see
 classFn, styleFrom, extendAttrs
 Tag, Text, List
 Component, list, func, if_, txt
@@ -72,7 +72,7 @@ describe 'demo', ->
     it 'should combobox', ->
       showingItems = see false
       comp = null # do NOT remove this line, because comp is referenced in attrs
-      value = see2 ''
+      value = see ''
       opts = for item in [1,2] then do (item=item) ->
         span({
           style:{display:'block', border:"1px solid blue", "min-width":"40px"}
