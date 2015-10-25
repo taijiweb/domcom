@@ -1,0 +1,160 @@
+# Domcom包目录层次结构
+
+  如下是Domcom包目录层次结构， 按重要程度排序，更重要的文件夹和文件放在前面。
+
+  没有扩展domcom/lib/, domcom/dist/test/, domcom/dist/demo/，因为它们只是从coffee-script转译产生的目标javascript文件。工程上这几个文件夹并无实际作用，提供给更倾向于javascript语言的程序员作为参考。
+
+  没有扩展domcom/static/, domcom/node_modules/ domcom/bower_modules/，因为它们只是公用的库文件夹。
+
+    domcom    ...................................  // 提供DOM部件的web框架
+    |- src/   ...................................  // coffee-script源代码文件夹
+    |  |- index.coffee    .......................  // 包含基础的domcom内容
+    |  |- domcom-addon.coffee    ................  // 包含domcom的增补内容: builtins, directives, etc.
+    |  |- domcom-full.coffee    .................  // 包含整个domcom，包括基本的domcom及其addon
+    |  |- dc.coffee    ..........................  // 直属dc的方法和特性
+    |  |- config.coffee    ......................  // dc配置文件
+    |  |- util.coffee    ........................  // dc辅助函数
+    |  |- DomNode.coffee    .....................  // DomNode类，提供操作dom节点的类jQuery接口
+    |  |- extend.coffee    ......................  // extend函数
+    |  |- core/    ..............................  // domcom部件核心实现
+    |  |  |- instantiate.coffee    ..............  // 用于产生部件实例的便利函数，相当于 new ComponentX(...)
+    |  |  |- tag.coffee    ......................  // 用于产生Tag部件实例的便利函数，相当于 new Tag("tagName", ...)
+    |  |  |- property.coffee    .................  // 处理Tag部件特性及事件的辅助函数
+    |  |  |- index.coffee    ....................  // index文件，用于require core/
+    |  |  |- base/    ...........................  // Domcom部件的基类和派生类
+    |  |  |  |- component.coffee    .............  // 所有部件类的Component基类
+    |  |  |  |- BaseComponent.coffee    .........  // 所有基本部件类的BaseComponent基类
+    |  |  |  |- TransformComponent.coffee  ......  // 所有派生部件类的TransformComponent基类
+    |  |  |  |- List.coffee    ..................  // List基本部件类，包含一组children部件
+    |  |  |  |- Tag.coffee    ...................  // Tag基本部件类，window.Element: document.createElement
+    |  |  |  |- Text.coffee    ..................  // Text基本部件类，window.Text: document.createTextNode(text)
+    |  |  |  |- Html.coffee    ..................  // Html基本部件类，通过设置innerHTML产生一组DOM节点: node.innerHTML = text
+    |  |  |  |- Comment.coffee    ...............  // Comment基本部件类，window.Comment: document.createComment(text)
+    |  |  |  |- Nothing.coffee    ...............  // Nothing基本部件类，不产生任何Dom节点
+    |  |  |  |- If.coffee    ....................  // If变换部件类，new If(test, then_, else_)
+    |  |  |  |- Case.coffee    ..................  // Case变换部件类，new Case(test, hashMap, else_)
+    |  |  |  |- Cond.coffee    ..................  // Cond变换部件类，new Cond(testAndComponentPairs, else_)
+    |  |  |  |- Func.coffee    ..................  // Func变换部件类，new Func(func)
+    |  |  |  |- Each.coffee    ..................  // Each变换部件类，new Each(items, itemFn, options)
+    |  |  |  |- route.coffee    .................  // Route变换部件类，route(routeList..., otherwise, baseIndex)
+    |  |  |  |- Defer.coffee    .................  // Defer变换部件类，new Nefer(promise, fulfill, reject, init)
+    |  |  |  |- isComponent.coffee    ...........  // 检测某项是否为部件, isComponent(item)
+    |  |  |  |- toComponent.coffee    ...........  // 转换某项为部件, toComponent(item)
+    |  |  |  \- index.coffee    .................  // index文件，用于require core/base/
+    |  |  |
+    |  |- flow/    ..............................  // 用于产生或处理响应函数的辅助函数
+    |  |  |- index.coffee    ....................  // 一些常用的响应函数生成器及辅助函数
+    |  |  |- watch-list.coffee    ...............  // flow.watchEachList和flow.watchEachObject，用于Each部件
+    |  |  \- addon.coffee    ....................  // 更多的响应函数生成器
+    |  |
+    |  |- directives/    ........................   // 一些内建指令定义
+    |  |  |- show-hide.coffee    ................   // $show和$hide指令
+    |  |  |- model.coffee    ....................   // $model指令
+    |  |  |- bind.coffee     ....................   // $bind指令
+    |  |  |- options.coffee    ..................   // $options指令
+    |  |  |- splitter.coffee    .................   // $splitter指令
+    |  |  |- blink.coffee    ....................   // $blink指令
+    |  |  \- index.coffee    ....................   // index文件，用于requiring directives/
+    |  |
+    |  |- builtins/    ..........................   // 一些内建部件定义
+    |  |  |- accordion.coffee    ................   // accordion部件
+    |  |  |- arrow.coffee    ....................   // 用css实现的四个方向的三角形
+    |  |  |- autoWidthEdit.coffee    ............   // 可自动调整宽度的text input标签元素
+    |  |  |- combo.coffee    ....................   // 两种comboBox edit
+    |  |  |- comboEdit.coffee    ................   // 一个未经测试的comboEdit
+    |  |  |- dialog.coffee    ...................   // 基于bootstrap css的简单对话框实现
+    |  |  \- index.coffee    ....................   // index文件，用于 require builtins/
+    |  |
+    |- doc    ...................................   // document 文件夹
+    |  |- README.CN.md    .......................   // 中文版README
+    |  |- API.md    .............................   // 英文版API参考
+    |  |- API.CN.md    ..........................   // 中文版API参考
+    |  |- introduction.CN.md    .................   // 中文版domcom介绍
+    |  |- package-directory.md   ................   // 英文版domcom包文件夹层次结构
+    |  |- package-directory-CN.md  ..............   // 中文版domcom包文件夹层次结构，即这个文件
+    |
+    |- test/    .................................   // test文件夹
+    |  |- mocha/    ..............................  // mocha测试coffee-script源代码文件夹
+    |  |  |- test-accordion.coffee    ...........   // 测试accordion部件
+    |  |  |- test-base-component.coffee    ......   // 测试基本部件
+    |  |  |- test-component.coffee    ...........   // 测试部件
+    |  |  |- test-component-event.coffee    .....   // 测试部件级事件, 即Component.on, Component.off, Component.emit
+    |  |  |- test-for-demo.coffeev    ...........   // 测试demo/和todoMVC中的一些内容，帮助调试
+    |  |  |- test-dc.coffee    ..................   // 测试直属dc的辅助函数
+    |  |  |- test-flow.coffee    ................   // 测试flow/中的响应函数
+    |  |  |- test-event.coffee    ...............   // 测试Tag部件事件
+    |  |  |- test-if-case-func.coffee    ........   // 测试If, Case和Func部件
+    |  |  |- test-list-each.coffee    ...........   // 测试List, Each部件
+    |  |  |- test-directive.coffee    ...........   // 测试指令
+    |  |  |- test-property.coffee    ............   // 测试Tag部件特性
+    |  |  |- test-ref-clone.coffee    ...........   // 测试对部件的引用和clone
+    |  |  |- test-route.coffee    ...............   // 测试Route部件
+    |  |  |- test-toString.coffee    ............   // 测试部件的toString方法
+    |  |  |- test-util.coffee    ................   // 测试dc/util模块
+    |  |  |- test-helper.coffee    ..............   // 用于测试的辅助函数
+    |  |  \- index.coffee    ....................   // 所有测试的index文件，用于mocha-runner.html以及mocha-runner-dist.html
+    |  |
+    |  |- mocha-runner.html    ..................   // 测试用mocha runner html, 采用webpack-hot-server
+    |  |- mocha-runner-dist.html    .............   // 测试用mocha runner html, 采用dist/中的文件
+    |  |- 1.html    .............................   // 只是在开发中用到的草稿文件
+    |  |
+    |- demo/    .................................   // demo文件夹
+    |  |- todomvc/    ...........................   // todoMVC范例文件夹
+    |  |  |- index.html    ......................   // todoMVC html页面，采用webpack-server
+    |  |  |- index-dist.html    .................   // todoMVC html页面，采用dist/中的代码
+    |  |  |- learn.json    ......................   // learn.json文件，为todoMVC网站提供
+    |  |  \- todomvc.coffee    ..................   // todoMVC全部源码
+    |  |
+    |  |- app.css    ............................   // 用于demo的css，被demo/index.html引用
+    |  |- demo-accordion.coffee    ..............   // 演示accordion
+    |  |- demo-auto-width-edit.coffee    ........   // 演示可自动调整宽度的<input, type="text">部件
+    |  |- demo-builtins.coffee    ...............   // 演示某些内建部件
+    |  |- demo-controls.coffee    ...............   // 演示某些空军
+    |  |- demo-counter.coffee    ................   // 演示简单计数器
+    |  |- demo-dialog.coffee    .................   // 演示简单对话框
+    |  |- demo-each.coffee    ...................   // 演示某项Each部件
+    |  |- demo-event.coffee    ..................   // 演示Tag部件的事件
+    |  |- demo-if-component.coffee    ...........   // 演示If部件
+    |  |- demo-mount-unmount.coffee    ..........   // 演示挂载和卸除部件
+    |  |- demo-show-hide.coffee    ..............   // 演示$show和$hide指令
+    |  |- demo-splitter.coffee    ...............   // 演示$splitte指令
+    |  |- demo-sum.coffee    ....................   // 演示求和
+    |  |- demo-switch-1-2-3-4.coffee    .........   // 演示切换1 2 3 4
+    |  |- demo-text-model.coffee    .............   // 演示带$model指令的文本输入标签
+    |  |- index.coffee    .......................   // 演示入口coffee文件，用来启动所有演示
+    |  |- index.html    .........................   // 演示用的index.html, 采用webpack-hot-server
+    |  \- index-dist.html    ....................   // 演示用的index.html, 采用dist/
+    |
+    |- dist    ..................................  // 发布用文件夹
+    |  |- domcom.js    ..........................  // 基础domcom发布, 用于开发
+    |  |- domcom.min.js    ......................  // 最小化的基础domcom发布文件, 用于产品
+    |  |- domcom-addon.js    ....................  // domcom发布, 用于开发
+    |  |- domcom-addon.min.js    ................  // 最小化的domcom发布, 用于产品
+    |  |- domcom-full.js    .....................  // 完整domcom发布, 包括基础内容和补充内容, 用于开发, 大多数情况下建议使用这个文件
+    |  |- domcom-full.min.js    .................  // 最小化的完整domcom发布, 包括基础内容和补充内容, 用于产品, 大多数情况下建议使用这个文件
+    |  |- mocha-index.js    .....................  // index文件，用于mocha测试, 采用webpack-hot-server
+    |  |- mocha-index.min.js    .................  // index文件，用于mocha测试, 采用dist/文件夹中的代码
+    |  |- demo-index.js    ......................  // index文件 for demos, 采用webpack-hot-server
+    |  |- demo-index.min.js    ..................  // index文件 for demos, 采用dist/文件夹中的代码
+    |  |- todomvc.js    .........................  // todoMVC代码, 采用webpack-hot-server
+    |  |- todomvc.min.js    .....................  // todoMVC代码, 采用dist/文件夹中的代码
+    |  |- test/ .................................  // 从coffee-script test/生成的javascript文件夹
+    |  \- demo/ .................................  //  从coffee-script demo/生成的javascript文件夹
+    |
+    |- lib/    ..................................  // 从coffee-script domcom/src/生成的javascript文件夹
+    |- static/    ...............................  // 用于演示和测试的公用静态文件库，包含bootstrap和sinon
+    |
+    |- README.md    .............................  // README，用于github和npm
+    |- LICENSE    ...............................  //domcom采用的MIT LICENSE
+    |- gulpfile.js    ...........................  // gulpfile, 只是require gulpfile.coffee
+    |- gulpfile.coffee    .......................  // 实际的gulpfile，coffee-script源代码
+    |- webpack.config.coffee    .................  // webpack配置文件, 构建webpack工作流
+    |- package.json     .........................  // node_modules packages json 文件，用于npm
+    |- bower.json     ...........................  // bower json文件，用于bower
+    |- .bowerrc     .............................  // .bowerrc，bower config文件
+    |- .gitattribute     ........................  // .gitattribute，用于git
+    |- .gitignore     ...........................  // .gitignore，用于git, git忽略的文件和文件夹列表
+    |
+    |- node_modules/    .........................  // node modules文件夹 依据npm package.json
+    \- bower_components/    .....................  // bower components文件夹
+

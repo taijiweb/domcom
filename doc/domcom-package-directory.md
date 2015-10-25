@@ -2,9 +2,9 @@
 
   Below is the directory hierarchy of domcom package. They are ordered by their importance, the more important folders and files are put in the front.
 
-  The folders (domcom/lib/, domcom/dist/test/, domcom/dist/demo/) are not expanded, they are just the generated javascript files from the coffee-script source files.
+  The folders (domcom/lib/, domcom/dist/test/, domcom/dist/demo/) are not expanded, they are just the generated javascript files from the coffee-script source files. They is not intended to be used in engineering, except being as a reference for the programer who prefer to javascript.
 
-  The folders (domcom/static/, domcom/node_modules/ domcom/bower_modules/) are not expanded, because they are well known or not specific to domcom.
+  The folders (domcom/static/, domcom/node_modules/ domcom/bower_modules/) are not expanded, because they are public libraries folder.
 
     domcom    ...................................  // the web framework to provide dom component
     |- src/   ...................................  // the coffee-script source code folder
@@ -21,7 +21,7 @@
     |  |  |- tag.coffee    ......................  // convenient utilities to generate Tag component, the same as "new Tag("tagName", ...)"
     |  |  |- property.coffee    .................  // some utilities to process Tag properties and events
     |  |  |- index.coffee    ....................  // the index file to enable requiring core/ folder
-    |  |  |- base/    ...........................  // base classes and derived classes for Dom component
+    |  |  |- base/    ...........................  // base classes and derived classes for domcom component
     |  |  |  |- component.coffee    .............  // Component base class for all component classes
     |  |  |  |- BaseComponent.coffee    .........  // BaseComponent base class  for all base component classes
     |  |  |  |- TransformComponent.coffee  ......  // TransformComponent base class  for all transform component classes
@@ -30,7 +30,7 @@
     |  |  |  |- Text.coffee    ..................  // Text base component class for window.Text: document.createTextNode(text)
     |  |  |  |- Html.coffee    ..................  // Html base component class for generating dom nodes by setting innerHTML: node.innerHTML = text
     |  |  |  |- Comment.coffee    ...............  // Comment base component class for window.Comment: document.createComment(text)
-    |  |  |  |- Nothing.coffee    ...............  // Nothing base component class, which won't genenating any dom node
+    |  |  |  |- Nothing.coffee    ...............  // Nothing base component class, which won't genenate any dom node
     |  |  |  |- If.coffee    ....................  // If transform component class, new If(test, then_, else_)
     |  |  |  |- Case.coffee    ..................  // Case transform component class, new Case(test, hashMap, else_)
     |  |  |  |- Cond.coffee    ..................  // Cond transform component class, new Cond(testComponents, else_)
@@ -43,7 +43,7 @@
     |  |  |  \- index.coffee    .................  // the index file to enable requiring core/base/ folder
     |  |  |
     |  |- flow/    ..............................  // the utilities to generate reactive functions
-    |  |  |- index.coffee    ....................  //  some frequently used reative functions
+    |  |  |- index.coffee    ....................  // some frequently used reative functions
     |  |  |- watch-list.coffee    ...............  // flow.watchEachList and flow.watchEachObject to play with Each component
     |  |  \- addon.coffee    ....................  // more reactive functions and utilities
     |  |
@@ -150,8 +150,8 @@
     |- gulpfile.js    ...........................  // gulpfile, just require the gulpfile.coffee
     |- gulpfile.coffee    .......................  // gulpfile in coffee-script
     |- webpack.config.coffee    .................  // webpack.config.coffee, for webpack workflow
-    |- package.json     .........................  // node_modules packages json file for npm
-    |- bower.json     ...........................  // packages json file for bower
+    |- package.json     .........................  // node_modules package json file for npm
+    |- bower.json     ...........................  // bower json file for bower
     |- .bowerrc     .............................  // .bowerrc for bower, bower config file
     |- .gitattribute     ........................  // .gitattribute for git
     |- .gitignore     ...........................  // .gitignore for git, ignored files and folder

@@ -70,6 +70,13 @@ In javascript:
 
 `<script src="path/to/domcom.min.js"/>`
 
+## document
+
+  See [doc/](https://github.com/taijiweb/domcom/tree/master/doc) for the document. Both English and Chinese document are provided.
+
+  The files in the [doc/](https://github.com/taijiweb/domcom/tree/master/doc) folder with filename like "somefile.CN.md" is Chinese document.
+
+  [doc/](https://github.com/taijiweb/domcom/tree/master/doc) 文件夹中带"somefile.CN.md"文件名的是中文文档。
 
 ## LICENSE
 MIT, see [LICENSE](https://github.com/taijiweb/domcom/blob/master/LICENSE)

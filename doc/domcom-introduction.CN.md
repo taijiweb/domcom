@@ -1,0 +1,383 @@
+# Domcom  
+
+提供DOM部件的web框架
+
+github.com/taijiweb/domcom
+
+设计背景
+
+影响web前端编程效率的因素主要在于各种浏览器的兼容需求，复杂的Dom结构及其导致的笨重DOM操作，以及繁琐冗长的DOM API。因此jQuery应运而生，其简明优雅的API大大便利了前端浏览器程序设计，迅速成为该领域的王者。然而，随着web的发展，web前端应用的架构设计和数据组织变得越来越重要，同时也变得越来越困难。angularjs和reactjs.js是目前响应这方面需求的两个最成功框架。我在学习，使用和研究jQuery，angular.js, react.js以及其它前端的web框架和项目（包括knockout.js, backbone.js，virtual-dom, mercury.js, mithril.js, riot.js和响应式函数编程库如bacon.js, flyd.js等）的过程中，感觉到了这些工具在设计上的提升和带来的便利，但是也逐步发现它们都还存在的一些不足和改进的空间，并产生了自己关于web前端框架的整体构想， 设计实现了Domcom这一个部件化的web前端框架。
+
+
+Domcom整体特性
+
+Domcom是DOM和Component合并后的缩写，宗旨是为开发Web应用提供DOM部件。通过Domcom，可以整体上简化提升Web应用设计架构和数据组织，尽可能减少不必要和重复的DOM操作，提升程序运行效率。Domcom提供的部件是声明式和响应式的，充分运用并有机结合函数范式和对象范式两种程序设计风格，提高代码复用，简化设计。以下是本框架主要特性的一个列表：
+
+* 基于响应函数的声明式部件
+
+任何dom特性以及部件的其它合适属性都可以是响应函数
+
+* 最小化Dom访问和更新
+
+Domcom预先通过部件声明和描述了整个Dom，web应用绝大部分时间不需要访问Dom特性和状态。更新的时候应用能跳过有效的部件，只处理当前处于无效状态的部件和这些部件的无效特性。
+
+* 便于组合扩展的部件
+
+利用Domcom，可以利用函数范式组合生成部件和设置传递参数，也可以利用对象范式通过继承机制定义新部件。这能提高web应用的代码复用，降低复杂度，令设计更为简单清晰。
+
+* 最大化解耦模型和控制器
+
+Domcom作为Dom部件的提供者，，在MVC或者MVV*模式专注于解决视图的问题。对模型和控制器完全保持中立和开放的视角。普通的值、变量和响应函数成为通往数据的桥梁和管道。借助这种方法，domcom最大化解耦视图于模型和控制器，给实现带来便利，简化设计。利用Domcom，很多时候我们甚至不需要为Model或者Controller作特意的设计。根据应用的复杂度和相关需求，Domcom当然也可以与POJO, 事件、observable, 基于类的扩展、Flux， immutable等不同解决方案联合使用，甚至可能借用backbone.js, ember.js， react.js等现有框架或库中的相关组件。
+
+* 不向Dom附加任何框架性元素和特性
+
+Domcom没有针对框架目的在Dom中设置元素id，class或其它辅助特性；也不需要为组合部件添加父元素或者任何其它辅助元素。利用Domcom可以得到一个最小最清洁的Dom。
+
+* 简单强大的路由部件
+
+Domcom自带路由部件，实现非常简单，然而提供了强大的功能，支持正则表达式、通配符，允许多层次、多点嵌入的参数化路由。
+
+* 支持Promise
+
+Domcom的特性值和子部件可以是Promise，另外提供Defer部件以提供便利，更方便于使用Promise。
+
+## Domcom入门
+
+### 获取Domcom
+  npm install --save domcom
+
+  git clone https://www.github.com/taijiweb/domcom
+
+
+### 在页面中设置Domcom
+
+根据开发和应用需要从安装或下载的文件夹中选择domcom/dist/下的domcom.js, domcom.min.js, domcom-addon.js, domcom-addon.min.js, domcom-full.js， domcom-full.min.js中合适的文件，按照通常方法向html页面添加script标签：
+
+`<script src="path/to/domcom-???.???.js"/>`
+
+在domcom的script标签之后添加自己的js脚本：
+
+`<script src="path/to/my-app.js"/>`
+
+### Domcom入门
+
+  Domcom采用coffee-script设计实现，转译成为javascript。Domcom鼓励使用coffee-script, 但是并不妨碍采用javascript来编写基于Domcom的应用，相对而言代码会稍长一点，可读性稍差一点。这对大多数习惯于编写javascript原生代码的程序员来说，是完全可行的，没有不好之处。Domcom针对coffee-script做了很多便于阅读和编写的设计，因此domcom应用的代码非常简洁可读。
+
+  以下实例采用coffee-script语言。Coffee-script和Javascript基本是一一对应的。即使不熟悉coffee-script的朋友，我建议也先阅读一遍接下来的内容，有疑问的时候按照直觉理解就好。有需要的朋友可以参考这组入门辅导范例对应的javascript对照版本，
+
+### Hello, Domcom
+
+	{div} = dc
+	comp = div "Hello, Domcom" 
+	comp.mount()
+
+  `div(attrs, children)`等同于`new Tag('div', attrs, children)`, 是Component类的一个子类（其直接父类是BaseComponent），其作用是生成html标签元素节点。`Component.mount`方法的作用是挂载部件。执行完这段代码页面将会显示Hello Domcom。
+
+### 使用变量或函数参数
+ 
+	{div} = dc
+	
+    angular = "Angular"
+	comp1 = hello angular
+	comp1.mount() # (1)
+	comp1.render() # (2)
+
+	hello = (who) ->
+	    div "Hello, ", who
+	comp2 = hello "Domcom" 
+	comp2.mount() # (3)
+	comp2.render() # (4)
+
+  本例借助变量或函数参数向部件传递数据。这里虽然是变量或参数，但是div接收到的实际上只是一个静态的值。`Component.render`方法的作用是重绘部件。上述代码中，只有`(1)`和`(3)`的挂载操作需要进行部件计算和dom刷新，`(2)`和`(4）`则不需要，因为部件没有发生任何改变。执行完毕页面应该显示：
+
+	Hello，Angular
+	Hello，Domcom
+
+### 强制响应函数
+  
+  响应函数是domcom中最关键的一个概念。虽然如此，这个概念其实非常简单。通过本例和下一个例子我们就能从整体上理解它们的作用。
+
+	{div} = dc
+	
+	who = "Angular"
+	comp = div "Hello, ", fn=(-> who)
+	comp.mount() # (1)
+	comp.render() # (2)
+	who = "Domcom"
+	comp.render() # (3) 
+	comp.render() # (4)
+
+  例中`fn=(-> who)`是一个强制响应函数。强制响应函数每次计算时都会再次令自己失效并向上层传播。任何函数fn作为子元素添加到部件中的时候会转换成Text部件，而Text部件会借助`document.createTextNode`生成`window.Text`类型的的dom节点。由于fn是强制响应函数的原因，上述代码每次调用`comp.render()`的时候，都会要求重新计算fn的值，即使在`(2)`和`(4）`的位置who的值没有改变也是如此。不管怎样，这些计算是独立于dom的，无需访问dom；只要计算值与缓存值相同，也不需要刷新Dom。因此，本例中只有`(1)`和`(3)`会触发刷新dom，而`(2)`和`(4）`不会。
+
+### 非强制的响应函数
+
+  借助非强制的响应函数可以避免上例中存在的问题。
+
+	{div, see} = dc
+	
+	who$ = see "Angular"
+	comp = div "Hello, ", who$
+	comp.mount() # (1)
+	comp.render() # (2)
+	who$ "Domcom"
+	comp.render() #(3)
+	comp.render() # (4)
+	who$ "Domcom"
+	comp.render() #(5)
+
+  这里，see是一个响应函数产生器，who$是它产生的响应函数。习惯在响应函数后面加上$作为标记。who$缓存的值可以用who$(newValue)加以改变。本例中，只有`(1)`和`(3)`才会有实质性的部件计算和最终的dom刷新。`(2)`，`(4）`和`(5）`中，因为comp一直是整体有效的，因此这几次调用不会引起任何计算，更不会有dom访问和刷新行为。特别是`(5）`，虽然之前调用了`who$ "Domcom"`，但是这个调用并没有改变who$缓存的值，因此一切内容依然保持有效。
+
+### Dom事件处理
+
+  domcom有很好的dom事件处理机制。可以直接在构造部件的时候将事件处理函数作为属性传递给Tag部件。基本的记法是`{..., onsomeevent:eventHandler,...}`。
+
+	{div} = dc
+	comp = div {onclick: -> alert("Hello, Domcom!")},
+	  "Say hello!"
+	comp.mount()
+
+  本例为div部件添加了onclick事件。在页面上点击`Say hello!`，将会弹出`Hello, Domcom!`
+
+### Dom事件与部件更新
+
+  在Dom事件中，应用可以改变数据，也可以调用部件的重绘或更新方法以更新部件和刷新Dom。
+
+	{div, text, list, see} = dc
+	
+	who$ = see "Angular"
+	comp = list \ 
+		text { 
+          value: who$,
+		  onchange: -> 
+            who$ @value
+            comp.update()
+          } 
+        div("Hello, ", who$)
+	comp.mount()
+
+  这里, text是一个实例化部件辅助函数，`text(attrs)`相当于`new Tag('input', {type:'text'}.extend(attrs))`。请注意text与Text部件类以及另一个实例化部件辅助函数txt的区别，Text部件类是一个和Tag部件类平级的基础部件子类，两者的父类都是BaseComponent，而`txt(item)`如前面提到的，相当于`new Text(item)`。
+
+  list产生List部件类的实例。List部件可以将一组部件组合成一个部件。Domcom不需要保证部件具有单一的dom根节点，不需要为多个部件的组合增加额外的父部件。
+
+  `Compnent.update`方法类似于`Component.render`，区别在于调用它会首先发送部件事件`'update'`（`comp.emit('update')`。注意部件事件不同于Dom事件，这里不详述。
+
+  执行本例页面将显示一个文本输入部件，输入完毕不同的文本, 比如`Domcom`，将触发文本输入部件的`onchange`事件，从而改变who$的缓存值，进而引发text和div的失效操作，并传播到comp部件本身。通过调用`comp.update()`，div的内容将同步改变为`Hello, Domcom`。
+
+### Domcom指令
+  
+  出于方便，Domcom设计了指令。使用指令的方法是： `new Tag('someTagName', { ... $directiveName, directiveHandler, ...}`。directiveHandler必须是一个函数，该函数接收一个部件作为参数，返回部件作为结果，就象这样：
+
+    (component) ->
+       ...
+       component
+
+  Domcom提供了一组内置指令，包括$bind, $model, $options, $show, $hide, $splitter, $blink等。我们可以在应用中使用这组指令，也可以参考这组指令的写法定义新的指令。
+
+  用到任何指令应该提前通过调用`dc.directives`方法予以注册。
+
+	{div, text, list, see, $bind} = dc
+	
+    dc.directives $bind: $bind
+
+	who$ = see "Angular"
+	comp = text $bind: who$ # (1), 相当于(2)
+    # comp = text value: who$ # (2)
+	comp.mount()
+    setTimeout (->
+	  who$ "Domcom"
+	  comp.render()), 2000
+
+  $bind指令可以用于所有的input元素，select，textarea。本例执行两秒后，页面显示内容将从`Hello, Angular`变为`Hello, Domcom`
+
+  可以看到，这里使用$bind指令并没任何便利。下面的例子演示了双向绑定指令在写法上如何带领实质性的便利。
+
+### 双向绑定
+
+  双向绑定是应用中一个常见的需求。前面“Dom事件与部件更新”小节就是一个典型场景。可以用domcom提供的双向绑定指令$model来简化该例中的代码。
+
+	{div, text, list, see} = dc
+	
+    dc.directives $model: $model
+
+	who$ = see "Angular"
+
+	comp = list \ 
+	  text($model: who$).bind('onchange', -> div1.update())
+	  div1 = div("Hello, ", who$)
+
+	comp.mount()
+
+  $model指令可以看作两个声明的结合，{$model: model}相当于{value: model, onchange: -> model(@value)}, model应该是一个可以设置值的响应函数，例如flow.see和flow.duplex。
+
+  Tag.bind可以为Tag部件绑定Dom事件处理函数。对一个部件的同一事件可以多次调用bind绑定多个事件处理函数，还可以调用unbind解除绑定。
+
+  可以看到，本例的执行效果与“Dom事件与部件更新”小节代码的执行效果是一致的。
+
+### If部件：向左，向右？这是个问题。
+    
+  If部件是条件测试部件。其实例化函数是：if_(test, then_, else_)，相当于: new If(test, then_, else_)。
+
+	{list, text, if_, div, see} = dc
+	
+	x$ = see 0, parseFloat
+	comp = list \
+      text {onchange: -> comp.update()}, x$,
+      if_ x$,
+       div('It is not 0.')
+       div('It is 0 or NaN.')
+
+  可以向see传入一个函数作为第二个参数，这种情况下see产生的响应函数的缓存值将是第一个参数值经该函数变换后的值。
+
+  input部件的实例化函数除了可以用{value:x}的方式传递dom节点的value特性值之外，还有一种简便记法，就象本例中这样将value直接作为参数。
+
+  运行本示例，div显示的内容将跟随文本输入框内容发生变化。依据javascrip的规则，当文本输入框中是一个非0的数字时，if_的条件是真值，页面将显示`It is not 0.`，否则是假值，将显示`It is 0 or NaN.`。
+
+
+### Case部件：无为在歧路，儿女共沾襟。
+
+  Case部件是多分支部件。其实例化函数是：case_(test, caseMap, else_), 相当于: new If(test, caseMap, else_)。有了Case部件，再也不用担心歧路亡羊了。
+
+	{see, case_, each, list, div, label, text} = dc
+
+	firstLetter$ = see 'd',  (x) -> x.toLowerCase()
+	comp = null
+	prompt = label 'Please choose: '
+	prefered = text {onchange: -> comp.update()}, firstLetter$
+	
+	frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember']
+	items =  for item in frameworks then div "#{item[0]}. #{item}"
+	items = list items
+	
+	caseMap = {}
+	for item in frameworks
+		caseMap[item[0]] = item
+	choice =  case_ firstLetter$, caseMap, 'some other things'
+	
+	comp = list \
+		prompt, prefered,
+		items,
+		div "You perfer ", choice, "."
+
+  本例用Case部件来响应用户的选择。Case部件的test是由see产生的响应函数。本例中当且仅当文本输入框输入不同的值，才会引起index的缓存值改变，进而使得Case部件的变换失效并传播到comp，部件得以更新并刷新Dom。需要注意的是，Case部件创建的时候不需要创建caseMap中的所有映射部件和else_部件，而只会创建当时的活动部件。当Case部件的test特性发生改变时再创建响应的部件。caseMap映射部件或者else_部件一旦创建，如果没有失效，就无需更新。切换映射部件只是将失效部件从dom中移除，将活动的映射部件重新附着到Dom上。test失效只是会通知Case部件的变换失效，并不会引发其它不必要的动作。 
+
+  赶紧运行本例的代码，选择你心仪的web框架吧。就象PHP是最好的语言，当然Domcom是最好的web框架。别犹豫了，就选它吧。
+
+### Each部件：十项全能选手
+
+  Each部件可以从一组项目根据一个模板函数生成一个List部件。这一组项目可以是数组或者object，也可以是返回数组或object的响应函数。可以设置选项控制排序。还有一个keyFunction选项可以用于优化Dom操作。
+
+  上面的例子利用Each部件代码可以变得更简单：
+
+	{flow, see, case_, each, every, func, list, div, label, text} = dc
+
+	firstLetter$ = see 'd',  (x) -> x.toLowerCase()
+	comp = null
+	prompt = label 'Please choose: '
+	prefered = text {onchange: -> comp.update()}, firstLetter$
+	
+	frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember']
+	#  items =  for item in frameworks then div "#{item[0]}. #{item}"  # (1)
+	#  items = list items
+	
+	#  items = each frameworks, (item) -> div "#{item[0]}. #{item}" # (2)
+	
+	items = every frameworks, (item) -> div "#{item[0]}. #{item}"  #(3)
+	
+	caseMap = {}
+	for item in frameworks
+	  caseMap[item[0]] = item
+	choice =  case_ firstLetter$, caseMap, 'some other things'
+	
+	comp = list \
+		prompt, prefered,
+		items,
+		div "You perfer ", choice, "."
+
+
+   通过使用Each部件，(2)相对于(1)少了一行代码，意思更清晰了。
+
+   对于不变的数据，使用Each部件有点象杀鸡用牛刀。实际上，因为数据是静态的数组，这里用every函数最为合适。every部件不会生成Each部件，而是直接生成List部件。这样更新部件层次时可以免除Each部件相对来说更为复杂的计算过程。
+
+   当需要动态化的数据时，Each部件就大有用武之地了。比如说，特立独行的你对上述框架都不满意，要即时增加一个特别的框架。
+
+	{flow, see, case_, each, every, func, list, div, label, text} = dc
+
+	firstLetter$ = see 'd',  (x) -> x.toLowerCase()
+	comp = null
+	prompt = label 'Please choose: '
+	prefered = text {onchange: -> comp.update()}, firstLetter$
+	
+	frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember']
+	items = each frameworks, (item) -> div "#{item[0]}. #{item}"
+	
+	prompt2 = label 'add some others: '
+	added = text onchange: ->
+		newFramework = this.value
+		frameworks.push newFramework
+		firstLetter$ newFramework[0]
+		comp.update()
+	
+	choice = func flowFunction = flow firstLetter, -> # (1)
+		firstLetter = firstLetter$()
+		for item in frameworks
+		  if item[0].toLowerCase()==firstLetter
+		    return item
+		'some other things'
+	
+	comp = list \
+		prompt, prefered,
+		prompt2, added,
+		items,
+		div "You perfer ", choice, "."
+
+### 路由
+
+### Promise
+
+### 定制更新方法
+
+domcom提供了多种管理部件更新的方法。既可以手动调用Component.mount, Componet.unmount, Component.render, Component.update直接触发更新，也可以利用Component.renderWhen, Component.updateWhen, dc.renderWhen, Component.updateWhen这样的方法声明更新的时机，比如Dom事件，setInterval, setTimeout, dc.raf等，从而让domcom更加自动化地管理更新过程。更具体的细节请参阅对应的API文档。
+
+### 更多例子
+
+`domcom/demo/`文件夹提供了更多的[演示示例](https://github.com/taijiweb/domcom/tree/master/demo)。在`domcom/`文件夹运行`gulp`命令行，然后打开`domcom/demo/index.html`(必须要有本地服务器，可以在webstorm打开，或者使用`python -m SimpleHTTPServer 8888`）,可以运行这些示例。
+
+### todoMVC
+
+[`domcom/demo/todoMVC`]文件夹(https://github.com/taijiweb/domcom/tree/master/demo/todomvc)提供了一个todoMVC(http://todomvc.com)的实现。在`domcom/`文件夹运行`gulp`命令行，然后打开`domcom/demo/todomvc/index.html`(必须要有本地服务器，可以在webstorm打开，或者使用`python -m SimpleHTTPServer 8888`），可以运行这个应用。
+
+## 与其它框架的比较
+
+### 更新检测
+
+angularjs使用脏值检测触发watcher的机制，当$apply某一个scope上的变化时，会反复运行该scope及以下各个层次scope上的watcher，有的时候因为持续的变化会导致watcher在一个$digest循环中执行多遍，甚至因为超过限制次数而触发infdig异常。infdig就象是马戏团的一个小丑，经常性地冒出来向我们提示angularjs存在这样一个不得已的补救措施，同时也表明整体设计上的某种缺憾，令人感觉十分奇怪和不爽。另外，angularjs这种方法还是需要使用者在directive和watcher中进行dom操作，并不能从根本上杜绝不必要的的DOM访问和dom更新。
+
+reactjs采用缓存和差异比较的方式，如果需要定制某个部件的刷新，普通办法是覆盖shouldComponentUpdate方法。如果props在重新绘制的时候没有发生变化，默认不更新下层部件。这和javascript的基于对象以及普遍运用副作用的的语言特性有些冲突。由此提出了flux的解决方案，并冒出了很多的扩展程序库，如reflux, redux, immutable.js等。我认为这些库从某种意义上是一种补救性的措施，反应了react.js某种设计上的不足。
+
+domcom采用响应函数作为更新检测的方案。检测和失效过程按照小粒度的数据、后继响应函数、部件特性和上层部件的方向进行传播。传播过程并不需要进行实际的计算，只是设置有效性标记。这样既不会产生angularJS中的无限循环或多次循环的问题，也不需要限制响应函数值的可变性，更加灵活，也更加高效。上述用于补救react.js的诸多程序库在domcom中直接没有多大价值，而domcom的应用自然而然地可以得到简化，结构也显得更清晰。而整体的代码量也可以大为减少，减少传输javascript脚本的网络流量。
+
+### 与模型和控制器的耦合
+
+  knockout.js, ember.js, backbone.js等采用定制对象作为model或者controler。这种方法对编码的影响和限制更为明显。当前的主流框架更少采用这种方法。
+
+  angular.js的模型数据可以是普通的javascript对象，但是必须挂到各级scope下。controller必须用angular的方法定制。scope、controller都构成某种层次关系。
+
+  react.js必须将模型数据从根部件通过this.props从上层到下层进行传递，对于动态数据要求用this.setState方法进行设置, 否则可能严重影响react.js的更新逻辑。react.js没有专门的controller的概念，但是习惯上controller方法都必须附属于部件类。
+
+  domcom中的各种元素只是普通的常量，变量或者响应函数，除此以外，对于模型或者控制器完全保持中立和开放的态度。可以看到，domcom的解耦程度是最高的。免除了上述框架带来的限制，应用可以根据问题域本身的需求任意组织数据，这将极大地促进整个系统的架构设计。
+
+### 组合和扩展能力
+
+angularjs 1.x 具有一组复杂的概念框架，一方面提升了学习曲线，另一方面也阻碍部件之间的组合。要实现controller，directive的组合、继承和扩展，要采用很多不平常的手法，克服很多技术障碍，经常令人望而生畏，妨碍着这些实践的普及。
+
+react.js的组合性有所改善，但是因为一方面必须将数据组织在props和state层次下，另一方面每个部件都必须要实现render方法，同时因为前述的更新检测方案产生的限制，组合和扩展能力还没有达到理想的境界。
+
+domcom不管是采用函数方法，还是采用对象方法，都能很自然地组合、变换、继承和扩展部件。前面的示例已经部分地体现了domcom在这方面的特点。
+
+### 响应式
+
+flyd.js, bacon.js, rx.js这些响应式框架虽然能为设计提供某种帮助，能以更少代码完成更多任务，但是我个人总觉得遵循这些框架的程序整体架构并没有变得更加清晰和更好理解，有陷入面条式响应流的感觉。虽然Domcom的大部分元素都是响应式的，但并不象上述框架一样按照响应流的模式来组织整体结构，而只是作为一种声明方法，因此程序显得更为直观和清晰。和这些响应式框架相比，Domcom的响是更为懒惰的。源头的变化并不立即触发后继的实际计算，而只是更新各级后继响应函数的有效性标记，并传播到Dom特性和各上层部件以指导部件更新和Dom刷新过程。
+
+## 下一步？ --  曙光在前
+
+  现在我们已经了解了Domcom的特点，优点，通过理解前面的范例，也初步掌握了通过domcom编写web应用的方法。domcom提供新的编写Web应用的方式，让我们在简化设计实现的同时追求最好的运行效率。接下来，我们可以进一步更全面的去熟悉domcom提供的API，更深入的它的概念和方法。
