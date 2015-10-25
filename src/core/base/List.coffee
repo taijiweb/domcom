@@ -38,6 +38,7 @@ module.exports = exports = class List extends BaseComponent
     node.parentNode = @parentNode
     @createChildrenDom()
     @firstNode = @childFristNode
+    @childrenNextNode = @nextNode
     @node
 
   createChildrenDom: ->
@@ -66,6 +67,7 @@ module.exports = exports = class List extends BaseComponent
     {children, parentNode, invalidIndexes} = @
     for index in invalidIndexes
       children[index].parentNode = parentNode
+    @childrenNextNode = @nextNode
     @updateChildrenDom()
 
   updateChildrenDom: ->
@@ -106,15 +108,28 @@ module.exports = exports = class List extends BaseComponent
       child.baseComponent.removeNode()
     return
 
+  pushChild: (child) -> @setChildren(@children.length, child)
+
+  unshiftChild: (child) -> @insertChild(0, child)
+
   insertChild: (index, child) ->
+    {children} = @
+    if index >= children.length
+      return @setChildren(index, child)
+
     @invalidate()
     child = toComponent(child)
-    @children.splice(index, 0, child)
+    children.splice(index, 0, child)
     @dcidIndexMap[child.dcid] = index
 
     if @node
+       # below will be executed before List.updateChildrenDom()
+#      if index > oldChildrenLength
+#        child.nextNode = @childrenNextNode
+
       {invalidIndexes} = @
       insertLocation = binaryInsert(index, invalidIndexes)
+
       # increment the indexes in the invalidInexes after insertLocation
       length = invalidIndexes.length
       insertLocation++
@@ -164,9 +179,17 @@ module.exports = exports = class List extends BaseComponent
     @invalidate()
     {children, family, node, dcidIndexMap} = @
 
+    if startIndex>oldChildrenLength=children.length
+      i = oldChildrenLength
+      while i<startIndex
+        newChildren.unshift new Nothing()
+        i++
+      startIndex = oldChildrenLength
+
     if node
       {invalidIndexes, removedChildren} = @
       insertLocation = binarySearch(startIndex, @invalidIndexes)
+
 
     stopIndex = startIndex+newChildren.length
     i = 0
@@ -174,6 +197,11 @@ module.exports = exports = class List extends BaseComponent
       child = toComponent newChildren[i]
 
       oldChild = children[startIndex]
+
+      # maybe stopIndex has exceeded the old length of the children
+      if !oldChild?
+        children[startIndex] = new Nothing()
+
       if oldChild==child
         if node
           invalidIndex = invalidIndexes[insertLocation]
@@ -193,10 +221,16 @@ module.exports = exports = class List extends BaseComponent
 
       startIndex++
       i++
+
+    # below will be executed before List.updateChildrenDom()
+#    if stopIndex>=oldChildrenLength
+#      child.nextNode = @childrenNextNode
+
     return @
 
   setLength: (newLength) ->
     children = @children
+    if newLength>=children.length then return @
     last = children.length-1
     if @node
       insertLocation = binarySearch(newLength, @invalidIndexes)

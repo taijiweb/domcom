@@ -1,7 +1,14 @@
 # domcom demo
-{select, see, case_, list, func} = dc
+{select, see, case_, list, func, each, p} = dc
 
 dc.directives $options: dc.$options,  $model: dc.$model
+
+demoEachPush = ->
+  lst = [1, 2]
+  comp = list each(lst, (item) -> p item), 'some other thing'
+  comp.mount()
+  lst.push 3
+  comp.render()
 
 {eachDemo1, eachDemo2, eachDemo3, eachDemo4} = require 'domcom/demo/demo-each'
 {demoArrow, demoCombo} = require 'domcom/demo/demo-builtins'
@@ -23,6 +30,7 @@ exports.demoMap = demoMap =
   each3:  func eachDemo3
   each4:  func eachDemo4
   'switch 1 2 3 4':  func require 'domcom/demo/demo-switch-1-2-3-4'
+  'choose web framework':  func require 'domcom/demo/demo-choose-web-framework'
   splitter:  func splitterDemo
   sum:  func require 'domcom/demo/demo-sum'
   'text model':  func require 'domcom/demo/demo-text-model'
@@ -35,26 +43,26 @@ exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem='arrow') ->
     case_(currentItem, demoMap, accordion).updateWhen(demoSelect, 'change')
 
 exports.runDomComDemo = window.runDomComDemo = ->
-  comp = accordion()
+#  comp = accordion()
 #  comp = demoCombo()
 #  comp = demoArrow()
-#  comp = demoMap["show hide"]()
-#  comp = demoMap["counter"]()
-#  comp = demoMap["dialog"]()
-#  comp = demoMap["event"]()
-#  comp = demoMap["controls"]()
-#  comp = demoMap["if"]()
-#  comp = demoMap["each1"]()
-#  comp = demoMap["each2"]()
-#  comp = demoMap["each3"]()
-#  comp = demoMap["each4"]()
-#  comp = demoMap["switch 1 2 3 4"]()
-#  comp = demoMap["splitter"]()
-#  comp = demoMap["sum"]()
-#  comp = demoMap["text model"]()
-#  comp = demoMap["auto width edit"]()
-#  comp = demoMap["mount/unmount"]()
+#  comp = demoMap["show hide"]
+#  comp = demoMap["counter"]
+#  comp = demoMap["dialog"]
+#  comp = demoMap["event"]
+#  comp = demoMap["controls"]
+#  comp = demoMap["if"]
+#  comp = demoMap["each1"]
+#  comp = demoMap["each2"]
+#  comp = demoMap["each3"]
+#  comp = demoMap["each4"]
+#  comp = demoMap["switch 1 2 3 4"]
+#  comp = demoMap["splitter"]
+#  comp = demoMap["sum"]
+#  comp = demoMap["text model"]
+#  comp = demoMap["auto width edit"]
+#  comp = demoMap["mount/unmount"]
 #  comp = makeDemoComponent(demoMap, demoArrow)
+
   comp = makeDemoComponent(demoMap)
   comp.mount()
-

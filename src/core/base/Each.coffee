@@ -136,17 +136,21 @@ module.exports = class Each extends TransformComponent
   invalidateChildren: (start, stop) ->
     if !stop? then stop = start+1
     i = start
+    {listComponent} = @
+    children = listComponent.children
+    oldChildrenLength = children.length
     while i<stop
       @getChild(i)
       i++
-    @listComponent.invalidChildren(start, stop)
+    if stop>oldChildrenLength
+      children[stop-1].nextNode = @nextNode
+    listComponent.invalidChildren(start, stop)
     @
 
   _setLength: (length) ->
     listComponent = @listComponent
     oldLength = listComponent.children.length
-    if length==oldLength then @
-    else if length>oldLength then @invalidateChildren(oldLength, length)
+    if length>=oldLength then @
     else
       if @keyFunction
         index = length

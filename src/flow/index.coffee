@@ -59,7 +59,9 @@ flow.pipe = (deps..., computation) ->
   reactive
 
 flow.react = react
+
 flow.dependent = dependent
+
 flow.flow = flow
 
 flow.see = see = (value, transform) ->

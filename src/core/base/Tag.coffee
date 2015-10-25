@@ -233,6 +233,7 @@ module.exports = class Tag extends List
     for child in children then child.parentNode = node
     if length=children.length then children[length-1].nextNode = null
     @childNodes = []
+    # @childrenNextNode = null # do not explicit set, by default this is true
     @createChildrenDom()
     @firstNode = node
 
@@ -243,6 +244,7 @@ module.exports = class Tag extends List
     {children, node, invalidIndexes} = @
     for index in invalidIndexes
       children[index].parentNode = node
+    # @childrenNextNode = null # do not explicit set, by default this is true
     @updateChildrenDom()
     @firstNode = @node
 

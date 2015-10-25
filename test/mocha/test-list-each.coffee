@@ -105,6 +105,15 @@ describe 'list, each', ->
       expect(comp.node.length).to.equal 1
       expect(comp.node[0].innerHTML).to.equal '1'
 
+    it  'should set childrenNextNode correctly', ->
+      lst = [1, 2]
+      comp = list (each1=each(lst, (item) -> p item)), 'some other thing'
+      comp.mount()
+      expect(each1.listComponent.childrenNextNode).to.equal(comp.node[1])
+      lst.push 3
+      comp.render()
+      expect(each1.listComponent.children[2].nextNode).to.equal(comp.node[1])
+
     it  'should create each component with two item', ->
       comp = each(lst = ['each', 'simple'], (item, i) -> p(item))
       comp.mount()

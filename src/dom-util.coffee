@@ -19,6 +19,7 @@ exports.getBindProp = (component)  ->
 {renew} = require './flow/index'
 
 exports.domValue = (value) ->
+
   if !value? then return ''
 
   if typeof value != 'function'

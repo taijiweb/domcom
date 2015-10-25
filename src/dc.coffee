@@ -42,13 +42,13 @@ dc.directives = (directives...) ->
       i += 2
   return
 
-dc.ready = (fn) -> readyFnList.push fn
+dc.onReady = (fn) -> readyFnList.push fn
 
-dc.onReady = ->
+dc.ready = ->
   for fn in readyFnList then fn()
   return
 
-document.addEventListener 'DOMContentLoaded', dc.onReady, false
+document.addEventListener 'DOMContentLoaded', dc.ready, false
 
 dc.render = render = ->
   for cb in renderCallbackList
@@ -69,9 +69,9 @@ window.dcid = newDcid()
 # can not write window.$document = dc(document)
 # why so strange? browser can predict the document.dcid=1, document.body.dcid=2 and assigns it in advance !!!!!!!
 dcid = document.dcid = newDcid()
-window.$document = componentCache[dcid] = new DomNode(document)
+window.$document = dc.$document = componentCache[dcid] = new DomNode(document)
 dcid = document.body.dcid = newDcid()
-window.$body = componentCache[dcid] = new DomNode(document.body)
+window.$body = dc.$body = componentCache[dcid] = new DomNode(document.body)
 
 # dc.updateWhen components, events, updateComponentList, options
 # dc.updateWhen setInterval, interval, components..., {clear: -> clearInterval test}

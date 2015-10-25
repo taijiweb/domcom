@@ -1,4 +1,4 @@
-exports.isArray = (exp) -> Object.prototype.toString.call(exp) == '[object Array]'
+exports.isArray = (item) -> Object.prototype.toString.call(item) == '[object Array]'
 
 exports.cloneObject = (obj) ->
   result = Object.create(null)
@@ -6,10 +6,10 @@ exports.cloneObject = (obj) ->
     result[key] = obj[key]
   result
 
-exports.pairListDict = (list...) ->
-  if list.length==1 then list = list[0]
-  len = list.length; i = 0; result = Object.create(null)
-  while i<len then result[list[i]] = list[i+1]; i += 2
+exports.pairListDict = (keyValuePairs...) ->
+  if keyValuePairs.length==1 then keyValuePairs = keyValuePairs[0]
+  len = keyValuePairs.length; i = 0; result = Object.create(null)
+  while i<len then result[keyValuePairs[i]] = keyValuePairs[i+1]; i += 2
   result
 
 dupStr = (str, n) ->
@@ -116,8 +116,9 @@ exports.binaryInsert = (item, items) ->
 # [0...n)
 # or [0...n()), if n is function
 exports.numbers = (n) ->
+  flow = require './flow'
   if typeof n == 'function'
-    ->
+    flow n, ->
       i = 0
       result = []
       length = n()
