@@ -16,6 +16,10 @@
 
 Domcom框架区别于其它框架的关键要素。Domcom中一切连接数据的成分，包括Dom特性，If,Case, Cond部件的测试条件，Func部件的func特性，Each部件基于的数组和对象，等等，都可以是响应函数。响应函数具有invalidateCallbacks，它包含该响应函数的失效回调函数的列表；还具有invalidate和onInvalidate两个方法，其中onInvalidate用于注册失效回调函数，invalidate用于执行onInvalidate注册的所有失效回调函数。
 
+* **响应依赖**
+
+响应函数之间存在的依赖关系。当被依赖的响应函数失效时，依赖于它的后继响应函数，部件特性、部件也将失效。
+
 * **强制响应函数**
 
 强制响应函数执行时总是连带执行自己的invalidate方法，进而执行用onInvalidate注册的所有回调，触发失效链。用flow.renew(fn)可以产生强制响应函数。构造部件时，一切可以用响应函数的地方如果被传入普通函数，domcom都会先用flow.new将其转换为强制响应函数。

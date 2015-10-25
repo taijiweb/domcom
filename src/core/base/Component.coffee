@@ -29,7 +29,7 @@ module.exports = class Component
 
   emit:(event, args...) ->
     if !(callbacks = @listeners[event]) then return
-    for cb in callbacks then cb.apply(@, args)
+    for callback in callbacks then callback.apply(@, args)
     @
 
   ### if mountNode is given, it should not the node of any Component

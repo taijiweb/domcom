@@ -2,22 +2,23 @@
 
 ## 文档说明
 
-### 本文档的记法习惯
+### 记法、体例
 
-* 函数原型记法：
+#### 函数原型记法
 
-functionName arg1[: Type1], arg2[: Type2], ...
-functionName()
+	functionName arg1[: Type1], arg2[: Type2], ...
+	
+	functionName()
 
-* 方法原型记法:
-class.methodName arg1[: Type1], arg2[: Type2], ...
-object.methodName arg1[: Type1], arg2[: Type2], ...
-class.methodName()
-object.methodName()
+#### 方法原型记法:
 
-上文中[]表示其中的内容可能省略。
+	object.methodName arg1[: Type1], arg2[: Type2], ...
+	
+	object.methodName()
 
-如果根据上下文类型是显然的，不便描述或不用描述，就会省略类型部分。
+[]表示其中的内容可能省略。
+
+根据上下文，如果类型是显然的，不便描述或不用描述，就会省略类型部分。
 
 上述记法适用于下一节“类型说明”以及后文中任何关于原型说明的文字。
 
@@ -27,25 +28,41 @@ object.methodName()
 
 以下是本文档函数原型说明中可能出现的一些类型:
 
-* item:toComponent: 代表item可以是任何值，但是所有的值(item)都会经过toComponent(item)转换成合适的部件。
-* value:domValue: 代表value:可以是任何值，但是所有的值(value)都会经过domValue(value)转换成适用的dom节点特性值。
+* item:toComponent: 代表item可以是任何值，但是item会经过toComponent(item)转换成合适的部件。
+
+* value:domValue: 代表value可以是任何值，但是value会经过domValue(value)转换成适用的dom节点特性值。
+
 * fn:Reactive：fn是响应函数
+
 * x:Any: x可以是任何类型
+
 * items:[Type]: items是元素类型为Type的数组
+
 * Array: 数组类型
-* item：ArrayIndex: 代表item是数组的下标索引。该数组一般是相关函数的某个参数或宿主对象的某个字段。
+
+* item：Index: 代表item是数组的下标索引。该数组一般是相关函数的某个参数或宿主对象的某个字段。
+
 * items:[Type1, Type2, ...]: items是元素按照Type1与Type2依次成对出现的数组
+
 * hash:Hash： hash是Object，要求不是数组或null
+
 * item：HashValue: 代表item是Hash对象的值。Hash对象一般是相关函数的某个参数或宿主对象的某个字段。
+
 * item：HashKey: 代表item是Hash对象的键。Hash对象一般是相关函数的某个参数或宿主对象的某个字段。
+
 * fn:(param1[: Type1] [, param2[: Type2] [, ...] ]) -> [Type]: 函数类型
+
 * item: Type1|Type2: 代表item:可以是类型1或者类型2的值
+
 * item:ValueReactive： item可以是任何值，也可以是响应函数，如果item是普通函数，会被转换为强制响应函数
+
 * attrs:Attrs: 代表attrs可以作为Tag部件的attrs属性。在instantiate.coffee中，isAttrs(attrs)应该为true
 
 ### 关于方法的说明
 
 本文档只描述公用的方法，包括类或类的实例提供的公用方法和模块提供的模块方法。
+
+************************************************************************
 
 ## 导入和引用domcom提供的api
 
@@ -64,15 +81,31 @@ object.methodName()
     {see} = require('domcom/src/flow'
     {div} = require('domcom/src/core/')
 
+### 原生的ES5的语法
+
+如果不借助上述工具，单纯采用原生的ES5，就只能用以下的方法：
+
+	var see = dc.see, div = dc.list, if_ = list.if_;
+
+或者象这样：
+
+	dc.see(1); dc.div({}, "hello"); dc.if_(x, "hello",  "hi")
+
+这显然不是很理想。还是建议尽量采用Coffee-script或者ES6的语法。 
+
+***********************************************************
+
 ## API参考
 
 ### 部件
 
-部件是构成Domcom骨架的最核心概念。domcom框架用部件代理和管理dom节点。每个部件最终将生成一个或一组Dom节点，某些特殊的部件不生成Dom节点，如Nothing部件和children.length为0的List部件。部件根据其基类的不同可以分成两大类：基础部件和变换部件。其中基础部件直接管理Dom，包括创建和刷新Dom，附着/删除节点等方法。变换节点最关键的方法是getContentComponent，通过这个方法逐步变成基础部件。Domcom通过部件提供了对于Dom包括节点、节点特性以及Dom事件在内的完整的声明式描述，并利用值和响应函数描述了Dom和数据的静态以及动态的交互关系，并以此为基础管理部件的更新过程和Dom刷新过程，最大限度提供时间和空间效率。
+部件是构成Domcom骨架的最核心概念。domcom框架用部件代理和管理dom节点。每个部件最终将生成自己对应的Dom节点或者生成空节点。部件根据其基类的不同可以分成两大类：基础部件和变换部件。其中基础部件直接管理Dom，带有创建和刷新Dom，附着/删除节点等方法。变换节点最关键的方法是getContentComponent，通过这个方法逐步变换成基础部件。Domcom通过部件提供了对于Dom包括节点、节点特性以及Dom事件在内的完整的声明式描述，并利用值和响应函数描述了Dom和数据之间静态以及动态的交互关系，并以此为基础管理部件的更新过程和Dom刷新过程，改善时间和空间效率。
+
+***********************************************************
 
 #### 部件基类： Component
 
-这是所有部件的基类，提供了部件类的公有方法，包括mount/unmount/remount用于管理部件的挂载与卸载, render/update管理部件的创建、绘制或更新，renderWhen/updateWhen便利设置重绘更新时机，on/off/emit管理部件内事件。
+这是所有部件的基类，提供了部件类的公有方法，其中mount, unmount和remount方法管理部件的挂载与卸载, render和update方法管理部件的创建、绘制或更新，renderWhen和updateWhen方法设置重绘和更新时机，on，off和emit方法管理部件事件。
 
 ##### 部件方法
 * **mount，unmount，remount**
@@ -145,11 +178,11 @@ object.methodName()
 
   > 函数原型: `component.toString indent:Int=0, addNewLine:Boolean`
 
-
+***********************************************************
 
 #### 基础部件基类： BaseComponent
 
-基础部件具有直接管理Dom的方法，包括createDom, updateDom，attachNode，removeNode等。大多数基础部件都直接生成Dom节点，List部件则间接通过子部件生成Dom节点，Nothing节点和空的List部件不会生成Dom节点。
+基础部件具有直接管理Dom的方法，包括createDom, updateDom，attachNode，removeNode等。大多数基础部件都直接生成Dom节点，List部件则间接通过子部件生成Dom节点，Nothing节点和空的List部件(`children.length==0`)不会生成实际的Dom节点，而是以空节点表示。节点特性为this.node。Tag，Text，Comment部件的node特性是实际的Dom节点。Html部件的node特性则包含一组实际的Dom节点。List的node特性是个数组，可能包含实际的Dom节点或者是别的List节点的node。如果是空节点，则有this.node = []。
 
 ##### 模块: Core/Base/BaseComponent
 
@@ -161,7 +194,7 @@ object.methodName()
 
   不要直接使用基础部件对象。
 
-
+***********************************************************
 
 #### 列表部件：List
 
@@ -171,9 +204,12 @@ object.methodName()
 
 ##### 子类：Tag
 
-##### 构造函数原型：	new List(children: [toComponent])
+##### 构造函数
+  > 函数原型： new List(children: [toComponent])
 
-##### 实例化函数原型： list children...: [toComponent]
+##### 实例化函数
+
+  > 函数原型： list children...: [toComponent]
 
 ##### 示例
 	list \
@@ -182,25 +218,39 @@ object.methodName()
 
 ##### 相关实例化函数: every, all, nItems
 
-every arrayItems:[Any], itemFn: (item:Any, index:int, arrayItems:arrayItems!) ->
+  > 函数原型： `every arrayItems:[Any], itemFn: (item:Any, index:int, arrayItems:arrayItems!) ->`
 
-all objectItems:Hash, (value, key, index:int, objectItems!) ->
+  > 函数原型： `all objectItems:Hash, (value, key, index:int, objectItems!) ->`
 
 ##### List部件方法
 
-列表部件提供了一组动态管理子部件的方法。这组方法可以增减childr中包含的子部件。注意，这些方法并不会立即影响Dom，而是先失效列表部件，等到调用部件更新方法时才会实际刷新Dom。除了在定制、扩展部件的时候，程序绝大多数时候可能不需要使用这些方法。
+列表部件提供了一组动态管理子部件的方法。这组方法可以增减部件特性children中包含的子部件。注意，这些方法并不会立即影响Dom，而是先失效列表部件，等到调用部件更新方法时才会实际刷新Dom。除了在定制、扩展部件的时候，程序绝大多数时候可能不需要使用这些方法。建议尽量不要使用这组方法直接强制性动态修改部件结构。
 
 * **pushChild**
 
+  > 函数原型：component.pushChild child:toComponent
+
 * **unshiftChild**
+
+  > 函数原型：component.unshiftChild child:toComponent
 
 * **insertChild**
 
+  > 函数原型：component.indexChild index:Index, child:toComponent
+
 * **removeChild**
+
+> 函数原型：component.removeChild index:Index
 
 * **setChildren**
 
+  > 函数原型：component.setChildren startIndex:Index, children:[toComponent]...
+
 * **setLength**
+
+  > 函数原型：component.setLength newLength:int
+
+***********************************************************
 
 #### 标签部件：Tag
 
@@ -213,12 +263,15 @@ all objectItems:Hash, (value, key, index:int, objectItems!) ->
 
 ##### 实例化函数原型
 
-	anyTagName attrs:Attrs, children...:[toComponent]
-    inputType attrs:Attrs, value:domValue
-	tag(tagName:TagName, children...)
-	tag(tagName, attrs:Attrs, children...)
+> 函数原型：anyTagName attrs:Attrs, children...:[toComponent]
 
-  上文中anyTagName或tagName是html页面中可以出现的标签名，例如div, p, span, input, textarea, select等，inputType是<intput>标签允许的类型值，包括text, number, checkbox, radio, email, date, tel等。这两项内容欲知完整列表参阅src/core/tag.coffee。
+> 函数原型：inputType attrs:Attrs, value:domValue
+
+> 函数原型：tag(tagName:TagName, children...)
+
+> 函数原型：tag(tagName, attrs:Attrs, children...)
+
+  anyTagName或tagName是html页面中可以出现的标签名，例如div, p, span, input, textarea, select等，inputType是<intput>标签允许的类型值，包括text, number, checkbox, radio, email, date, tel等。这两项内容欲知完整列表请参阅src/core/tag.coffee。
 
 ##### 示例
 
@@ -231,40 +284,45 @@ all objectItems:Hash, (value, key, index:int, objectItems!) ->
 
 ##### Tag部件方法
 
-发生在Dom节点上的事件，比如onclick，onchange等。对于Dom事件处理函数，domcom主要通过在构造Tag部件时利用attrs参数进行声明，也可以通过Tag.bind，Tag.unbind来管理。$model指令，Component.renderWhen, Component.updateWhen, dc,renderWhen, dc,updateWhen等函数也可以添加事件处理函数。
+Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特性，Css Style， Dom事件等。Dom事件是发生在Dom节点上的事件，不同于Domcom部件事件，这些事件包括onclick，onchange等。对于Dom事件处理函数，domcom主要通过构造Tag部件时利用attrs参数进行声明，也可以通过Tag.bind，Tag.unbind来管理。$model指令，Component.renderWhen, Component.updateWhen, dc,renderWhen, dc,updateWhen等函数也可以添加事件处理函数。
 
 * prop
 
-    tag.prop(prop, value)
+  > 函数原型： `tag.prop prop, value`
 
-    prop: 如果参数个数是1，则prop为特性名，此时函数返回部件对应的node的该特性名的值，或者为包含特性与值的集合的object，函数将扩展部件的特性集，如果参数个数为2， 则本方法将设置部件的prop特性为（tag.props[prop]=value）。
+   prop: 如果参数个数是1，则prop为特性名，此时函数返回部件对应的node的该特性名的值，或者为包含特性与值的集合的object，函数将扩展部件的特性集，如果参数个数为2， 则本方法将设置部件的prop特性为（tag.props[prop]=value）。
 
-    value: undefined,或者被设置的特性的值，可以是函数。如果是函数，部件对应的dom node的prop特性（tag.node[prop])将在每次更新的时候与该函数的值动态保持一致。
+   value: undefined,或者被设置的特性的值，可以是函数。如果是函数，部件对应的dom node的prop特性（tag.node[prop])将在每次更新的时候与该函数的值动态保持一致。
 
 * css
 
-    tag.css(prop, value)
-    如果参数个数是1，则prop为特性名，此时本方法返回部件的style中prop的值（tag.style[prop]），或者为包含特性与值的集合的object，本方法将扩展部件的style的特性集；如果参数个数为2， 则本方法将设置部件的style的prop特性（tag.style[prop]=value）。
-    prop: 特性名，或者包含特性与值的集合的object，函数将扩展部件的style的特性集
-    value: undefined，或者为部件的style的prop特性的值。value可以是函数。如果是函数，部件对应的dom node的style的prop特性（tag.node.style[prop])将在每次更新的时候与该函数的值动态保持一致。
+  > 函数原型：tag.css(prop, value)
+    
+  如果参数个数是1，则prop为特性名，此时本方法返回部件的style中prop的值（tag.style[prop]），或者为包含特性与值的集合的object，本方法将扩展部件的style的特性集；如果参数个数为2， 则本方法将设置部件的style的prop特性（tag.style[prop]=value）。
+    
+  prop: 特性名，或者包含特性与值的集合的object，函数将扩展部件的style的特性集
+  
+  value: undefined，或者为部件的style的prop特性的值。value可以是函数。如果是函数，部件对应的dom node的style的prop特性（tag.node.style[prop])将在每次更新的时候与该函数的值动态保持一致。
 
 * addClass, removeClass
 
-    tag.addClass(items...)
+  > 函数原型： `tag.addClass items...`
 
-    tag.removeClass(classes...)
+  > 函数原型： `tag.removeClass classes...`
 
 * show, hide
 
-    tag.show(display)
+  > 函数原型： `tag.show [display]`
 
-    tag.hide()
+  > 函数原型： `tag.hide()`
 
 * bind, unbind
 
-    tag.bind(eventName, handlers...)
+  > 函数原型： `tag.bind eventName, handlers:DomEventHandler`
 
-    tag.unbind(eventName, handlers...)
+  > 函数原型： `tag.unbind eventName, handler`
+
+***********************************************************
 
 ### 文本部件：Text
 
@@ -274,13 +332,13 @@ all objectItems:Hash, (value, key, index:int, objectItems!) ->
 
 ##### 子类：Html, Comment
 
-##### 构造函数原型
+##### 构造函数
 
-    nex Text text:domValue
+  > 函数原型：new Text text:domValue
 
-##### 实例化函数原型
+##### 实例化函数
 
-    txt attrs:Attrs, string:DomValue
+  > 函数原型：txt attrs:Attrs, string:DomValue
 
 ##### 说明
 
@@ -291,18 +349,21 @@ all objectItems:Hash, (value, key, index:int, objectItems!) ->
   div 1; p "hello", who$; li someVariable; span -> someVariable  # （1）
 
 
+***********************************************************
+
 ### Html部件: Html
 
 ##### 模块: Core/Base/Html
 
 ##### 直接基类：Text
 
-##### 构造函数原型
-	new Html htmlText:domValue[, transform:(String) -> String]
+##### 构造函数
 
-##### 实例化函数原型
+  > 函数原型：new Html htmlText:domValue[, transform:(String) -> String]
 
-	html attrs:Attrs, htmlText:domValue[, transform:(String) -> String]
+##### 实例化函数
+
+  > 函数原型：html attrs:Attrs, htmlText:domValue[, transform:(String) -> String]
 
 ##### 示例
 
@@ -310,26 +371,30 @@ all objectItems:Hash, (value, key, index:int, objectItems!) ->
 	html someHtmlTextString, escapeHtml
 
 
+***********************************************************
+
 ### 注释部件: Comment
 
 ##### 模块: Core/Base/Comment
 
 ##### 直接基类：Text
 
-##### 构造函数原型
+##### 构造函数
 
-	new Comment text:domValue
+  > 函数原型：new Comment text:domValue
 
-##### 实例化函数原型
+##### 实例化函数
 
-	comment text:domValue
+  > 函数原型：comment text:domValue
 
-    注释部件实例化不提供attrs:Attrs参数。
+  注释部件实例化不提供attrs:Attrs参数。
 
 ##### 示例
 
 	comment "this is a comment"
 
+
+***********************************************************
 
 ### 空部件: Nothing
 
@@ -337,27 +402,28 @@ all objectItems:Hash, (value, key, index:int, objectItems!) ->
 
 ##### 直接基类：BaseComponent
 
-##### 构造函数原型
+##### 构造函数
 
-	new Nothing()
+  > 函数原型：new Nothing()
 
-##### 实例化函数原型
+##### 实例化函数
 
-	nothing()
+  > 函数原型：nothing()
 
-    空部件实例化不提供attrs:Attrs参数。
+  空部件实例化不提供attrs:Attrs参数。
 
 ##### 说明
 
   当toComponent(item)中item是null或undefined时，将创建空部件。
 
 
+***********************************************************
 
 
 
 #### 变换部件基类： TransformComponent
 
-变换部件具有getContentComponent方法。重绘Dom前变换部件先调用getContentComponent方法，先获取内容部件后再决定重绘过程。
+  变换部件具有getContentComponent方法。重绘Dom前变换部件先调用getContentComponent方法，先获取内容部件后再决定重绘过程。变换部件通过内容部件链连接到基础部件，也会对应到Dom节点或空节点。节点特性为this.node。
 
 ##### 模块: Core/Base/TransformComponent
 
@@ -369,6 +435,7 @@ all objectItems:Hash, (value, key, index:int, objectItems!) ->
 
   不要直接使用变换部件对象。
 
+***********************************************************
 
 
 ### If部件：If
@@ -377,16 +444,17 @@ all objectItems:Hash, (value, key, index:int, objectItems!) ->
 
 ##### 模块: Core/Base/If
 
-##### 构造函数原型
+##### 构造函数
 
-	new If test:ValueReactive, then_:toComponent[, else_:toComponent]
+  > 函数原型：new If test:ValueReactive, then_:toComponent[, else_:toComponent]
 
-##### 实例化函数原型
+##### 实例化函数
 
-	if_ attrs:Attrs, test:ValueReactive, then_:toComponent[, else_:toComponent]
+  > 函数原型：if_ attrs:Attrs, test:ValueReactive, then_:toComponent[, else_:toComponent]
 
 ##### 示例
 
+***********************************************************
 
 ### Case部件：Case
 
@@ -394,99 +462,101 @@ all objectItems:Hash, (value, key, index:int, objectItems!) ->
 
 ##### 直接基类：TransformComponent
 
-##### 构造函数原型
+##### 构造函数
 
-	new Case test:ValueReactive, caseMap:Hash[, else_:toComponent]
+  > 函数原型：new Case test:ValueReactive, caseMap:Hash[, else_:toComponent]
 
-##### 实例化函数原型
+##### 实例化函数
 
-	case_ attrs:Attrs, test:ValueReactive, caseMap:Hash[, else_:toComponent]
+  > 函数原型：case_ attrs:Attrs, test:ValueReactive, caseMap:Hash[, else_:toComponent]
 
 ##### 示例
 
-
+***********************************************************
 
 ### Cond部件
 
 ##### 模块: Core/Base/Cond
 
-##### 构造函数原型
+##### 构造函数
 
-	new Cond testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent]
+  > 函数原型：new Cond testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent]
 
-##### 实例化函数原型
+##### 实例化函数
 
-	Cond attrs:Attrs, testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent]
+  > 函数原型：Cond attrs:Attrs, testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent]
 
 ##### 示例
 
-
+***********************************************************
 
 ##### Func函数部件
 
 ##### 模块: Core/Base/Func
 
-##### 构造函数原型
+##### 构造函数
 
-	new Func func:Reactive
+  > 函数原型：new Func func:Reactive
 
 ##### 实例化函数原型
 
-	func attrs:Attrs, func:Reactive
+  > 函数原型：func attrs:Attrs, func:Reactive
 
 ##### 示例
 
-
+***********************************************************
 
 ### Each部件
 
 ##### 模块: Core/Base/Each
 
-##### 构造函数原型
+##### 构造函数
 
-	new Each attrs:Attrs, items:[Any]|Reactive->[Any][,options:Options]
+  > 函数原型：new Each attrs:Attrs, items:[Any]|Reactive->[Any][,options:Options]
 
-##### 实例化函数原型
+##### 实例化函数
 
-	each attrs:Attrs, items:[Any]|Reactive->[Any][,options:Options]
+  > 函数原型：each attrs:Attrs, items:[Any]|Reactive->[Any][,options:Options]
 
 ##### 示例
 
-
+***********************************************************
 
 #### Route部件
 
 ##### 模块: Core/Base/route
 
-##### 构造函数原型
+##### 构造函数
 
-	new Html htmlText:domValue[, transform:(String) -> String]
+  > 函数原型：new Html htmlText:domValue[, transform:(String) -> String]
 
-##### 实例化函数原型
+##### 实例化函数
 
-	if_ attrs:Attrs, test:ValueReactive[, then_:toComponent[, else:toComponent]]
+  > 函数原型： if_ attrs:Attrs, test:ValueReactive[, then_:toComponent[, else:toComponent]]
 
 ##### 示例
 
 	html "<div> This is domcom </div> <div> That is angular </div>"
 	html someHtmlTextString, escapeHtml
 
+***********************************************************
+
 ### Defer部件
 
 ##### 模块: Core/Base/Defer
 
 
-##### 构造函数原型
+##### 构造函数
 
-	new Defer
+  > 函数原型：new Defer
         promise:Promise
         fulfill:((value, promise, component) -> toComponent)
         [reject: ((value, promise, component) -> toComponent)
         [init:toComponent]]
 
-##### 实例化函数原型
+##### 实例化函数
 
-	defer attrs:Attrs,
+  > 函数原型：defer attrs:Attrs,
         promise:Promise
         fulfill:((value, promise, component) -> toComponent)
         [reject: ((value, promise, component) -> toComponent)
@@ -494,60 +564,87 @@ all objectItems:Hash, (value, key, index:int, objectItems!) ->
 
 ##### 示例
 
+***********************************************************
 
 ### 响应函数
 
-响应函数是Domcom框架区别于其它框架的关键要素。Domcom中一切连接数据的成分，包括Dom特性，If,Case, Cond部件的测试条件，Func部件的func特性，Each部件基于的数组和对象，等等，都可以是响应函数。响应函数具有invalidateCallbacks，它包含该响应函数的失效回调函数的列表；还具有invalidate和onInvalidate两个方法，其中onInvalidate用于注册失效回调函数，invalidate用于执行onInvalidate注册的所有失效回调函数。
+  响应函数是Domcom框架区别于其它框架的关键要素。Domcom中一切连接数据的成分，包括Dom特性，If,Case, Cond部件的测试条件，Func部件的func特性，Each部件基于的数组和对象，等等，都可以是响应函数。响应函数具有invalidateCallbacks，它包含该响应函数的失效回调函数的列表；还具有invalidate和onInvalidate两个方法，其中onInvalidate用于注册失效回调函数，invalidate用于执行onInvalidate注册的所有失效回调函数。
 
-响应函数通过响应函数生成器来产生。
+  响应函数通过响应函数生成器来产生。
 
-domcom与响应函数相关的方法都定义在domcom/srs/flow/文件夹，其中所有方法名都直接定义在dc.flow名字空间，可以用flow.someName或者{someName,...} = dc.flow的方式引用。为了方便flow/index模块下的常用方法名也导入到了dc名字空间，因此也可以通过dc.someName或{someName,...} = dc的方式引用。
+  domcom与响应函数相关的方法都定义在domcom/srs/flow/文件夹，其中所有方法名都直接定义在dc.flow名字空间，可以用flow.someName或者{someName,...} = dc.flow的方式引用。为了方便flow/index模块下的常用方法名也导入到了dc名字空间，因此也可以通过dc.someName或{someName,...} = dc的方式引用。
 
 #### flow/index模块
 
-react
+##### react
 
-reactive.invalidate
+* 函数原型： ``
 
-renew
+##### reactive.invalidate
 
-dependent
+* 函数原型： ``
 
-flow
+##### renew
 
-pipe
+* 函数原型： ``
 
-depend
+##### dependent
 
-see
+* 函数原型： ``
 
-* 函数原型：see value: Any[, Transform:(Value) -> Any]
+##### flow
 
-username$ = see "Tom"
+  * 函数原型： ``
 
-num1$ = see 1,
-num2$ = see 2
+##### pipe
 
-seeN
+  * 函数原型： ``
+
+##### depend
+
+  * 函数原型： ``
+
+##### see
+
+  * 函数原型： `see value: Any[, Transform:(Value) -> Any]`
+
+  * 示例
+    
+    username$ = see "Tom"
+
+    num1$ = see 1,
+    num2$ = see 2
+
+##### seeN
+
+  * 函数原型： ``
 
 
-bind
+##### bind
 
-score = { name: "Tom", points:95}
+  * 示例
 
-name$ = bind(scores, "name")
+	score = { name: "Tom", points:95}
+	
+	name$ = bind(scores, "name")
+	
+##### duplex
+	
+	points$ = duplex(scores, "points")
+	
+##### unary
+	
+##### binary
 
-duplex
-
-points$ = duplex(scores, "points")
-
-unary
-
-binary
-
+****************************************************************************
 
 #### flow/watch-list模块
 
+##### watchEachList
+
+##### watchEachObject
+
+****************************************************************************
 
 #### flow/addon模块
 
@@ -571,6 +668,8 @@ flow.min = (x, y) -> binary(x, y, (x, y) -> Math.min(x, y))
 
 flow.if_ = (test, then_, else_) ->
 
+******************************************************************
+
 ### Tag特性工具函数
 
 #### 模块：src/core/property
@@ -589,7 +688,9 @@ classFn(items...)
 
 styleFrom(value)
 
-    value: 形如"stylePropName:value; ..."的style字符串, 或者形如"stylePropName:value"的项的数组, 可包含空白字符, 或者形如[stylePropName, value]的项的数组
+    value: 形如"stylePropName:value; ..."的style字符串, 
+      或: 形如"stylePropName:value"的项的数组, 可包含空白字符, 
+      或: 形如[stylePropName, value]的项的数组
 
 #### extendAttrs
 
@@ -615,6 +716,7 @@ extendEventValue(props, prop, value, before)
 
     before: 如果是javascript任何可以为真的值则value将被添加或连接到原事件处理器数组之前, 否则将被添加或连接到之前。默认为假。
 
+***********************************************************
 
 ### 指令
 
@@ -689,7 +791,7 @@ extendEventValue(props, prop, value, before)
 
 * 模块：src/directives/options
 
-* 说明：只能配合`<select>标签部件使用
+* 说明：只能配合`<select>`标签部件使用
 
 * 用法：select $options: [items]
 
@@ -704,6 +806,8 @@ extendEventValue(props, prop, value, before)
     obj = {a:1}
     a = duplex obj, 'a'
     comp = text type:'text', $model:a
+
+***********************************************************
 
 ### 内置部件
 
@@ -753,45 +857,195 @@ dc(element, options={})
 
 * dc.$body(与window.$body)
 
-* dc.renderWhe
+* dc.renderWhen
 
 * dc.updateWhen
 
 #### util工具函数
 
-isArray
-
-cloneObject
-
-pairListDict
-
-newLine
-
-isEven
-
-intersect
-
-substractSet
-
-binarySearch
-
-binaryInsert
-
-numbers
-
 ##### 模块： domcom/src/util
+
+Domcom实现的这组util工具函数主要提供给框架代码使用，并非出于提供一组通用性的工具函数的目的。用户程序请视情况使用。
+
+##### isArray
+
+  判断任何项是不是数组类型。
+
+* 类型定义
+
+  > 函数原型: `isArray item:Any`
+
+* 参考实现：
+
+  当前的实现代码如下，仅作参考，有可能在后续版本进行修改。代码位于domcom/src/util.coffee：
+
+	exports.isArray = (item) -> Object.prototype.toString.call(item) == '[object Array]'
+
+
+##### cloneObject
+
+  复制对象参数。
+
+* 类型定义
+
+  > 函数原型: `cloneObject obj:Object`
+
+##### pairListDict
+
+  将列表数组中的项成对地复制成字典类型(或者叫hash，map， object）。
+
+* 类型定义
+
+  > 函数原型: `pairListDict keyValuePairs[key, value, ...]...`
+
+##### newLine
+
+  返回一个带起始新行以及指定缩进的字符串。
+
+* 类型定义
+
+  > 函数原型: `newLine str:String, indent:Natural, addNewLine:Boolean`
+
+##### isEven
+
+  判断某数是否是偶数。
+
+* 类型定义
+
+  > 函数原型: `isEven n:Int`
+
+##### intersect
+
+  求两个集合的交集。
+
+* 类型定义
+
+  > 函数原型: `intersect maps:Set`
+
+##### substractSet
+
+  求两个集合的差集。
+
+* 类型定义
+
+  > 函数原型: `substractSet whole：Set, part:Set`
+
+##### binarySearch
+
+  对排序的项进行二分搜索查找item。如果item已经存在，返回item已存在的位置的索引，否则返回适合插入item的位置的索引。
+
+* 类型定义
+
+  > 函数原型: `binarySearch item, items`
+
+##### binaryInsert
+
+  将项item按序插入已经排序的数组中。如果项item已经存在，则不做插入。使用二分搜索算法。返回插入item的位置或item已存在的位置的索引。
+
+  Domcom通过binarySearch和binaryInsert提高更新List部件children的时间效率。
+
+* 类型定义
+
+  > 函数原型: `binaryInsert item, items`
+
+##### numbers
+
+  如果n是数，返回小于n的整数列表，如果n是函数，则返回一个响应函数，该响应函数响应依赖于n。
+
+* 类型定义
+
+  > 函数原型: `numbers n:Int`
+
+**********************************************
 
 #### dom-util工具函数
 
-##### 模块： domcom/src/dom-util
+##### 模块： domcom/dom-util
 
-domValue
+##### domValue
 
-requestAnimationFrame
+  如果value是undefind或null，返回""；如果是普通函数，返回强制响应函数; 如果是响应函数，直接返回该项；如果是Promise(有then方法和catch方法), 返回该promise的响应函数代理。其它情况返回该项自身(因为domValue一般用作Dom特性，因此后续一般会因Javascript语言的类型转换机制而调用该项的toString转换成字符串）。
 
-#### extend函数
+  domValue通常由domcom自动调用。用户程序一般无需直接使用该函数。
 
-# https://github.com/justmoon/node-extend
+* 类型定义：
+  
+  > 函数原型: `domValue item:DomValue`
+  
+* 实现代码参考：
 
-##### 模块： domcom/src/extend
+  如下代码位于domcom/src/dom-util.coffee：
 
+	exports.domValue = (value) ->
+
+	  if !value? then return ''
+	
+	  if typeof value != 'function'
+	
+	   if value.then and x.catch
+	     fn = react -> fn.promiseResult
+	
+	     value.then (value) ->
+	        fn.promiseResult = value
+	        fn.invalidate()
+	
+	     .catch (error) ->
+	        fn.promiseResult = error
+	        fn.invalidate()
+	
+	     return fn
+	
+	   else return value
+	
+	  if !value.invalidate then return renew(value)
+	
+	  value
+
+
+##### requestAnimationFrame (即dc.raf)
+
+  window.requestAnimationFrame或其腻子函数，被dc.renderLoop使用。
+
+* 类型定义：
+  
+  > 函数原型: `requestAnimationFrame callback:Callback`
+  
+* 示例
+   
+ 如下代码位于domcom/src/dc.coffee：
+
+	dc.renderLoop = renderLoop = ->
+	  requestAnimFrame renderLoop
+	  render()
+	  return   
+
+*********************************************************
+ 
+#### 模块：domcom/extend 
+
+##### extend函数
+
+将第二个开始的对象类型参数(或者叫做hasn, map)的特性补充到底一个对象类型参数。采用https://github.com/justmoon/node-extend。
+
+* 模块： domcom/src/extend
+
+* 函数原型
+
+ > 函数原型: ` extend toObject:Object, fromObjects:[Object]:...`
+  
+* 示例
+   
+  如下代码位于domcom/src/index.coffee：
+  
+	extend dc,
+	
+	  require './config'
+	
+	  # utilities
+	  require './flow/index'
+	  require './flow/watch-list'
+	  require './dom-util'
+	  require './util'
+	
+	  # component
+	  require './core/index'
