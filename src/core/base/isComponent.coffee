@@ -1,1 +1,1 @@
-module.exports = (x) -> x and x.renderDom
+module.exports = (item) -> item and item.renderDom

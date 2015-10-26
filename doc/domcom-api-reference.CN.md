@@ -16,47 +16,59 @@
 	
 	object.methodName()
 
-[]表示其中的内容可能省略。
+此处[]表示其中的内容可能省略。后文中函数或方法原型说明中出现的[...]，如果不是表示数组类型，就表示其中的内容是可选参数。
 
 根据上下文，如果类型是显然的，不便描述或不用描述，就会省略类型部分。
 
-上述记法适用于下一节“类型说明”以及后文中任何关于原型说明的文字。
+上述记法适用于下一节“类型说明”以及后文中的函数或方法原型说明。
 
-[...]出现在实际的原型说明中，如果不是代表数组类型的含义，就表示其中的内容是可选参数。
 
 ### 类型说明
 
+本类型说明只是一个非正式的规范，为我们理解文档和编写用户程序提供帮助之用，不应该被当作精确的形式化体系。
+
 以下是本文档函数原型说明中可能出现的一些类型:
 
-* item:toComponent: 代表item可以是任何值，但是item会经过toComponent(item)转换成合适的部件。
+* item:toComponent:    代表item可以是任何值，但是item会经过toComponent(item)转换成合适的部件。
 
-* value:domValue: 代表value可以是任何值，但是value会经过domValue(value)转换成适用的dom节点特性值。
+* value:domValue:    代表value可以是任何值，但是value会经过domValue(value)转换成适用的dom节点特性值。
 
-* fn:Reactive：fn是响应函数
+* fn:Reactive：   fn是响应函数
 
-* x:Any: x可以是任何类型
+* x:Any:    x可以是任何类型
 
-* items:[Type]: items是元素类型为Type的数组
+* items:[Type]:    items是元素类型为Type的数组
 
-* Array: 数组类型
+* Array:    数组类型
 
-* item：Index: 代表item是数组的下标索引。该数组一般是相关函数的某个参数或宿主对象的某个字段。
+* items:[Type1, Type2, ...]:    items是元素按照Type1与Type2依次成对出现的数组
 
-* items:[Type1, Type2, ...]: items是元素按照Type1与Type2依次成对出现的数组
+* hash:Hash：    hash是Object，要求不是数组或null
 
-* hash:Hash： hash是Object，要求不是数组或null
+* item：HashValue:    代表item是Hash对象的值。Hash对象一般是相关函数的某个参数或宿主对象的某个字段。
 
-* item：HashValue: 代表item是Hash对象的值。Hash对象一般是相关函数的某个参数或宿主对象的某个字段。
+* item：HashKey:    代表item是Hash对象的键。Hash对象一般是相关函数的某个参数或宿主对象的某个字段。
 
-* item：HashKey: 代表item是Hash对象的键。Hash对象一般是相关函数的某个参数或宿主对象的某个字段。
+* item: Set:    代表item是个集合（特指键值总是为true或1的Object）。
 
-* fn:(param1[: Type1] [, param2[: Type2] [, ...] ]) -> [Type]: 函数类型
+* fn:(param1[: Type1] [, param2[: Type2] [, ...] ]) -> [Type]:    函数类型。
 
-* item: Type1|Type2: 代表item:可以是类型1或者类型2的值
+* item:Type1|Type2:    代表item:可以是类型1或者类型2的值。
 
-* item:ValueReactive： item可以是任何值，也可以是响应函数，如果item是普通函数，会被转换为强制响应函数
+* item:ValueReactive：    item可以是任何值，也可以是响应函数，如果item是普通函数，会被转换为强制响应函数。
 
-* attrs:Attrs: 代表attrs可以作为Tag部件的attrs属性。在instantiate.coffee中，isAttrs(attrs)应该为true
+* attrs:Attrs:    代表attrs可以作为Tag部件的attrs属性。在instantiate.coffee中，isAttrs(attrs)应该为true
+
+* item：Index:    代表item是数组的下标索引。该数组一般是相关函数的某个参数或宿主对象的某个字段。
+
+* item：Boolean:  代表item是布尔类型。
+
+* item：Int: 代表item是整数类型
+
+* item：String:    代表item是字符串。
+
+* item：Promise:    代表item是Promise类型，应该带有then方法和catch方法。
+
 
 ### 关于方法的说明
 
@@ -85,7 +97,7 @@
 
 如果不借助上述工具，单纯采用原生的ES5，就只能用以下的方法：
 
-	var see = dc.see, div = dc.list, if_ = list.if_;
+	var see = dc.see, div = dc.div, if_ = dc.if_;
 
 或者象这样：
 
@@ -112,7 +124,7 @@
 
   > 函数原型：`component.mount mountNode：Null|domNode, beforeNode：Null|domNode`
   
-  挂载部件。如果Dom节点不存在，挂载前将创建Dom节点。mountNode是将要挂载的父节点，如果省略，将挂载到document.body节点。beforeNode将成为部件节点的下一相邻节点。假设实际挂载的父节点是parentNode，部件创建的Dom节点是Node，则挂载方法如下：`parentNode.insertBefore(node, beforeNode)`
+  挂载部件。如果Dom节点不存在，挂载前将创建Dom节点。mountNode是将要挂载的父节点，如果省略，将挂载到document.body节点。beforeNode将成为部件节点的下一相邻节点。假设实际挂载的父节点是parentNode，部件创建的Dom节点是node，则挂载方法如下：`parentNode.insertBefore(node, beforeNode)`
 
   > 函数原型：`component.unmount()`
   
@@ -130,24 +142,23 @@
 
   > 函数原型：`component.update()`
   
-  更新部件。本方法和render方法唯一的区别是本方法将先调用`component.emit('update')`
+  更新部件。本方法和render方法的区别是本方法将先调用`component.emit('update')`
 
 * **renderWhen，updateWhen**
 
-  定制部件的更新时机：可以是其它某个或一组部件上发生的某些Dom事件，也可以采用window.setInterval或者dc.raf方法。
-
-  > 函数原型：
+  定制部件的更新时机：可以是其它某个或一组部件上发生的某些Dom事件，也可以采用window.setInterval或者dc.raf方法。以下是这两个函数的类型说明：
   
-  `component.renderWhen [Component]|Component, [DomEventName], "render"|"update"`
-  `component.renderWhen setInterval, ms, options`
-  `component.renderWhen dc.raf, options`  
+  > 函数原型： `component.renderWhen [Component]|Component, [DomEventName], options`
   
+  > 函数原型： `component.renderWhen setInterval, ms, options`
 
-  > 函数原型：
+  > 函数原型： `component.renderWhen dc.raf, options`  
 
-  `component.updateWhen [Component]|Component, [DomEventName], "render"|"update"`
-  `component.renderWhen setInterval, ms, options`
-  `component.renderWhen dc.raf, options`
+  > 函数原型： `component.updateWhen [Component]|Component, [DomEventName], options`
+  
+  > 函数原型： `component.renderWhen setInterval, ms, options`
+  
+  > 函数原型： `component.renderWhen dc.raf, options`
 
 * **on, off, emit**
 
@@ -155,7 +166,7 @@
 
   > 函数原型：`component.on event, callback`
   
-  注册部件事件回调函数fn，部件对象将成为fn的this上下文。
+  注册部件事件回调函数callback，部件对象将成为callback的this上下文。
 
   > 函数原型： `component.off event, callback`
 
@@ -163,26 +174,77 @@
 
   > 函数原型： `component.emit event, args...`
 
-  执行注册在event上的所有回调。对于每个回调callback都执行`callback.apply(component, args)`
+  执行注册在event上的所有回调函数。对于每个回调函数callback都执行`callback.apply(component, args)`
 
 * **clone**
 
-  Component类自身没有定义本方法，但是domcom内建的可以实例化的派生类都定义了这个方法。扩充新的部件类时，如果该部件有可能需要复制自身产生一个copy部件，应该定义这个方法。clone方法可以复制一个component的拷贝。当部件需要用于多处，而直接引用可能引起Dom节点附着位置冲突的时候，可以考虑使用这个方法。
+  Component类自身没有定义本方法，但是domcom内建的可以实例化的派生类大多定义了这个方法。扩充新的部件类时，如果该部件有可能需要复制自身产生一个copy部件，应该定义这个方法。clone方法可以复制一个component的拷贝。当部件需要用于多处，而直接引用可能引起Dom节点附着位置冲突的时候，可以考虑使用这个方法。
 
   > 函数原型: `component.clone()`
 
 
 * **toString**
 
-  Component自身没有定义本方法，但是domcom内建的可以实例化的派生类都定义了这个方法，主要作用是为了帮助调试。
+  Component自身没有定义本方法，但是domcom内建的可以实例化的派生类大多定义了这个方法，主要作用是为了帮助调试。
 
   > 函数原型: `component.toString indent:Int=0, addNewLine:Boolean`
+
+***********************************************************
+#### 部件辅助工具函数
+
+#### toComponent函数
+
+将任何项转化为部件。如果是部件，返回自身。如果是函数，返回文本部件，部件的文本域是该函数。如果是数组，返回列表部件。如果是promise，返回该promise的代理响应函数。如果是空值(null或undefined)，返回Nothing部件。其它情况返回文本部件。
+
+##### 函数类型
+
+  > 函数原型: `toComponent item:Any`
+
+##### 参考实现
+
+	toComponent = (item) ->
+
+	  if isComponent(item) then item
+	
+	  else if typeof item == 'function' then new Text(item)
+	
+	  else if item instanceof Array
+	    new List(for e in item then toComponent(e))
+	
+	  else if !item? then new Nothing()
+	
+	  else if item.then and item.catch
+	    component = new Func react -> component.promiseResult
+	
+	    item.then (value) ->
+	      component.promiseResult = value
+	      component.invalideTransform()
+	
+	    item.catch (error) ->
+	      component.promiseResult = error
+	      component.invalideTransform()
+	
+	    component
+	
+	  else new Text(item)
+
+#### isComponent函数
+
+判断任何项是否为部件。
+
+##### 函数类型
+
+  > 函数原型: `isComponent item:Any`
+
+##### 参考实现
+	
+	isComponent = (item) -> item and item.renderDom
 
 ***********************************************************
 
 #### 基础部件基类： BaseComponent
 
-基础部件具有直接管理Dom的方法，包括createDom, updateDom，attachNode，removeNode等。大多数基础部件都直接生成Dom节点，List部件则间接通过子部件生成Dom节点，Nothing节点和空的List部件(`children.length==0`)不会生成实际的Dom节点，而是以空节点表示。节点特性为this.node。Tag，Text，Comment部件的node特性是实际的Dom节点。Html部件的node特性则包含一组实际的Dom节点。List的node特性是个数组，可能包含实际的Dom节点或者是别的List节点的node。如果是空节点，则有this.node = []。
+基础部件具有直接管理Dom的方法，包括createDom, updateDom，attachNode，removeNode等。大多数基础部件都直接生成Dom节点，List部件则间接通过子部件生成Dom节点，空的List部件(`children.length==0`)和Nothing节点不会生成实际的Dom节点，而是以空数组[]表示空节点。节点特性为this.node。Tag，Text，Comment部件的node特性是实际的Dom节点；Html部件的node特性是数组，包含一组实际的Dom节点；List的node特性是数组，包含实际的Dom节点或者是别的List节点的node。
 
 ##### 模块: Core/Base/BaseComponent
 
@@ -218,9 +280,15 @@
 
 ##### 相关实例化函数: every, all, nItems
 
-  > 函数原型： `every arrayItems:[Any], itemFn: (item:Any, index:int, arrayItems:arrayItems!) ->`
+  every, all和nItems都返回列表部件的实例。
 
-  > 函数原型： `all objectItems:Hash, (value, key, index:int, objectItems!) ->`
+  > 函数原型： `every arrayItems:[Any], itemFn:(item:Any, index:int, arrayItems:arrayItems!) -> toComponent`
+
+  > 函数原型： `all objectItems:Hash, itemFn:(value, key, index:Index, objectItems!) -> toComponent`
+
+  > 函数原型： `nItems n:Int|Function|Reactive, itemFn:(value, key, index:Index, objectItems!) -> toComponent`  
+  
+  itemFn称为部件模板函数，返回部件，如果返回值不是部件，将被toComponent函数转化为部件。
 
 ##### List部件方法
 
@@ -228,27 +296,27 @@
 
 * **pushChild**
 
-  > 函数原型：component.pushChild child:toComponent
+  > 函数原型： `component.pushChild child:toComponent`
 
 * **unshiftChild**
 
-  > 函数原型：component.unshiftChild child:toComponent
+  > 函数原型： `component.unshiftChild child:toComponent`
 
 * **insertChild**
 
-  > 函数原型：component.indexChild index:Index, child:toComponent
+  > 函数原型： `component.indexChild index:Index, child:toComponent`
 
 * **removeChild**
 
-> 函数原型：component.removeChild index:Index
+> 函数原型： `component.removeChild index:Index`
 
 * **setChildren**
 
-  > 函数原型：component.setChildren startIndex:Index, children:[toComponent]...
+  > 函数原型： `component.setChildren startIndex:Index, children:[toComponent]...`
 
 * **setLength**
 
-  > 函数原型：component.setLength newLength:int
+  > 函数原型： `component.setLength newLength:int`
 
 ***********************************************************
 
@@ -263,15 +331,13 @@
 
 ##### 实例化函数原型
 
-> 函数原型：anyTagName attrs:Attrs, children...:[toComponent]
+> 函数原型： `dcTagName [attrs:Attrs] [, children:[toComponent]...]`
 
-> 函数原型：inputType attrs:Attrs, value:domValue
+> 函数原型： `inputType [attrs:Attrs][, value:domValue]`
 
-> 函数原型：tag(tagName:TagName, children...)
+> 函数原型： `tag tagName:anyTagName [attrs:Attrs][, children:[toComponent]...]`
 
-> 函数原型：tag(tagName, attrs:Attrs, children...)
-
-  anyTagName或tagName是html页面中可以出现的标签名，例如div, p, span, input, textarea, select等，inputType是<intput>标签允许的类型值，包括text, number, checkbox, radio, email, date, tel等。这两项内容欲知完整列表请参阅src/core/tag.coffee。
+  anyTagName是可以作为html标签名的字符串。dcTagName是可以实例化Tag部件的函数名，必须从dc名字空间引入对于的名字方可使用，例如div, p, span, input, textarea, select等，inputType是<intput>标签允许的类型值，包括text, number, checkbox, radio, email, date, tel等。这两项内容欲知完整列表请参阅src/core/tag.coffee。
 
 ##### 示例
 
@@ -284,11 +350,11 @@
 
 ##### Tag部件方法
 
-Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特性，Css Style， Dom事件等。Dom事件是发生在Dom节点上的事件，不同于Domcom部件事件，这些事件包括onclick，onchange等。对于Dom事件处理函数，domcom主要通过构造Tag部件时利用attrs参数进行声明，也可以通过Tag.bind，Tag.unbind来管理。$model指令，Component.renderWhen, Component.updateWhen, dc,renderWhen, dc,updateWhen等函数也可以添加事件处理函数。
+Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特性，Css Style， Dom事件等。Tag部件所定义的Dom节点特性是响应式的，即这些值如果是函数，则成为响应函数。只有响应函数的计算失效时，Tag部件才需要更新这些特性。而更新特性时，会将计算所得新值与缓存值进行比较，只有两者不相同才需要实际修改Dom节点特性，执行Dom操作以刷新Dom。Dom事件是发生在Dom节点上的事件，不同于Domcom部件事件，这些事件包括onclick，onchange等。对于Dom事件处理函数，domcom主要通过构造Tag部件时利用attrs参数进行声明，也可以通过Tag.bind，Tag.unbind来管理。$model指令，Component.renderWhen, Component.updateWhen, dc,renderWhen, dc,updateWhen等函数也可以添加事件处理函数。
 
 * prop
 
-  > 函数原型： `tag.prop prop, value`
+  > 函数原型： `tag.prop prop:PropName|PropSet, value：domValue`
 
    prop: 如果参数个数是1，则prop为特性名，此时函数返回部件对应的node的该特性名的值，或者为包含特性与值的集合的object，函数将扩展部件的特性集，如果参数个数为2， 则本方法将设置部件的prop特性为（tag.props[prop]=value）。
 
@@ -296,7 +362,7 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 * css
 
-  > 函数原型：tag.css(prop, value)
+  > 函数原型： `tag.css prop:PropName|PropSet, value：domValue`
     
   如果参数个数是1，则prop为特性名，此时本方法返回部件的style中prop的值（tag.style[prop]），或者为包含特性与值的集合的object，本方法将扩展部件的style的特性集；如果参数个数为2， 则本方法将设置部件的style的prop特性（tag.style[prop]=value）。
     
@@ -334,11 +400,11 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 ##### 构造函数
 
-  > 函数原型：new Text text:domValue
+  > 函数原型： `new Text text:domValue`
 
 ##### 实例化函数
 
-  > 函数原型：txt attrs:Attrs, string:DomValue
+  > 函数原型： `txt [attrs:Attrs, ]string:DomValue`
 
 ##### 说明
 
@@ -359,11 +425,11 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 ##### 构造函数
 
-  > 函数原型：new Html htmlText:domValue[, transform:(String) -> String]
+  > 函数原型： `new Html htmlText:domValue[, transform:(String) -> String]`
 
 ##### 实例化函数
 
-  > 函数原型：html attrs:Attrs, htmlText:domValue[, transform:(String) -> String]
+  > 函数原型： `html [attrs:Attrs, ]htmlText:domValue[, transform:(String) -> String]`
 
 ##### 示例
 
@@ -446,11 +512,11 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 ##### 构造函数
 
-  > 函数原型：new If test:ValueReactive, then_:toComponent[, else_:toComponent]
+  > 函数原型： `new If test:ValueReactive, then_:toComponent[, else_:toComponent]`
 
 ##### 实例化函数
 
-  > 函数原型：if_ attrs:Attrs, test:ValueReactive, then_:toComponent[, else_:toComponent]
+  > 函数原型： `if_ [attrs:Attrs, ]test:ValueReactive, then_:toComponent[, else_:toComponent]`
 
 ##### 示例
 
@@ -464,11 +530,11 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 ##### 构造函数
 
-  > 函数原型：new Case test:ValueReactive, caseMap:Hash[, else_:toComponent]
+  > 函数原型： `new Case test:ValueReactive, caseMap:Hash[, else_:toComponent]`
 
 ##### 实例化函数
 
-  > 函数原型：case_ attrs:Attrs, test:ValueReactive, caseMap:Hash[, else_:toComponent]
+  > 函数原型： `case_ [attrs:Attrs, ]test:ValueReactive, caseMap:Hash[, else_:toComponent]`
 
 ##### 示例
 
@@ -480,11 +546,11 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 ##### 构造函数
 
-  > 函数原型：new Cond testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent]
+  > 函数原型： `new Cond testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent]`
 
 ##### 实例化函数
 
-  > 函数原型：Cond attrs:Attrs, testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent]
+  > 函数原型： `Cond attrs:Attrs, testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent]`
 
 ##### 示例
 
@@ -496,11 +562,11 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 ##### 构造函数
 
-  > 函数原型：new Func func:Reactive
+  > 函数原型： `new Func func:Function|Reactive`
 
 ##### 实例化函数原型
 
-  > 函数原型：func attrs:Attrs, func:Reactive
+  > 函数原型： `func [attrs:Attrs, ]func:Function|Reactive`
 
 ##### 示例
 
@@ -512,11 +578,11 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 ##### 构造函数
 
-  > 函数原型：new Each attrs:Attrs, items:[Any]|Reactive->[Any][,options:Options]
+  > 函数原型： `new Each attrs:Attrs, items:[Any]|Reactive->[Any][,options:Options]`
 
 ##### 实例化函数
 
-  > 函数原型：each attrs:Attrs, items:[Any]|Reactive->[Any][,options:Options]
+  > 函数原型： `each [attrs:Attrs, ]items:[Any]|Reactive->[Any][,options:Options]`
 
 ##### 示例
 
@@ -528,17 +594,38 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 ##### 构造函数
 
-  > 函数原型：new Html htmlText:domValue[, transform:(String) -> String]
+  > 函数原型： `new Router routeList, otherwise, baseIndex`
+  
+  基本没有必要直接使用Router构造函数，使用route函数总是更方便。route附带有to方法，而Router则没有。
 
 ##### 实例化函数
 
-  > 函数原型： if_ attrs:Attrs, test:ValueReactive[, then_:toComponent[, else:toComponent]]
+  > 函数原型： `route routeList:[RoutePattern, RouteHandler...], [otherwise：toComponent][, baseIndex]`
+  
+  其中，RoutePattern是路由模式字符串或者路由模式字符串及测试函数，路由模式字符串中可以包括包括查询字段名(冒号:引导的标识符)及正则表达式，通配符(*或**)及普通字符串。
+
+  RouteHandler是如下类型的函数：
+
+  > 函数原型： `(match:RouteMatchResult, childRoute: RouteInstantiateFunction) -> toComponent`
+
+  RouteMatchResult的类型如下：
+    { 
+      items: 匹配的查询字段结果。
+      basePath: 传入路由部件的基路径
+      segment: [String]：与模式相匹配的字符段
+      leftPath: String： 与模式匹配过后剩余的字符段
+      childBase: Int：子路由部件的字符段基索引
+    }
+  
+  route和childRoute带有to方法，可用于设置`location.href`或者`window.history`。
+
+  > 函数原型： `route.to path:RelativePath|AbsolutePath`
+  
+  > 函数原型： `childRoute.to path:RelativePath|AbsolutePath`
 
 ##### 示例
 
-	html "<div> This is domcom </div> <div> That is angular </div>"
-	html someHtmlTextString, escapeHtml
-
+	
 ***********************************************************
 
 ### Defer部件
@@ -648,65 +735,133 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 #### flow/addon模块
 
-bindings
+绑定绑定： bindings
 
-flow.neg = (x) -> unary(x, (x) -> -x)
-flow.no = (x) -> unary(x, (x) -> !x)
-flow.bitnot = (x) -> unary(x, (x) -> ~x)
-flow.reciprocal = (x) -> unary(x, (x) -> 1/x)
-flow.abs = (x) -> unary(x, Math.abs)
-flow.floor = (x) -> unary(x, Math.floor)
-flow.ceil = (x) -> unary(x, Math.ceil)
-flow.round = (x) -> unary(x, Math.round)
-sum$ = flow.add num1$, num2$
+一元运算：neg， no， bitnot， reciprocal，abs， floor，ceil， round
 
-flow.add = (x, y) -> binary(x, y, (x, y) -> x+y)
-flow.sub = (x, y) -> binary(x, y, (x, y) -> x-y)
-flow.mul = (x, y) -> binary(x, y, (x, y) -> x*y)
-flow.div = (x, y) -> binary(x, y, (x, y) -> x/y)
-flow.min = (x, y) -> binary(x, y, (x, y) -> Math.min(x, y))
+二元运算：add， sub，mul，div，min
 
-flow.if_ = (test, then_, else_) ->
+条件判断：if_
 
 ******************************************************************
 
-### Tag特性工具函数
+### domcom辅助工具
 
-#### 模块：src/core/property
+#### DomNode类
 
-#### 说明
+#### dc直属工具函数
+
+##### 模块： domcom/src/dc
+
+##### 方法
+
+* dc
+
+  > 函数原型：`dc element: DomSelector|Node|[Node]|NodeList, options={}`
+   
+
+* dc.directives
+
+  注册一条或多条指令。关于指令以及此方法的详细说明请参考后面“指令”一节的专门描述。
+
+* dc.onReady
+
+  > 函数原型：`dc.onReady fn:Callback`
+  
+
+* dc.ready
+  
+  执行dc.onReady注册的所有回调函数。
+
+  > 函数原型：`dc.ready()`
+ 
+
+* dc.onRender
+
+  注册应该在dc.render中执行的回调函数。
+
+
+  > 函数原型：`dc.onRender callback:Callback`
+  
+
+* dc.offRender
+
+  移除已经注册的应该在dc.render中执行的回调函数。
+
+  > 函数原型：`dc.offRender callback:Callback`
+
+
+* dc.render
+
+  执行经由dc.onRender注册的所有回调函数。
+
+  > 函数原型：`dc.render()`
+  
+
+* dc.renderLoop
+
+  通过requestAnimFrame（或者其腻子函数）循环执行`dc.render()`。
+  
+  > 函数原型：`dc.renderLoop()`
+  
+  如下代码是dc.renderLoop的实现，位于domcom/src/dc.coffee：
+
+	dc.renderLoop = renderLoop = ->
+	  requestAnimFrame renderLoop
+	  render()
+	  return
+
+* dc.renderWhen和dc.updateWhen
+
+
+##### dc特性
+ 
+* dc.$document
+  
+  与window.$document是同一个变量，dc.$document = dc(window.document)
+
+* dc.$body
+ 
+  与window.$body)，dc.$body = dc(window.body)
+
+
+#### Tag特性工具函数
+
+##### 模块：src/core/property
+
+##### 说明
 
 为处理Tag的class，style及其它特性提供便利的一组工具函数。包括classFn, styleFrom, extendAttrs等
 
-#### classFn
+##### classFn
 
-classFn(items...)
+  > 函数原型: classFn： items：[classFnType]...
 
-    递归地，items中的项可以是className的字符串, 或者是classFn产生的函数, 或者是项的集合
+  classFnType是个递归定义的类型，其定义为：`ClassName|MultipleClassNames|classFn(...)|classFnType`
 
-### styleFrom
+    
+#### styleFrom
 
-styleFrom(value)
+  > 函数原型: styleFrom value
 
     value: 形如"stylePropName:value; ..."的style字符串, 
       或: 形如"stylePropName:value"的项的数组, 可包含空白字符, 
       或: 形如[stylePropName, value]的项的数组
 
-#### extendAttrs
 
-extendAttrs(attrs, obj)
+##### extendAttrs
 
-    扩展部件的属性集对象
+  > 函数原型: extendAttrs toAttrs:Attrs|Null, fromAttrs:Attrs|Null
 
-    attrs: 待扩展的属性集, 如果是null或undefined, 将创建一个新的空对象
+  > 函数原型: overAttrs fromAttrs:Attrs|Null, toAttrs:Attrs|Null
 
-    obj: 用来覆盖或增强属性集特性的对象
+    toAttrs: 待扩展的属性集, 如果是null或undefined, 将创建一个新的空对象
 
-overAttrs = overAttrs = (attrs, obj) ->
+    fromAttrs: 用来覆盖或增强属性集特性的对象
 
-#### extendEventValue
+##### extendEventValue
 
-extendEventValue(props, prop, value, before)
+  > 函数原型: extendEventValue props, prop, value, before
 
     props: 部件的events特性
 
@@ -717,149 +872,6 @@ extendEventValue(props, prop, value, before)
     before: 如果是javascript任何可以为真的值则value将被添加或连接到原事件处理器数组之前, 否则将被添加或连接到之前。默认为假。
 
 ***********************************************************
-
-### 指令
-
- domcom通过使用指令可以在某些情况下让代码更为简明，更为符合人的书写和阅读习惯。domcom的指令设计借鉴了angular的指令，但是，在domcom中指令只是作为语法糖存在，并不具有独立的不可替代的作用。任何时候都可以用普通的函数代替指令来实现完全相同的需求，区别只存在于代码格式方面。
-
- 指令只允许用在Tag部件上。指令的使用方法是：
-
-   tag { ..., $directiveName: directiveArguments, ...}, ...
-
- 在执行Tag部件的初始化期间处理Tag的属性集的时候，如果遇到以"$"字符开头的属性，domcom认为这是一个指令，会查找预先注册的指令集，如果找到该指令的指令处理函数生成器，则以directiveArguments作为参数调用该生成器，然后用该调用返回的指令处理函数来处理该部件。如果没有注册该指令，domcom将认为是一个错误。
-
-#### 注册指令
-
-  domcom中使用任何指令前必须显式地注册。注册方法有两种。可以批量注册
-    dc.directives {$directiveName:directiveGenerator, ...}
-
-
-  或者注册单个指令
-    dc.directives $directiveName:directiveGenerator
-
-  directiveGenerator应该是个指令处理函数生成器。
-
-#### 指令处理函数
-
-  指令处理函数接受部件参数，对该部件进行处理，并返回该部件。
-
-#### 指令处理函数生成器
-
-  指令处理函数生成器是个返回指令处理函数的函数，返回的函数用于处理部件。
-
-#### 内建指令
-
-##### 文件夹路径：src/directives/
-
-##### 说明
-
-在上述文件夹定义了一组内建指令，也就是说定义了一组函数，这组函数可以充当指令处理函数生成器。可以通过如下代码注册所有内置指令:
-
-    dc.directives dc.builtinDirectives
-
-也可以单个地注册需要使用的指令, 例如：
-
-    {$model} = dc
-    dc.directives $model:$model
-
-##### $model指令
-
-* 模块：src/directives/model
-
-* 用法：tag $model: model
-
-##### $bind指令
-
-* 模块：src/directives/bind
-* 用法：tag $bind: model
-
-##### $show和$hide指令
-
-* 模块：src/directives/show-hide
-* 用法：
-  tag $show:test
-  tag $show: [test, display]
-  tag $hide: test
-  tag $hide: [test, display]
-
-##### $splitter指令
-
-* 模块：src/directives/splitter
-* $splitter: direction
-
-##### $options指令
-
-* 模块：src/directives/options
-
-* 说明：只能配合`<select>`标签部件使用
-
-* 用法：select $options: [items]
-
-##### $blink指令
-
-* 模块：src/directives/blink
-* tag $blink: delay
-
-#### 示例
-
-    {input, model, duplex} = require('domcom')
-    obj = {a:1}
-    a = duplex obj, 'a'
-    comp = text type:'text', $model:a
-
-***********************************************************
-
-### 内置部件
-
-#### 说明
-
-  combo, comboEdit, dialog, arrow, accordion
-
-#### 子文件夹路径：domcom/src/builtins
-
-### domcom工具
-
-#### DomNode类
-
-#### dc直属工具函数
-
-##### 模块： domcom/src/dc
-
-* dc
-
-dc(element, options={})
-
-* dc.directives
-
-* dc.onReady
-
-* dc.onReady(fn)
-
-* dc.ready
-
-* dc.ready()
-
-* dc.render
-
-* dc.render()
-
-* dc.onRender
-
-* dc.onRender(fn)
-
-* dc.offRender
-
-* dc.offRender(fn)
-
-* dc.renderLoop
-
-* dc.$document(与window.$document相同)
-
-* dc.$body(与window.$body)
-
-* dc.renderWhen
-
-* dc.updateWhen
 
 #### util工具函数
 
@@ -904,7 +916,7 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
 
 * 类型定义
 
-  > 函数原型: `newLine str:String, indent:Natural, addNewLine:Boolean`
+  > 函数原型: `newLine str:String, indent:Int, addNewLine:Boolean`
 
 ##### isEven
 
@@ -920,7 +932,7 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
 
 * 类型定义
 
-  > 函数原型: `intersect maps:Set`
+  > 函数原型: `intersect maps:[Set]`
 
 ##### substractSet
 
@@ -936,7 +948,7 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
 
 * 类型定义
 
-  > 函数原型: `binarySearch item, items`
+  > 函数原型: `binarySearch item:Sortable, items[Sortable]`
 
 ##### binaryInsert
 
@@ -946,15 +958,15 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
 
 * 类型定义
 
-  > 函数原型: `binaryInsert item, items`
+  > 函数原型: `binaryInsert item:Sortable, items[Sortable]`
 
 ##### numbers
 
-  如果n是数，返回小于n的整数列表，如果n是函数，则返回一个响应函数，该响应函数响应依赖于n。
+  如果n是整数(必须大于等于0），返回小于n的整数列表，如果n是函数，则返回一个响应依赖于n的响应函数，该响应函数返回小于n()的整数列表。
 
 * 类型定义
 
-  > 函数原型: `numbers n:Int`
+  > 函数原型: `numbers n:Int|Function|Reactive`
 
 **********************************************
 
@@ -1049,3 +1061,101 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
 	
 	  # component
 	  require './core/index'
+
+### Domcom指令
+
+ domcom通过使用指令可以在某些情况下让代码更为简明，更为符合人的书写和阅读习惯。domcom的指令设计借鉴了angular的指令，但是，在domcom中指令只是作为语法糖存在，并不具有独立的不可替代的作用。任何时候都可以用普通的函数代替指令来实现完全相同的需求，区别只存在于代码格式方面。
+
+ 指令只允许用在Tag部件上。指令的使用方法是：
+
+   tag { ..., $directiveName: directiveArguments, ...}, ...
+
+ 在执行Tag部件的初始化期间处理Tag的属性集的时候，如果遇到以"$"字符开头的属性，domcom认为这是一个指令，会查找预先注册的指令集，如果找到该指令的指令处理函数生成器，则以directiveArguments作为参数调用该生成器，然后用该调用返回的指令处理函数来处理该部件。如果没有注册该指令，domcom将认为是一个错误。
+
+#### 注册指令
+
+  domcom中使用任何指令前必须显式地注册。注册方法有两种。可以批量注册
+
+  > 函数原型： `dc.directives {$directiveName:generator:DirectiveHandlerGenerator ... }`
+  
+  或者注册单个指令
+
+  > 函数原型： `dc.directives $directiveName:String, generator:DirectiveHandlerGenerator`
+  
+  其中，DirectiveHandlerGenerator表示指令处理函数生成器，是个返回指令处理函数的函数。其类型如下
+  
+  > 函数原型： `DirectiveHandlerGenerator: (...) -> DirectiveHandler`
+  
+  DirectiveHandler表示指令处理函数，它接受部件参数，对该部件进行处理，并返回该部件，其类型如下：
+
+  > 函数原型： `DirectiveHandler: (component) -> component` 
+
+#### 内建指令
+
+  Domcom预定义了一组内建指令。
+
+##### 文件夹路径：src/directives/
+
+##### 说明
+
+在上述文件夹定义了一组内建指令，也就是说定义了一组函数，这组函数可以充当指令处理函数生成器。可以通过如下代码注册所有内置指令:
+
+    dc.directives dc.builtinDirectives
+
+也可以单个地注册需要使用的指令, 例如：
+
+    {$model} = dc
+    dc.directives $model:$model
+
+##### $model指令
+
+* 模块：src/directives/model
+
+* 用法：tag $model: model
+
+##### $bind指令
+
+* 模块：src/directives/bind
+* 用法：tag $bind: model
+
+##### $show和$hide指令
+
+* 模块：src/directives/show-hide
+* 用法：
+  tag $show:test
+  tag $show: [test, display]
+  tag $hide: test
+  tag $hide: [test, display]
+
+##### $splitter指令
+
+* 模块：src/directives/splitter
+* $splitter: direction
+
+##### $options指令
+
+* 模块：src/directives/options
+
+* 说明：只能配合`<select>`标签部件使用
+
+* 用法：select $options: [items]
+
+##### $blink指令
+
+* 模块：src/directives/blink
+* tag $blink: delay
+
+#### 示例
+
+    {input, model, duplex} = require('domcom')
+    obj = {a:1}
+    a = duplex obj, 'a'
+    comp = text type:'text', $model:a
+
+***********************************************************
+
+### 内置部件
+
+  Domcom预定义了一组内置部件，包括combo, dialog, arrow, accordion等。这些部件主要起演示作用，实际项目中请视情况选用。从这些实例可以看到，在Domcom框架下，要扩充新的部件是非常简单的。
+
+#### 子文件夹路径：domcom/src/builtins
