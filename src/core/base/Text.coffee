@@ -9,7 +9,7 @@ module.exports = class Text extends BaseComponent
     @text = text = domValue(text)
     if typeof text == 'function'
       text.onInvalidate -> me.invalidate()
-    @family = Object.create(null)
+    @family = {}
     @family[@dcid] = true
     @
 

@@ -10,7 +10,7 @@ mountList = []
 
 module.exports = class Component
   constructor: ->
-    @listeners = Object.create(null)
+    @listeners = {}
     @baseComponent = null
     @parentNode = null
     @node = null

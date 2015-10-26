@@ -27,8 +27,8 @@ describe "test base component", ->
   describe 'process get baseComponent of Tag',  ->
 
     it 'should getBaseComponent of two tags', ->
-      p1 = new Tag('p', Object.create(null), [])
-      d = new Tag('div', Object.create(null), [p1])
+      p1 = new Tag('p', {}, [])
+      d = new Tag('div', {}, [p1])
       expect(d.baseComponent).to.equal d
       expect(d.children[0]).to.be.instanceof Tag
       d.mount()

@@ -3,23 +3,23 @@
  * @param element
 ###
 DomNode = require './DomNode'
-{requestAnimationFrame, raf} = require  './dom-util'
+{requestAnimationFrame, raf, isElement} = require  './dom-util'
 {newDcid, isEven} = require './util'
 {componentCache, readyFnList, _updateComponentMap, directiveRegistry, renderCallbackList, rootComponents} = require './config'
 isComponent = require './core/base/isComponent'
+
 
 module.exports = dc = (element, options={}) ->
   if typeof element == 'string'
     if options.noCache then querySelector(element, options.all)
     else componentCache[element] or componentCache[element] = querySelector(element, options.all)
-  else if element instanceof Node
+  else if element instanceof Node or element instanceof NodeList or element instanceof Array
     if options.noCache then new DomNode(element)
     else
       if element.dcid then componentCache[element.dcid]
       else
         element.dcid = newDcid()
         componentCache[element.dcid] = new DomNode(element)
-  else if element instanceof DomNode then element
   else throw new Error('error type for dc')
 
 querySelector = (selector, all) ->
@@ -27,38 +27,36 @@ querySelector = (selector, all) ->
   else new DomNode(document.querySelector(selector))
 
 # register directive
-# directiveHandler: (...) -> (component) -> component
-dc.directives = (directives...) ->
-  if directives.length==1
-    for directiveName, directiveHandler of directives[0]
-      if directiveName[0]!='$' then directiveName = '$'+directiveName
-      directiveRegistry[directiveName] = directiveHandler
+# directiveHandlerGenerator: (...) -> (component) -> component
+dc.directives = (directiveName, directiveHandlerGenerator) ->
+  if arguments.length==1
+    for name, generator of directiveName
+      if name[0]!='$' then name = '$'+name
+      directiveRegistry[name] = generator
   else
-    if !isEven(len=directives.length)
-      throw new Error 'missing directive handler for directives '+directives[len]
-    i = 0
-    while i<len
-      directiveRegistry[directives[i]] = directives[i+1]
-      i += 2
-  return
+    if directiveName[0]!='$' then directiveName = '$'+directiveName
+    directiveRegistry[directiveName] = directiveHandlerGenerator
 
-dc.onReady = (fn) -> readyFnList.push fn
+dc.onReady = (callback) -> readyFnList.push callback
+
+dc.offReady = (callback) ->
+  readyFnList.indexOf(callback)>=0 and  readyFnList.splice(index, 1)
 
 dc.ready = ->
-  for fn in readyFnList then fn()
+  for callback in readyFnList then callback()
   return
 
 document.addEventListener 'DOMContentLoaded', dc.ready, false
 
 dc.render = render = ->
-  for cb in renderCallbackList
-    cb()
+  for callback in renderCallbackList
+    callback()
 
-dc.onRender = (cb) ->
-  renderCallbackList.push cb
+dc.onRender = (callback) ->
+  renderCallbackList.push callback
 
-dc.offRender = (cb) ->
-  renderCallbackList.indexOf(cb)>=0 and  renderCallbackList.splice(index, 1)
+dc.offRender = (callback) ->
+  renderCallbackList.indexOf(callback)>=0 and  renderCallbackList.splice(index, 1)
 
 dc.renderLoop = renderLoop = ->
   requestAnimFrame renderLoop
@@ -132,14 +130,14 @@ _renderComponentWhenBy = (method, component, event, updateList, options) ->
 addSetIntervalUpdater = (method, component, options) ->
   handler = null
   {test, interval, clear} = options
-  fn = ->
+  callback = ->
     if !test or test() then component[method]()
     if clear and clear() then clearInterval handler
-  handler = setInterval(fn, interval or 16)
+  handler = setInterval(callback, interval or 16)
 
 addRafUpdater = (method, component, options) ->
   {test, clear} = options
-  fn = ->
+  callback = ->
     if !test or test() then component[method]()
-    if clear and clear() then dc.offRender fn
-  dc.onRender fn
+    if clear and clear() then dc.offRender callback
+  dc.onRender callback

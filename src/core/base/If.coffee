@@ -17,7 +17,7 @@ maybeIf = (test, then_, else_) ->
   if then_==else_ then return then_
   if typeof test == 'function'
     if then_.isTag and else_.isTag and then_.tagName==else_.tagName and then_.namespace==else_.namespace
-      attrs = Object.create(null)
+      attrs = {}
       thenAttrs = then_.attrs
       elseAttrs = else_.attrs
       for key of bothKeys(thenAttrs, elseAttrs)

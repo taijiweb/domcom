@@ -15,11 +15,11 @@ processProp = (props, cache, prop, value) ->
 module.exports = class DomNode
   constructor: (@node) ->
     if node instanceof Node
-      @cacheProps = Object.create(null)
-      @cacheStyle = Object.create(null)
+      @cacheProps = {}
+      @cacheStyle = {}
     else
-      @cacheProps = for n in @node then Object.create(null)
-      @cacheStyle = for n in @node then Object.create(null)
+      @cacheProps = for n in @node then {}
+      @cacheStyle = for n in @node then {}
 
   prop: (prop, value) ->
     {node} = @

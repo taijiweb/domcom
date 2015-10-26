@@ -8,11 +8,11 @@ Component, each
 extendAttrs} = dc
 
 module.exports = exports = accordion = (attrs, accordionGroupList, options) ->
-  attrs = extendAttrs {class:"panel-group"}, attrs  or Object.create(null)
-  accordionOptions = options or Object.create(null)
+  attrs = extendAttrs {class:"panel-group"}, attrs  or {}
+  accordionOptions = options or {}
   comp = div(attrs, each(accordionGroupList, (group, index) ->
       [groupAttrs, heading, content, groupOptions] = group
-      groupOptions = groupOptions or Object.create(null)
+      groupOptions = groupOptions or {}
       groupOptions.toggleOpen = ->
         groupOptions.opened = !groupOptions.opened
         if accordionOptions.closeOthers and groupOptions.opened

@@ -9,7 +9,7 @@ a, p, span, text, li, div, button, input} = dc
 describe "component  ", ->
   describe 'construct component', ->
     it 'component shoud have children', ->
-      comp = p(Object.create(null), [1, 2])
+      comp = p({}, [1, 2])
       expect(comp.children.length).to.equal 2
 
     it 'should construct component', ->
@@ -42,7 +42,7 @@ describe "component  ", ->
       expect(comp.node.innerHTML).to.equal ''
 
     it 'should mount tag 1',  ->
-      comp = new Tag('div', Object.create(null), [])
+      comp = new Tag('div', {}, [])
       comp.mount()
       expect(comp.node.tagName).to.equal 'DIV'
 

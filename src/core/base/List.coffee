@@ -8,9 +8,9 @@ module.exports = exports = class List extends BaseComponent
   constructor: (@children) ->
     super()
 
-    @family = family = Object.create(null)
+    @family = family = {}
     family[@dcid] = true
-    @dcidIndexMap = dcidIndexMap = Object.create(null)
+    @dcidIndexMap = dcidIndexMap = {}
 
     for child, i in children
       children[i] = child = toComponent(child)
@@ -44,7 +44,7 @@ module.exports = exports = class List extends BaseComponent
   createChildrenDom: ->
     node = @childNodes
     @invalidIndexes = []
-    @removedChildren = Object.create(null)
+    @removedChildren = {}
     {children} = @
     index = children.length-1
     firstNode = null
@@ -76,7 +76,7 @@ module.exports = exports = class List extends BaseComponent
     if !invalidIndexes.length
       for _, child of @removedChildren
         child.removeDom()
-      @removedChildren = Object.create(null)
+      @removedChildren = {}
       return childNodes
 
     {children} = @
@@ -98,7 +98,7 @@ module.exports = exports = class List extends BaseComponent
 
     for _, child of @removedChildren
       child.removeDom()
-    @removedChildren = Object.create(null)
+    @removedChildren = {}
 
     childNodes
 

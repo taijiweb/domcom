@@ -8,14 +8,14 @@ isAttrs = (item) ->
 
 attrsChildren = (args) ->
   attrs = args[0]
-  if !args.length then [Object.create(null), []]
-  else if `attrs==null` then [Object.create(null), args.slice(1)]
-  else if attrs instanceof Array then [Object.create(null), args]
-  else if typeof attrs == 'function' then [Object.create(null), args]
+  if !args.length then [{}, []]
+  else if `attrs==null` then [{}, args.slice(1)]
+  else if attrs instanceof Array then [{}, args]
+  else if typeof attrs == 'function' then [{}, args]
   else if typeof attrs == 'object'
-    if isComponent(attrs) then [Object.create(null), args]
+    if isComponent(attrs) then [{}, args]
     else [attrs, args.slice(1)]
-  else [Object.create(null), args]
+  else [{}, args]
 
 toTagChildren = (args) ->
   if args not instanceof Array then [args]
@@ -105,6 +105,7 @@ exports.all = (attrs, hash, itemFn) ->
     children = []
     i = 0
     for key, value of hash
+      if !hash.hasOwnProperty((key)) then break
       children.push itemFn(key, value, i, hash)
       i++
     new Tag('div', attrs, [new List(children)])
@@ -113,6 +114,7 @@ exports.all = (attrs, hash, itemFn) ->
     children = []
     i = 0
     for key, value of attrs
+      if !attrs.hasOwnProperty((key)) then break
       children.push itemFn(key, value, i, hash)
       i++
     new List(children)

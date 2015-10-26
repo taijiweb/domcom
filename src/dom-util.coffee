@@ -16,6 +16,11 @@ exports.getBindProp = (component)  ->
   else if component.attrs.type=='checkbox' then return 'checked'
   else return 'value'
 
+# Returns true if it is a DOM element
+exports.isElement = (item) ->
+  if typeof HTMLElement == "object" then item instanceof HTMLElement
+  else item and typeof item == "object" and item != null && item.nodeType == 1 && typeof item.nodeName=="string"
+
 {renew} = require './flow/index'
 
 exports.domValue = (value) ->

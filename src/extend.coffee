@@ -25,11 +25,11 @@ module.exports = ->
   # Handle a deep copy situation
   if typeof target == 'boolean'
     deep = target
-    target = arguments[1] or Object.create(null)
+    target = arguments[1] or {}
     # skip the boolean and the target
     i = 2
   else if typeof target != 'object' and typeof target != 'function' or target == null
-    target = Object.create(null)
+    target = {}
   while i < length
     options = arguments[i]
     # Only deal with non-null/undefined values
@@ -49,7 +49,7 @@ module.exports = ->
             copyIsArray = false
             clone = if src and Array.isArray(src) then src else []
           else
-            clone = if src and isPlainObject(src) then src else Object.create(null)
+            clone = if src and isPlainObject(src) then src else {}
           # Never move original objects, clone them
           target[name] = extend(deep, clone, copy)
           # Don't bring in undefined values

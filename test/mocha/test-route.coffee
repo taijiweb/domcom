@@ -4,7 +4,7 @@ rePatternTotal = /^((:([$_\w]+)(\([^\(\)]+\))?)|(\([^\(\)]+\))|([^:\(]*))+$/
 rePattern = /^((:([$_\w]+)(\([^\(\)]+\))?)|(\([^\(\)]+\))|([^:\(]+))/
 slashs = /(?:\\\/)|(?:\\\()|(?:\\\))/
 
-{isComponent, route, txt} = dc
+{isComponent, route, txt, Nothing} = dc
 
 describe 'route', ->
   describe 'route regexp', ->
@@ -73,77 +73,77 @@ describe 'route', ->
     it "should route 'a'", ->
       comp = route 'a', -> 1
       comp.getPath = -> 'a'
-      expect(!!(content = comp.getContent())).to.equal true
+      expect(!!(content = comp.getContentComponent())).to.equal true
       expect(content.text).to.equal 1
     it "should route 'a/b' on path 'a'", ->
       comp = route 'a/b', -> 1
       comp.getPath = -> 'a'
-      expect(!!(content = comp.getContent())).to.equal false
+      expect((content = comp.getContentComponent()) instanceof Nothing).to.equal true
     it "should not route 'a/' on path 'a'", ->
       comp = route 'a/', -> 1
       comp.getPath = -> 'a'
-      expect(!!(content = comp.getContent())).to.equal false
+      expect((content = comp.getContentComponent()) instanceof Nothing).to.equal true
     it "should not route 'a' on path 'a/'", ->
       comp = route 'a', -> 1
       comp.getPath = -> 'a/'
-      expect(!!(content = comp.getContent())).to.equal false
+      expect((content = comp.getContentComponent())  instanceof Nothing).to.equal true
     it "should route '*' on path 'a'", ->
       comp = route '*', (match) -> match.segments[0]
       comp.getPath = -> 'a'
-      expect(!!(content = comp.getContent())).to.equal true
+      expect(!!(content = comp.getContentComponent())).to.equal true
       expect(content.text).to.equal 'a'
     it "should route '(\w+)' on path 'a'", ->
       comp = route '(\\w+)', (match) -> match.items[0]
       comp.getPath = -> 'a'
-      expect(!!(content = comp.getContent())).to.equal true
+      expect(!!(content = comp.getContentComponent())).to.equal true
       expect(content.children[0].text).to.equal 'a'
     it "should not route '*' on path 'a/'", ->
       comp = route '*', (match) -> 1
       comp.getPath = -> 'a/'
-      expect(!!(content = comp.getContent())).to.equal false
+      expect((content = comp.getContentComponent()) instanceof Nothing).to.equal true
     it "should not route '*/' on path 'a'", ->
       comp = route '*/', -> 1
       comp.getPath = -> 'a'
-      expect(!!(content = comp.getContent())).to.equal false
+      expect((content = comp.getContentComponent())  instanceof Nothing).to.equal true
     it "should route 'a/b'", ->
       comp = route 'a/b', -> 1
       comp.getPath = -> 'a/b'
-      expect(!!(content = comp.getContent())).to.equal true
+      expect(!!(content = comp.getContentComponent())).to.equal true
       expect(content.text).to.equal 1
     it "should route multi item", ->
       comp = route 'a/1', (-> 1),
         'a/2', ->2
       comp.getPath = -> 'a/2'
-      expect(!!(content = comp.getContent())).to.equal true
+      expect(!!(content = comp.getContentComponent())).to.equal true
       expect(content.text).to.equal 2
     it "should route multi item with otherwise", ->
       comp = route 'a/1', (-> 1),
         'a/2', -> 2,
         txt('otherwise')
       comp.getPath = -> 'a/otherwise'
-      expect(!!(content = comp.getContent())).to.equal true
+      expect(!!(content = comp.getContentComponent())).to.equal true
       expect(content.text).to.equal 'otherwise'
     it "should route 'a/**' on path a/b", ->
       comp = route 'a/**', -> 1
       comp.getPath = -> 'a/b'
-      expect(!!(content = comp.getContent())).to.equal true
+      expect(!!(content = comp.getContentComponent())).to.equal true
       expect(content.text).to.equal 1
     it "should route 'a/*/**' on path a/b", ->
       comp = route 'a/*/**', -> 1
       comp.getPath = -> 'a/b'
-      expect(!!(content = comp.getContent())).to.equal true
+      expect(!!(content = comp.getContentComponent())).to.equal true
       expect(content.text).to.equal 1
     it "should route 'a/*/*/**' on path a/b", ->
       comp = route 'a/*/*/**', -> 1
       comp.getPath = -> 'a/b'
-      expect(!!(content = comp.getContent())).to.equal false
+      expect((content = comp.getContentComponent())  instanceof Nothing).to.equal true
     it "should route embedding route", ->
       comp = route 'a/**', (match, route2) ->
         route2 'b', -> 2
       comp.getPath = -> 'a/b'
-      content = comp.getContent()
+      content = comp.getContentComponent()
       content.getPath = -> 'a/b'
-      comp2 =  content.getContent()
+      comp2 =  content.getContentComponent()
       expect(!!comp2).to.equal true
       expect(comp2.text).to.equal 2
 
@@ -159,26 +159,26 @@ describe 'route', ->
     )
     it "should route a/b/3", ->
       comp.getPath = -> 'a/b/3'
-      content = comp.getContent()
+      content = comp.getContentComponent()
       content.getPath = -> 'a/b/3'
-      comp2 =  content.getContent()
+      comp2 =  content.getContentComponent()
       expect(!!comp2).to.equal true
       expect(comp2.text).to.equal 3
     it "should route b/2", ->
       comp.getPath = -> 'b/2'
-      content = comp.getContent()
+      content = comp.getContentComponent()
       expect(!!content).to.equal true
       expect(content.text).to.equal 'b/**'
     it "should route not-found", ->
       comp.getPath = -> 'not-found'
-      content = comp.getContent()
+      content = comp.getContentComponent()
       expect(!!content).to.equal true
       expect(content.text).to.equal 'otherwise 1'
     it "should route a/b/no-entry", ->
       comp.getPath = -> 'a/b/no-entry'
-      content = comp.getContent()
+      content = comp.getContentComponent()
       content.getPath = -> 'a/b/no-entry'
-      comp2 =  content.getContent()
+      comp2 =  content.getContentComponent()
       expect(!!comp2).to.equal true
       expect(comp2.text).to.equal 'otherwise 2'
 

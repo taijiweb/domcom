@@ -11,13 +11,13 @@ demoEachPush = ->
   comp.render()
 
 {eachDemo1, eachDemo2, eachDemo3, eachDemo4} = require 'domcom/demo/demo-each'
-{demoArrow, demoCombo} = require 'domcom/demo/demo-builtins'
+{demoTriangle, demoCombo} = require 'domcom/demo/demo-builtins'
 splitterDemo = require 'domcom/demo/demo-splitter'
 accordion = require 'domcom/demo/demo-accordion'
 
 exports.demoMap = demoMap =
   accordion: func accordion
-  arrow: func demoArrow
+  arrow: func demoTriangle
   combo: func demoCombo
   "show hide":  func require 'domcom/demo/demo-show-hide'
   counter:  func require 'domcom/demo/demo-counter'
@@ -45,7 +45,7 @@ exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem='arrow') ->
 exports.runDomComDemo = window.runDomComDemo = ->
 #  comp = accordion()
 #  comp = demoCombo()
-#  comp = demoArrow()
+#  comp = demoTriangle()
 #  comp = demoMap["show hide"]
 #  comp = demoMap["counter"]
 #  comp = demoMap["dialog"]
@@ -62,7 +62,7 @@ exports.runDomComDemo = window.runDomComDemo = ->
 #  comp = demoMap["text model"]
 #  comp = demoMap["auto width edit"]
 #  comp = demoMap["mount/unmount"]
-#  comp = makeDemoComponent(demoMap, demoArrow)
+#  comp = makeDemoComponent(demoMap, demoTriangle)
 
   comp = makeDemoComponent(demoMap)
   comp.mount()

@@ -43,22 +43,22 @@ module.exports = class Tag extends List
         me.invalidate()
 
     @hasActiveProps = false
-    @cacheProps = Object.create(null)
-    @props = props = Object.create(null)
+    @cacheProps = {}
+    @props = props = {}
 
-    @['invalidateProps'] = Object.create(null)
+    @['invalidateProps'] = {}
     @hasActiveStyle = false
-    @cacheStyle = Object.create(null)
-    @style = style = Object.create(null)
-    @['invalidateStyle'] = Object.create(null)
+    @cacheStyle = {}
+    @style = style = {}
+    @['invalidateStyle'] = {}
     attrStyle = styleFrom(attrs.style)
     for key, value of attrStyle then @setProp(key, value, style, 'Style')
     delete attrs.style
 
     @hasActiveEvents = false
-    @cacheEvents = Object.create(null)
-    @events = events = Object.create(null)
-    @eventUpdateConfig = Object.create(null)
+    @cacheEvents = {}
+    @events = events = {}
+    @eventUpdateConfig = {}
 
     directives = []
     for key, value of attrs

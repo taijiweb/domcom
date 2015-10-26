@@ -21,4 +21,4 @@ module.exports = ->
       }, item)
     )
     [groupAttrs, group.heading, content, groupOptions]
-  comp = accordion(Object.create(null), accordionGroupList, {closeOthers:true})
+  comp = accordion({}, accordionGroupList, {closeOthers:true})

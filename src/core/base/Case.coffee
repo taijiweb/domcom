@@ -28,7 +28,7 @@ module.exports = class Case extends TransformComponent
   getContentComponent: -> @map[@test()] or @else_
 
   clone: ->
-    cloneMap = Object.create(null)
+    cloneMap = {}
     for key, value of @map
       cloneMap[key] = value.clone()
     (new Case(@test, cloneMap, @else.clone())).copyEventListeners(@)

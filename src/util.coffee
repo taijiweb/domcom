@@ -1,14 +1,14 @@
 exports.isArray = (item) -> Object.prototype.toString.call(item) == '[object Array]'
 
 exports.cloneObject = (obj) ->
-  result = Object.create(null)
+  result = {}
   for key of obj
     result[key] = obj[key]
   result
 
 exports.pairListDict = (keyValuePairs...) ->
   if keyValuePairs.length==1 then keyValuePairs = keyValuePairs[0]
-  len = keyValuePairs.length; i = 0; result = Object.create(null)
+  len = keyValuePairs.length; i = 0; result = {}
   while i<len then result[keyValuePairs[i]] = keyValuePairs[i+1]; i += 2
   result
 
@@ -60,7 +60,7 @@ exports.matchCurvedString = (str, i) ->
       else level--
 
 exports.intersect = (maps) ->
-  result = Object.create(null)
+  result = {}
   m = maps[0]
   for key of m
     isMember = true

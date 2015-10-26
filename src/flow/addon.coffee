@@ -3,7 +3,7 @@
 module.exports = flow
 
 dc.bindings = flow.bindings =  (model, name) ->
-  result = Object.create(null)
+  result = {}
   for key of model
     result['$'+key] = duplex(model, key, name)
     result['_'+key] = bind(model, key, name)

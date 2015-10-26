@@ -15,7 +15,7 @@ module.exports = class Each extends TransformComponent
   constructor: (items, @itemFn, options={}) ->
     super()
 
-    @family = Object.create(null)
+    @family = {}
 
     me = this
 
@@ -41,8 +41,8 @@ module.exports = class Each extends TransformComponent
       else if key? then (item, i) -> item[key]
 
     @childReactives = []
-    @memoComponents = Object.create(null)
-    @memoChildMap = Object.create(null) # the map from memo key to active child component, only one child from a key is allowed
+    @memoComponents = {}
+    @memoChildMap = {} # the map from memo key to active child component, only one child from a key is allowed
     @cacheChildren = []
     @listComponent = new List([])
     @listComponent.holder = @

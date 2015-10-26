@@ -5,7 +5,7 @@ module.exports = flow
 slice = Array.prototype.slice
 
 flow.watchEachList = (listItems, component) ->
-  watchingComponents = listItems.watchingComponents  or listItems.watchingComponents = Object.create(null)
+  watchingComponents = listItems.watchingComponents  or listItems.watchingComponents = {}
   watchingComponents[component.dcid] = component
 
   if listItems.$dcWatching then return
@@ -113,7 +113,7 @@ flow.watchEachList = (listItems, component) ->
 
 flow.watchEachObject = (objectItems, component) ->
 
-  watchingComponents = objectItems.watchingComponents or objectItems.watchingComponents = Object.create(null)
+  watchingComponents = objectItems.watchingComponents or objectItems.watchingComponents = {}
   watchingComponents[component.dcid] = component
 
   if objectItems.$dcWatching then return

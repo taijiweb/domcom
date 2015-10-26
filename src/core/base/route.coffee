@@ -28,6 +28,7 @@ toComponent = require './toComponent'
 module.exports = route = (routeList..., otherwise, baseIndex) -> _route(routeList, otherwise, baseIndex, 0)
 
 _route = (routeList, otherwise, baseIndex, defaultBaseIndex) ->
+
   if typeof baseIndex == 'function'
     routeList.push otherwise
     routeList.push baseIndex
@@ -45,14 +46,17 @@ _route = (routeList, otherwise, baseIndex, defaultBaseIndex) ->
     baseIndex = baseIndex >>> 0
     if otherwise and not isComponent(otherwise) and otherwise.otherwise
       otherwise = otherwise.otherwise
+
   len = routeList.length
   if !isEven(len) then throw new Error 'route parameter error: missing matched handler'
   if len<2 or typeof routeList[len-1] != 'function'
     throw new Error 'route parameter error:\n  expect route(pattern, handler, pattern, handler, ..., otherwise, baseIndex)'
+
   routeList2 = []; i = 0
   while i<len
     routeList2.push [routeList[i], routeList[i+1]]
     i += 2
+
   new Router(routeList2, otherwise, baseIndex)
 
 route._navigateTo = navigateTo = (oldPath, path, baseIndex=0) ->
@@ -75,24 +79,34 @@ navigate = (baseIndex) -> (path) ->
     if window.history and window.history.pushState
       decodeURI(location.pathname + location.search).replace(/\?(.*)$/, '')  # remove GET params
     else if match=location.href.match(/#(.*)$/) then match[1] else ''
+
   navigateTo(oldPath, path, baseIndex)
+
   if window.history and window.history.pushState
     history.pushState(null, null, path)
   else location.href = location.href.replace(/#(.*)$/, '') + '#' + path
+
   path
 
 route.to = navigate(0)
 
 route.Router = class Router extends TransformComponent
-  constructor: (routeList, otherwise, baseIndex) ->
+  constructor: (@routeList, @otherwise, @baseIndex) ->
     for patternRoute in routeList
       patternRoute[0] = getRoutePattern(patternRoute[0])
 
-    @getContent = ->
-      path = @getPath()
-      for item in routeList
-        if component=processRouteItem(item, path, baseIndex) then return component
-      otherwise? and toComponent otherwise
+    @otherwise = toComponent otherwise
+
+    return
+
+  getContentComponent: ->
+    path = @getPath()
+
+    for patternRoute in @routeList
+      if component=processRouteItem(patternRoute, path, @baseIndex)
+        return component
+
+    @otherwise
 
   getPath: ->
     if window.history and window.history.pushState
@@ -100,16 +114,21 @@ route.Router = class Router extends TransformComponent
     else if match=location.href.match(/#(.*)$/) then match[1] else ''
 
 route._processRouteItem = processRouteItem = (patternRoute, path, baseIndex) ->
-  if patternRoute.length==3 then [pattern, test, handler] = patternRoute
-  else [pattern, handler] = patternRoute
+
+  [pattern, handler] = patternRoute
+  if pattern instanceof Array then [pattern, test] = pattern
+
   match = matchRoute(pattern, path, baseIndex)
-  if !match or (test and !test(match, location)) then return
+  if !match or (test and !match=test(match, path, baseIndex)) then return
+
   childRoute = (routeList..., otherwise, baseIndex) -> _route(routeList, otherwise, baseIndex, match.base)
   childRoute.to = navigate(match.base)
+
   toComponent handler match, childRoute
 
 route._processPiecePatterns = processPiecePatterns = (segmentPattern, params, nonameRegExpIndex) ->
   i = 0; len = segmentPattern.length; pieces = []
+
   while ch=segmentPattern[i]
     start = i
     if ch==':'
@@ -138,13 +157,16 @@ route._processPiecePatterns = processPiecePatterns = (segmentPattern, params, no
       ++i
       while (ch=segmentPattern[i]) and ch!=':' and ch!='(' then i++
       pieces.push {pattern: segmentPattern.slice(start, i)}
+
   [pieces, nonameRegExpIndex]
 
 route._getRoutePattern = getRoutePattern = (pattern) ->
   pattern = ''+pattern
+
   if pattern.match /\\\//  then new Error 'should not include /\\\// in pattern'
   if pattern=='' then segments = []
   else segments = pattern.split('/')  # '' at head or end will be processed in the loop
+
   upCount = 0; absolute = false; atHead = true; endSlash = false; moreComing = false
   segmentPatterns = []; params = {}; len = segments.length
   i = 0; nonameRegExpIndex = 0
@@ -168,10 +190,12 @@ route._getRoutePattern = getRoutePattern = (pattern) ->
       [pieces, nonameRegExpIndex] = processPiecePatterns(segment, params, nonameRegExpIndex)
       segmentPatterns.push pieces
     atHead = false
+
   {segmentPatterns, absolute, upCount, endSlash, moreComing}
 
 route._matchRoute = matchRoute = (pattern, path, baseIndex) ->
   if pattern.endSlash and path[path.length-1]!='/' then return
+
   if pattern.absolute then baseIndex = 0
   else
     baseIndex -= pattern.upCount
@@ -180,6 +204,7 @@ route._matchRoute = matchRoute = (pattern, path, baseIndex) ->
   else
     pathSegments = path.split('/')
     if path[0]=='' then pathSegments.shift()
+
   len = pathSegments.length; base = baseIndex
   items = {}; segments = []
   for segmentPattern, i in pattern.segmentPatterns
@@ -205,7 +230,10 @@ route._matchRoute = matchRoute = (pattern, path, baseIndex) ->
     if matchIndex!= segmentStr.length then return
     segments.push segmentStr
     base++
+
   if base!=len and !pattern.moreComing then return
+
   basePath = '/'+pathSegments.slice(0, baseIndex+1).join('/')+'/'
   leftPath = '/'+pathSegments.slice(base).join('/')
+
   {items, basePath, segments, leftPath, base}

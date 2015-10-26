@@ -1,7 +1,7 @@
 module.exports =
-  componentCache: Object.create(null)
+  componentCache: {}
   readyFnList: []
-  _updateComponentMap: Object.create(null)
+  _updateComponentMap: {}
   useSystemUpdating: false
-  directiveRegistry: Object.create(null)
+  directiveRegistry: {}
   renderCallbackList: []

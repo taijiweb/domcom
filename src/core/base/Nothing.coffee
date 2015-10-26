@@ -6,7 +6,7 @@ module.exports = class Nothing extends BaseComponent
     super
 
     @firstNode = null
-    @family = Object.create(null)
+    @family = {}
     @baseComponent = @
 
   createDom: -> @node = []

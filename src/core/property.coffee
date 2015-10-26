@@ -32,7 +32,7 @@ exports.extendAttrs = (attrs, obj, options={}) ->
 
 exports.overAttrs = overAttrs = (attrs, obj) ->
   if !obj
-    attrs = extend(Object.create(null), attrs)
+    attrs = extend({}, attrs)
     if attrs.style then attrs.style = extend({}, styleFrom(attrs.style))
     attrs
   else if !attrs then obj
@@ -43,7 +43,7 @@ exports.overAttrs = overAttrs = (attrs, obj) ->
     obj
 
 exports.classFn = classFn = (items...) ->
-  classMap = Object.create(null)
+  classMap = {}
 
   method = ->
     if !arguments.length
@@ -105,7 +105,7 @@ exports.classFn = classFn = (items...) ->
 
 exports.styleFrom = styleFrom = (value) ->
   if typeof value == 'string'
-    result = Object.create(null)
+    result = {}
     value = value.trim().split(/\s*;\s*/)
     for item in value
       item = item.trim()
@@ -114,7 +114,7 @@ exports.styleFrom = styleFrom = (value) ->
       result[key] = v
     result
   else if value instanceof Array
-    result = Object.create(null)
+    result = {}
     for item in value
       if typeof item == 'string'
         item = item.trim()
@@ -123,7 +123,7 @@ exports.styleFrom = styleFrom = (value) ->
       else [key, value] = item
       result[key] = value
     result
-  else if value and typeof value != 'object' then Object.create(null)
+  else if value and typeof value != 'object' then {}
   else cloneObject(value)
 
 config = require '../config'

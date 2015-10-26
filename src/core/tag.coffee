@@ -37,5 +37,5 @@ for type in 'text checkbox radio date email tel number'.split(' ')
       temp = attrs
       attrs = value
       value = temp
-    attrs = attrs or Object.create(null)
+    attrs = attrs or {}
     input(type, attrs, value)
