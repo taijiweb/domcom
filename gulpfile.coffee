@@ -39,6 +39,9 @@ coffee = require 'gulp-coffee'
 
 task 'coffee', (cb) ->
   from(['./src/**/*.coffee'], {cache:'coffee'}).pipelog(coffee({bare: true})).pipe(dest('./lib'))
+  # below is just for who prefer to reading javascript
+  from(['./test/**/*.coffee'], {cache:'coffee'}).pipelog(coffee({bare: true})).pipe(dest('./dist/test'))
+  from(['./demo/**/*.coffee'], {cache:'coffee'}).pipelog(coffee({bare: true})).pipe(dest('./dist/demo'))
 
 webpack = require 'webpack'
 {makeConfig, makeWebpackDevServer} = require './webpack.config'
@@ -52,15 +55,13 @@ onTaskDone = -> (err, stats) ->
 webpack = require("webpack")
 ClosureCompilerPlugin = require('webpack-closure-compiler')
 
-domcomEntry = {
-  'domcom': './src/index',
-  'domcom-addon': './src/domcom-addon'
-}
-# if put them together, domcom-full will fail to use the index.coffee and domcom-addon.coffee
-domcomFullEntry = {
-  'domcom-full': './src/domcom-full'
+domcomBasicEntry = {
+  'domcom-basic': './src/domcom-basic'
 }
 
+domcomEntry = {
+  'domcom': './src/domcom',
+}
 runWebPack = (entry, filename, options) ->
   config = makeConfig(entry, filename, options)
   webpackCompiler = webpack(config)
@@ -69,13 +70,13 @@ runWebPack = (entry, filename, options) ->
 webpackDistribute = (mode) ->
   pathinfo = mode=='dev'
   plugins = []
+  runWebPack(domcomBasicEntry, '[name].js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
   runWebPack(domcomEntry, '[name].js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
-  runWebPack(domcomFullEntry, '[name].js', {path:'dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
   if mode=='dist'
     plugins = [new webpack.optimize.UglifyJsPlugin({minimize: true})]
     #plugins = [new ClosureCompilerPlugin()]
+    runWebPack(domcomBasicEntry, '[name].min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
     runWebPack(domcomEntry, '[name].min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
-    runWebPack(domcomFullEntry, '[name].min.js', {path:'dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
   runWebPack('./test/mocha/index', 'mocha-index.js', {path:'dist', pathinfo:pathinfo, plugins})
   runWebPack('./demo/index', 'demo-index.js', {path:'dist', pathinfo:pathinfo, plugins})
   runWebPack('./demo/todomvc/todomvc', 'todomvc.js', {path:'dist', pathinfo:pathinfo, plugins})
@@ -88,9 +89,8 @@ task 'webpack-server', ->
     new webpack.HotModuleReplacementPlugin()
     new webpack.NoErrorsPlugin()
   ]
-  makeWebpackDevServer(["webpack/hot/dev-server", './src/index'], 'domcom.js', {port:8083, inline:true, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './src/domcom-addon'], 'domcom-addon.js', {port:8084, inline:true, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './src/domcom-full'], 'domcom-full.js', {port:8085, inline:true, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './src/domcom'], 'domcom.js', {port:8083, inline:true, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './src/domcom-basic'], 'domcom-basic.js', {port:8085, inline:true, plugins:webServerPlugins})
   makeWebpackDevServer(["webpack/hot/dev-server", './test/mocha/index'], 'mocha-index.js', {port:8088, plugins:webServerPlugins})
   makeWebpackDevServer(["webpack/hot/dev-server", './demo/index'], 'demo-index.js', {port:8089, plugins:webServerPlugins})
   makeWebpackDevServer(["webpack/hot/dev-server", './demo/todomvc/todomvc'], 'todomvc.js', {port:8087, plugins:webServerPlugins})
