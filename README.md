@@ -23,7 +23,7 @@ The code below give a taste of domcom:
 
 In javascript:
 
-    // recommend to use some tool to support ES6 destructive syntax
+    // Although it's not necessary, but I recommend to use some tool to support ES6, especially destructive syntax
     {list, text, p, flow, see} = dc
 
     // otherwise you need write the the code like below
@@ -56,13 +56,17 @@ In coffee-script:
     {list, text, p, flow, see} = dc
 
     demoSum = ->
-      a = see 1; b = see 2
-      comp = list \
-        (t1 = text value: a, onchange: (-> a @value*1)),
-        (t2 = text value: b, onchange: (-> b @value*1)),
-        p1 = p flow.add a, b
-      dc.updateWhen [t1, t2], 'change', p1
-      comp.mount()
+
+        a = see 1; b = see 2
+
+        comp = list \
+            (t1 = text value: a, onchange: (-> a @value*1)),
+            (t2 = text value: b, onchange: (-> b @value*1)),
+            p1 = p flow.add a, b
+
+        dc.updateWhen [t1, t2], 'change', p1
+
+        comp.mount()
 
     demoSum()
 
@@ -79,7 +83,7 @@ In coffee-script:
 
   The files in the [doc/](https://github.com/taijiweb/domcom/tree/master/doc) folder with filename like "somefile.CN.md" is Chinese document.
 
-  [doc/](https://github.com/taijiweb/domcom/tree/master/doc) 文件夹中带"somefile.CN.md"文件名的是中文文档。
+  **中文文档在 [doc/Chinese/](https://github.com/taijiweb/domcom/tree/master/doc/Chinese) 文件夹。**
 
 ## LICENSE
 MIT, see [LICENSE](https://github.com/taijiweb/domcom/blob/master/LICENSE)

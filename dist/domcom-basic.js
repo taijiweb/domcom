@@ -1127,9 +1127,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var DomNode, newLine, processProp;
+	var DomNode, addEventListener, newLine, processProp, removeEventListener, _ref;
 
 	newLine = __webpack_require__(3).newLine;
+
+	_ref = __webpack_require__(6), addEventListener = _ref.addEventListener, removeEventListener = _ref.removeEventListener;
 
 	processProp = function(props, cache, prop, value) {
 	  var p, _i, _len, _results;
@@ -1167,21 +1169,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.cacheStyle = {};
 	    } else {
 	      this.cacheProps = (function() {
-	        var _i, _len, _ref, _results;
-	        _ref = this.node;
+	        var _i, _len, _ref1, _results;
+	        _ref1 = this.node;
 	        _results = [];
-	        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	          n = _ref[_i];
+	        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+	          n = _ref1[_i];
 	          _results.push({});
 	        }
 	        return _results;
 	      }).call(this);
 	      this.cacheStyle = (function() {
-	        var _i, _len, _ref, _results;
-	        _ref = this.node;
+	        var _i, _len, _ref1, _results;
+	        _ref1 = this.node;
 	        _results = [];
-	        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	          n = _ref[_i];
+	        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+	          n = _ref1[_i];
 	          _results.push({});
 	        }
 	        return _results;
@@ -1227,11 +1229,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        name = name.slice(2);
 	      }
 	      if (node instanceof Node) {
-	        node.addEventListener(name, handler);
+	        addEventListener(node, name, handler);
 	      } else {
 	        for (_j = 0, _len1 = node.length; _j < _len1; _j++) {
 	          n = node[_j];
-	          n.addEventListener(name, handler);
+	          addEventListener(n, name, handler);
 	        }
 	      }
 	    }
@@ -1247,11 +1249,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        name = name.slice(2);
 	      }
 	      if (node instanceof Node) {
-	        node.removeEventListener(name, handler);
+	        removeEventListener(node, name, handler);
 	      } else {
 	        for (_j = 0, _len1 = node.length; _j < _len1; _j++) {
 	          n = node[_j];
-	          n.removeEventListener(name, handler);
+	          removeEventListener(n, name, handler);
 	        }
 	      }
 	    }
@@ -1301,6 +1303,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return 'value';
 	  }
 	};
+
+	if (document.body.addEventListener) {
+	  exports.addEventListener = function(node, name, handler) {
+	    node.addEventListener(name, handler, false);
+	  };
+	  exports.removeEventListener = function(node, name, handler) {
+	    node.removeEventListener(name, handler);
+	  };
+	} else {
+	  exports.addEventListener = function(node, name, handler) {
+	    node.attachEvent(name, setCheckedValues);
+	  };
+	  exports.removeEventListener = function(node, name, handler) {
+	    node.detachEvent(name, handler);
+	  };
+	}
 
 	exports.isElement = function(item) {
 	  if (typeof HTMLElement === "object") {
@@ -2405,8 +2423,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this.node;
 	    }
 	    this.textValid = true;
-	    if ((text = this.processText()) !== this.node.textContent) {
-	      this.node.textContent = text;
+	    text = this.processText();
+	    if (text !== this.node.textContent) {
+	      if (this.node.parentNode) {
+	        this.removeNode();
+	      }
+	      this.node = document.createTextNode(text);
+	      this.firstNode = this.node;
+	      this.cacheText = text;
 	    }
 	    return this.node;
 	  };
@@ -3752,7 +3776,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var node;
 	    this.textValid = true;
 	    node = document.createElement('DIV');
-	    node.innerHTML = this.transform && this.transform(this.processText()) || this.processText();
+	    node.innerHTML = this.cacheText = this.transform && this.transform(this.processText()) || this.processText();
 	    this.node = (function() {
 	      var _i, _len, _ref1, _results;
 	      _ref1 = node.childNodes;
@@ -3768,18 +3792,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Html.prototype.updateDom = function() {
-	    var node;
+	    var node, text;
 	    if (!this.textValid) {
 	      return this;
 	    }
 	    this.textValid = true;
-	    if (this.parentNode) {
-	      this.removeNode();
+	    text = this.transform && this.transform(this.processText()) || this.processText();
+	    if (text !== this.cacheText) {
+	      if (this.node.parentNode) {
+	        this.removeNode();
+	      }
+	      node = document.createElement('DIV');
+	      node.innerHTML = text;
+	      this.node = node.childNodes;
+	      this.firstNode = this.node[0];
+	      this.cacheText = text;
 	    }
-	    node = document.createElement('DIV');
-	    node.innerHTML = this.transform && this.transform(this.processText()) || this.processText();
-	    this.node = node.childNodes;
-	    this.firstNode = this.node[0];
 	    return this;
 	  };
 
@@ -3805,6 +3833,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      childNode = _ref1[_i];
 	      parentNode.removeChild(childNode);
 	    }
+	    this.node.parentNode = null;
 	  };
 
 	  Html.prototype.toString = function(indent, addNewLine) {

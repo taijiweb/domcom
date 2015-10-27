@@ -25,8 +25,12 @@ module.exports = class Text extends BaseComponent
   updateDom: ->
     if !@textValid then return @node
     @textValid = true
-    if (text=@processText())!=@node.textContent
-      @node.textContent = text
+    text = @processText()
+    if text!=@node.textContent
+      if @node.parentNode  then @removeNode()
+      @node = document.createTextNode(text)
+      @firstNode = @node
+      @cacheText = text
     @node
 
   removeDom: ->

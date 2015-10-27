@@ -17,7 +17,7 @@ module.exports = class Html extends Text
   createDom: ->
     @textValid = true
     node = document.createElement('DIV')
-    node.innerHTML = @transform and @transform(@processText()) or @processText()
+    node.innerHTML = @cacheText = @transform and @transform(@processText()) or @processText()
     # when the node in createElement('div').childNodes is inserted to dom, it is removed from the active childNodes
     # so they should be keep in an inative array
     @node = for node in node.childNodes then node
@@ -27,11 +27,15 @@ module.exports = class Html extends Text
   updateDom: ->
     if !@textValid then return @
     @textValid = true
-    if @parentNode then @removeNode()
-    node = document.createElement('DIV')
-    node.innerHTML = @transform and @transform(@processText()) or @processText()
-    @node = node.childNodes
-    @firstNode = @node[0]
+
+    text = @transform and @transform(@processText()) or @processText()
+    if text!=@cacheText
+      if @node.parentNode then @removeNode()
+      node = document.createElement('DIV')
+      node.innerHTML =  text
+      @node = node.childNodes
+      @firstNode = @node[0]
+      @cacheText = text
     @
 
   attachNode: ->
@@ -46,6 +50,7 @@ module.exports = class Html extends Text
     parentNode = @node.parentNode
     for childNode in @node
       parentNode.removeChild(childNode)
+    @node.parentNode = null
     return
 
   toString: (indent=2, addNewLine) -> newLine("<Html #{funcString(@text)}/>", indent, addNewLine)

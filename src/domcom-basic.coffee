@@ -4,13 +4,13 @@ dc.extend = extend = require './extend'
 
 extend dc,
 
-  require './config'
+  require('./config'),
 
   # utilities
-  require './flow/index'
-  require './flow/watch-list'
-  require './dom-util'
-  require './util'
+  require('./flow/index'),
+  require('./flow/watch-list'),
+  require('./dom-util'),
+  require('./util'),
 
   # component
-  require './core/index'
+  require('./core/index')

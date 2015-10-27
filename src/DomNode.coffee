@@ -1,5 +1,7 @@
 {newLine} = require './util'
 
+{addEventListener, removeEventListener} = require './dom-util'
+
 processProp = (props, cache, prop, value) ->
   if !prop? then return props
   if !value?
@@ -45,9 +47,9 @@ module.exports = class DomNode
     for name in names
       if name[..1]=='on' then name = name[2...]
       if node instanceof Node
-        node.addEventListener(name, handler)
+        addEventListener(node, name, handler)
       else for n in node
-        n.addEventListener(name, handler)
+        addEventListener(n, name, handler)
     return
 
   unbind: (eventNames, handler) ->
@@ -56,9 +58,9 @@ module.exports = class DomNode
     for name in names
       if name[..1]=='on' then name = name[2...]
       if node instanceof Node
-        node.removeEventListener(name, handler)
+        removeEventListener(node, name, handler)
       else for n in node
-        n.removeEventListener(name, handler)
+        removeEventListener(n, name, handler)
     return
 
   toString: (indent=0, addNewLine) ->

@@ -16,6 +16,23 @@ exports.getBindProp = (component)  ->
   else if component.attrs.type=='checkbox' then return 'checked'
   else return 'value'
 
+# add browser compatability for addEventListener and removeEventListener in ie 6, 7, 8
+if document.body.addEventListener
+  exports.addEventListener = (node, name, handler) ->
+    node.addEventListener(name, handler, false)
+    return
+  exports.removeEventListener = (node, name, handler) ->
+    node.removeEventListener(name, handler)
+    return
+
+else
+  exports.addEventListener = (node, name, handler) ->
+    node.attachEvent(name, setCheckedValues)
+    return
+  exports.removeEventListener = (node, name, handler) ->
+    node.detachEvent(name, handler)
+    return
+
 # Returns true if it is a DOM element
 exports.isElement = (item) ->
   if typeof HTMLElement == "object" then item instanceof HTMLElement
