@@ -1,6 +1,6 @@
-var bindings, each, list, p, txt;
+var each, list, p, txt;
 
-list = dc.list, each = dc.each, p = dc.p, txt = dc.txt, bindings = dc.bindings;
+list = dc.list, each = dc.each, p = dc.p, txt = dc.txt;
 
 exports.eachDemo1 = function() {
   var comp, lst;

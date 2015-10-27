@@ -875,7 +875,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var DomNode, addRafUpdater, addSetIntervalUpdater, componentCache, dc, dcid, directiveRegistry, isComponent, isElement, isEven, newDcid, querySelector, raf, readyFnList, render, renderCallbackList, renderLoop, requestAnimationFrame, rootComponents, _ref, _ref1, _ref2, _renderComponentWhenBy, _updateComponentMap;
+	var DomNode, addRenderUpdate, addSetIntervalUpdate, componentCache, dc, dcid, directiveRegistry, isComponent, isElement, isEven, newDcid, querySelector, raf, readyFnList, render, renderCallbackList, renderLoop, requestAnimationFrame, rootComponents, _ref, _ref1, _ref2, _renderComponentWhenBy, _updateComponentMap;
 
 	DomNode = __webpack_require__(5);
 
@@ -1008,24 +1008,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  } else if (components === setInterval) {
 	    if (isComponent(events)) {
-	      addSetIntervalUpdater(method, events, updateList);
+	      addSetIntervalUpdate(method, events, updateList);
 	    } else if (events instanceof Array) {
 	      for (_l = 0, _len3 = events.length; _l < _len3; _l++) {
 	        component = events[_l];
-	        addSetIntervalUpdater(method, events, updateList);
+	        addSetIntervalUpdate(method, events, updateList);
 	      }
 	    } else if (typeof events === 'number') {
 	      options = options || {};
 	      options.interval = events;
-	      addSetIntervalUpdater(method, updateList, options);
+	      addSetIntervalUpdate(method, updateList, options);
 	    }
-	  } else if (components === raf) {
+	  } else if (components === render) {
 	    if (isComponent(events)) {
-	      addRafUpdater(method, events, updateList);
+	      addRafUpdate(method, events, updateList);
 	    } else if (events instanceof Array) {
 	      for (_m = 0, _len4 = events.length; _m < _len4; _m++) {
 	        component = events[_m];
-	        addRafUpdater(method, events, updateList);
+	        addRafUpdate(method, events, updateList);
 	      }
 	    }
 	  } else if (events instanceof Array) {
@@ -1073,7 +1073,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	addSetIntervalUpdater = function(method, component, options) {
+	addSetIntervalUpdate = function(method, component, options) {
 	  var callback, clear, handler, interval, test;
 	  handler = null;
 	  test = options.test, interval = options.interval, clear = options.clear;
@@ -1088,7 +1088,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return handler = setInterval(callback, interval || 16);
 	};
 
-	addRafUpdater = function(method, component, options) {
+	addRenderUpdate = function(method, component, options) {
 	  var callback, clear, test;
 	  test = options.test, clear = options.clear;
 	  callback = function() {

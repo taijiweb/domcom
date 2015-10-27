@@ -40,33 +40,33 @@ describe('reactive flow', function() {
     return expect(r3()).to.equal(4);
   });
   it('should flow unary', function() {
-    var r, _a, _b, _ref1;
+    var a_, b_, r, _ref1;
     _ref1 = bindings({
       a: 4,
       b: 2
-    }), _a = _ref1._a, _b = _ref1._b;
-    r = flow.neg(_a);
+    }), a_ = _ref1.a_, b_ = _ref1.b_;
+    r = flow.neg(a_);
     expect(r()).to.equal(-4, 'neg');
-    r = flow.no(_a);
+    r = flow.no(a_);
     expect(r()).to.equal(false, 'not');
-    r = flow.abs(flow.neg(_a));
+    r = flow.abs(flow.neg(a_));
     expect(r()).to.equal(4, 'abs neg');
-    r = flow.bitnot(_a);
+    r = flow.bitnot(a_);
     return expect(r()).to.equal(-5, 'bitnot');
   });
   it('should flow binary', function() {
-    var r, _a, _b, _ref1;
+    var a_, b_, r, _ref1;
     _ref1 = bindings({
       a: 4,
       b: 2
-    }), _a = _ref1._a, _b = _ref1._b;
-    r = flow.add(_a, _b);
+    }), a_ = _ref1.a_, b_ = _ref1.b_;
+    r = flow.add(a_, b_);
     expect(r()).to.equal(6, 'add');
-    r = flow.sub(_a, _b);
+    r = flow.sub(a_, b_);
     expect(r()).to.equal(2, 'sub');
-    r = flow.mul(_a, _b);
+    r = flow.mul(a_, b_);
     expect(r()).to.equal(8, 'mul');
-    r = flow.div(_a, _b);
+    r = flow.div(a_, b_);
     return expect(r()).to.equal(2, 'div');
   });
   it('should invalidate flow binary', function() {
@@ -105,12 +105,12 @@ describe('reactive flow', function() {
     return expect(a2()).to.equal(3, 'a2 again');
   });
   it('should process bindings', function() {
-    var $a, _a, _ref1;
+    var a$, a_, _ref1;
     _ref1 = bindings({
       a: 1
-    }), $a = _ref1.$a, _a = _ref1._a;
-    $a(3);
-    return expect(_a()).to.equal(3);
+    }), a$ = _ref1.a$, a_ = _ref1.a_;
+    a$(3);
+    return expect(a_()).to.equal(3);
   });
   return it('should process multiple bind and duplex on same object and attr', function() {
     var a1, a2, b1, b2, m, sum;

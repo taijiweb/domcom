@@ -1,8 +1,8 @@
-var Component, Tag, Text, TransformComponent, a, accordion, accordionGroup, bindings, case_, div, each, expect, func, idescribe, if_, iit, list, ndescribe, nit, p, span, text, txt, _ref;
+var Component, Tag, Text, TransformComponent, a, accordion, accordionGroup, case_, div, each, expect, func, idescribe, if_, iit, list, ndescribe, nit, p, span, text, txt, _ref;
 
 _ref = require('./helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
 
-bindings = dc.bindings, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, accordionGroup = dc.accordionGroup, accordion = dc.accordion, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
+Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, accordionGroup = dc.accordionGroup, accordion = dc.accordion, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
 describe('accordion', function() {
   it('should update accordionGroup', function() {

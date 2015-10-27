@@ -1,7 +1,5 @@
 {list,
-a, checkbox, text, p
-bindings} = dc
-{$a, $b, _a, _b} = bindings({a: 1, b: 2})
+a, checkbox, text, p} = dc
 
 module.exports = ->
   propagation = a({onclick: -> alert('parent')},

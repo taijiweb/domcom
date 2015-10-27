@@ -81,18 +81,18 @@ dc._renderWhenBy = (method, components, events, updateList, options) ->
         _renderComponentWhenBy(method, component, events, updateList)
 
   else if components == setInterval
-    if isComponent(events) then addSetIntervalUpdater(method, events, updateList) # updateList is options
+    if isComponent(events) then addSetIntervalUpdate(method, events, updateList) # updateList is options
     else if events instanceof Array
-      for component in events then addSetIntervalUpdater(method, events, updateList)
+      for component in events then addSetIntervalUpdate(method, events, updateList)
     else if typeof events == 'number'
       options = options or {}
       options.interval = events
-      addSetIntervalUpdater(method, updateList, options)
+      addSetIntervalUpdate(method, updateList, options)
 
-  else if components == raf
-    if isComponent(events) then addRafUpdater(method, events, updateList) # updateList is options
+  else if components == render
+    if isComponent(events) then addRafUpdate(method, events, updateList) # updateList is options
     else if events instanceof Array
-      for component in events then addRafUpdater(method, events, updateList)
+      for component in events then addRafUpdate(method, events, updateList)
 
   else if events instanceof Array
     if updateList not instanceof Array then updateList = [updateList]
@@ -117,7 +117,7 @@ _renderComponentWhenBy = (method, component, event, updateList, options) ->
       component.eventUpdateConfig[event] = updateList
     return
 
-addSetIntervalUpdater = (method, component, options) ->
+addSetIntervalUpdate = (method, component, options) ->
   handler = null
   {test, interval, clear} = options
   callback = ->
@@ -125,7 +125,7 @@ addSetIntervalUpdater = (method, component, options) ->
     if clear and clear() then clearInterval handler
   handler = setInterval(callback, interval or 16)
 
-addRafUpdater = (method, component, options) ->
+addRenderUpdate = (method, component, options) ->
   {test, clear} = options
   callback = ->
     if !test or test() then component[method]()

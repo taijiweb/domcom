@@ -1,6 +1,6 @@
-var comboEdit, div, duplex, hcombo, list, triangle, vcombo;
+var div, duplex, hcombo, list, triangle, vcombo;
 
-duplex = dc.duplex, div = dc.div, triangle = dc.triangle, list = dc.list, comboEdit = dc.comboEdit, hcombo = dc.hcombo, vcombo = dc.vcombo;
+duplex = dc.duplex, div = dc.div, triangle = dc.triangle, list = dc.list, hcombo = dc.hcombo, vcombo = dc.vcombo;
 
 exports.demoTriangle = function() {
   var triangles;

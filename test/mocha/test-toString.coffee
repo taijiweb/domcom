@@ -1,12 +1,10 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings, flow
+{flow, bindings
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func, each
 accordionGroup, accordion
 a, p, span, text, div} = dc
-
-{$a, $b, _a, _b} = bindings({a: 1, b: 2})
 
 describe 'toString', ->
   it 'should toString list of if(tag)', ->
@@ -26,8 +24,9 @@ describe 'toString', ->
 #    console.log(comp.toString())
     expect(comp.toString()).to.equal '<Case renew: fn:x>\n  1: <p>1</p>\n  2: <p>2</p>\n  3: <p>3</p>\n  "others"\n</Case>'
 
-  it 'should flow.add(_a, _b).toString', ->
-    r = flow.add _a, _b
+  it 'should flow.add(a_, b_).toString', ->
+    {a_, b_} = bindings({a: 1, b: 2})
+    r = flow.add a_, b_
     expect(r.toString()).to.equal 'flow: [m[a],m[b]] --> fn:binaryFn(x(), y())'
 
 

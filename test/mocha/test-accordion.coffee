@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings
+{
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func, each
 accordionGroup, accordion

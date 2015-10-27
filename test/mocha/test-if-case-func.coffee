@@ -1,12 +1,10 @@
 {expect, iit, idescribe, nit, ndescribe, newDemoNode} = require('./helper')
 
-{bindings, see, flow
+{see, flow
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func, each
 accordionGroup, accordion
 a, p, span, text, div} = dc
-
-{$a, $b, _a, _b} = bindings({a: 1, b: 2})
 
 describe 'if, case, func', ->
 

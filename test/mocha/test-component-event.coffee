@@ -1,13 +1,11 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings, duplex, see
+{duplex, see
 classFn, styleFrom
 model, show
 Tag, Text, List
 Component, list, func, if_, txt
 a, p, span, text, li, div, button, input} = dc
-
-{$a, $b, _a, _b} = bindings({a: 1, b: 2})
 
 describe "component event", ->
   describe 'beforeMount', ->

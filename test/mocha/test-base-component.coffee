@@ -12,7 +12,7 @@ Nothing
 
 } = dc
 
-{$a, $b, _a, _b} = bindings({a: 1, b: 2})
+{a_} = bindings({a: 1, b: 2})
 
 describe "test base component", ->
   describe 'getBaseComponent', ->
@@ -72,7 +72,7 @@ describe "test base component", ->
       expect(p.node.getAttribute('className')).to.equal null
 
     it 'process bind as value', ->
-      comp = new Tag('input', {type:'text', value:  _a}, [new Text(_a)])
+      comp = new Tag('input', {type:'text', value:  a_}, [new Text(a_)])
       comp.mount() 
       expect(comp.node.value).to.equal '1'
 

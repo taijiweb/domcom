@@ -1,11 +1,6 @@
-var $a, $b, a, bindings, checkbox, list, p, text, _a, _b, _ref;
+var a, checkbox, list, p, text;
 
-list = dc.list, a = dc.a, checkbox = dc.checkbox, text = dc.text, p = dc.p, bindings = dc.bindings;
-
-_ref = bindings({
-  a: 1,
-  b: 2
-}), $a = _ref.$a, $b = _ref.$b, _a = _ref._a, _b = _ref._b;
+list = dc.list, a = dc.a, checkbox = dc.checkbox, text = dc.text, p = dc.p;
 
 module.exports = function() {
   var noPropagation, propagation;

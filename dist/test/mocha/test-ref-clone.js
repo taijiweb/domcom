@@ -1,13 +1,8 @@
-var $a, $b, Component, Tag, Text, TransformComponent, a, bindings, case_, clone, div, each, expect, func, idescribe, if_, iit, list, ndescribe, nit, p, see, span, text, txt, _a, _b, _ref, _ref1;
+var Component, Tag, Text, TransformComponent, a, case_, clone, div, each, expect, func, idescribe, if_, iit, list, ndescribe, nit, p, see, span, text, txt, _ref;
 
 _ref = require('./helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
 
-bindings = dc.bindings, see = dc.see, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, clone = dc.clone, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
-
-_ref1 = bindings({
-  a: 1,
-  b: 2
-}), $a = _ref1.$a, $b = _ref1.$b, _a = _ref1._a, _b = _ref1._b;
+see = dc.see, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, clone = dc.clone, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
 describe('Component.refs, clone', function() {
   describe('refs', function() {

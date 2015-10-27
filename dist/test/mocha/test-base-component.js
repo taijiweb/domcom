@@ -1,16 +1,16 @@
 
 /**test-virtual-tree
  */
-var $a, $b, Html, List, Nothing, Tag, Text, bindings, classFn, div, expect, html, idescribe, iit, list, ndescribe, newDemoNode, nit, p, see, styleFrom, txt, _a, _b, _ref, _ref1;
+var Html, List, Nothing, Tag, Text, a_, bindings, classFn, div, expect, html, idescribe, iit, list, ndescribe, newDemoNode, nit, p, see, styleFrom, txt, _ref;
 
 _ref = require('./helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
 bindings = dc.bindings, see = dc.see, Tag = dc.Tag, Text = dc.Text, List = dc.List, txt = dc.txt, list = dc.list, p = dc.p, div = dc.div, Html = dc.Html, html = dc.html, classFn = dc.classFn, styleFrom = dc.styleFrom, Nothing = dc.Nothing;
 
-_ref1 = bindings({
+a_ = bindings({
   a: 1,
   b: 2
-}), $a = _ref1.$a, $b = _ref1.$b, _a = _ref1._a, _b = _ref1._b;
+}).a_;
 
 describe("test base component", function() {
   describe('getBaseComponent', function() {
@@ -89,8 +89,8 @@ describe("test base component", function() {
       var comp;
       comp = new Tag('input', {
         type: 'text',
-        value: _a
-      }, [new Text(_a)]);
+        value: a_
+      }, [new Text(a_)]);
       comp.mount();
       return expect(comp.node.value).to.equal('1');
     });

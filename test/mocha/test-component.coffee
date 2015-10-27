@@ -57,8 +57,8 @@ describe "component  ", ->
       expect(comp.node.innerHTML).to.equal '0'
 
     it 'should mount Text with flow value', ->
-      {_a, _b} = bindings({a: 1, b: 2})
-      comp = txt(flow.add _a, _b)
+      {a_, b_} = bindings({a: 1, b: 2})
+      comp = txt(flow.add a_, b_)
       comp.mount('#demo')
       expect(comp.node.textContent).to.equal '3',  'mount'
 
@@ -110,8 +110,8 @@ describe "component  ", ->
       expect(elm.getAttribute('className')).to.equal null
 
     it 'should process function value of text', ->
-      {_a} = bindings({a: 1})
-      comp = text(_a)
+      {a_} = bindings({a: 1})
+      comp = text(a_)
       elm = comp.mount()
       elm = comp.node
       expect(elm.value).to.equal '1'
@@ -157,9 +157,9 @@ describe "component  ", ->
       comp.update()
       expect(comp.node.innerHTML).to.equal '3'
 
-    it 'should process bidirectional bind', ->
-      {$a} = bindings({a: 1})
-      comp = new Tag('input', {value:$a}, [])
+    it 'should update bidirectional bind', ->
+      {a$} = bindings({a: 1})
+      comp = new Tag('input', {value:a$}, [])
       comp.mount()
       expect(comp.node.value).to.equal "1"
 
@@ -177,24 +177,24 @@ describe "component  ", ->
       expect(elm.innerHTML).to.equal '3'
 
     it 'should process text with bind', ->
-      {_a, _b} = bindings({a: 1, b: 2})
-      comp = p(txt(flow.add _a, _b))
+      {a_, b_} = bindings({a: 1, b: 2})
+      comp = p(txt(flow.add a_, b_))
       comp.mount('#demo')
       expect(comp.node.innerHTML).to.equal '3',  'mount'
-      _a 3; _b 4
-      expect(_a()).to.equal(3, '_a')
-      expect(_b()).to.equal(4, '_b')
+      a_ 3; b_ 4
+      expect(a_()).to.equal(3, 'a_')
+      expect(b_()).to.equal(4, 'b_')
       comp.update()
       expect(comp.node.innerHTML).to.equal '7', 'update'
 
     it 'should process bidirectional bind', ->
-      {$a} = bindings({a: 1})
-      comp = text($a)
+      {a$} = bindings({a: 1})
+      comp = text(a$)
       comp.mount('#demo')
       expect(comp.node.value).to.equal '1'
       comp.node.value = '2'
       comp.node.onchange()
-      expect($a()).to.equal '2'
+      expect(a$()).to.equal '2'
 
     it 'should render div(2) component', ->
       comp = div(2)

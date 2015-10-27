@@ -12,10 +12,10 @@ controls = require 'domcom/demo/demo-controls'
 describe 'demo', ->
   describe 'sum', ->
     it 'should construct and create components', ->
-      {$a, $b, _a, _b} = bindings({a: 3, b: 2})
-      x = text($a); y = text($b); z = p(txt(sum=flow.add _a, _b))
+      {a$, b$, a_, b_} = bindings({a: 3, b: 2})
+      x = text(a$); y = text(b$); z = p(txt(sum=flow.add a_, b_))
       expect(sum()).to.equal 5, 'sum 1'
-      _a 1
+      a_ 1
       expect(sum()).to.equal 3,  'sum 2'
       comp = list(x, y, z)
       comp.mount('#demo')
@@ -24,8 +24,8 @@ describe 'demo', ->
       y.node.value = '4'
       x.node.onchange()
       y.node.onchange()
-      expect(_a()).to.equal('3', '_a')
-      expect(_b()).to.equal('4', '_b')
+      expect(a_()).to.equal('3', 'a_')
+      expect(b_()).to.equal('4', 'b_')
       expect(sum()).to.equal('34', 'sum')
       expect(!!comp.valid).to.equal false, 'comp.valid'
       expect(!!z.valid).to.equal false, 'z.valid'
@@ -49,9 +49,9 @@ describe 'demo', ->
 
   describe 'text model', ->
     it 'should text model by value', ->
-      {$a} = bindings(m={a: 1})
+      {a$} = bindings(m={a: 1})
       attrs = {onchange: -> comp.update()}
-      comp = list(text1=text(attrs, $a), text2=text(attrs, $a))
+      comp = list(text1=text(attrs, a$), text2=text(attrs, a$))
       comp.mount()
       text1.node.value = 3
       text1.node.onchange()
@@ -59,8 +59,8 @@ describe 'demo', ->
       expect(text2.node.value).to.equal '3', 'text2.node.value'
 
     it 'should text model by value and onchange', ->
-      {$a} = bindings(m={a: 1})
-      attrs = {value: $a, onchange: -> $a @value; comp.update()}
+      {a$} = bindings(m={a: 1})
+      attrs = {value: a$, onchange: -> a$ @value; comp.update()}
       comp = list(text1=text(attrs), text2=text(attrs))
       comp.mount()
       text1.node.value = 3

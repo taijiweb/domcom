@@ -1,5 +1,4 @@
-{bindings
-list,
+{list,
 text, div, p, see, flow} = dc
 
 toggle = flow.toggle

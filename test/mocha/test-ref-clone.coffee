@@ -1,12 +1,10 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings, see
+{see
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func, each
 clone
 a, p, span, text, div} = dc
-
-{$a, $b, _a, _b} = bindings({a: 1, b: 2})
 
 describe 'Component.refs, clone', ->
 

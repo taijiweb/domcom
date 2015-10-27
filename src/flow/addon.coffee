@@ -5,8 +5,8 @@ module.exports = flow
 dc.bindings = flow.bindings =  (model, name) ->
   result = {}
   for key of model
-    result['$'+key] = duplex(model, key, name)
-    result['_'+key] = bind(model, key, name)
+    result[key+'$'] = duplex(model, key, name)
+    result[key+'_'] = bind(model, key, name)
   result
 
 flow.neg = (x) -> unary(x, (x) -> -x)

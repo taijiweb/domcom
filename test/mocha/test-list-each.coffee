@@ -1,14 +1,11 @@
 {expect, iit, idescribe, nit, ndescribe, newDemoNode} = require('./helper')
 
-{bindings
-isComponent
+{isComponent
 Component, TransformComponent, Tag, Text,
 txt, list, List, func, if_, case_, func, each
 accordionGroup, accordion
 a, p, span, text, div
 bind, pour, see} = dc
-
-{$a, $b, _a, _b} = bindings({a: 1, b: 2})
 
 describe 'list, each', ->
   describe 'List', ->

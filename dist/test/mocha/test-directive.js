@@ -1,7 +1,7 @@
 
 /**test-directive
  */
-var $a, $b, $hide, $show, $splitter, Component, a, bindings, div, duplex, each, expect, func, idescribe, if_, iit, input, list, ndescribe, nit, p, see, select, span, text, _a, _b, _ref, _ref1;
+var $hide, $show, $splitter, Component, a, a$, bindings, div, duplex, each, expect, func, idescribe, if_, iit, input, list, ndescribe, nit, p, see, select, span, text, _ref;
 
 _ref = require('./helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
 
@@ -9,22 +9,21 @@ Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, each = d
 
 dc.directives(dc.builtinDirectives);
 
-_ref1 = bindings({
-  a: 1,
-  b: 2
-}), $a = _ref1.$a, $b = _ref1.$b, _a = _ref1._a, _b = _ref1._b;
+a$ = bindings({
+  a: 1
+}).a$;
 
 describe('directives', function() {
   describe('model ', function() {
     it('should process model  directive', function() {
       var comp;
       comp = text({
-        $model: $a
+        $model: a$
       });
       comp.mount();
       comp.node.value = '2';
       comp.node.onchange();
-      return expect($a()).to.equal('2');
+      return expect(a$()).to.equal('2');
     });
     return it('should process event property of component with model directive', function() {
       var comp, m, modelValue, x;

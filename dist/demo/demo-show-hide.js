@@ -1,6 +1,6 @@
-var bindings, div, flow, list, p, see, text, toggle;
+var div, flow, list, p, see, text, toggle;
 
-bindings = dc.bindings, list = dc.list, text = dc.text, div = dc.div, p = dc.p, see = dc.see, flow = dc.flow;
+list = dc.list, text = dc.text, div = dc.div, p = dc.p, see = dc.see, flow = dc.flow;
 
 toggle = flow.toggle;
 

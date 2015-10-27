@@ -12,17 +12,17 @@ see} = dc
 
 dc.directives dc.builtinDirectives
 
-{$a, $b, _a, _b} = bindings({a: 1, b: 2})
+{a$} = bindings({a: 1})
 
 describe 'directives', ->
 
   describe 'model ', ->
     it 'should process model  directive', ->
-      comp = text({$model:$a})
+      comp = text({$model:a$})
       comp.mount()
       comp.node.value = '2'
       comp.node.onchange()
-      expect($a()).to.equal '2'
+      expect(a$()).to.equal '2'
 
     it 'should process event property of component with model directive', ->
       x = 0

@@ -3,7 +3,6 @@ duplex
 div
 triangle
 list
-comboEdit
 hcombo, vcombo} = dc
 
 exports.demoTriangle =  ->
@@ -16,8 +15,6 @@ exports.demoTriangle =  ->
 
 exports.demoCombo =  ->
   a = {}
-  #  comp = comboEdit({}, duplex(a, 'x'), 'a b'.split(' '))
-  #  comp.mount()
   combo1 = hcombo({style:{display:'inline-block'}}, duplex(a, 'x'), 'a b'.split(' '))
   #comp.mount()
   combo2 = vcombo({style:{display:'inline-block'}}, duplex(a, 'x'), 'a b'.split(' '))

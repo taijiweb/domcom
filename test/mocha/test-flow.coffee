@@ -28,25 +28,25 @@ describe 'reactive flow', ->
     expect(r3()).to.equal 4
 
   it 'should flow unary', ->
-    {_a, _b} = bindings({a: 4, b: 2})
-    r = flow.neg _a
+    {a_, b_} = bindings({a: 4, b: 2})
+    r = flow.neg a_
     expect(r()).to.equal -4, 'neg'
-    r = flow.no _a
+    r = flow.no a_
     expect(r()).to.equal false, 'not'
-    r = flow.abs flow.neg _a
+    r = flow.abs flow.neg a_
     expect(r()).to.equal 4, 'abs neg'
-    r = flow.bitnot _a
+    r = flow.bitnot a_
     expect(r()).to.equal -5, 'bitnot'
 
   it 'should flow binary', ->
-    {_a, _b} = bindings({a: 4, b: 2})
-    r = flow.add _a, _b
+    {a_, b_} = bindings({a: 4, b: 2})
+    r = flow.add a_, b_
     expect(r()).to.equal 6, 'add'
-    r = flow.sub _a, _b
+    r = flow.sub a_, b_
     expect(r()).to.equal 2, 'sub'
-    r = flow.mul _a, _b
+    r = flow.mul a_, b_
     expect(r()).to.equal 8, 'mul'
-    r = flow.div _a, _b
+    r = flow.div a_, b_
     expect(r()).to.equal 2, 'div'
 
   it 'should invalidate flow binary', ->
@@ -75,9 +75,9 @@ describe 'reactive flow', ->
     expect(a2()).to.equal(3, 'a2 again')
 
   it 'should process bindings', ->
-    {$a, _a} = bindings({a: 1})
-    $a 3
-    expect(_a()).to.equal(3)
+    {a$, a_} = bindings({a: 1})
+    a$ 3
+    expect(a_()).to.equal(3)
 
   it 'should process multiple bind and duplex on same object and attr', ->
     m = {a:1, b:2}

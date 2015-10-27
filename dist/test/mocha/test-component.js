@@ -68,12 +68,12 @@ describe("component  ", function() {
       return expect(comp.node.innerHTML).to.equal('0');
     });
     it('should mount Text with flow value', function() {
-      var comp, _a, _b, _ref1;
+      var a_, b_, comp, _ref1;
       _ref1 = bindings({
         a: 1,
         b: 2
-      }), _a = _ref1._a, _b = _ref1._b;
-      comp = txt(flow.add(_a, _b));
+      }), a_ = _ref1.a_, b_ = _ref1.b_;
+      comp = txt(flow.add(a_, b_));
       comp.mount('#demo');
       return expect(comp.node.textContent).to.equal('3', 'mount');
     });
@@ -148,11 +148,11 @@ describe("component  ", function() {
       return expect(elm.getAttribute('className')).to.equal(null);
     });
     it('should process function value of text', function() {
-      var comp, elm, _a;
-      _a = bindings({
+      var a_, comp, elm;
+      a_ = bindings({
         a: 1
-      })._a;
-      comp = text(_a);
+      }).a_;
+      comp = text(a_);
       elm = comp.mount();
       elm = comp.node;
       return expect(elm.value).to.equal('1');
@@ -220,13 +220,13 @@ describe("component  ", function() {
       comp.update();
       return expect(comp.node.innerHTML).to.equal('3');
     });
-    it('should process bidirectional bind', function() {
-      var $a, comp;
-      $a = bindings({
+    it('should update bidirectional bind', function() {
+      var a$, comp;
+      a$ = bindings({
         a: 1
-      }).$a;
+      }).a$;
       comp = new Tag('input', {
-        value: $a
+        value: a$
       }, []);
       comp.mount();
       return expect(comp.node.value).to.equal("1");
@@ -248,32 +248,32 @@ describe("component  ", function() {
       return expect(elm.innerHTML).to.equal('3');
     });
     it('should process text with bind', function() {
-      var comp, _a, _b, _ref1;
+      var a_, b_, comp, _ref1;
       _ref1 = bindings({
         a: 1,
         b: 2
-      }), _a = _ref1._a, _b = _ref1._b;
-      comp = p(txt(flow.add(_a, _b)));
+      }), a_ = _ref1.a_, b_ = _ref1.b_;
+      comp = p(txt(flow.add(a_, b_)));
       comp.mount('#demo');
       expect(comp.node.innerHTML).to.equal('3', 'mount');
-      _a(3);
-      _b(4);
-      expect(_a()).to.equal(3, '_a');
-      expect(_b()).to.equal(4, '_b');
+      a_(3);
+      b_(4);
+      expect(a_()).to.equal(3, 'a_');
+      expect(b_()).to.equal(4, 'b_');
       comp.update();
       return expect(comp.node.innerHTML).to.equal('7', 'update');
     });
     it('should process bidirectional bind', function() {
-      var $a, comp;
-      $a = bindings({
+      var a$, comp;
+      a$ = bindings({
         a: 1
-      }).$a;
-      comp = text($a);
+      }).a$;
+      comp = text(a$);
       comp.mount('#demo');
       expect(comp.node.value).to.equal('1');
       comp.node.value = '2';
       comp.node.onchange();
-      return expect($a()).to.equal('2');
+      return expect(a$()).to.equal('2');
     });
     it('should render div(2) component', function() {
       var comp;

@@ -1,6 +1,5 @@
 {list, each
-p, txt
-bindings} = dc
+p, txt} = dc
 
 exports.eachDemo1 = ->
   lst = [1, 2]

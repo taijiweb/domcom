@@ -9,16 +9,16 @@ controls = require('domcom/demo/demo-controls');
 describe('demo', function() {
   describe('sum', function() {
     return it('should construct and create components', function() {
-      var $a, $b, comp, sum, x, y, z, _a, _b, _ref1;
+      var a$, a_, b$, b_, comp, sum, x, y, z, _ref1;
       _ref1 = bindings({
         a: 3,
         b: 2
-      }), $a = _ref1.$a, $b = _ref1.$b, _a = _ref1._a, _b = _ref1._b;
-      x = text($a);
-      y = text($b);
-      z = p(txt(sum = flow.add(_a, _b)));
+      }), a$ = _ref1.a$, b$ = _ref1.b$, a_ = _ref1.a_, b_ = _ref1.b_;
+      x = text(a$);
+      y = text(b$);
+      z = p(txt(sum = flow.add(a_, b_)));
       expect(sum()).to.equal(5, 'sum 1');
-      _a(1);
+      a_(1);
       expect(sum()).to.equal(3, 'sum 2');
       comp = list(x, y, z);
       comp.mount('#demo');
@@ -27,8 +27,8 @@ describe('demo', function() {
       y.node.value = '4';
       x.node.onchange();
       y.node.onchange();
-      expect(_a()).to.equal('3', '_a');
-      expect(_b()).to.equal('4', '_b');
+      expect(a_()).to.equal('3', 'a_');
+      expect(b_()).to.equal('4', 'b_');
       expect(sum()).to.equal('34', 'sum');
       expect(!!comp.valid).to.equal(false, 'comp.valid');
       expect(!!z.valid).to.equal(false, 'z.valid');
@@ -65,16 +65,16 @@ describe('demo', function() {
   });
   describe('text model', function() {
     it('should text model by value', function() {
-      var $a, attrs, comp, m, text1, text2;
-      $a = bindings(m = {
+      var a$, attrs, comp, m, text1, text2;
+      a$ = bindings(m = {
         a: 1
-      }).$a;
+      }).a$;
       attrs = {
         onchange: function() {
           return comp.update();
         }
       };
-      comp = list(text1 = text(attrs, $a), text2 = text(attrs, $a));
+      comp = list(text1 = text(attrs, a$), text2 = text(attrs, a$));
       comp.mount();
       text1.node.value = 3;
       text1.node.onchange();
@@ -82,14 +82,14 @@ describe('demo', function() {
       return expect(text2.node.value).to.equal('3', 'text2.node.value');
     });
     return it('should text model by value and onchange', function() {
-      var $a, attrs, comp, m, text1, text2;
-      $a = bindings(m = {
+      var a$, attrs, comp, m, text1, text2;
+      a$ = bindings(m = {
         a: 1
-      }).$a;
+      }).a$;
       attrs = {
-        value: $a,
+        value: a$,
         onchange: function() {
-          $a(this.value);
+          a$(this.value);
           return comp.update();
         }
       };
