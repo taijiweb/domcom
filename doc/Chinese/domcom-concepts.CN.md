@@ -49,7 +49,6 @@ Domcom框架区别于其它框架的关键要素。Domcom中一切连接数据�
 
 变换部件经过调用getContentComponent方法产生的部件，称为该变换部件的内容部件。
 
-
 * **子部件**
 
 根据上下文不同，子部件可以有不同的意义。涉及到List部件或Tag部件时，特指chilren数组中的部件项。在更宽泛的语境中，指代部件的内容部件及其children数组中的部件项，以及进一步包含的所有后代。
@@ -91,6 +90,8 @@ Domcom框架区别于其它框架的关键要素。Domcom中一切连接数据�
 直接发生在部件上的事件。部件事件注册在Component.listeners特性上，通过Component.on, Component.off, Component.emit这一组函数进行处理。domcom内部发送的部件事件有beforeMount, update, afterUnmount, beforeAttach, contentChanged等。
 
 * **指令**
+
+指令是Domcom提供的一种语法糖，作为属性集中的属性用在Tag部件上对该部件做某些处理。
 
 * **部件的多处引用**
 

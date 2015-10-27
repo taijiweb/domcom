@@ -106,7 +106,7 @@ model, bind, show, hide, blink, splitter, options
     comp = text({type:'text', directives:model(a)})
 
 #### src/core/builtins/
- combo, comboEdit, dialog, arrow, accordion
+ combo, dialog, arrow, accordion
 
 ### classes
 ##### Component

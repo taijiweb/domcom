@@ -13,10 +13,10 @@
     # coffee-script
     {bindings, list, text, p} = require 'domcom'
     demoSum = ->
-      {_a, _b} = bindings({a: 1, b: 2})
-      comp = list(text({onchange:->comp.update()}, _a),
-                  text({onchange:->comp.update()}, _b),
-                  p(-> parseFloat(_a())+parseFloat(_b())))
+      {a_, b_} = bindings({a: 1, b: 2})
+      comp = list(text({onchange:->comp.update()}, a_),
+                  text({onchange:->comp.update()}, b_),
+                  p(-> parseFloat(a_())+parseFloat(b_())))
       comp.mount()
     demSum()
 

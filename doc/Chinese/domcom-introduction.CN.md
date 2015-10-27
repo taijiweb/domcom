@@ -51,7 +51,7 @@ Domcom的特性值和子部件可以是Promise，另外提供Defer部件以提�
 
 ### 在页面中设置Domcom
 
-根据开发和应用需要从安装或下载的文件夹中选择domcom/dist/下的domcom.js, domcom.min.js, domcom-addon.js, domcom-addon.min.js, domcom-full.js， domcom-full.min.js中合适的文件，按照通常方法向html页面添加script标签：
+根据开发和应用需要从安装或下载的文件夹中选择domcom/dist/下的domcom.js, domcom.min.js, domcom-basic.js， domcom-basic.min.js中合适的文件，按照通常方法向html页面添加script标签：
 
 `<script src="path/to/domcom-???.???.js"/>`
 

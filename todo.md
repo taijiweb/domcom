@@ -1,19 +1,10 @@
 ### todo
 * todo: browser compatibility
-* todo: template similar to JSX(reactjs), MSX(mithril.js), riotjs template
-* todo: dom event delegation
-* todo: use requestAnimationFrame
-
-#### half done
-
-### known issues:
-* fixme: lost focus wrongly after component is updated
-* fixme: sometimes do not respond to button
 
 #### done
+* done: use requestAnimationFrame
 * done: jquery style api
-* done: support object with Repeat
-
+* done: support object with Each
 * done: rename Repeat to Each
 * done: multiple test if-else if-else, similar to "cond" in lisp
   cond: (test, component, ..., otherwise)

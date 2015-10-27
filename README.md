@@ -21,26 +21,14 @@ There is [some  samples](https://github.com/taijiweb/domcom/tree/master/demo), a
 
 The code below give a taste of domcom:
 
-In coffee-script:
-
-    {list, text, p, flow, see} = dc
-
-    demoSum = ->
-      a = see 1; b = see 2
-      comp = list \
-        (t1 = text value: a, onchange: (-> a @value*1)),
-        (t2 = text value: b, onchange: (-> b @value*1)),
-        p1 = p flow.add a, b
-      dc.updateWhen [t1, t2], 'change', p1
-      comp.mount()
-
-    demoSum()
-
 In javascript:
 
-    var demoSum, flow, list, p, see, text;
-    ​
-    list = dc.list, text = dc.text, p = dc.p, flow = dc.flow, see = dc.see;
+    // recommend to use some tool to support ES6 destructive syntax
+    {list, text, p, flow, see} = dc
+
+    // otherwise you need write the the code like below
+    // var demoSum, flow, list, p, see, text;​
+    // list = dc.list, text = dc.text, p = dc.p, flow = dc.flow, see = dc.see;
     ​
     demoSum = function() {
       var a, b, comp, p1, t1, t2;
@@ -63,6 +51,21 @@ In javascript:
     ​
     demoSum();
 ​
+In coffee-script:
+
+    {list, text, p, flow, see} = dc
+
+    demoSum = ->
+      a = see 1; b = see 2
+      comp = list \
+        (t1 = text value: a, onchange: (-> a @value*1)),
+        (t2 = text value: b, onchange: (-> b @value*1)),
+        p1 = p flow.add a, b
+      dc.updateWhen [t1, t2], 'change', p1
+      comp.mount()
+
+    demoSum()
+
 ## get start
 `npm install domcom`
 

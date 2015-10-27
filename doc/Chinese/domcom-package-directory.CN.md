@@ -8,9 +8,9 @@
 
     domcom    ...................................  // 提供DOM部件的web框架
     |- src/   ...................................  // coffee-script源代码文件夹
-    |  |- index.coffee    .......................  // 包含基础的domcom内容
+    |  |- domcom.coffee    ......................  // 包含整个domcom，包括基础的domcom及其addon
+    |  |- domcom-basic.coffee  ..................  // 包含基础的domcom内容
     |  |- domcom-addon.coffee    ................  // 包含domcom的增补内容: builtins, directives, etc.
-    |  |- domcom-full.coffee    .................  // 包含整个domcom，包括基本的domcom及其addon
     |  |- dc.coffee    ..........................  // 直属dc的方法和特性
     |  |- config.coffee    ......................  // dc配置文件
     |  |- util.coffee    ........................  // dc辅助函数
@@ -61,7 +61,6 @@
     |  |  |- arrow.coffee    ....................   // 用css实现的四个方向的三角形
     |  |  |- autoWidthEdit.coffee    ............   // 可自动调整宽度的text input标签元素
     |  |  |- combo.coffee    ....................   // 两种comboBox edit
-    |  |  |- comboEdit.coffee    ................   // 一个未经测试的comboEdit
     |  |  |- dialog.coffee    ...................   // 基于bootstrap css的简单对话框实现
     |  |  \- index.coffee    ....................   // index文件，用于 require builtins/
     |  |
@@ -126,12 +125,10 @@
     |  \- index-dist.html    ....................   // 演示用的index.html, 采用dist/
     |
     |- dist    ..................................  // 发布用文件夹
-    |  |- domcom.js    ..........................  // 基础domcom发布, 用于开发
-    |  |- domcom.min.js    ......................  // 最小化的基础domcom发布文件, 用于产品
-    |  |- domcom-addon.js    ....................  // domcom发布, 用于开发
-    |  |- domcom-addon.min.js    ................  // 最小化的domcom发布, 用于产品
-    |  |- domcom-full.js    .....................  // 完整domcom发布, 包括基础内容和补充内容, 用于开发, 大多数情况下建议使用这个文件
-    |  |- domcom-full.min.js    .................  // 最小化的完整domcom发布, 包括基础内容和补充内容, 用于产品, 大多数情况下建议使用这个文件
+    |  |- domcom.js    ..........................  // 完整domcom发布, 包括基础内容和补充内容, 用于开发, 大多数情况下建议使用这个文件
+    |  |- domcom.min.js    ......................  // 最小化的完整domcom发布, 包括基础内容和补充内容, 用于产品, 大多数情况下建议使用这个文件
+    |  |- domcom-basic.js    ....................  // 基础domcom发布, 用于开发
+    |  |- domcom-basic.min.js    ................  // 最小化的基础domcom发布文件, 用于产品
     |  |- mocha-index.js    .....................  // index文件，用于mocha测试, 采用webpack-hot-server
     |  |- mocha-index.min.js    .................  // index文件，用于mocha测试, 采用dist/文件夹中的代码
     |  |- demo-index.js    ......................  // index文件 for demos, 采用webpack-hot-server

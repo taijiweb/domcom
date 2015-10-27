@@ -8,9 +8,9 @@
 
     domcom    ...................................  // the web framework to provide dom component
     |- src/   ...................................  // the coffee-script source code folder
-    |  |- index.coffee    .......................  // the index file to enable require this folder as domcom package
+    |  |- domcom.coffee    .......................  // the index file to enable require this folder as domcom package, include basic domcom and it's addon content
+    |  |- domcom-basic.coffee    .................  // the index file to the basic domcom, does not include the addon content
     |  |- domcom-addon.coffee    ................  // the index file for addon modules: builtins, directives, etc.
-    |  |- domcom-full.coffee    .................  // the index file to the full domcom, include basic domcom and it's addon content
     |  |- dc.coffee    ..........................  // the methods and properties which belong to dc directly
     |  |- config.coffee    ......................  // config file for dc
     |  |- util.coffee    ........................  // utilities for dc
@@ -58,10 +58,9 @@
     |  |
     |  |- builtins/    ..........................   // some bultin component definitions
     |  |  |- accordion.coffee    ................   // accordion implementation based on domcom
-    |  |  |- arrow.coffee    ....................   // arrow icon by css in four directions
+    |  |  |- triangle.coffee    ....................   // triangle icon by css in four directions
     |  |  |- autoWidthEdit.coffee    ............   // text input tag element which automatic changing its width according the inputed text
     |  |  |- combo.coffee    ....................   // two implementatinos for comboBox edit
-    |  |  |- comboEdit.coffee    ................   // an untested implementatino for comboEdit
     |  |  |- dialog.coffee    ...................   // a simple dialog implementation based on bootstrap css
     |  |  \- index.coffee    ....................   // the index file to enable requiring builtins/ folder
     |  |
@@ -127,12 +126,10 @@
     |  \- index-dist.html    ....................   // index.html for the demo, using the code in dist/ folder
     |
     |- dist    ..................................  // distribution folder
-    |  |- domcom.js    ..........................  // basic domcom distribution, development version
-    |  |- domcom.min.js    ......................  // minified basic domcom distribution, production version
-    |  |- domcom-addon.js    ....................  // domcom distribution, development version
-    |  |- domcom-addon.min.js    ................  // minified domcom distribution, production version
-    |  |- domcom-full.js    .....................  // full domcom distribution, include basic domcom and addon, development version, in most time it's better to use this file
-    |  |- domcom-full.min.js    .................  // minified full domcom distribution, include basic domcom and addon, production version, in most time it's better to use this file
+    |  |- domcom.js    ..........................  // full domcom distribution, include basic domcom and addon, development version, in most time it's better to use this file
+    |  |- domcom.min.js    ......................  // minified full domcom distribution, include basic domcom and addon, production version, in most time it's better to use this file
+    |  |- domcom-basic.js    ....................  // basic domcom distribution, development version
+    |  |- domcom-basic.min.js    ................  // minified basic domcom distribution, production version
     |  |- mocha-index.js    .....................  // the index file for tests based on mocha, using webpack-hot-server
     |  |- mocha-index.min.js    .................  // the index file for tests based on mocha, using the code in dist/ folder
     |  |- demo-index.js    ......................  // the index file for demos, using webpack-hot-server

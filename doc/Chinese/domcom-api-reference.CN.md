@@ -69,6 +69,13 @@
 
 * item：Promise:    代表item是Promise类型，应该带有then方法和catch方法。
 
+* item:TagName:    代表item是可以作为Html标签名使用的合适的字符串，如div, custom-tag等等。
+
+* item:PropName:    代表item是合适的Node特性名或者Node的Style中的特性名。根据不同的方法，使用这两者其中之一。
+
+* item:PropSet:    代表item是从PropName到特性值的Hash类型。其中特性值是domValue类型。
+
+* item:ClassFn:    代表item是className(或class)特性的值或值列表，该值会被classFn作为参数，合并到一起作为className的特性。
 
 ### 关于方法的说明
 
@@ -148,17 +155,39 @@
 
   定制部件的更新时机：可以是其它某个或一组部件上发生的某些Dom事件，也可以采用window.setInterval或者dc.raf方法。以下是这两个函数的类型说明：
   
-  > 函数原型： `component.renderWhen [Component]|Component, [DomEventName], options`
+  > 函数原型： `component.renderWhen components:[Component]|Component, events:[DomEventName], options`
   
-  > 函数原型： `component.renderWhen setInterval, ms, options`
+  > 函数原型： `component.updateWhen components:[Component]|Component, events:[DomEventName], options`
+    
+  当components的dom事件events发生时绘制或更新component。如果dc.config.useSystemUpdating为真，则这种方式配置的绘制或更新不会发生，除非在选项中设定options.alwaysUpdating = true 
 
-  > 函数原型： `component.renderWhen dc.raf, options`  
+  > 函数原型： `component.renderWhen event:setInterval, interval:Int(ms), options`
+  
+  > 函数原型： `component.renderWhen event:setInterval, interval:Int(ms), options`
+  
+  用window.setInterval函数设置每个interval毫秒绘制或更新一次部件。options可设置test函数在绘制或更新前进行测试。clear可以控制停止绘制或更新的时机。可以参考如下代码来帮助理解：
+	
+	addSetIntervalUpdate = (method, component, options) ->
+	  handler = null
+	  {test, interval, clear} = options
+	  callback = ->
+	    if !test or test() then component[method]()
+	    if clear and clear() then clearInterval handler
+	  handler = setInterval(callback, interval or 16)
+  
 
-  > 函数原型： `component.updateWhen [Component]|Component, [DomEventName], options`
-  
-  > 函数原型： `component.renderWhen setInterval, ms, options`
-  
-  > 函数原型： `component.renderWhen dc.raf, options`
+  > 函数原型： `component.renderWhen event:dc.render, options`
+
+  > 函数原型： `component.renderWhen when:dc.render, options`  
+
+  dc.render函数中绘制或更新部件component。options可设置test函数在绘制或更新前进行测试。clear可以控制停止绘制或更新的时机。可以参考如下代码来帮助理解：
+
+	addRenderUpdate = (method, component, options) ->
+	  {test, clear} = options
+	  callback = ->
+	    if !test or test() then component[method]()
+	    if clear and clear() then dc.offRender callback
+	  dc.onRender callback 
 
 * **on, off, emit**
 
@@ -296,27 +325,40 @@
 
 * **pushChild**
 
+  从List.children后面压入一个子部件child。
+
   > 函数原型： `component.pushChild child:toComponent`
 
+
 * **unshiftChild**
+
+  从List.children前面压入一个子部件child。
 
   > 函数原型： `component.unshiftChild child:toComponent`
 
 * **insertChild**
 
+  向List.children的index位置插入一个子部件child。
+
   > 函数原型： `component.indexChild index:Index, child:toComponent`
 
 * **removeChild**
 
-> 函数原型： `component.removeChild index:Index`
+  删除List.children的index位置的子部件。
+
+  > 函数原型： `component.removeChild index:Index`
 
 * **setChildren**
 
-  > 函数原型： `component.setChildren startIndex:Index, children:[toComponent]...`
+  设置从List.children的index位置开始的一组位置的各个子部件分别为newChildren中对应的部件。
+
+  > 函数原型： `component.setChildren startIndex:Index, newChildren:[toComponent]...`
 
 * **setLength**
 
-  > 函数原型： `component.setLength newLength:int`
+  设置从List.children的长度为newLength，从newLength开始所在位置的子部件将被删除。如果newLength大于等于List.children的原长度，此方法没有作用。
+
+  > 函数原型： `component.setLength newLength:Int`
 
 ***********************************************************
 
@@ -327,17 +369,23 @@
 ##### 直接父类：List
 
 ##### 构造函数原型
-    new Tag(tagName, attrs, children)
+  > 函数原型： new Tag(tagName, attrs, children)
 
 ##### 实例化函数原型
 
-> 函数原型： `dcTagName [attrs:Attrs] [, children:[toComponent]...]`
+  > 函数原型： `dcTagName([attrs:Attrs] [, children:[toComponent]...])`
+  
+  DCTagName是可以实例化Tag部件的函数名，必须从dc名字空间引入对于的名字方可使用，例如div, p, span, input, textarea, select等。
 
-> 函数原型： `inputType [attrs:Attrs][, value:domValue]`
+  > 函数原型： `inputType([attrs:Attrs][, value:domValue])`
 
-> 函数原型： `tag tagName:anyTagName [attrs:Attrs][, children:[toComponent]...]`
+  inputType是<intput>标签允许的类型值，包括text, number, checkbox, radio, email, date, tel等。
 
-  anyTagName是可以作为html标签名的字符串。dcTagName是可以实例化Tag部件的函数名，必须从dc名字空间引入对于的名字方可使用，例如div, p, span, input, textarea, select等，inputType是<intput>标签允许的类型值，包括text, number, checkbox, radio, email, date, tel等。这两项内容欲知完整列表请参阅src/core/tag.coffee。
+  关于dcTagName和inputType这两项内容的完整列表请参阅src/core/tag.coffee。
+
+  > 函数原型： `tag tagName:TagName [attrs:Attrs][, children:[toComponent]...]`
+
+  tagName是任何可以作为html标签名的字符。
 
 ##### 示例
 
@@ -350,7 +398,7 @@
 
 ##### Tag部件方法
 
-Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特性，Css Style， Dom事件等。Tag部件所定义的Dom节点特性是响应式的，即这些值如果是函数，则成为响应函数。只有响应函数的计算失效时，Tag部件才需要更新这些特性。而更新特性时，会将计算所得新值与缓存值进行比较，只有两者不相同才需要实际修改Dom节点特性，执行Dom操作以刷新Dom。Dom事件是发生在Dom节点上的事件，不同于Domcom部件事件，这些事件包括onclick，onchange等。对于Dom事件处理函数，domcom主要通过构造Tag部件时利用attrs参数进行声明，也可以通过Tag.bind，Tag.unbind来管理。$model指令，Component.renderWhen, Component.updateWhen, dc,renderWhen, dc,updateWhen等函数也可以添加事件处理函数。
+  Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特性，Css Style， Dom事件等。Tag部件所定义的Dom节点特性是响应式的，即这些值如果是函数，则成为响应函数。只有响应函数的计算失效时，Tag部件才需要更新这些特性。而更新特性时，会将计算所得新值与缓存值进行比较，只有两者不相同才需要实际修改Dom节点特性，执行Dom操作以刷新Dom。Dom事件是发生在Dom节点上的事件，不同于Domcom部件事件，这些事件包括onclick，onchange等。对于Dom事件处理函数，domcom主要通过构造Tag部件时利用attrs参数进行声明，也可以通过Tag.bind，Tag.unbind来管理。$model指令，Component.renderWhen, Component.updateWhen, dc,renderWhen, dc,updateWhen等函数也可以添加事件处理函数。
 
 * prop
 
@@ -372,9 +420,9 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 * addClass, removeClass
 
-  > 函数原型： `tag.addClass items...`
+  > 函数原型： `tag.addClass items：[ClassFn]...`
 
-  > 函数原型： `tag.removeClass classes...`
+  > 函数原型： `tag.removeClass classes:[ClassName]...`
 
 * show, hide
 
@@ -387,6 +435,28 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
   > 函数原型： `tag.bind eventName, handlers:DomEventHandler`
 
   > 函数原型： `tag.unbind eventName, handler`
+
+  绑定或移除Tag部件的eventName所指Dom事件使用的Dom事件处理函数。Domcom将事件处理函数收集到一个数组，并产生一个真正的事件处理函数，将此函数设置到Dom节点的EventName特性。
+
+  handler将这样被调用：handler.call(node, event, component), 其中，本Tag部件对应的Dom节点node成为handler的this，event是实际发生的Dom事件，component是本Tag部件。当事件的所有事件处理函数执行完毕后，将执行event.preventDefault()和event.stopPropagation()，除非event.executeDefault或者event.continuePropagation各自被显式地设置为真。
+
+  具体实现请参考如下代码：
+
+	eventHandlerFromArray = (callbackList, eventName, component) ->
+ 		(event) ->
+			node = component.node
+			for fn in callbackList then fn and fn.call(node, event, component)
+			updateList = component.eventUpdateConfig[eventName]
+			if updateList
+			 for [comp, options] in updateList
+			   # the comp is in updateList, so it need to be updated
+			   # if config.useSystemUpdating then update this component in dc's system update scheme
+			   if options.alwaysUpdating or !config.useSystemUpdating then comp[options.method]()
+			if !event then return
+			!event.executeDefault and event.preventDefault()
+			!event.continuePropagation and event.stopPropagation()
+			return
+
 
 ***********************************************************
 
@@ -517,8 +587,15 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 ##### 实例化函数
 
   > 函数原型： `if_ [attrs:Attrs, ]test:ValueReactive, then_:toComponent[, else_:toComponent]`
+  
+  else_是可以选的，如果else_参数没提供，则If部件的else_特性是Nothing部件。
 
 ##### 示例
+
+	x = see 0, parseFloat
+	comp = list \
+        text({onchange: -> comp.update()}, x)
+        if_(x, div('It is not 0.'), div('It is 0 or NaN.')))
 
 ***********************************************************
 
@@ -538,6 +615,14 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 ##### 示例
 
+    case_(x, {
+        A: "Angular",
+        B: "BackBone",
+        D: "Domcom",
+        E: "Ember",
+        R: "React"
+    },  "some other")
+
 ***********************************************************
 
 ### Cond部件
@@ -552,7 +637,6 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
   > 函数原型： `Cond attrs:Attrs, testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent]`
 
-##### 示例
 
 ***********************************************************
 
@@ -568,7 +652,13 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
   > 函数原型： `func [attrs:Attrs, ]func:Function|Reactive`
 
+
 ##### 示例
+
+	x = 0
+	comp = null
+	indexInput = number({onchange: -> x = parseInt(@value); comp.render()})
+	comp = list(indexInput, func(-> if x>=0 and x<=3 then div x))
 
 ***********************************************************
 
@@ -625,6 +715,15 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 ##### 示例
 
+    comp = route(
+      'a/*/**', (match, route2) ->
+        route2 1, (-> 1),
+          2, -> 2,
+          3, -> 3
+          otherwise: 'otherwise 2'
+      'b/**', -> 'b/**'
+      otherwise: 'otherwise 1'
+    )
 	
 ***********************************************************
 
@@ -735,13 +834,40 @@ Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特�
 
 #### flow/addon模块
 
-绑定绑定： bindings
+以下函数都会根据给定的参数生成响应函数。
 
-一元运算：neg， no， bitnot， reciprocal，abs， floor，ceil， round
+##### 组合绑定
 
-二元运算：add， sub，mul，div，min
+  根据模型数据生成一组单向绑定(flow.bind)和双向绑定(flow.duplex),其中单向绑定的特性名前缀为"_", 双向绑定的的特性名前缀为"$"。
 
-条件判断：if_
+  > 函数原型：bindings model:Object[, name:String]
+
+  name参数可选，为生成的响应函数的toString所用。
+
+  以下为参考实现：
+
+    dc.bindings = flow.bindings =  (model, name) ->
+      result = {}
+      for key of model
+        result[key+'$'] = duplex(model, key, name)
+        result[key+'_'] = bind(model, key, name)
+      result
+
+  * 示例：
+
+     m = {a:1, b: 2}
+     bindings$ = bindings m
+
+     {a_, b$} = m
+
+##### 一元运算
+  neg， no， bitnot， reciprocal，abs， floor，ceil， round
+
+##### 二元运算
+  add， sub，mul，div，min
+
+##### 条件判断：
+  if_
 
 ******************************************************************
 
