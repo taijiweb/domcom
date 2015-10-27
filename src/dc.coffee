@@ -1,13 +1,14 @@
-###* @api dc(element) - dc component constructor
- *
- * @param element
-###
 DomNode = require './DomNode'
 {requestAnimationFrame, raf, isElement} = require  './dom-util'
 {newDcid, isEven} = require './util'
 {componentCache, readyFnList, _updateComponentMap, directiveRegistry, renderCallbackList, rootComponents} = require './config'
 isComponent = require './core/base/isComponent'
 
+
+###* @api dc(element) - dc component constructor
+ *
+ * @param element
+###
 
 module.exports = dc = (element, options={}) ->
   if typeof element == 'string'
@@ -26,16 +27,13 @@ querySelector = (selector, all) ->
   if all then new DomNode(document.querySelectorAll(selector))
   else new DomNode(document.querySelector(selector))
 
-# register directive
-# directiveHandlerGenerator: (...) -> (component) -> component
-dc.directives = (directiveName, directiveHandlerGenerator) ->
-  if arguments.length==1
-    for name, generator of directiveName
-      if name[0]!='$' then name = '$'+name
-      directiveRegistry[name] = generator
-  else
-    if directiveName[0]!='$' then directiveName = '$'+directiveName
-    directiveRegistry[directiveName] = directiveHandlerGenerator
+window.dcid = newDcid()
+# can not write window.$document = dc(document)
+# why so strange? browser can predict the document.dcid=1, document.body.dcid=2 and assigns it in advance !!!!!!!
+dcid = document.dcid = newDcid()
+window.$document = dc.$document = componentCache[dcid] = new DomNode(document)
+dcid = document.body.dcid = newDcid()
+window.$body = dc.$body = componentCache[dcid] = new DomNode(document.body)
 
 dc.onReady = (callback) -> readyFnList.push callback
 
@@ -62,14 +60,6 @@ dc.renderLoop = renderLoop = ->
   requestAnimFrame renderLoop
   render()
   return
-
-window.dcid = newDcid()
-# can not write window.$document = dc(document)
-# why so strange? browser can predict the document.dcid=1, document.body.dcid=2 and assigns it in advance !!!!!!!
-dcid = document.dcid = newDcid()
-window.$document = dc.$document = componentCache[dcid] = new DomNode(document)
-dcid = document.body.dcid = newDcid()
-window.$body = dc.$body = componentCache[dcid] = new DomNode(document.body)
 
 # dc.updateWhen components, events, updateComponentList, options
 # dc.updateWhen setInterval, interval, components..., {clear: -> clearInterval test}
@@ -141,3 +131,14 @@ addRafUpdater = (method, component, options) ->
     if !test or test() then component[method]()
     if clear and clear() then dc.offRender callback
   dc.onRender callback
+
+# register directive
+# directiveHandlerGenerator: (...) -> (component) -> component
+dc.directives = (directiveName, directiveHandlerGenerator) ->
+  if arguments.length==1
+    for name, generator of directiveName
+      if name[0]!='$' then name = '$'+name
+      directiveRegistry[name] = generator
+  else
+    if directiveName[0]!='$' then directiveName = '$'+directiveName
+    directiveRegistry[directiveName] = directiveHandlerGenerator
