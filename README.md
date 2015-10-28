@@ -81,8 +81,6 @@ In coffee-script:
 
   See [doc/](https://github.com/taijiweb/domcom/tree/master/doc) for the document. Both English and Chinese document are provided.
 
-  The files in the [doc/](https://github.com/taijiweb/domcom/tree/master/doc) folder with filename like "somefile.CN.md" is Chinese document.
-
   **中文文档在 [doc/Chinese/](https://github.com/taijiweb/domcom/tree/master/doc/Chinese) 文件夹。**
 
 ## LICENSE

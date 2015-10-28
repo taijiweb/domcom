@@ -1,4 +1,5 @@
 ### todo
+* error processing: dc.onerror and dc.error: should can skip error and continue to process the components afterwards
 
 #### done
 * done: browser compatibility

@@ -31,7 +31,7 @@
 
 * item:toComponent:    代表item可以是任何值，但是item会经过toComponent(item)转换成合适的部件。
 
-* value:domValue:    代表value可以是任何值，但是value会经过domValue(value)转换成适用的dom节点特性值。
+* value:domField:    代表value可以是任何值，但是value会经过domField(value)转换成适用的dom节点特性值。
 
 * fn:Reactive：   fn是响应函数
 
@@ -73,7 +73,7 @@
 
 * item:PropName:    代表item是合适的Node特性名或者Node的Style中的特性名。根据不同的方法，使用这两者其中之一。
 
-* item:PropSet:    代表item是从PropName到特性值的Hash类型。其中特性值是domValue类型。
+* item:PropSet:    代表item是从PropName到特性值的Hash类型。其中特性值是domField类型。
 
 * item:ClassFn:    代表item是className(或class)特性的值或值列表，该值会被classFn作为参数，合并到一起作为className的特性。
 
@@ -377,7 +377,7 @@
   
   DCTagName是可以实例化Tag部件的函数名，必须从dc名字空间引入对于的名字方可使用，例如div, p, span, input, textarea, select等。
 
-  > 函数原型： `inputType([attrs:Attrs][, value:domValue])`
+  > 函数原型： `inputType([attrs:Attrs][, value:domField])`
 
   inputType是<intput>标签允许的类型值，包括text, number, checkbox, radio, email, date, tel等。
 
@@ -402,7 +402,7 @@
 
 * prop
 
-  > 函数原型： `tag.prop prop:PropName|PropSet, value：domValue`
+  > 函数原型： `tag.prop prop:PropName|PropSet, value：domField`
 
    prop: 如果参数个数是1，则prop为特性名，此时函数返回部件对应的node的该特性名的值，或者为包含特性与值的集合的object，函数将扩展部件的特性集，如果参数个数为2， 则本方法将设置部件的prop特性为（tag.props[prop]=value）。
 
@@ -410,7 +410,7 @@
 
 * css
 
-  > 函数原型： `tag.css prop:PropName|PropSet, value：domValue`
+  > 函数原型： `tag.css prop:PropName|PropSet, value：domField`
     
   如果参数个数是1，则prop为特性名，此时本方法返回部件的style中prop的值（tag.style[prop]），或者为包含特性与值的集合的object，本方法将扩展部件的style的特性集；如果参数个数为2， 则本方法将设置部件的style的prop特性（tag.style[prop]=value）。
     
@@ -470,11 +470,11 @@
 
 ##### 构造函数
 
-  > 函数原型： `new Text text:domValue`
+  > 函数原型： `new Text text:domField`
 
 ##### 实例化函数
 
-  > 函数原型： `txt [attrs:Attrs, ]string:DomValue`
+  > 函数原型： `txt [attrs:Attrs, ]string:domField`
 
 ##### 说明
 
@@ -495,11 +495,11 @@
 
 ##### 构造函数
 
-  > 函数原型： `new Html htmlText:domValue[, transform:(String) -> String]`
+  > 函数原型： `new Html htmlText:domField[, transform:(String) -> String]`
 
 ##### 实例化函数
 
-  > 函数原型： `html [attrs:Attrs, ]htmlText:domValue[, transform:(String) -> String]`
+  > 函数原型： `html [attrs:Attrs, ]htmlText:domField[, transform:(String) -> String]`
 
 ##### 示例
 
@@ -517,11 +517,11 @@
 
 ##### 构造函数
 
-  > 函数原型：new Comment text:domValue
+  > 函数原型：new Comment text:domField
 
 ##### 实例化函数
 
-  > 函数原型：comment text:domValue
+  > 函数原型：comment text:domField
 
   注释部件实例化不提供attrs:Attrs参数。
 
@@ -1100,21 +1100,21 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
 
 ##### 模块： domcom/dom-util
 
-##### domValue
+##### domField
 
-  如果value是undefind或null，返回""；如果是普通函数，返回强制响应函数; 如果是响应函数，直接返回该项；如果是Promise(有then方法和catch方法), 返回该promise的响应函数代理。其它情况返回该项自身(因为domValue一般用作Dom特性，因此后续一般会因Javascript语言的类型转换机制而调用该项的toString转换成字符串）。
+  如果value是undefind或null，返回""；如果是普通函数，返回强制响应函数; 如果是响应函数，直接返回该项；如果是Promise(有then方法和catch方法), 返回该promise的响应函数代理。其它情况返回该项自身(因为domField一般用作Dom特性，因此后续一般会因Javascript语言的类型转换机制而调用该项的toString转换成字符串）。
 
-  domValue通常由domcom自动调用。用户程序一般无需直接使用该函数。
+  domField通常由domcom自动调用。用户程序一般无需直接使用该函数。
 
 * 类型定义：
   
-  > 函数原型: `domValue item:DomValue`
+  > 函数原型: `domField item:domField`
   
 * 实现代码参考：
 
   如下代码位于domcom/src/dom-util.coffee：
 
-	exports.domValue = (value) ->
+	exports.domField = (value) ->
 
 	  if !value? then return ''
 	
