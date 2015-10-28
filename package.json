@@ -30,6 +30,8 @@
   "devDependencies": {
     "coffee-script": "1.8.0",
     "mocha": "1.14.0",
+    "chai": "~1.9.1",
+    "minimist": "1.1.0",
     "gulp": "~3.8.10",
     "gulp-util": "~3.0.1",
     "gulp-changed": "~1.0.0",
@@ -39,15 +41,13 @@
     "gulp-coffee": "~2.2.0",
     "gulp-mocha": "~1.1.0",
     "gulp-copy": "0.0.2",
-    "minimist": "1.1.0",
+    "gulp-github-release": "1.0.3",
     "run-sequence": "~1.0.2",
-    "chai": "~1.9.1",
     "webpack": "~1.10.1",
     "webpack-dev-server": "~1.10.1",
     "coffee-loader": "0.7.2",
     "todomvc-common": "~1.0.1",
-    "todomvc-app-css": "~2.0.1",
-    "gulp-github-release": "1.0.3"
+    "todomvc-app-css": "~2.0.1"
   },
   "engines": {
     "node": ">=0.8.0"

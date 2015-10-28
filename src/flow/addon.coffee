@@ -1,4 +1,4 @@
-{bind, duplex, flow, unary, binary} = dc
+{bind, duplex, flow, unary, binary} = require "./index"
 
 module.exports = flow
 

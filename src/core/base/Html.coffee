@@ -1,6 +1,7 @@
-Text = require './Text'
-
+BaseComponent = require './BaseComponent'
+{constructTextLikeComponent} = require './Text'
 {funcString, newLine} = require '../../util'
+{domValue} = require '../../dom-util'
 
 # !!! Warning:
 # By default, Html does not escape to safe the html.
@@ -11,13 +12,15 @@ Text = require './Text'
 # this is for Html Component, which take some text as innerHTML
 # for <html> ... </html>, please use tagHtml instead
 
-module.exports = class Html extends Text
-  constructor: (text, @transform) ->  super(text)
+module.exports = class Html extends BaseComponent
+  constructor: (text, @transform) ->
+    super()
+    constructTextLikeComponent.call(this, text)
 
   createDom: ->
     @textValid = true
     node = document.createElement('DIV')
-    node.innerHTML = @cacheText = @transform and @transform(@processText()) or @processText()
+    node.innerHTML = @cacheText = @transform and @transform(domValue(@text)) or domValue(@text)
     # when the node in createElement('div').childNodes is inserted to dom, it is removed from the active childNodes
     # so they should be keep in an inative array
     @node = for node in node.childNodes then node
@@ -28,7 +31,7 @@ module.exports = class Html extends Text
     if !@textValid then return @
     @textValid = true
 
-    text = @transform and @transform(@processText()) or @processText()
+    text = @transform and @transform(domValue(@text)) or domValue(@text)
     if text!=@cacheText
       if @node.parentNode then @removeNode()
       node = document.createElement('DIV')

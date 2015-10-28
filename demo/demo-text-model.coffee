@@ -1,4 +1,4 @@
-{list,
+{list, bindings
 a, checkbox, text} = dc
 
 module.exports = ->

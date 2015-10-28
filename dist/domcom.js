@@ -56,7 +56,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	__webpack_require__(1);
 
-	__webpack_require__(32);
+	__webpack_require__(34);
 
 	module.exports = dc;
 
@@ -342,7 +342,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var binary, bind, dependent, flow, funcString, newLine, react, see, unary, _ref,
+	var bindWithDefineProperty, dependent, flow, funcString, newLine, react, renew, see, _ref,
 	  __slice = [].slice;
 
 	_ref = __webpack_require__(4), newLine = _ref.newLine, funcString = _ref.funcString;
@@ -383,6 +383,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return method;
 	};
 
+	renew = function(computation) {
+	  var method;
+	  method = function() {
+	    if (!arguments.length) {
+	      method.invalidate();
+	      return method.value = computation();
+	    } else {
+	      throw new Error('flow.dynamic is not allowed to accept arguments');
+	    }
+	  };
+	  method.toString = function() {
+	    return "renew: " + (funcString(computation));
+	  };
+	  return react(method);
+	};
+
 	dependent = function(computation) {
 	  var cacheValue, method;
 	  cacheValue = null;
@@ -405,51 +421,89 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	module.exports = flow = function() {
-	  var computation, dep, deps, reactive, _i, _j, _len;
+	  var cacheValue, computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
 	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
-	  if (!computation.invalidate) {
-	    reactive = dependent(computation);
-	    reactive.toString = function() {
-	      var dep;
-	      return "flow: [" + (((function() {
-	        var _j, _len, _results;
-	        _results = [];
-	        for (_j = 0, _len = deps.length; _j < _len; _j++) {
-	          dep = deps[_j];
-	          _results.push(dep.toString());
-	        }
-	        return _results;
-	      })()).join(',')) + "] --> " + (funcString(computation));
-	    };
-	  } else {
-	    reactive = computation;
-	  }
 	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
 	    dep = deps[_j];
+	    if (typeof dep === 'function' && !dep.invalidate) {
+	      reactive = react(function() {
+	        reactive.invalidate();
+	        return computation();
+	      });
+	      return reactive;
+	    }
+	  }
+	  cacheValue = null;
+	  reactive = react(function() {
+	    if (!arguments.length) {
+	      if (!reactive.valid) {
+	        reactive.valid = true;
+	        return cacheValue = computation();
+	      } else {
+	        return cacheValue;
+	      }
+	    } else {
+	      throw new Error('flow.dependent is not allowed to accept arguments');
+	    }
+	  });
+	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	    dep = deps[_k];
 	    if (dep && dep.onInvalidate) {
 	      dep.onInvalidate(reactive.invalidate);
 	    }
 	  }
+	  reactive.toString = function() {
+	    return "flow: [" + (((function() {
+	      var _l, _len2, _results;
+	      _results = [];
+	      for (_l = 0, _len2 = deps.length; _l < _len2; _l++) {
+	        dep = deps[_l];
+	        _results.push(dep.toString());
+	      }
+	      return _results;
+	    })()).join(',')) + "] --> " + (funcString(computation));
+	  };
 	  return reactive;
 	};
 
 	flow.pipe = function() {
-	  var computation, dep, deps, reactive, _i, _j, _len;
+	  var computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
 	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
-	  reactive = react(function() {
-	    var dep;
-	    return computation.apply(null, (function() {
-	      var _j, _len, _results;
-	      _results = [];
-	      for (_j = 0, _len = deps.length; _j < _len; _j++) {
-	        dep = deps[_j];
-	        _results.push(dep());
-	      }
-	      return _results;
-	    })());
-	  });
 	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
 	    dep = deps[_j];
+	    if (typeof dep === 'function' && !dep.invalidate) {
+	      reactive = react(function() {
+	        var args, _k, _len1;
+	        reactive.invalidate();
+	        args = [];
+	        for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	          dep = deps[_k];
+	          if (typeof dep === 'function') {
+	            args.push(dep());
+	          } else {
+	            args.push(dep);
+	          }
+	        }
+	        return computation.apply(null, args);
+	      });
+	      return reactive;
+	    }
+	  }
+	  reactive = react(function() {
+	    var args, _k, _len1;
+	    args = [];
+	    for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	      dep = deps[_k];
+	      if (typeof dep === 'function') {
+	        args.push(dep());
+	      } else {
+	        args.push(dep);
+	      }
+	    }
+	    return computation.apply(null, args);
+	  });
+	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	    dep = deps[_k];
 	    if (dep && dep.onInvalidate) {
 	      dep.onInvalidate(reactive.invalidate);
 	    }
@@ -458,6 +512,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	flow.react = react;
+
+	flow.renew = renew;
 
 	flow.dependent = dependent;
 
@@ -496,70 +552,88 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return _results;
 	};
 
-	flow.renew = function(computation) {
-	  var method;
-	  method = function() {
-	    if (!arguments.length) {
-	      method.invalidate();
-	      return method.value = computation();
-	    } else {
-	      throw new Error('flow.dynamic is not allowed to accept arguments');
+	if (Object.defineProperty) {
+	  flow.bind = bindWithDefineProperty = function(obj, attr, debugName) {
+	    var cacheValue, d, get, method, set;
+	    d = Object.getOwnPropertyDescriptor(obj, attr);
+	    if (d) {
+	      get = d.get, set = d.set;
 	    }
+	    if (!set || !set.invalidate) {
+	      cacheValue = obj[attr];
+	      method = function(value) {
+	        if (!arguments.length) {
+	          if (get) {
+	            return get();
+	          } else {
+	            return cacheValue;
+	          }
+	        } else if (value !== obj[attr]) {
+	          if (set) {
+	            set(value);
+	          }
+	          method.invalidate();
+	          return cacheValue = value;
+	        }
+	      };
+	      react(method);
+	      Object.defineProperty(obj, attr, {
+	        get: method,
+	        set: method
+	      });
+	    } else {
+	      method = set;
+	    }
+	    method.toString = function() {
+	      return "" + (debugName || 'm') + "[" + attr + "]";
+	    };
+	    return method;
 	  };
-	  method.toString = function() {
-	    return "renew: " + (funcString(computation));
+	} else {
+	  flow.bind = function(obj, attr, debugName) {
+	    var method;
+	    method = function() {
+	      return obj[attr];
+	    };
+	    react(method);
+	    method.toString = function() {
+	      return "" + (debugName || 'm') + "[" + attr + "]";
+	    };
+	    return method;
 	  };
-	  return react(method);
-	};
+	}
 
-	flow.bind = bind = function(obj, attr, name) {
-	  var cacheValue, d, get, method, set;
-	  d = Object.getOwnPropertyDescriptor(obj, attr);
-	  if (d) {
-	    get = d.get, set = d.set;
-	  }
-	  if (!set || !set.invalidate) {
-	    cacheValue = obj[attr];
+	if (Object.defineProperty) {
+	  flow.duplex = function(obj, attr, debugName) {
+	    var reactive;
+	    reactive = bindWithDefineProperty(obj, attr);
+	    reactive.isDuplex = true;
+	    reactive.toString = function() {
+	      return "" + (debugName || 'm') + "[" + attr + "]";
+	    };
+	    return reactive;
+	  };
+	  flow.duplex = function(obj, attr, debugName) {
+	    var method;
 	    method = function(value) {
 	      if (!arguments.length) {
-	        if (get) {
-	          return get();
-	        } else {
-	          return cacheValue;
-	        }
+	        return obj[attr];
 	      } else if (value !== obj[attr]) {
-	        if (set) {
-	          set(value);
-	        }
+	        obj[attr] = value;
 	        method.invalidate();
-	        return cacheValue = value;
+	        return value;
 	      }
 	    };
 	    react(method);
-	    Object.defineProperty(obj, attr, {
-	      get: method,
-	      set: method
-	    });
-	  } else {
-	    method = set;
-	  }
-	  method.toString = function() {
-	    return "" + (name || 'm') + "[" + attr + "]";
+	    method.isDuplex = true;
+	    method.toString = function() {
+	      return "" + (debugName || 'm') + "[" + attr + "]";
+	    };
+	    return method;
 	  };
-	  return method;
-	};
+	}
 
-	flow.duplex = function(obj, attr, name) {
-	  var reactive;
-	  reactive = bind(obj, attr);
-	  reactive.isDuplex = true;
-	  reactive.toString = function() {
-	    return "" + (name || 'm') + "[" + attr + "]";
-	  };
-	  return reactive;
-	};
-
-	flow.unary = unary = function(x, unaryFn) {
+	flow.unary = function(x, unaryFn) {
 	  if (typeof x !== 'function') {
 	    return unaryFn(x);
 	  } else if (x.invalidate) {
@@ -573,7 +647,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	flow.binary = binary = function(x, y, binaryFn) {
+	flow.binary = function(x, y, binaryFn) {
 	  if (typeof x === 'function' && typeof y === 'function') {
 	    if (x.invalidate && y.invalidate) {
 	      return flow(x, y, function() {
@@ -886,7 +960,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var DomNode, addRenderUpdate, addSetIntervalUpdate, componentCache, dc, dcid, directiveRegistry, isComponent, isElement, isEven, newDcid, querySelector, raf, readyFnList, render, renderCallbackList, renderLoop, requestAnimationFrame, rootComponents, _ref, _ref1, _ref2, _renderComponentWhenBy, _updateComponentMap;
+	var DomNode, addRenderUpdate, addSetIntervalUpdate, dc, dcid, directiveRegistry, domNodeCache, isComponent, isElement, isEven, newDcid, querySelector, raf, readyFnList, render, renderCallbackList, renderLoop, requestAnimationFrame, _ref, _ref1, _ref2, _renderComponentWhenBy;
 
 	DomNode = __webpack_require__(6);
 
@@ -894,7 +968,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	_ref1 = __webpack_require__(4), newDcid = _ref1.newDcid, isEven = _ref1.isEven;
 
-	_ref2 = __webpack_require__(8), componentCache = _ref2.componentCache, readyFnList = _ref2.readyFnList, _updateComponentMap = _ref2._updateComponentMap, directiveRegistry = _ref2.directiveRegistry, renderCallbackList = _ref2.renderCallbackList, rootComponents = _ref2.rootComponents;
+	_ref2 = __webpack_require__(8), domNodeCache = _ref2.domNodeCache, readyFnList = _ref2.readyFnList, directiveRegistry = _ref2.directiveRegistry, renderCallbackList = _ref2.renderCallbackList;
 
 	isComponent = __webpack_require__(9);
 
@@ -912,17 +986,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (options.noCache) {
 	      return querySelector(element, options.all);
 	    } else {
-	      return componentCache[element] || (componentCache[element] = querySelector(element, options.all));
+	      return domNodeCache[element] || (domNodeCache[element] = querySelector(element, options.all));
 	    }
 	  } else if (element instanceof Node || element instanceof NodeList || element instanceof Array) {
 	    if (options.noCache) {
 	      return new DomNode(element);
 	    } else {
 	      if (element.dcid) {
-	        return componentCache[element.dcid];
+	        return domNodeCache[element.dcid];
 	      } else {
 	        element.dcid = newDcid();
-	        return componentCache[element.dcid] = new DomNode(element);
+	        return domNodeCache[element.dcid] = new DomNode(element);
 	      }
 	    }
 	  } else {
@@ -942,11 +1016,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	dcid = document.dcid = newDcid();
 
-	window.$document = dc.$document = componentCache[dcid] = new DomNode(document);
+	window.$document = dc.$document = domNodeCache[dcid] = new DomNode(document);
 
 	dcid = document.body.dcid = newDcid();
 
-	window.$body = dc.$body = componentCache[dcid] = new DomNode(document.body);
+	window.$body = dc.$body = domNodeCache[dcid] = new DomNode(document.body);
 
 	dc.onReady = function(callback) {
 	  return readyFnList.push(callback);
@@ -1341,7 +1415,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	renew = __webpack_require__(3).renew;
 
-	exports.domValue = function(value) {
+	exports.domField = function(value) {
 	  var fn;
 	  if (value == null) {
 	    return '';
@@ -1369,6 +1443,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return value;
 	};
 
+	exports.domValue = function(value) {
+	  if (value == null) {
+	    return '';
+	  } else if (typeof value !== 'function') {
+	    return value;
+	  } else {
+	    value = value();
+	    if (value == null) {
+	      return '';
+	    } else {
+	      return value;
+	    }
+	  }
+	};
+
 	exports.checkConflictOffspring = function(family, child) {
 	  var childDcid, dcid;
 	  childDcid = child.dcid;
@@ -1386,9 +1475,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	module.exports = {
-	  componentCache: {},
+	  domNodeCache: {},
 	  readyFnList: [],
-	  _updateComponentMap: {},
 	  useSystemUpdating: false,
 	  directiveRegistry: {},
 	  renderCallbackList: []
@@ -1408,7 +1496,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 10 */
 /***/ function(module, exports) {
 
-	'use strict';
 	var hasOwn, isPlainObject, toString;
 
 	hasOwn = Object.prototype.hasOwnProperty;
@@ -1483,7 +1570,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	extend = __webpack_require__(10);
 
-	module.exports = exports = extend({}, __webpack_require__(12), __webpack_require__(30), __webpack_require__(31), __webpack_require__(23));
+	module.exports = exports = extend({}, __webpack_require__(12), __webpack_require__(30), __webpack_require__(33), __webpack_require__(23));
 
 
 /***/ },
@@ -2377,6 +2464,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.holder && this.holder.invalidateContent(this);
 	  };
 
+	  BaseComponent.prototype.removeDom = function() {
+	    this.removeNode();
+	    this.emit('afterRemoveDom');
+	    return this;
+	  };
+
+	  BaseComponent.prototype.removeNode = function() {
+	    return this.node.parentNode.removeChild(this.node);
+	  };
+
+	  BaseComponent.prototype.attachNode = function() {
+	    var node;
+	    node = this.node;
+	    if (this.parentNode === node.parentNode) {
+	      return node;
+	    }
+	    this.parentNode.insertBefore(node, this.nextNode);
+	    return node;
+	  };
+
 	  return BaseComponent;
 
 	})(Component);
@@ -2386,7 +2493,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, Text, domValue, dynamic, funcString, newLine, value, _ref,
+	var BaseComponent, Text, constructTextLikeComponent, domField, domValue, dynamic, exports, funcString, newLine, value, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -2394,37 +2501,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
 
-	domValue = __webpack_require__(7).domValue;
+	_ref1 = __webpack_require__(7), domField = _ref1.domField, domValue = _ref1.domValue;
 
-	module.exports = Text = (function(_super) {
+	exports = module.exports = Text = (function(_super) {
 	  __extends(Text, _super);
 
 	  function Text(text) {
-	    var me;
 	    Text.__super__.constructor.call(this);
-	    me = this;
-	    this.text = text = domValue(text);
-	    if (typeof text === 'function') {
-	      text.onInvalidate(function() {
-	        return me.invalidate();
-	      });
-	    }
-	    this.family = {};
-	    this.family[this.dcid] = true;
-	    this;
+	    constructTextLikeComponent.call(this, text);
 	  }
-
-	  Text.prototype.processText = function() {
-	    if (typeof this.text === 'function') {
-	      return domValue(this.text());
-	    } else {
-	      return this.text;
-	    }
-	  };
 
 	  Text.prototype.createDom = function() {
 	    this.textValid = true;
-	    this.firstNode = this.node = document.createTextNode(this.processText());
+	    this.firstNode = this.node = document.createTextNode(domValue(this.text));
 	    return this.node;
 	  };
 
@@ -2434,7 +2523,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this.node;
 	    }
 	    this.textValid = true;
-	    text = this.processText();
+	    text = domValue(this.text);
 	    if (text !== this.node.textContent) {
 	      if (this.node.parentNode) {
 	        this.removeNode();
@@ -2452,20 +2541,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this;
 	  };
 
-	  Text.prototype.attachNode = function() {
-	    var node;
-	    node = this.node;
-	    if (this.parentNode === node.parentNode) {
-	      return node;
-	    }
-	    this.parentNode.insertBefore(node, this.nextNode);
-	    return node;
-	  };
-
-	  Text.prototype.removeNode = function() {
-	    return this.node.parentNode.removeChild(this.node);
-	  };
-
 	  Text.prototype.clone = function() {
 	    return (new this.constructor(this.text)).copyEventListeners(this);
 	  };
@@ -2480,6 +2555,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Text;
 
 	})(BaseComponent);
+
+	exports.constructTextLikeComponent = constructTextLikeComponent = function(text) {
+	  var me;
+	  me = this;
+	  this.text = text = domField(text);
+	  if (typeof text === 'function') {
+	    text.onInvalidate(function() {
+	      return me.invalidate();
+	    });
+	  }
+	  this.family = {};
+	  this.family[this.dcid] = true;
+	  return this;
+	};
 
 
 /***/ },
@@ -2904,7 +2993,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domValue, eventHandlerFromArray, extend, flow, funcString, newLine, styleFrom, toComponent, updating, _ref, _ref1,
+	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, eventHandlerFromArray, extend, flow, funcString, newLine, styleFrom, toComponent, updating, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
@@ -2927,7 +3016,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	flow = __webpack_require__(3).flow;
 
-	domValue = __webpack_require__(7).domValue;
+	domField = __webpack_require__(7).domField;
 
 	toComponent = __webpack_require__(16);
 
@@ -3055,7 +3144,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Tag.prototype.setProp = function(prop, value, props, type) {
 	    var fn, me, oldValue;
 	    prop = attrToPropName(prop);
-	    value = domValue(value);
+	    value = domField(value);
 	    oldValue = props[prop];
 	    if (oldValue == null) {
 	      if (typeof value === 'function') {
@@ -3214,7 +3303,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Tag.prototype.showHide = function(status, test, display) {
 	    var fn, me, method, oldDisplay, style;
 	    style = this.style;
-	    test = domValue(test);
+	    test = domField(test);
 	    oldDisplay = style.display;
 	    if (!oldDisplay) {
 	      this.addActivity(style, 'display', 'Style', this.node);
@@ -3433,12 +3522,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var attrPropNameMap, classFn, cloneObject, config, domValue, extend, extendEventValue, isArray, isComponent, overAttrs, react, styleFrom, _ref,
+	var attrPropNameMap, classFn, cloneObject, config, domField, extend, extendEventValue, isArray, isComponent, overAttrs, react, styleFrom, _ref,
 	  __slice = [].slice;
 
 	_ref = __webpack_require__(4), isArray = _ref.isArray, cloneObject = _ref.cloneObject;
 
-	domValue = __webpack_require__(7).domValue;
+	domField = __webpack_require__(7).domField;
 
 	react = __webpack_require__(3).react;
 
@@ -3551,7 +3640,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	  processClassValue = function(name, value) {
 	    var oldValue;
-	    value = domValue(value);
+	    value = domField(value);
 	    oldValue = classMap[name];
 	    if (typeof oldValue === 'function') {
 	      oldValue.offInvalidate(method.invalidate);
@@ -3728,26 +3817,33 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Comment, funcString, newLine, _ref,
+	var BaseComponent, Comment, constructTextLikeComponent, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+	BaseComponent = __webpack_require__(18);
+
+	constructTextLikeComponent = __webpack_require__(19).constructTextLikeComponent;
+
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
+
+	domValue = __webpack_require__(7).domValue;
 
 	module.exports = Comment = (function(_super) {
 	  __extends(Comment, _super);
 
-	  function Comment() {
-	    return Comment.__super__.constructor.apply(this, arguments);
+	  function Comment(text) {
+	    Comment.__super__.constructor.call(this);
+	    constructTextLikeComponent.call(this, text);
 	  }
 
 	  Comment.prototype.createDom = function(parentNode, nextNode) {
-	    this.node = document.createComment(this.processText());
+	    this.node = document.createComment(domValue(this.text));
 	    return this.node;
 	  };
 
 	  Comment.prototype.updateDom = function(parentNode, nextNode) {
-	    this.text && (this.node.data = this.processText());
+	    this.text && (this.node.data = domValue(this.text));
 	    return this.node;
 	  };
 
@@ -3760,34 +3856,39 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  return Comment;
 
-	})(Text);
+	})(BaseComponent);
 
 
 /***/ },
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Html, Text, funcString, newLine, _ref,
+	var BaseComponent, Html, constructTextLikeComponent, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	Text = __webpack_require__(19);
+	BaseComponent = __webpack_require__(18);
+
+	constructTextLikeComponent = __webpack_require__(19).constructTextLikeComponent;
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
+
+	domValue = __webpack_require__(7).domValue;
 
 	module.exports = Html = (function(_super) {
 	  __extends(Html, _super);
 
 	  function Html(text, transform) {
 	    this.transform = transform;
-	    Html.__super__.constructor.call(this, text);
+	    Html.__super__.constructor.call(this);
+	    constructTextLikeComponent.call(this, text);
 	  }
 
 	  Html.prototype.createDom = function() {
 	    var node;
 	    this.textValid = true;
 	    node = document.createElement('DIV');
-	    node.innerHTML = this.cacheText = this.transform && this.transform(this.processText()) || this.processText();
+	    node.innerHTML = this.cacheText = this.transform && this.transform(domValue(this.text)) || domValue(this.text);
 	    this.node = (function() {
 	      var _i, _len, _ref1, _results;
 	      _ref1 = node.childNodes;
@@ -3808,7 +3909,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this;
 	    }
 	    this.textValid = true;
-	    text = this.transform && this.transform(this.processText()) || this.processText();
+	    text = this.transform && this.transform(domValue(this.text)) || domValue(this.text);
 	    if (text !== this.cacheText) {
 	      if (this.node.parentNode) {
 	        this.removeNode();
@@ -3856,14 +3957,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  return Html;
 
-	})(Text);
+	})(BaseComponent);
 
 
 /***/ },
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var If, TransformComponent, funcString, intersect, maybeIf, mergeThenElseValue, newLine, renew, toComponent, _ref,
+	var If, TransformComponent, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -3875,75 +3976,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	renew = __webpack_require__(3).renew;
 
-	mergeThenElseValue = function(test, thenValue, elseValue) {
-	  if (typeof thenValue === 'function') {
-	    if (typeof elseValue === 'function') {
-	      return function() {
-	        if (test()) {
-	          return thenValue();
-	        } else {
-	          return elseValue();
-	        }
-	      };
-	    } else {
-	      return function() {
-	        if (test()) {
-	          return thenValue();
-	        } else {
-	          return elseValue;
-	        }
-	      };
-	    }
-	  } else {
-	    if (typeof elseValue === 'function') {
-	      return function() {
-	        if (test()) {
-	          return thenValue;
-	        } else {
-	          return elseValue();
-	        }
-	      };
-	    } else {
-	      return function() {
-	        if (test()) {
-	          return thenValue;
-	        } else {
-	          return elseValue;
-	        }
-	      };
-	    }
-	  }
-	};
-
-	maybeIf = function(test, then_, else_) {
-	  var attrs, elseAttrs, key, thenAttrs;
-	  if (then_ === else_) {
-	    return then_;
-	  }
-	  if (typeof test === 'function') {
-	    if (then_.isTag && else_.isTag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
-	      attrs = {};
-	      thenAttrs = then_.attrs;
-	      elseAttrs = else_.attrs;
-	      for (key in bothKeys(thenAttrs, elseAttrs)) {
-	        attrs[key] = mergeThenElseValue(test, thenAttrs[key], elseAttrs[key]);
-	      }
-	      attrs.namespace = then_.namespace;
-	      return new Tag(then_.tagName, attrs, children);
-	    } else if (then_.type === 'Text' && else_.type === 'Text') {
-	      return new Text(mergeThenElseValue(test, then_.text, else_.text));
-	    } else if (then_.type === 'Comment' && else_.type === 'Comment') {
-	      return new Comment(mergeThenElseValue(test, then_.text, else_.text));
-	    } else if (then_.type === 'Html' && else_.type === 'Html') {
-	      return new Html(mergeThenElseValue(test, then_.text, else_.text));
-	    }
-	  } else if (test) {
-	    return then_;
-	  } else {
-	    return else_;
-	  }
-	};
-
 	module.exports = If = (function(_super) {
 	  __extends(If, _super);
 
@@ -3951,6 +3983,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var family;
 	    then_ = toComponent(then_);
 	    else_ = toComponent(else_);
+	    if (then_ === else_) {
+	      return then_;
+	    }
 	    if (typeof test !== 'function') {
 	      if (test) {
 	        return then_;
@@ -4396,9 +4431,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	_ref1 = __webpack_require__(4), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
-	isAttrs = function(item) {
-	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
-	};
+	isAttrs = __webpack_require__(31).isAttrs;
 
 	attrsChildren = function(args) {
 	  var attrs;
@@ -4630,798 +4663,74 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var extend, getBindProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,
-	  __slice = [].slice;
+	var Comment, Func, Html, Text, if_, isComponent, mergeThenElseValue, toComponent, _ref;
 
-	extend = __webpack_require__(10);
+	_ref = __webpack_require__(12), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
 
-	tag = __webpack_require__(30).tag;
+	Func = __webpack_require__(21);
 
-	getBindProp = __webpack_require__(7).getBindProp;
+	Text = __webpack_require__(19);
 
-	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section";
+	Html = __webpack_require__(25);
 
-	tagNames = tagNames.split(' ');
+	Comment = __webpack_require__(24);
 
-	_fn = function(tagName) {
-	  return exports[tagName] = function() {
-	    return tag.apply(null, [tagName].concat(__slice.call(arguments)));
-	  };
+	if_ = __webpack_require__(32).if_;
+
+	exports.isAttrs = function(item) {
+	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
 	};
-	for (_i = 0, _len = tagNames.length; _i < _len; _i++) {
-	  tagName = tagNames[_i];
-	  _fn(tagName);
-	}
 
-	exports.tagHtml = tag.apply(null, [tagName].concat(__slice.call(arguments)));
+	mergeThenElseValue = function(test, thenValue, elseValue) {
+	  return if_(test, thenValue, elseValue);
+	};
 
-	inputTypes = 'text textarea checkbox radio date email number'.split(' ');
-
-	input = exports.input = function(type, attrs, value) {
-	  var component;
-	  if (typeof type === 'object') {
-	    value = attrs;
-	    attrs = type;
-	    type = 'text';
+	exports._maybeIf = function(test, then_, else_) {
+	  var attrs, elseAttrs, key, thenAttrs;
+	  then_ = toComponent(then_);
+	  else_ = toComponent(else_);
+	  if (then_ === else_) {
+	    return then_;
 	  }
-	  attrs = extend({
-	    type: type
-	  }, attrs);
-	  component = tag('input', attrs);
-	  if (value != null) {
-	    component.prop(getBindProp(component), value);
-	    if (value.isDuplex) {
-	      component.bind('onchange', (function(event, comp) {
-	        return value(this.value);
-	      }), 'before');
-	    }
+	  if (then_ instanceof Nothing && else_ instanceof Nothing) {
+	    return then_;
 	  }
-	  return component;
-	};
-
-	_ref = 'text checkbox radio date email tel number'.split(' ');
-	_fn1 = function(type) {
-	  return exports[type] = function(value, attrs) {
-	    var temp;
-	    if (typeof value === 'object') {
-	      temp = attrs;
-	      attrs = value;
-	      value = temp;
+	  if (typeof test === 'function') {
+	    if (then_.isTag && else_.isTag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
+	      attrs = {};
+	      thenAttrs = then_.attrs;
+	      elseAttrs = else_.attrs;
+	      for (key in bothKeys(thenAttrs, elseAttrs)) {
+	        attrs[key] = mergeThenElseValue(test, thenAttrs[key], elseAttrs[key]);
+	      }
+	      attrs.namespace = then_.namespace;
+	      return new Tag(then_.tagName, attrs, children);
+	    } else if (then_ instanceof Text && else_ instanceof Text) {
+	      return new Text(mergeThenElseValue(test, then_.text, else_.text));
+	    } else if (then_ instanceof Comment && else_ instanceof Comment) {
+	      return new Comment(mergeThenElseValue(test, then_.text, else_.text));
+	    } else if (then_ instanceof Html && else_ instanceof Html) {
+	      return new Html(mergeThenElseValue(test, then_.text, else_.text));
+	    } else if (then_ instanceof Func && else_ instanceof Func) {
+	      return new Func(flow.if_(test, then_.func, else_.func));
+	    } else {
+	      return new If(test, then_, else_);
 	    }
-	    attrs = attrs || {};
-	    return input(type, attrs, value);
-	  };
+	  } else if (test) {
+	    return then_;
+	  } else {
+	    return else_;
+	  }
 	};
-	for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-	  type = _ref[_j];
-	  _fn1(type);
-	}
 
 
 /***/ },
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var extend, flow;
+	var binary, bind, duplex, flow, unary, _ref;
 
-	extend = dc.extend;
-
-	dc.builtinDirectives = __webpack_require__(33);
-
-	extend(dc, dc.builtinDirectives, __webpack_require__(40));
-
-	flow = dc.flow;
-
-	extend(flow, __webpack_require__(46), __webpack_require__(2));
-
-	module.exports = dc;
-
-
-/***/ },
-/* 33 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var $hide, $show, _ref;
-
-	exports.$model = __webpack_require__(35);
-
-	exports.$bind = __webpack_require__(36);
-
-	_ref = __webpack_require__(37), $show = _ref.$show, $hide = _ref.$hide;
-
-	exports.$show = $show;
-
-	exports.$hide = $hide;
-
-	exports.$blink = __webpack_require__(34);
-
-	exports.$splitter = __webpack_require__(38);
-
-	exports.$options = __webpack_require__(39);
-
-
-/***/ },
-/* 34 */
-/***/ function(module, exports) {
-
-	var flow, see, toggle;
-
-	see = dc.see, flow = dc.flow;
-
-	toggle = flow.toggle;
-
-	module.exports = function(interval) {
-	  return function(comp) {
-	    var timer, visible;
-	    if (interval == null) {
-	      interval = 500;
-	    }
-	    timer = null;
-	    comp.on('beforeMount', function(baseComponent) {
-	      return function() {
-	        return timer = setInterval((function() {
-	          visible(!visible());
-	          return comp.update();
-	        }), interval);
-	      };
-	    });
-	    comp.on('afterUnmount', function(baseComponent) {
-	      return function() {
-	        return clearInterval(timer);
-	      };
-	    });
-	    visible = see(true);
-	    this.style.visibility = flow(see, function() {
-	      if (visible()) {
-	        return 'visible';
-	      } else {
-	        return 'hidden';
-	      }
-	    });
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 35 */
-/***/ function(module, exports) {
-
-	var getBindProp;
-
-	getBindProp = dc.getBindProp;
-
-	module.exports = function(binding, eventName) {
-	  return function(comp) {
-	    var bindProp, props;
-	    props = comp.props;
-	    bindProp = getBindProp(comp);
-	    comp.setProp(bindProp, binding, props, 'Props');
-	    comp.bind(eventName || 'onchange', (function() {
-	      return binding(this[bindProp]);
-	    }), 'before');
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 36 */
-/***/ function(module, exports) {
-
-	var domValue, getBindProp;
-
-	getBindProp = dc.getBindProp, domValue = dc.domValue;
-
-	module.exports = function(binding) {
-	  return function(comp) {
-	    comp.setProp(getBindProp(comp), binding, props, 'Props');
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 37 */
-/***/ function(module, exports) {
-
-	
-	/* @param test - paramenter expression for directive
-	 */
-	var showHide;
-
-	showHide = function(showing) {
-	  return function(test, display) {
-	    return function(comp) {
-	      comp.showHide(showing, test, display);
-	      return comp;
-	    };
-	  };
-	};
-
-	exports.$show = showHide(true);
-
-	exports.$hide = showHide(false);
-
-
-/***/ },
-/* 38 */
-/***/ function(module, exports) {
-
-	var Component, classFn, div, pairListDict, span;
-
-	pairListDict = dc.pairListDict, classFn = dc.classFn, Component = dc.Component, div = dc.div, span = dc.span;
-
-	module.exports = function(direction) {
-	  return function(comp) {
-	    var arrawAAttr, arrawBAttr, arrowA, arrowAHovering, arrowB, arrowBHovering, attrs, barsize, buttonClass, children, clientX, cursor, drag, getSize, left, minAWidth, minBWidth, paneA, paneB, percent, pos, right, size, splitBar, splitBarAttr, splitBarAttrCss, splitbarClass, width;
-	    dc.directives({
-	      $show: dc.$show
-	    });
-	    attrs = comp.attrs;
-	    direction = direction || 'vertical';
-	    if (direction === 'vertical') {
-	      left = "top";
-	      right = "bottom";
-	      width = "height";
-	      clientX = "clientY";
-	      splitbarClass = "splitbarH";
-	      buttonClass = "splitbuttonH";
-	      cursor = "s-resize";
-	    } else {
-	      left = "left";
-	      right = "right";
-	      width = "width";
-	      clientX = "clientX";
-	      splitbarClass = "splitbarV";
-	      buttonClass = "splitbuttonV";
-	      cursor = "e-resize";
-	    }
-	    pos = 200;
-	    percent = 0.5;
-	    size = null;
-	    drag = false;
-	    getSize = function() {
-	      return size || 600;
-	    };
-	    children = comp.children;
-	    paneA = children[0];
-	    paneB = children[1];
-	    minAWidth = attrs.minAWidth || 0;
-	    minBWidth = attrs.minBWidth || 0;
-	    splitBarAttr = {
-	      "class": splitbarClass,
-	      unselectable: "on",
-	      style: splitBarAttrCss = {
-	        "cursor": cursor,
-	        "user-select": "none",
-	        "-webkit-user-select": "none",
-	        "-khtml-user-select": "none",
-	        "-moz-user-select": "none"
-	      }
-	    };
-	    splitBarAttrCss[left] = function() {
-	      return pos + 'px';
-	    };
-	    splitBarAttrCss[width] = barsize = 6;
-	    arrowAHovering = false;
-	    arrawAAttr = {
-	      "class": classFn(buttonClass, {
-	        'inactive': function() {
-	          return arrowAHovering;
-	        }
-	      }),
-	      unselectable: "on",
-	      style: {
-	        cursor: 'pointer'
-	      },
-	      onmouseover: function() {
-	        arrowAHovering = true;
-	        return comp.update();
-	      },
-	      onmouseleave: function() {
-	        arrowAHovering = false;
-	        return comp.update();
-	      },
-	      onclick: function(e) {
-	        pos = minAWidth;
-	        return comp.update();
-	      },
-	      $show: function() {
-	        return pos > minAWidth;
-	      }
-	    };
-	    arrowBHovering = false;
-	    arrawBAttr = {
-	      "class": classFn(buttonClass + ' invert', {
-	        'inactive': function() {
-	          return arrowBHovering;
-	        }
-	      }),
-	      unselectable: "on",
-	      style: {
-	        cursor: 'pointer'
-	      },
-	      onmouseover: function() {
-	        arrowBHovering = true;
-	        return comp.update();
-	      },
-	      onmouseleave: function() {
-	        arrowBHovering = false;
-	        return comp.update();
-	      },
-	      onclick: function(e) {
-	        pos = getSize() - minBWidth;
-	        return comp.update();
-	      },
-	      $show: function() {
-	        return getSize() - pos > minBWidth;
-	      }
-	    };
-	    arrowA = div(arrawAAttr);
-	    arrowB = div(arrawBAttr);
-	    splitBar = div(splitBarAttr, span(), arrowA, arrowB);
-	    comp.setChildren(1, splitBar, paneB);
-	    splitBar.bind('mousedown', function(event) {
-	      return drag = true;
-	    });
-	    dc(document).bind('mouseup', function() {
-	      return drag = false;
-	    });
-	    comp.bind('mousemove', function(event) {
-	      var bounds, pencent, w;
-	      event.continuePropagation = true;
-	      event.executeDefault = true;
-	      if (!drag) {
-	        return;
-	      }
-	      event.continuePropagation = false;
-	      event.executeDefault = false;
-	      bounds = comp.node.getBoundingClientRect();
-	      size = w = bounds[right] - bounds[left];
-	      pos = Math.max(event[clientX] - bounds[left], 0);
-	      pencent = pos / w;
-	      return comp.update();
-	    });
-	    paneA.css(pairListDict('position', 'absolute', width, (function() {
-	      return pos + 'px';
-	    })));
-	    paneB.css(pairListDict('position', 'absolute', left, (function() {
-	      return (pos + barsize) + 'px';
-	    }), width, (function() {
-	      return getSize() - (pos + barsize) + 'px';
-	    })));
-	    comp.css(pairListDict('position', 'absolute'));
-	    comp.bind('resize', function(event) {
-	      var bounds, w;
-	      event.preventDefault();
-	      event.stopPropagation();
-	      bounds = comp.node.getBoundingClientRect();
-	      w = bounds[right] - bounds[left];
-	      pos = percent * w;
-	      if (pos < minAWidth) {
-	        pos = minAWidth;
-	      } else if (w - pos < minBWidth) {
-	        pos = w - minBWidth;
-	      }
-	      return comp.update();
-	    });
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 39 */
-/***/ function(module, exports) {
-
-	var List, Tag, each, option, txt;
-
-	Tag = dc.Tag, List = dc.List, each = dc.each, txt = dc.txt, option = dc.option;
-
-	module.exports = function(items, attrs) {
-	  return function(comp) {
-	    if (!(comp instanceof Tag) || comp.tagName !== 'select') {
-	      throw new Error('options should be only used in select tag');
-	    }
-	    comp.setChildren(0, each(items, function(item) {
-	      return option(attrs, [txt(item)]);
-	    }));
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 40 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var extend;
-
-	extend = dc.extend;
-
-	extend(exports, __webpack_require__(41));
-
-	exports.triangle = __webpack_require__(42);
-
-	exports.dialog = __webpack_require__(43);
-
-	extend(exports, __webpack_require__(44));
-
-	extend(exports, __webpack_require__(45));
-
-
-/***/ },
-/* 41 */
-/***/ function(module, exports) {
-
-	
-	/** @module accordion
-	 * @directive accordion
-	 */
-	var Component, a, accordion, accordionGroup, div, each, exports, extend, extendAttrs, h4, img, span;
-
-	extend = dc.extend, div = dc.div, h4 = dc.h4, a = dc.a, span = dc.span, img = dc.img, Component = dc.Component, each = dc.each, extendAttrs = dc.extendAttrs;
-
-	module.exports = exports = accordion = function(attrs, accordionGroupList, options) {
-	  var accordionOptions, comp;
-	  attrs = extendAttrs({
-	    "class": "panel-group"
-	  }, attrs || {});
-	  accordionOptions = options || {};
-	  return comp = div(attrs, each(accordionGroupList, function(group, index) {
-	    var content, groupAttrs, groupOptions, heading;
-	    groupAttrs = group[0], heading = group[1], content = group[2], groupOptions = group[3];
-	    groupOptions = groupOptions || {};
-	    groupOptions.toggleOpen = function() {
-	      var group2, i, _i, _len;
-	      groupOptions.opened = !groupOptions.opened;
-	      if (accordionOptions.closeOthers && groupOptions.opened) {
-	        for (i = _i = 0, _len = accordionGroupList.length; _i < _len; i = ++_i) {
-	          group2 = accordionGroupList[i];
-	          if (i !== index) {
-	            group2[3].opened = false;
-	          }
-	        }
-	      }
-	      return comp.update();
-	    };
-	    return accordionGroup(groupAttrs, heading, content, groupOptions);
-	  }));
-	};
-
-	exports.accordionGroup = accordionGroup = function(attrs, heading, content, options) {
-	  return div({
-	    "class": "panel panel-default"
-	  }, div({
-	    "class": "panel-heading",
-	    onclick: options.toggleOpen
-	  }, h4({
-	    "class": "panel-title"
-	  }, div({
-	    "class": "accordion-toggle"
-	  }, span({
-	    "class": {
-	      'text-muted': function() {
-	        return options.disabled;
-	      }
-	    }
-	  }, heading)))), div({
-	    "class": {
-	      "panel-collapse": function() {
-	        return !options.opened;
-	      }
-	    },
-	    style: {
-	      display: function() {
-	        if (options.opened) {
-	          return 'block';
-	        } else {
-	          return 'none';
-	        }
-	      }
-	    }
-	  }, div({
-	    "class": "panel-body"
-	  }, content)));
-	};
-
-	exports.accordion = accordion;
-
-
-/***/ },
-/* 42 */
-/***/ function(module, exports) {
-
-	var arrowStyle, div, extendAttrs, reverseSide;
-
-	div = dc.div, extendAttrs = dc.extendAttrs;
-
-	reverseSide = {
-	  left: 'right',
-	  right: 'left',
-	  top: 'bottom',
-	  bottom: 'top'
-	};
-
-	arrowStyle = function(direction, size, color) {
-	  var props, sideStyle;
-	  props = {
-	    width: 0,
-	    height: 0
-	  };
-	  sideStyle = size + "px solid transparent";
-	  if (direction === 'left' || direction === 'right') {
-	    props["border-top"] = props["border-bottom"] = sideStyle;
-	  } else {
-	    props["border-left"] = props["border-right"] = sideStyle;
-	  }
-	  props["border-" + reverseSide[direction]] = size + "px solid " + color;
-	  return props;
-	};
-
-	module.exports = function(attrs, direction, size, color) {
-	  attrs = extendAttrs(attrs, {
-	    style: arrowStyle(direction, size, color)
-	  });
-	  return div(attrs);
-	};
-
-
-/***/ },
-/* 43 */
-/***/ function(module, exports) {
-
-	var Component, div, globalID, if_, list, see;
-
-	Component = dc.Component, list = dc.list, if_ = dc.if_, see = dc.see, div = dc.div;
-
-	globalID = 0;
-
-	module.exports = function(options, template) {
-	  var closeCallback, dlg, openCallback, opened;
-	  if (options.showClose) {
-	    template = list(div({
-	      "class": "dcdialog-close",
-	      style: {
-	        position: 'absolute',
-	        "z-index": 10001,
-	        top: 0,
-	        right: '80px'
-	      },
-	      onclick: (function() {
-	        return dlg.close();
-	      })
-	    }), template);
-	  }
-	  if (options.overlay) {
-	    template = list(div({
-	      "class": "dcdialog-overlay",
-	      style: {
-	        "z-index": 10000
-	      }
-	    }), div({
-	      "class": "dcdialog-content",
-	      style: {
-	        position: 'absolute',
-	        "z-index": 10001
-	      }
-	    }, template));
-	  } else {
-	    template = div({
-	      "class": "dcdialog-content",
-	      style: {
-	        "z-index": 10001
-	      }
-	    }, template);
-	  }
-	  opened = see(!options.closed);
-	  dlg = if_(opened, div({
-	    id: 'dcdialog' + (++globalID),
-	    "class": "dcdialog",
-	    style: {
-	      position: 'absolute',
-	      top: '0px',
-	      left: '0px',
-	      "z-index": 9999
-	    }
-	  }, template));
-	  openCallback = options.openCallback;
-	  dlg.open = function() {
-	    openCallback && openCallback();
-	    opened(true);
-	    return dlg.update();
-	  };
-	  closeCallback = options.closeCallback;
-	  dlg.close = function() {
-	    opened(false);
-	    dlg.update();
-	    return closeCallback && closeCallback();
-	  };
-	  if (options.escClose) {
-	    dlg.on('onMount', function() {
-	      var escHandler;
-	      escHandler = function(event) {
-	        var esc;
-	        esc = 27;
-	        if (event.which === esc || event.keyCode === esc) {
-	          return dlg.close();
-	        }
-	      };
-	      return document.body.addEventListener('keydown', escHandler);
-	    });
-	    dlg.on('onUnmount', function() {
-	      return document.body.removeEventListener('keydown', escHandler);
-	    });
-	  }
-	  return dlg;
-	};
-
-
-/***/ },
-/* 44 */
-/***/ function(module, exports) {
-
-	var combobox, div, extendAttrs, flow, input, list, see, span;
-
-	list = dc.list, input = dc.input, span = dc.span, div = dc.div, extendAttrs = dc.extendAttrs, see = dc.see, flow = dc.flow;
-
-	exports.combobox = combobox = function(attrs, modelValue, valueList, direction) {
-	  var comp, disp, item, opts, showingItems;
-	  showingItems = see(false);
-	  disp = direction === 'v' || direction === 'vertical' ? 'block' : 'inline-block';
-	  comp = null;
-	  opts = (function() {
-	    var _i, _len, _results;
-	    _results = [];
-	    for (_i = 0, _len = valueList.length; _i < _len; _i++) {
-	      item = valueList[_i];
-	      _results.push((function(item) {
-	        return span({
-	          style: {
-	            display: disp,
-	            border: "1px solid blue",
-	            "min-width": "40px"
-	          },
-	          onclick: (function() {
-	            modelValue(item);
-	            return comp.update();
-	          })
-	        }, item);
-	      })(item));
-	    }
-	    return _results;
-	  })();
-	  attrs = extendAttrs(attrs, {
-	    onmouseleave: (function() {
-	      showingItems(false);
-	      return comp.update();
-	    })
-	  });
-	  return comp = div(attrs, input({
-	    $model: modelValue,
-	    onmouseenter: (function() {
-	      showingItems(true);
-	      return comp.update();
-	    })
-	  }), div({
-	    style: {
-	      display: function() {
-	        if (showingItems()) {
-	          return 'block';
-	        } else {
-	          return 'none';
-	        }
-	      }
-	    }
-	  }, opts));
-	};
-
-	exports.vcombo = function(attrs, modelValue, valueList) {
-	  return combobox(attrs, modelValue, valueList, 'vertical');
-	};
-
-	exports.hcombo = function(attrs, modelValue, valueList) {
-	  return combobox(attrs, modelValue, valueList, 'horizontal');
-	};
-
-
-/***/ },
-/* 45 */
-/***/ function(module, exports) {
-
-	var AutoWidthEdit, Tag, div, flow, overAttrs, pipe, see, text,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	div = dc.div, text = dc.text, overAttrs = dc.overAttrs, Tag = dc.Tag, see = dc.see, flow = dc.flow, pipe = dc.pipe;
-
-	exports.AutoWidthEdit = AutoWidthEdit = (function(_super) {
-	  __extends(AutoWidthEdit, _super);
-
-	  function AutoWidthEdit(contextEditAttrs, inputAttrs, inputKeyFn) {
-	    var editWidth, me, testSubject, testSubjectStyle, _inputAttrs;
-	    if (inputKeyFn == null) {
-	      inputKeyFn = this.inputKeyFn;
-	    }
-	    me = this;
-	    editWidth = see(48);
-	    testSubjectStyle = {
-	      position: 'absolute',
-	      top: '30px',
-	      width: 'auto',
-	      height: '20px',
-	      whiteSpace: 'nowrap',
-	      display: 'inline-block',
-	      margin: '0',
-	      padding: '0',
-	      fontSize: function() {
-	        return me.css('fontSize');
-	      },
-	      fontFamily: function() {
-	        return me.css('fontFamily');
-	      },
-	      fontWeight: function() {
-	        return me.css('fontWeight');
-	      },
-	      letterSpacing: function() {
-	        return me.css('letterSpacing');
-	      },
-	      visibility: 'hidden'
-	    };
-	    testSubject = div({
-	      style: testSubjectStyle
-	    }, ((function(_this) {
-	      return function() {
-	        return _this.value;
-	      };
-	    })(this)));
-	    this.inputKeyFn = function(event, comp) {
-	      var node;
-	      event.executeDefault = true;
-	      node = comp.node;
-	      me.value = node.value;
-	      editWidth(testSubject.node.getBoundingClientRect().width);
-	      me.update();
-	      return node.focus();
-	    };
-	    _inputAttrs = {
-	      style: {
-	        'z-index': '10',
-	        width: pipe(editWidth, function(w) {
-	          return Math.max(Math.floor(w) + 40, 48) + 'px';
-	        }),
-	        whiteSpace: 'nowrap'
-	      },
-	      onkeydown: function(event, comp) {
-	        return me.inputKeyFn(event, comp);
-	      }
-	    };
-	    this.inputComp = text(overAttrs(_inputAttrs, inputAttrs));
-	    contextEditAttrs = overAttrs({
-	      onclick: function(event, comp) {
-	        return this.focus();
-	      }
-	    }, contextEditAttrs);
-	    AutoWidthEdit.__super__.constructor.call(this, 'div', contextEditAttrs, [this.inputComp, testSubject]);
-	  }
-
-	  return AutoWidthEdit;
-
-	})(Tag);
-
-	exports.autoWidthEdit = function(contextEditAttrs, inputAttrs, inputKeyFn) {
-	  return new AutoWidthEdit(contextEditAttrs, inputAttrs, inputKeyFn);
-	};
-
-
-/***/ },
-/* 46 */
-/***/ function(module, exports) {
-
-	var binary, bind, duplex, flow, unary;
-
-	bind = dc.bind, duplex = dc.duplex, flow = dc.flow, unary = dc.unary, binary = dc.binary;
+	_ref = __webpack_require__(3), bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
 
 	module.exports = flow;
 
@@ -5611,6 +4920,864 @@ return /******/ (function(modules) { // webpackBootstrap
 	      });
 	    }
 	  }
+	};
+
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var extend, getBindProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,
+	  __slice = [].slice;
+
+	extend = __webpack_require__(10);
+
+	tag = __webpack_require__(30).tag;
+
+	getBindProp = __webpack_require__(7).getBindProp;
+
+	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section";
+
+	tagNames = tagNames.split(' ');
+
+	_fn = function(tagName) {
+	  return exports[tagName] = function() {
+	    return tag.apply(null, [tagName].concat(__slice.call(arguments)));
+	  };
+	};
+	for (_i = 0, _len = tagNames.length; _i < _len; _i++) {
+	  tagName = tagNames[_i];
+	  _fn(tagName);
+	}
+
+	exports.tagHtml = tag.apply(null, [tagName].concat(__slice.call(arguments)));
+
+	inputTypes = 'text checkbox radio date email number'.split(' ');
+
+	input = exports.input = function(type, attrs, value) {
+	  var component;
+	  if (typeof type === 'object') {
+	    value = attrs;
+	    attrs = type;
+	    type = 'text';
+	  }
+	  attrs = extend({
+	    type: type
+	  }, attrs);
+	  component = tag('input', attrs);
+	  if (value != null) {
+	    component.prop(getBindProp(component), value);
+	    if (value.isDuplex) {
+	      component.bind('onchange', (function(event, comp) {
+	        return value(this.value);
+	      }), 'before');
+	    }
+	  }
+	  return component;
+	};
+
+	_ref = 'text checkbox radio date email tel number'.split(' ');
+	_fn1 = function(type) {
+	  return exports[type] = function(value, attrs) {
+	    var temp;
+	    if (typeof value === 'object') {
+	      temp = attrs;
+	      attrs = value;
+	      value = temp;
+	    }
+	    attrs = attrs || {};
+	    return input(type, attrs, value);
+	  };
+	};
+	for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+	  type = _ref[_j];
+	  _fn1(type);
+	}
+
+	exports.textarea = function(attrs, value) {
+	  var component;
+	  if (isAttrs(attrs)) {
+	    if (value != null) {
+	      attrs = extend({
+	        value: value
+	      }, attrs);
+	      component = tag('textarea', attrs);
+	      if (value.isDuplex) {
+	        component.bind('onchange', (function(event, comp) {
+	          return value(this.value);
+	        }), 'before');
+	      }
+	    } else {
+	      component = tag('textarea', attrs);
+	    }
+	  } else {
+	    if (attrs != null) {
+	      component = tag('textarea', {
+	        value: attrs
+	      });
+	      if (attrs.isDuplex) {
+	        component.bind('onchange', (function(event, comp) {
+	          return attrs(this.value);
+	        }), 'before');
+	      }
+	    } else {
+	      component = tag('textarea');
+	    }
+	  }
+	  return component;
+	};
+
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var extend, flow;
+
+	extend = dc.extend;
+
+	dc.builtinDirectives = __webpack_require__(35);
+
+	extend(dc, dc.builtinDirectives, __webpack_require__(42));
+
+	flow = dc.flow;
+
+	extend(flow, __webpack_require__(32), __webpack_require__(2));
+
+	module.exports = dc;
+
+
+/***/ },
+/* 35 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $hide, $show, _ref;
+
+	exports.$model = __webpack_require__(37);
+
+	exports.$bind = __webpack_require__(38);
+
+	_ref = __webpack_require__(39), $show = _ref.$show, $hide = _ref.$hide;
+
+	exports.$show = $show;
+
+	exports.$hide = $hide;
+
+	exports.$blink = __webpack_require__(36);
+
+	exports.$splitter = __webpack_require__(40);
+
+	exports.$options = __webpack_require__(41);
+
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var flow, see, _ref;
+
+	_ref = __webpack_require__(3), see = _ref.see, flow = _ref.flow;
+
+	module.exports = function(interval) {
+	  return function(comp) {
+	    var timer, visible;
+	    if (interval == null) {
+	      interval = 500;
+	    }
+	    timer = null;
+	    comp.on('beforeMount', function(baseComponent) {
+	      return function() {
+	        return timer = setInterval((function() {
+	          visible(!visible());
+	          return comp.update();
+	        }), interval);
+	      };
+	    });
+	    comp.on('afterUnmount', function(baseComponent) {
+	      return function() {
+	        return clearInterval(timer);
+	      };
+	    });
+	    visible = see(true);
+	    this.style.visibility = flow(visible, function() {
+	      if (visible()) {
+	        return 'visible';
+	      } else {
+	        return 'hidden';
+	      }
+	    });
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var getBindProp;
+
+	getBindProp = __webpack_require__(7).getBindProp;
+
+	module.exports = function(binding, eventName) {
+	  return function(comp) {
+	    var bindProp, props;
+	    props = comp.props;
+	    bindProp = getBindProp(comp);
+	    comp.setProp(bindProp, binding, props, 'Props');
+	    comp.bind(eventName || 'onchange', (function() {
+	      return binding(this[bindProp]);
+	    }), 'before');
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 38 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var domField, getBindProp, _ref;
+
+	_ref = __webpack_require__(7), getBindProp = _ref.getBindProp, domField = _ref.domField;
+
+	module.exports = function(binding) {
+	  return function(comp) {
+	    comp.setProp(getBindProp(comp), binding, props, 'Props');
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 39 */
+/***/ function(module, exports) {
+
+	
+	/* @param test - paramenter expression for directive
+	 */
+	var showHide;
+
+	showHide = function(showing) {
+	  return function(test, display) {
+	    return function(comp) {
+	      comp.showHide(showing, test, display);
+	      return comp;
+	    };
+	  };
+	};
+
+	exports.$show = showHide(true);
+
+	exports.$hide = showHide(false);
+
+
+/***/ },
+/* 40 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Component, classFn, div, pairListDict, span, _ref;
+
+	pairListDict = __webpack_require__(4).pairListDict;
+
+	classFn = __webpack_require__(23).classFn;
+
+	Component = __webpack_require__(15).Component;
+
+	_ref = __webpack_require__(33), div = _ref.div, span = _ref.span;
+
+	module.exports = function(direction) {
+	  return function(comp) {
+	    var arrawAAttr, arrawBAttr, arrowA, arrowAHovering, arrowB, arrowBHovering, attrs, barsize, buttonClass, children, clientX, cursor, drag, getSize, left, minAWidth, minBWidth, paneA, paneB, percent, pos, right, size, splitBar, splitBarAttr, splitBarAttrCss, splitbarClass, width;
+	    dc.directives({
+	      $show: dc.$show
+	    });
+	    attrs = comp.attrs;
+	    direction = direction || 'vertical';
+	    if (direction === 'vertical') {
+	      left = "top";
+	      right = "bottom";
+	      width = "height";
+	      clientX = "clientY";
+	      splitbarClass = "splitbarH";
+	      buttonClass = "splitbuttonH";
+	      cursor = "s-resize";
+	    } else {
+	      left = "left";
+	      right = "right";
+	      width = "width";
+	      clientX = "clientX";
+	      splitbarClass = "splitbarV";
+	      buttonClass = "splitbuttonV";
+	      cursor = "e-resize";
+	    }
+	    pos = 200;
+	    percent = 0.5;
+	    size = null;
+	    drag = false;
+	    getSize = function() {
+	      return size || 600;
+	    };
+	    children = comp.children;
+	    paneA = children[0];
+	    paneB = children[1];
+	    minAWidth = attrs.minAWidth || 0;
+	    minBWidth = attrs.minBWidth || 0;
+	    splitBarAttr = {
+	      "class": splitbarClass,
+	      unselectable: "on",
+	      style: splitBarAttrCss = {
+	        "cursor": cursor,
+	        "user-select": "none",
+	        "-webkit-user-select": "none",
+	        "-khtml-user-select": "none",
+	        "-moz-user-select": "none"
+	      }
+	    };
+	    splitBarAttrCss[left] = function() {
+	      return pos + 'px';
+	    };
+	    splitBarAttrCss[width] = barsize = 6;
+	    arrowAHovering = false;
+	    arrawAAttr = {
+	      "class": classFn(buttonClass, {
+	        'inactive': function() {
+	          return arrowAHovering;
+	        }
+	      }),
+	      unselectable: "on",
+	      style: {
+	        cursor: 'pointer'
+	      },
+	      onmouseover: function() {
+	        arrowAHovering = true;
+	        return comp.update();
+	      },
+	      onmouseleave: function() {
+	        arrowAHovering = false;
+	        return comp.update();
+	      },
+	      onclick: function(e) {
+	        pos = minAWidth;
+	        return comp.update();
+	      },
+	      $show: function() {
+	        return pos > minAWidth;
+	      }
+	    };
+	    arrowBHovering = false;
+	    arrawBAttr = {
+	      "class": classFn(buttonClass + ' invert', {
+	        'inactive': function() {
+	          return arrowBHovering;
+	        }
+	      }),
+	      unselectable: "on",
+	      style: {
+	        cursor: 'pointer'
+	      },
+	      onmouseover: function() {
+	        arrowBHovering = true;
+	        return comp.update();
+	      },
+	      onmouseleave: function() {
+	        arrowBHovering = false;
+	        return comp.update();
+	      },
+	      onclick: function(e) {
+	        pos = getSize() - minBWidth;
+	        return comp.update();
+	      },
+	      $show: function() {
+	        return getSize() - pos > minBWidth;
+	      }
+	    };
+	    arrowA = div(arrawAAttr);
+	    arrowB = div(arrawBAttr);
+	    splitBar = div(splitBarAttr, span(), arrowA, arrowB);
+	    comp.setChildren(1, splitBar, paneB);
+	    splitBar.bind('mousedown', function(event) {
+	      return drag = true;
+	    });
+	    dc(document).bind('mouseup', function() {
+	      return drag = false;
+	    });
+	    comp.bind('mousemove', function(event) {
+	      var bounds, pencent, w;
+	      event.continuePropagation = true;
+	      event.executeDefault = true;
+	      if (!drag) {
+	        return;
+	      }
+	      event.continuePropagation = false;
+	      event.executeDefault = false;
+	      bounds = comp.node.getBoundingClientRect();
+	      size = w = bounds[right] - bounds[left];
+	      pos = Math.max(event[clientX] - bounds[left], 0);
+	      pencent = pos / w;
+	      return comp.update();
+	    });
+	    paneA.css(pairListDict('position', 'absolute', width, (function() {
+	      return pos + 'px';
+	    })));
+	    paneB.css(pairListDict('position', 'absolute', left, (function() {
+	      return (pos + barsize) + 'px';
+	    }), width, (function() {
+	      return getSize() - (pos + barsize) + 'px';
+	    })));
+	    comp.css(pairListDict('position', 'absolute'));
+	    comp.bind('resize', function(event) {
+	      var bounds, w;
+	      event.preventDefault();
+	      event.stopPropagation();
+	      bounds = comp.node.getBoundingClientRect();
+	      w = bounds[right] - bounds[left];
+	      pos = percent * w;
+	      if (pos < minAWidth) {
+	        pos = minAWidth;
+	      } else if (w - pos < minBWidth) {
+	        pos = w - minBWidth;
+	      }
+	      return comp.update();
+	    });
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 41 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Tag, every, option, txt, _ref;
+
+	_ref = __webpack_require__(30), every = _ref.every, txt = _ref.txt;
+
+	option = __webpack_require__(33).option;
+
+	Tag = __webpack_require__(22);
+
+	module.exports = function(items, attrs) {
+	  return function(comp) {
+	    if (!(comp instanceof Tag) || comp.tagName !== 'select') {
+	      throw new Error('options should be only used in select tag');
+	    }
+	    comp.setChildren(0, every(items, function(item) {
+	      return option(attrs, [txt(item)]);
+	    }));
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 42 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var extend;
+
+	extend = dc.extend;
+
+	extend(exports, __webpack_require__(43));
+
+	exports.triangle = __webpack_require__(44);
+
+	exports.dialog = __webpack_require__(45);
+
+	extend(exports, __webpack_require__(46));
+
+	extend(exports, __webpack_require__(47));
+
+
+/***/ },
+/* 43 */
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	/** @module accordion
+	 * @directive accordion
+	 */
+	var Component, a, accordion, accordionGroup, div, each, exports, extend, extendAttrs, h4, img, span, _ref;
+
+	_ref = __webpack_require__(33), div = _ref.div, h4 = _ref.h4, a = _ref.a, span = _ref.span, img = _ref.img;
+
+	each = __webpack_require__(30).each;
+
+	extend = __webpack_require__(4);
+
+	Component = __webpack_require__(15);
+
+	extendAttrs = __webpack_require__(23).extendAttrs;
+
+	module.exports = exports = accordion = function(attrs, accordionGroupList, options) {
+	  var accordionOptions, comp;
+	  attrs = extendAttrs({
+	    "class": "panel-group"
+	  }, attrs || {});
+	  accordionOptions = options || {};
+	  return comp = div(attrs, each(accordionGroupList, function(group, index) {
+	    var content, groupAttrs, groupOptions, heading;
+	    groupAttrs = group[0], heading = group[1], content = group[2], groupOptions = group[3];
+	    groupOptions = groupOptions || {};
+	    groupOptions.toggleOpen = function() {
+	      var group2, i, _i, _len;
+	      groupOptions.opened = !groupOptions.opened;
+	      if (accordionOptions.closeOthers && groupOptions.opened) {
+	        for (i = _i = 0, _len = accordionGroupList.length; _i < _len; i = ++_i) {
+	          group2 = accordionGroupList[i];
+	          if (i !== index) {
+	            group2[3].opened = false;
+	          }
+	        }
+	      }
+	      return comp.update();
+	    };
+	    return accordionGroup(groupAttrs, heading, content, groupOptions);
+	  }));
+	};
+
+	exports.accordionGroup = accordionGroup = function(attrs, heading, content, options) {
+	  return div({
+	    "class": "panel panel-default"
+	  }, div({
+	    "class": "panel-heading",
+	    onclick: options.toggleOpen
+	  }, h4({
+	    "class": "panel-title"
+	  }, div({
+	    "class": "accordion-toggle"
+	  }, span({
+	    "class": {
+	      'text-muted': function() {
+	        return options.disabled;
+	      }
+	    }
+	  }, heading)))), div({
+	    "class": {
+	      "panel-collapse": function() {
+	        return !options.opened;
+	      }
+	    },
+	    style: {
+	      display: function() {
+	        if (options.opened) {
+	          return 'block';
+	        } else {
+	          return 'none';
+	        }
+	      }
+	    }
+	  }, div({
+	    "class": "panel-body"
+	  }, content)));
+	};
+
+	exports.accordion = accordion;
+
+
+/***/ },
+/* 44 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var arrowStyle, div, extendAttrs, reverseSide;
+
+	div = __webpack_require__(33).div;
+
+	extendAttrs = __webpack_require__(23).extendAttrs;
+
+	reverseSide = {
+	  left: 'right',
+	  right: 'left',
+	  top: 'bottom',
+	  bottom: 'top'
+	};
+
+	arrowStyle = function(direction, size, color) {
+	  var props, sideStyle;
+	  props = {
+	    width: 0,
+	    height: 0
+	  };
+	  sideStyle = size + "px solid transparent";
+	  if (direction === 'left' || direction === 'right') {
+	    props["border-top"] = props["border-bottom"] = sideStyle;
+	  } else {
+	    props["border-left"] = props["border-right"] = sideStyle;
+	  }
+	  props["border-" + reverseSide[direction]] = size + "px solid " + color;
+	  return props;
+	};
+
+	module.exports = function(attrs, direction, size, color) {
+	  attrs = extendAttrs(attrs, {
+	    style: arrowStyle(direction, size, color)
+	  });
+	  return div(attrs);
+	};
+
+
+/***/ },
+/* 45 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Component, div, globalID, list, see;
+
+	see = __webpack_require__(3).see;
+
+	div = __webpack_require__(33).div;
+
+	list = __webpack_require__(30).list;
+
+	Component = __webpack_require__(15);
+
+	globalID = 0;
+
+	module.exports = function(options, template) {
+	  var closeCallback, dlg, openCallback, opened;
+	  if (options.showClose) {
+	    template = list(div({
+	      "class": "dcdialog-close",
+	      style: {
+	        position: 'absolute',
+	        "z-index": 10001,
+	        top: 0,
+	        right: '80px'
+	      },
+	      onclick: (function() {
+	        return dlg.close();
+	      })
+	    }), template);
+	  }
+	  if (options.overlay) {
+	    template = list(div({
+	      "class": "dcdialog-overlay",
+	      style: {
+	        "z-index": 10000
+	      }
+	    }), div({
+	      "class": "dcdialog-content",
+	      style: {
+	        position: 'absolute',
+	        "z-index": 10001
+	      }
+	    }, template));
+	  } else {
+	    template = div({
+	      "class": "dcdialog-content",
+	      style: {
+	        "z-index": 10001
+	      }
+	    }, template);
+	  }
+	  opened = see(!options.closed);
+	  dlg = if_(opened, div({
+	    id: 'dcdialog' + (++globalID),
+	    "class": "dcdialog",
+	    style: {
+	      position: 'absolute',
+	      top: '0px',
+	      left: '0px',
+	      "z-index": 9999
+	    }
+	  }, template));
+	  openCallback = options.openCallback;
+	  dlg.open = function() {
+	    openCallback && openCallback();
+	    opened(true);
+	    return dlg.update();
+	  };
+	  closeCallback = options.closeCallback;
+	  dlg.close = function() {
+	    opened(false);
+	    dlg.update();
+	    return closeCallback && closeCallback();
+	  };
+	  if (options.escClose) {
+	    dlg.on('onMount', function() {
+	      var escHandler;
+	      escHandler = function(event) {
+	        var esc;
+	        esc = 27;
+	        if (event.which === esc || event.keyCode === esc) {
+	          return dlg.close();
+	        }
+	      };
+	      return document.body.addEventListener('keydown', escHandler);
+	    });
+	    dlg.on('onUnmount', function() {
+	      return document.body.removeEventListener('keydown', escHandler);
+	    });
+	  }
+	  return dlg;
+	};
+
+
+/***/ },
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var combobox, div, extendAttrs, flow, input, list, see, span, _ref, _ref1;
+
+	_ref = __webpack_require__(3), see = _ref.see, flow = _ref.flow;
+
+	_ref1 = __webpack_require__(33), input = _ref1.input, span = _ref1.span, div = _ref1.div;
+
+	list = __webpack_require__(30).list;
+
+	extendAttrs = __webpack_require__(23).extendAttrs;
+
+	exports.combobox = combobox = function(attrs, modelValue, valueList, direction) {
+	  var comp, disp, item, opts, showingItems;
+	  showingItems = see(false);
+	  disp = direction === 'v' || direction === 'vertical' ? 'block' : 'inline-block';
+	  comp = null;
+	  opts = (function() {
+	    var _i, _len, _results;
+	    _results = [];
+	    for (_i = 0, _len = valueList.length; _i < _len; _i++) {
+	      item = valueList[_i];
+	      _results.push((function(item) {
+	        return span({
+	          style: {
+	            display: disp,
+	            border: "1px solid blue",
+	            "min-width": "40px"
+	          },
+	          onclick: (function() {
+	            modelValue(item);
+	            return comp.update();
+	          })
+	        }, item);
+	      })(item));
+	    }
+	    return _results;
+	  })();
+	  attrs = extendAttrs(attrs, {
+	    onmouseleave: (function() {
+	      showingItems(false);
+	      return comp.update();
+	    })
+	  });
+	  return comp = div(attrs, input({
+	    $model: modelValue,
+	    onmouseenter: (function() {
+	      showingItems(true);
+	      return comp.update();
+	    })
+	  }), div({
+	    style: {
+	      display: function() {
+	        if (showingItems()) {
+	          return 'block';
+	        } else {
+	          return 'none';
+	        }
+	      }
+	    }
+	  }, opts));
+	};
+
+	exports.vcombo = function(attrs, modelValue, valueList) {
+	  return combobox(attrs, modelValue, valueList, 'vertical');
+	};
+
+	exports.hcombo = function(attrs, modelValue, valueList) {
+	  return combobox(attrs, modelValue, valueList, 'horizontal');
+	};
+
+
+/***/ },
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AutoWidthEdit, Tag, div, flow, overAttrs, pipe, see, text, _ref, _ref1,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	_ref = __webpack_require__(3), see = _ref.see, flow = _ref.flow, pipe = _ref.pipe;
+
+	_ref1 = __webpack_require__(33), div = _ref1.div, text = _ref1.text;
+
+	Tag = __webpack_require__(22);
+
+	overAttrs = __webpack_require__(23).overAttrs;
+
+	exports.AutoWidthEdit = AutoWidthEdit = (function(_super) {
+	  __extends(AutoWidthEdit, _super);
+
+	  function AutoWidthEdit(contextEditAttrs, inputAttrs, inputKeyFn) {
+	    var editWidth, me, testSubject, testSubjectStyle, _inputAttrs;
+	    if (inputKeyFn == null) {
+	      inputKeyFn = this.inputKeyFn;
+	    }
+	    me = this;
+	    editWidth = see(48);
+	    testSubjectStyle = {
+	      position: 'absolute',
+	      top: '30px',
+	      width: 'auto',
+	      height: '20px',
+	      whiteSpace: 'nowrap',
+	      display: 'inline-block',
+	      margin: '0',
+	      padding: '0',
+	      fontSize: function() {
+	        return me.css('fontSize');
+	      },
+	      fontFamily: function() {
+	        return me.css('fontFamily');
+	      },
+	      fontWeight: function() {
+	        return me.css('fontWeight');
+	      },
+	      letterSpacing: function() {
+	        return me.css('letterSpacing');
+	      },
+	      visibility: 'hidden'
+	    };
+	    testSubject = div({
+	      style: testSubjectStyle
+	    }, ((function(_this) {
+	      return function() {
+	        return _this.value;
+	      };
+	    })(this)));
+	    this.inputKeyFn = function(event, comp) {
+	      var node;
+	      event.executeDefault = true;
+	      node = comp.node;
+	      me.value = node.value;
+	      editWidth(testSubject.node.getBoundingClientRect().width);
+	      me.update();
+	      return node.focus();
+	    };
+	    _inputAttrs = {
+	      style: {
+	        'z-index': '10',
+	        width: pipe(editWidth, function(w) {
+	          return Math.max(Math.floor(w) + 40, 48) + 'px';
+	        }),
+	        whiteSpace: 'nowrap'
+	      },
+	      onkeydown: function(event, comp) {
+	        return me.inputKeyFn(event, comp);
+	      }
+	    };
+	    this.inputComp = text(overAttrs(_inputAttrs, inputAttrs));
+	    contextEditAttrs = overAttrs({
+	      onclick: function(event, comp) {
+	        return this.focus();
+	      }
+	    }, contextEditAttrs);
+	    AutoWidthEdit.__super__.constructor.call(this, 'div', contextEditAttrs, [this.inputComp, testSubject]);
+	  }
+
+	  return AutoWidthEdit;
+
+	})(Tag);
+
+	exports.autoWidthEdit = function(contextEditAttrs, inputAttrs, inputKeyFn) {
+	  return new AutoWidthEdit(contextEditAttrs, inputAttrs, inputKeyFn);
 	};
 
 

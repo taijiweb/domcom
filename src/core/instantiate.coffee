@@ -3,8 +3,7 @@ Tag, Text, Comment, Html
 If, Case, Func, List, Each, Defer} = require './base'
 {isEven, numbers} = require '../util'
 
-isAttrs = (item) ->
-  typeof item == 'object' and item!=null and !isComponent(item) and item not instanceof Array
+{isAttrs} = require './util'
 
 attrsChildren = (args) ->
   attrs = args[0]

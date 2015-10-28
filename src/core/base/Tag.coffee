@@ -7,7 +7,7 @@ List = require './List'
 {funcString, newLine, cloneObject} = require '../../util'
 {directiveRegistry} = require '../../config'
 {flow} = require '../../flow'
-{domValue} = require '../../dom-util'
+{domField} = require '../../dom-util'
 toComponent = require './toComponent'
 
 module.exports = class Tag extends List
@@ -99,7 +99,7 @@ module.exports = class Tag extends List
 
   setProp: (prop, value, props, type) ->
     prop = attrToPropName(prop)
-    value = domValue value
+    value = domField value
     oldValue = props[prop]
     if !oldValue?
       if typeof value == 'function'
@@ -195,7 +195,7 @@ module.exports = class Tag extends List
 
   showHide: (status, test, display) ->
     {style} = @
-    test = domValue(test)
+    test = domField(test)
     oldDisplay = style.display
     if !oldDisplay then  @addActivity(style, 'display', 'Style', @node)
     else if typeof oldDisplay =='function' and oldDisplay.offInvalidate

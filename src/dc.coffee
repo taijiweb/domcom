@@ -1,7 +1,7 @@
 DomNode = require './DomNode'
 {requestAnimationFrame, raf, isElement} = require  './dom-util'
 {newDcid, isEven} = require './util'
-{componentCache, readyFnList, _updateComponentMap, directiveRegistry, renderCallbackList, rootComponents} = require './config'
+{domNodeCache, readyFnList, directiveRegistry, renderCallbackList} = require './config'
 isComponent = require './core/base/isComponent'
 
 
@@ -13,14 +13,14 @@ isComponent = require './core/base/isComponent'
 module.exports = dc = (element, options={}) ->
   if typeof element == 'string'
     if options.noCache then querySelector(element, options.all)
-    else componentCache[element] or componentCache[element] = querySelector(element, options.all)
+    else domNodeCache[element] or domNodeCache[element] = querySelector(element, options.all)
   else if element instanceof Node or element instanceof NodeList or element instanceof Array
     if options.noCache then new DomNode(element)
     else
-      if element.dcid then componentCache[element.dcid]
+      if element.dcid then domNodeCache[element.dcid]
       else
         element.dcid = newDcid()
-        componentCache[element.dcid] = new DomNode(element)
+        domNodeCache[element.dcid] = new DomNode(element)
   else throw new Error('error type for dc')
 
 querySelector = (selector, all) ->
@@ -31,9 +31,9 @@ window.dcid = newDcid()
 # can not write window.$document = dc(document)
 # why so strange? browser can predict the document.dcid=1, document.body.dcid=2 and assigns it in advance !!!!!!!
 dcid = document.dcid = newDcid()
-window.$document = dc.$document = componentCache[dcid] = new DomNode(document)
+window.$document = dc.$document = domNodeCache[dcid] = new DomNode(document)
 dcid = document.body.dcid = newDcid()
-window.$body = dc.$body = componentCache[dcid] = new DomNode(document.body)
+window.$body = dc.$body = domNodeCache[dcid] = new DomNode(document.body)
 
 dc.onReady = (callback) -> readyFnList.push callback
 

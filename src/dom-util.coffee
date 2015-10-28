@@ -40,7 +40,7 @@ exports.isElement = (item) ->
 
 {renew} = require './flow/index'
 
-exports.domValue = (value) ->
+exports.domField = (value) ->
 
   if !value? then return ''
 
@@ -64,6 +64,14 @@ exports.domValue = (value) ->
   if !value.invalidate then return renew(value)
 
   value
+
+exports.domValue = (value) ->
+  if !value? then return ''
+  else if typeof value != 'function' then value
+  else
+    value = value()
+    if !value? then return ''
+    else value
 
 # family do not consider exceeding TransformComponent
 # a BaseComponent can have only one reference of one component in all of its family

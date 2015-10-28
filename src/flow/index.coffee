@@ -26,6 +26,17 @@ react = (method) ->
 
   method
 
+renew = (computation) ->
+  method = ->
+    if !arguments.length
+      method.invalidate()
+      method.value = computation()
+    else throw new Error 'flow.dynamic is not allowed to accept arguments'
+
+  method.toString = () ->  "renew: #{funcString(computation)}"
+
+  react method
+
 dependent = (computation) ->
   cacheValue = null
 
@@ -42,23 +53,59 @@ dependent = (computation) ->
   react method
 
 module.exports = flow = (deps..., computation) ->
-  if !computation.invalidate
-    reactive = dependent(computation)
-    reactive.toString = () ->  "flow: [#{(for dep in deps then dep.toString()).join(',')}] --> #{funcString(computation)}"
-  else reactive = computation
+  for dep in deps
+    if typeof dep == 'function' and !dep.invalidate
+      reactive = react ->
+        reactive.invalidate()
+        computation()
+      return reactive
+
+  cacheValue = null
+
+  reactive = react ->
+    if !arguments.length
+      if !reactive.valid
+        reactive.valid = true
+        cacheValue = computation()
+      else cacheValue
+    else throw new Error 'flow.dependent is not allowed to accept arguments'
+
   for dep in deps
     if dep and dep.onInvalidate
       dep.onInvalidate(reactive.invalidate)
+
+  reactive.toString = () ->  "flow: [#{(for dep in deps then dep.toString()).join(',')}] --> #{funcString(computation)}"
+
   reactive
 
 flow.pipe = (deps..., computation) ->
-  reactive = react -> computation.apply(null, dep() for dep in deps)
+  for dep in deps
+    if typeof dep == 'function' and !dep.invalidate
+      reactive = react ->
+        reactive.invalidate()
+        args = []
+        for dep in deps
+          if typeof dep == 'function' then args.push dep()
+          else args.push dep
+        computation.apply(null, args)
+      return reactive
+
+  reactive = react ->
+    args = []
+    for dep in deps
+      if typeof dep == 'function' then args.push dep()
+      else args.push dep
+    computation.apply(null, args)
+
   for dep in deps
     if dep and dep.onInvalidate
       dep.onInvalidate(reactive.invalidate)
+
   reactive
 
 flow.react = react
+
+flow.renew = renew
 
 flow.dependent = dependent
 
@@ -83,52 +130,66 @@ flow.see = see = (value, transform) ->
 flow.seeN = (computations...) ->
   for computation in computations then see computation
 
-flow.renew = (computation) ->
-  method = ->
-    if !arguments.length
-      method.invalidate()
-      method.value = computation()
-    else throw new Error 'flow.dynamic is not allowed to accept arguments'
+# Object.defineProperty is ES5 feature, it's not supported in IE 6, 7, 8
+if Object.defineProperty
 
-  method.toString = () ->  "renew: #{funcString(computation)}"
+  flow.bind = bindWithDefineProperty = (obj, attr, debugName) ->
 
-  react method
+    d = Object.getOwnPropertyDescriptor(obj, attr)
+    if d then {get, set} = d
 
-flow.bind = bind = (obj, attr, name) ->
+    if !set or !set.invalidate
+      cacheValue = obj[attr]
+      method = (value) ->
+        if !arguments.length
+          if get then get()
+          else cacheValue
+        else if value!=obj[attr]
+          if set then set(value)
+          method.invalidate()
+          cacheValue = value
+      react method
+      Object.defineProperty(obj, attr, {get:method, set:method})
+    else method = set
 
-  d = Object.getOwnPropertyDescriptor(obj, attr)
-  if d then {get, set} = d
+    method.toString = () ->  "#{debugName or 'm'}[#{attr}]"
 
-  if !set or !set.invalidate
-    cacheValue = obj[attr]
-    method = (value) ->
-      if !arguments.length
-        if get then get()
-        else cacheValue
-      else if value!=obj[attr]
-        if set then set(value)
-        method.invalidate()
-        cacheValue = value
+    method
+
+else
+
+  flow.bind = (obj, attr, debugName) ->
+    method = -> obj[attr]
     react method
-    Object.defineProperty(obj, attr, {get:method, set:method})
-  else method = set
+    method.toString = () ->  "#{debugName or 'm'}[#{attr}]"
+    method
 
-  method.toString = () ->  "#{name or 'm'}[#{attr}]"
+if Object.defineProperty
 
-  method
+  flow.duplex = (obj, attr, debugName) ->
+    reactive = bindWithDefineProperty(obj, attr)
+    reactive.isDuplex = true
+    reactive.toString = () ->  "#{debugName or 'm'}[#{attr}]"
+    reactive
 
-flow.duplex = (obj, attr, name) ->
-  reactive = bind(obj, attr)
-  reactive.isDuplex = true
-  reactive.toString = () ->  "#{name or 'm'}[#{attr}]"
-  reactive
+  flow.duplex = (obj, attr, debugName) ->
+    method = (value) ->
+      if !arguments.length then obj[attr]
+      else if value!=obj[attr]
+        obj[attr] = value
+        method.invalidate()
+        value
+    react method
+    method.isDuplex = true
+    method.toString = () ->  "#{debugName or 'm'}[#{attr}]"
+    method
 
-flow.unary = unary = (x, unaryFn) ->
+flow.unary = (x, unaryFn) ->
   if typeof x != 'function' then unaryFn(x)
   else if x.invalidate then flow(x, -> unaryFn(x()))
   else -> unaryFn(x())
 
-flow.binary = binary = (x, y, binaryFn) ->
+flow.binary = (x, y, binaryFn) ->
   if typeof x == 'function' and typeof y == 'function'
     if x.invalidate and y.invalidate then flow x, y, -> binaryFn x(), y()
     else -> binaryFn x(), y()
@@ -139,3 +200,4 @@ flow.binary = binary = (x, y, binaryFn) ->
     if y.invalidate then flow y, -> binaryFn x, y()
     else -> binaryFn x, y()
   else binaryFn(x, y)
+

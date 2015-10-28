@@ -1,4 +1,7 @@
-{Component, list, if_, see, div}  = dc
+{see}  = require "../flow/index"
+{div} = require "../core/tag"
+{list} = require "../core/instantiate"
+Component = require "../core/base/component"
 
 globalID = 0
 

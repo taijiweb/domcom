@@ -17,7 +17,7 @@ for tagName in tagNames
 # So use tagHtml instead here
 exports.tagHtml = tag(tagName, arguments...)
 
-inputTypes = 'text textarea checkbox radio date email number'.split(' ')
+inputTypes = 'text checkbox radio date email number'.split(' ')
 
 input = exports.input = (type, attrs, value) ->
   if typeof type == 'object'
@@ -39,3 +39,17 @@ for type in 'text checkbox radio date email tel number'.split(' ')
       value = temp
     attrs = attrs or {}
     input(type, attrs, value)
+
+exports.textarea = (attrs, value) ->
+  if isAttrs(attrs)
+    if  value?
+      attrs = extend({value:value}, attrs)
+      component = tag('textarea', attrs)
+      if value.isDuplex then component.bind('onchange', ((event, comp) -> value(@value)), 'before')
+    else  component = tag('textarea', attrs)
+  else
+    if attrs? # attrs is value
+      component = tag('textarea', {value:attrs})
+      if attrs.isDuplex then component.bind('onchange', ((event, comp) -> attrs(@value)), 'before')
+    else  component = tag('textarea')
+  component

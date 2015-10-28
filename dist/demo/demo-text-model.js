@@ -1,6 +1,6 @@
-var a, checkbox, list, text;
+var a, bindings, checkbox, list, text;
 
-list = dc.list, a = dc.a, checkbox = dc.checkbox, text = dc.text;
+list = dc.list, bindings = dc.bindings, a = dc.a, checkbox = dc.checkbox, text = dc.text;
 
 module.exports = function() {
   var a$, attrs, comp;

@@ -331,7 +331,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var binary, bind, dependent, flow, funcString, newLine, react, see, unary, _ref,
+	var bindWithDefineProperty, dependent, flow, funcString, newLine, react, renew, see, _ref,
 	  __slice = [].slice;
 
 	_ref = __webpack_require__(3), newLine = _ref.newLine, funcString = _ref.funcString;
@@ -372,6 +372,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return method;
 	};
 
+	renew = function(computation) {
+	  var method;
+	  method = function() {
+	    if (!arguments.length) {
+	      method.invalidate();
+	      return method.value = computation();
+	    } else {
+	      throw new Error('flow.dynamic is not allowed to accept arguments');
+	    }
+	  };
+	  method.toString = function() {
+	    return "renew: " + (funcString(computation));
+	  };
+	  return react(method);
+	};
+
 	dependent = function(computation) {
 	  var cacheValue, method;
 	  cacheValue = null;
@@ -394,51 +410,89 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	module.exports = flow = function() {
-	  var computation, dep, deps, reactive, _i, _j, _len;
+	  var cacheValue, computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
 	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
-	  if (!computation.invalidate) {
-	    reactive = dependent(computation);
-	    reactive.toString = function() {
-	      var dep;
-	      return "flow: [" + (((function() {
-	        var _j, _len, _results;
-	        _results = [];
-	        for (_j = 0, _len = deps.length; _j < _len; _j++) {
-	          dep = deps[_j];
-	          _results.push(dep.toString());
-	        }
-	        return _results;
-	      })()).join(',')) + "] --> " + (funcString(computation));
-	    };
-	  } else {
-	    reactive = computation;
-	  }
 	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
 	    dep = deps[_j];
+	    if (typeof dep === 'function' && !dep.invalidate) {
+	      reactive = react(function() {
+	        reactive.invalidate();
+	        return computation();
+	      });
+	      return reactive;
+	    }
+	  }
+	  cacheValue = null;
+	  reactive = react(function() {
+	    if (!arguments.length) {
+	      if (!reactive.valid) {
+	        reactive.valid = true;
+	        return cacheValue = computation();
+	      } else {
+	        return cacheValue;
+	      }
+	    } else {
+	      throw new Error('flow.dependent is not allowed to accept arguments');
+	    }
+	  });
+	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	    dep = deps[_k];
 	    if (dep && dep.onInvalidate) {
 	      dep.onInvalidate(reactive.invalidate);
 	    }
 	  }
+	  reactive.toString = function() {
+	    return "flow: [" + (((function() {
+	      var _l, _len2, _results;
+	      _results = [];
+	      for (_l = 0, _len2 = deps.length; _l < _len2; _l++) {
+	        dep = deps[_l];
+	        _results.push(dep.toString());
+	      }
+	      return _results;
+	    })()).join(',')) + "] --> " + (funcString(computation));
+	  };
 	  return reactive;
 	};
 
 	flow.pipe = function() {
-	  var computation, dep, deps, reactive, _i, _j, _len;
+	  var computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
 	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
-	  reactive = react(function() {
-	    var dep;
-	    return computation.apply(null, (function() {
-	      var _j, _len, _results;
-	      _results = [];
-	      for (_j = 0, _len = deps.length; _j < _len; _j++) {
-	        dep = deps[_j];
-	        _results.push(dep());
-	      }
-	      return _results;
-	    })());
-	  });
 	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
 	    dep = deps[_j];
+	    if (typeof dep === 'function' && !dep.invalidate) {
+	      reactive = react(function() {
+	        var args, _k, _len1;
+	        reactive.invalidate();
+	        args = [];
+	        for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	          dep = deps[_k];
+	          if (typeof dep === 'function') {
+	            args.push(dep());
+	          } else {
+	            args.push(dep);
+	          }
+	        }
+	        return computation.apply(null, args);
+	      });
+	      return reactive;
+	    }
+	  }
+	  reactive = react(function() {
+	    var args, _k, _len1;
+	    args = [];
+	    for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	      dep = deps[_k];
+	      if (typeof dep === 'function') {
+	        args.push(dep());
+	      } else {
+	        args.push(dep);
+	      }
+	    }
+	    return computation.apply(null, args);
+	  });
+	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	    dep = deps[_k];
 	    if (dep && dep.onInvalidate) {
 	      dep.onInvalidate(reactive.invalidate);
 	    }
@@ -447,6 +501,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	flow.react = react;
+
+	flow.renew = renew;
 
 	flow.dependent = dependent;
 
@@ -485,70 +541,88 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return _results;
 	};
 
-	flow.renew = function(computation) {
-	  var method;
-	  method = function() {
-	    if (!arguments.length) {
-	      method.invalidate();
-	      return method.value = computation();
-	    } else {
-	      throw new Error('flow.dynamic is not allowed to accept arguments');
+	if (Object.defineProperty) {
+	  flow.bind = bindWithDefineProperty = function(obj, attr, debugName) {
+	    var cacheValue, d, get, method, set;
+	    d = Object.getOwnPropertyDescriptor(obj, attr);
+	    if (d) {
+	      get = d.get, set = d.set;
 	    }
+	    if (!set || !set.invalidate) {
+	      cacheValue = obj[attr];
+	      method = function(value) {
+	        if (!arguments.length) {
+	          if (get) {
+	            return get();
+	          } else {
+	            return cacheValue;
+	          }
+	        } else if (value !== obj[attr]) {
+	          if (set) {
+	            set(value);
+	          }
+	          method.invalidate();
+	          return cacheValue = value;
+	        }
+	      };
+	      react(method);
+	      Object.defineProperty(obj, attr, {
+	        get: method,
+	        set: method
+	      });
+	    } else {
+	      method = set;
+	    }
+	    method.toString = function() {
+	      return "" + (debugName || 'm') + "[" + attr + "]";
+	    };
+	    return method;
 	  };
-	  method.toString = function() {
-	    return "renew: " + (funcString(computation));
+	} else {
+	  flow.bind = function(obj, attr, debugName) {
+	    var method;
+	    method = function() {
+	      return obj[attr];
+	    };
+	    react(method);
+	    method.toString = function() {
+	      return "" + (debugName || 'm') + "[" + attr + "]";
+	    };
+	    return method;
 	  };
-	  return react(method);
-	};
+	}
 
-	flow.bind = bind = function(obj, attr, name) {
-	  var cacheValue, d, get, method, set;
-	  d = Object.getOwnPropertyDescriptor(obj, attr);
-	  if (d) {
-	    get = d.get, set = d.set;
-	  }
-	  if (!set || !set.invalidate) {
-	    cacheValue = obj[attr];
+	if (Object.defineProperty) {
+	  flow.duplex = function(obj, attr, debugName) {
+	    var reactive;
+	    reactive = bindWithDefineProperty(obj, attr);
+	    reactive.isDuplex = true;
+	    reactive.toString = function() {
+	      return "" + (debugName || 'm') + "[" + attr + "]";
+	    };
+	    return reactive;
+	  };
+	  flow.duplex = function(obj, attr, debugName) {
+	    var method;
 	    method = function(value) {
 	      if (!arguments.length) {
-	        if (get) {
-	          return get();
-	        } else {
-	          return cacheValue;
-	        }
+	        return obj[attr];
 	      } else if (value !== obj[attr]) {
-	        if (set) {
-	          set(value);
-	        }
+	        obj[attr] = value;
 	        method.invalidate();
-	        return cacheValue = value;
+	        return value;
 	      }
 	    };
 	    react(method);
-	    Object.defineProperty(obj, attr, {
-	      get: method,
-	      set: method
-	    });
-	  } else {
-	    method = set;
-	  }
-	  method.toString = function() {
-	    return "" + (name || 'm') + "[" + attr + "]";
+	    method.isDuplex = true;
+	    method.toString = function() {
+	      return "" + (debugName || 'm') + "[" + attr + "]";
+	    };
+	    return method;
 	  };
-	  return method;
-	};
+	}
 
-	flow.duplex = function(obj, attr, name) {
-	  var reactive;
-	  reactive = bind(obj, attr);
-	  reactive.isDuplex = true;
-	  reactive.toString = function() {
-	    return "" + (name || 'm') + "[" + attr + "]";
-	  };
-	  return reactive;
-	};
-
-	flow.unary = unary = function(x, unaryFn) {
+	flow.unary = function(x, unaryFn) {
 	  if (typeof x !== 'function') {
 	    return unaryFn(x);
 	  } else if (x.invalidate) {
@@ -562,7 +636,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	flow.binary = binary = function(x, y, binaryFn) {
+	flow.binary = function(x, y, binaryFn) {
 	  if (typeof x === 'function' && typeof y === 'function') {
 	    if (x.invalidate && y.invalidate) {
 	      return flow(x, y, function() {
@@ -875,7 +949,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var DomNode, addRenderUpdate, addSetIntervalUpdate, componentCache, dc, dcid, directiveRegistry, isComponent, isElement, isEven, newDcid, querySelector, raf, readyFnList, render, renderCallbackList, renderLoop, requestAnimationFrame, rootComponents, _ref, _ref1, _ref2, _renderComponentWhenBy, _updateComponentMap;
+	var DomNode, addRenderUpdate, addSetIntervalUpdate, dc, dcid, directiveRegistry, domNodeCache, isComponent, isElement, isEven, newDcid, querySelector, raf, readyFnList, render, renderCallbackList, renderLoop, requestAnimationFrame, _ref, _ref1, _ref2, _renderComponentWhenBy;
 
 	DomNode = __webpack_require__(5);
 
@@ -883,7 +957,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	_ref1 = __webpack_require__(3), newDcid = _ref1.newDcid, isEven = _ref1.isEven;
 
-	_ref2 = __webpack_require__(7), componentCache = _ref2.componentCache, readyFnList = _ref2.readyFnList, _updateComponentMap = _ref2._updateComponentMap, directiveRegistry = _ref2.directiveRegistry, renderCallbackList = _ref2.renderCallbackList, rootComponents = _ref2.rootComponents;
+	_ref2 = __webpack_require__(7), domNodeCache = _ref2.domNodeCache, readyFnList = _ref2.readyFnList, directiveRegistry = _ref2.directiveRegistry, renderCallbackList = _ref2.renderCallbackList;
 
 	isComponent = __webpack_require__(8);
 
@@ -901,17 +975,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (options.noCache) {
 	      return querySelector(element, options.all);
 	    } else {
-	      return componentCache[element] || (componentCache[element] = querySelector(element, options.all));
+	      return domNodeCache[element] || (domNodeCache[element] = querySelector(element, options.all));
 	    }
 	  } else if (element instanceof Node || element instanceof NodeList || element instanceof Array) {
 	    if (options.noCache) {
 	      return new DomNode(element);
 	    } else {
 	      if (element.dcid) {
-	        return componentCache[element.dcid];
+	        return domNodeCache[element.dcid];
 	      } else {
 	        element.dcid = newDcid();
-	        return componentCache[element.dcid] = new DomNode(element);
+	        return domNodeCache[element.dcid] = new DomNode(element);
 	      }
 	    }
 	  } else {
@@ -931,11 +1005,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	dcid = document.dcid = newDcid();
 
-	window.$document = dc.$document = componentCache[dcid] = new DomNode(document);
+	window.$document = dc.$document = domNodeCache[dcid] = new DomNode(document);
 
 	dcid = document.body.dcid = newDcid();
 
-	window.$body = dc.$body = componentCache[dcid] = new DomNode(document.body);
+	window.$body = dc.$body = domNodeCache[dcid] = new DomNode(document.body);
 
 	dc.onReady = function(callback) {
 	  return readyFnList.push(callback);
@@ -1330,7 +1404,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	renew = __webpack_require__(2).renew;
 
-	exports.domValue = function(value) {
+	exports.domField = function(value) {
 	  var fn;
 	  if (value == null) {
 	    return '';
@@ -1358,6 +1432,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return value;
 	};
 
+	exports.domValue = function(value) {
+	  if (value == null) {
+	    return '';
+	  } else if (typeof value !== 'function') {
+	    return value;
+	  } else {
+	    value = value();
+	    if (value == null) {
+	      return '';
+	    } else {
+	      return value;
+	    }
+	  }
+	};
+
 	exports.checkConflictOffspring = function(family, child) {
 	  var childDcid, dcid;
 	  childDcid = child.dcid;
@@ -1375,9 +1464,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	module.exports = {
-	  componentCache: {},
+	  domNodeCache: {},
 	  readyFnList: [],
-	  _updateComponentMap: {},
 	  useSystemUpdating: false,
 	  directiveRegistry: {},
 	  renderCallbackList: []
@@ -1397,7 +1485,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 9 */
 /***/ function(module, exports) {
 
-	'use strict';
 	var hasOwn, isPlainObject, toString;
 
 	hasOwn = Object.prototype.hasOwnProperty;
@@ -1472,7 +1559,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	extend = __webpack_require__(9);
 
-	module.exports = exports = extend({}, __webpack_require__(11), __webpack_require__(29), __webpack_require__(30), __webpack_require__(22));
+	module.exports = exports = extend({}, __webpack_require__(11), __webpack_require__(29), __webpack_require__(32), __webpack_require__(22));
 
 
 /***/ },
@@ -2366,6 +2453,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.holder && this.holder.invalidateContent(this);
 	  };
 
+	  BaseComponent.prototype.removeDom = function() {
+	    this.removeNode();
+	    this.emit('afterRemoveDom');
+	    return this;
+	  };
+
+	  BaseComponent.prototype.removeNode = function() {
+	    return this.node.parentNode.removeChild(this.node);
+	  };
+
+	  BaseComponent.prototype.attachNode = function() {
+	    var node;
+	    node = this.node;
+	    if (this.parentNode === node.parentNode) {
+	      return node;
+	    }
+	    this.parentNode.insertBefore(node, this.nextNode);
+	    return node;
+	  };
+
 	  return BaseComponent;
 
 	})(Component);
@@ -2375,7 +2482,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, Text, domValue, dynamic, funcString, newLine, value, _ref,
+	var BaseComponent, Text, constructTextLikeComponent, domField, domValue, dynamic, exports, funcString, newLine, value, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -2383,37 +2490,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	_ref = __webpack_require__(3), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
 
-	domValue = __webpack_require__(6).domValue;
+	_ref1 = __webpack_require__(6), domField = _ref1.domField, domValue = _ref1.domValue;
 
-	module.exports = Text = (function(_super) {
+	exports = module.exports = Text = (function(_super) {
 	  __extends(Text, _super);
 
 	  function Text(text) {
-	    var me;
 	    Text.__super__.constructor.call(this);
-	    me = this;
-	    this.text = text = domValue(text);
-	    if (typeof text === 'function') {
-	      text.onInvalidate(function() {
-	        return me.invalidate();
-	      });
-	    }
-	    this.family = {};
-	    this.family[this.dcid] = true;
-	    this;
+	    constructTextLikeComponent.call(this, text);
 	  }
-
-	  Text.prototype.processText = function() {
-	    if (typeof this.text === 'function') {
-	      return domValue(this.text());
-	    } else {
-	      return this.text;
-	    }
-	  };
 
 	  Text.prototype.createDom = function() {
 	    this.textValid = true;
-	    this.firstNode = this.node = document.createTextNode(this.processText());
+	    this.firstNode = this.node = document.createTextNode(domValue(this.text));
 	    return this.node;
 	  };
 
@@ -2423,7 +2512,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this.node;
 	    }
 	    this.textValid = true;
-	    text = this.processText();
+	    text = domValue(this.text);
 	    if (text !== this.node.textContent) {
 	      if (this.node.parentNode) {
 	        this.removeNode();
@@ -2441,20 +2530,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this;
 	  };
 
-	  Text.prototype.attachNode = function() {
-	    var node;
-	    node = this.node;
-	    if (this.parentNode === node.parentNode) {
-	      return node;
-	    }
-	    this.parentNode.insertBefore(node, this.nextNode);
-	    return node;
-	  };
-
-	  Text.prototype.removeNode = function() {
-	    return this.node.parentNode.removeChild(this.node);
-	  };
-
 	  Text.prototype.clone = function() {
 	    return (new this.constructor(this.text)).copyEventListeners(this);
 	  };
@@ -2469,6 +2544,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Text;
 
 	})(BaseComponent);
+
+	exports.constructTextLikeComponent = constructTextLikeComponent = function(text) {
+	  var me;
+	  me = this;
+	  this.text = text = domField(text);
+	  if (typeof text === 'function') {
+	    text.onInvalidate(function() {
+	      return me.invalidate();
+	    });
+	  }
+	  this.family = {};
+	  this.family[this.dcid] = true;
+	  return this;
+	};
 
 
 /***/ },
@@ -2893,7 +2982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domValue, eventHandlerFromArray, extend, flow, funcString, newLine, styleFrom, toComponent, updating, _ref, _ref1,
+	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, eventHandlerFromArray, extend, flow, funcString, newLine, styleFrom, toComponent, updating, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
@@ -2916,7 +3005,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	flow = __webpack_require__(2).flow;
 
-	domValue = __webpack_require__(6).domValue;
+	domField = __webpack_require__(6).domField;
 
 	toComponent = __webpack_require__(15);
 
@@ -3044,7 +3133,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Tag.prototype.setProp = function(prop, value, props, type) {
 	    var fn, me, oldValue;
 	    prop = attrToPropName(prop);
-	    value = domValue(value);
+	    value = domField(value);
 	    oldValue = props[prop];
 	    if (oldValue == null) {
 	      if (typeof value === 'function') {
@@ -3203,7 +3292,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Tag.prototype.showHide = function(status, test, display) {
 	    var fn, me, method, oldDisplay, style;
 	    style = this.style;
-	    test = domValue(test);
+	    test = domField(test);
 	    oldDisplay = style.display;
 	    if (!oldDisplay) {
 	      this.addActivity(style, 'display', 'Style', this.node);
@@ -3422,12 +3511,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var attrPropNameMap, classFn, cloneObject, config, domValue, extend, extendEventValue, isArray, isComponent, overAttrs, react, styleFrom, _ref,
+	var attrPropNameMap, classFn, cloneObject, config, domField, extend, extendEventValue, isArray, isComponent, overAttrs, react, styleFrom, _ref,
 	  __slice = [].slice;
 
 	_ref = __webpack_require__(3), isArray = _ref.isArray, cloneObject = _ref.cloneObject;
 
-	domValue = __webpack_require__(6).domValue;
+	domField = __webpack_require__(6).domField;
 
 	react = __webpack_require__(2).react;
 
@@ -3540,7 +3629,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	  processClassValue = function(name, value) {
 	    var oldValue;
-	    value = domValue(value);
+	    value = domField(value);
 	    oldValue = classMap[name];
 	    if (typeof oldValue === 'function') {
 	      oldValue.offInvalidate(method.invalidate);
@@ -3717,26 +3806,33 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Comment, funcString, newLine, _ref,
+	var BaseComponent, Comment, constructTextLikeComponent, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+	BaseComponent = __webpack_require__(17);
+
+	constructTextLikeComponent = __webpack_require__(18).constructTextLikeComponent;
+
 	_ref = __webpack_require__(3), funcString = _ref.funcString, newLine = _ref.newLine;
+
+	domValue = __webpack_require__(6).domValue;
 
 	module.exports = Comment = (function(_super) {
 	  __extends(Comment, _super);
 
-	  function Comment() {
-	    return Comment.__super__.constructor.apply(this, arguments);
+	  function Comment(text) {
+	    Comment.__super__.constructor.call(this);
+	    constructTextLikeComponent.call(this, text);
 	  }
 
 	  Comment.prototype.createDom = function(parentNode, nextNode) {
-	    this.node = document.createComment(this.processText());
+	    this.node = document.createComment(domValue(this.text));
 	    return this.node;
 	  };
 
 	  Comment.prototype.updateDom = function(parentNode, nextNode) {
-	    this.text && (this.node.data = this.processText());
+	    this.text && (this.node.data = domValue(this.text));
 	    return this.node;
 	  };
 
@@ -3749,34 +3845,39 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  return Comment;
 
-	})(Text);
+	})(BaseComponent);
 
 
 /***/ },
 /* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Html, Text, funcString, newLine, _ref,
+	var BaseComponent, Html, constructTextLikeComponent, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	Text = __webpack_require__(18);
+	BaseComponent = __webpack_require__(17);
+
+	constructTextLikeComponent = __webpack_require__(18).constructTextLikeComponent;
 
 	_ref = __webpack_require__(3), funcString = _ref.funcString, newLine = _ref.newLine;
+
+	domValue = __webpack_require__(6).domValue;
 
 	module.exports = Html = (function(_super) {
 	  __extends(Html, _super);
 
 	  function Html(text, transform) {
 	    this.transform = transform;
-	    Html.__super__.constructor.call(this, text);
+	    Html.__super__.constructor.call(this);
+	    constructTextLikeComponent.call(this, text);
 	  }
 
 	  Html.prototype.createDom = function() {
 	    var node;
 	    this.textValid = true;
 	    node = document.createElement('DIV');
-	    node.innerHTML = this.cacheText = this.transform && this.transform(this.processText()) || this.processText();
+	    node.innerHTML = this.cacheText = this.transform && this.transform(domValue(this.text)) || domValue(this.text);
 	    this.node = (function() {
 	      var _i, _len, _ref1, _results;
 	      _ref1 = node.childNodes;
@@ -3797,7 +3898,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this;
 	    }
 	    this.textValid = true;
-	    text = this.transform && this.transform(this.processText()) || this.processText();
+	    text = this.transform && this.transform(domValue(this.text)) || domValue(this.text);
 	    if (text !== this.cacheText) {
 	      if (this.node.parentNode) {
 	        this.removeNode();
@@ -3845,14 +3946,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  return Html;
 
-	})(Text);
+	})(BaseComponent);
 
 
 /***/ },
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var If, TransformComponent, funcString, intersect, maybeIf, mergeThenElseValue, newLine, renew, toComponent, _ref,
+	var If, TransformComponent, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -3864,75 +3965,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	renew = __webpack_require__(2).renew;
 
-	mergeThenElseValue = function(test, thenValue, elseValue) {
-	  if (typeof thenValue === 'function') {
-	    if (typeof elseValue === 'function') {
-	      return function() {
-	        if (test()) {
-	          return thenValue();
-	        } else {
-	          return elseValue();
-	        }
-	      };
-	    } else {
-	      return function() {
-	        if (test()) {
-	          return thenValue();
-	        } else {
-	          return elseValue;
-	        }
-	      };
-	    }
-	  } else {
-	    if (typeof elseValue === 'function') {
-	      return function() {
-	        if (test()) {
-	          return thenValue;
-	        } else {
-	          return elseValue();
-	        }
-	      };
-	    } else {
-	      return function() {
-	        if (test()) {
-	          return thenValue;
-	        } else {
-	          return elseValue;
-	        }
-	      };
-	    }
-	  }
-	};
-
-	maybeIf = function(test, then_, else_) {
-	  var attrs, elseAttrs, key, thenAttrs;
-	  if (then_ === else_) {
-	    return then_;
-	  }
-	  if (typeof test === 'function') {
-	    if (then_.isTag && else_.isTag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
-	      attrs = {};
-	      thenAttrs = then_.attrs;
-	      elseAttrs = else_.attrs;
-	      for (key in bothKeys(thenAttrs, elseAttrs)) {
-	        attrs[key] = mergeThenElseValue(test, thenAttrs[key], elseAttrs[key]);
-	      }
-	      attrs.namespace = then_.namespace;
-	      return new Tag(then_.tagName, attrs, children);
-	    } else if (then_.type === 'Text' && else_.type === 'Text') {
-	      return new Text(mergeThenElseValue(test, then_.text, else_.text));
-	    } else if (then_.type === 'Comment' && else_.type === 'Comment') {
-	      return new Comment(mergeThenElseValue(test, then_.text, else_.text));
-	    } else if (then_.type === 'Html' && else_.type === 'Html') {
-	      return new Html(mergeThenElseValue(test, then_.text, else_.text));
-	    }
-	  } else if (test) {
-	    return then_;
-	  } else {
-	    return else_;
-	  }
-	};
-
 	module.exports = If = (function(_super) {
 	  __extends(If, _super);
 
@@ -3940,6 +3972,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var family;
 	    then_ = toComponent(then_);
 	    else_ = toComponent(else_);
+	    if (then_ === else_) {
+	      return then_;
+	    }
 	    if (typeof test !== 'function') {
 	      if (test) {
 	        return then_;
@@ -4385,9 +4420,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	_ref1 = __webpack_require__(3), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
-	isAttrs = function(item) {
-	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
-	};
+	isAttrs = __webpack_require__(30).isAttrs;
 
 	attrsChildren = function(args) {
 	  var attrs;
@@ -4619,6 +4652,270 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var Comment, Func, Html, Text, if_, isComponent, mergeThenElseValue, toComponent, _ref;
+
+	_ref = __webpack_require__(11), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
+
+	Func = __webpack_require__(20);
+
+	Text = __webpack_require__(18);
+
+	Html = __webpack_require__(24);
+
+	Comment = __webpack_require__(23);
+
+	if_ = __webpack_require__(31).if_;
+
+	exports.isAttrs = function(item) {
+	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
+	};
+
+	mergeThenElseValue = function(test, thenValue, elseValue) {
+	  return if_(test, thenValue, elseValue);
+	};
+
+	exports._maybeIf = function(test, then_, else_) {
+	  var attrs, elseAttrs, key, thenAttrs;
+	  then_ = toComponent(then_);
+	  else_ = toComponent(else_);
+	  if (then_ === else_) {
+	    return then_;
+	  }
+	  if (then_ instanceof Nothing && else_ instanceof Nothing) {
+	    return then_;
+	  }
+	  if (typeof test === 'function') {
+	    if (then_.isTag && else_.isTag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
+	      attrs = {};
+	      thenAttrs = then_.attrs;
+	      elseAttrs = else_.attrs;
+	      for (key in bothKeys(thenAttrs, elseAttrs)) {
+	        attrs[key] = mergeThenElseValue(test, thenAttrs[key], elseAttrs[key]);
+	      }
+	      attrs.namespace = then_.namespace;
+	      return new Tag(then_.tagName, attrs, children);
+	    } else if (then_ instanceof Text && else_ instanceof Text) {
+	      return new Text(mergeThenElseValue(test, then_.text, else_.text));
+	    } else if (then_ instanceof Comment && else_ instanceof Comment) {
+	      return new Comment(mergeThenElseValue(test, then_.text, else_.text));
+	    } else if (then_ instanceof Html && else_ instanceof Html) {
+	      return new Html(mergeThenElseValue(test, then_.text, else_.text));
+	    } else if (then_ instanceof Func && else_ instanceof Func) {
+	      return new Func(flow.if_(test, then_.func, else_.func));
+	    } else {
+	      return new If(test, then_, else_);
+	    }
+	  } else if (test) {
+	    return then_;
+	  } else {
+	    return else_;
+	  }
+	};
+
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var binary, bind, duplex, flow, unary, _ref;
+
+	_ref = __webpack_require__(2), bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
+
+	module.exports = flow;
+
+	dc.bindings = flow.bindings = function(model, name) {
+	  var key, result;
+	  result = {};
+	  for (key in model) {
+	    result[key + '$'] = duplex(model, key, name);
+	    result[key + '_'] = bind(model, key, name);
+	  }
+	  return result;
+	};
+
+	flow.neg = function(x) {
+	  return unary(x, function(x) {
+	    return -x;
+	  });
+	};
+
+	flow.no = function(x) {
+	  return unary(x, function(x) {
+	    return !x;
+	  });
+	};
+
+	flow.bitnot = function(x) {
+	  return unary(x, function(x) {
+	    return ~x;
+	  });
+	};
+
+	flow.reciprocal = function(x) {
+	  return unary(x, function(x) {
+	    return 1 / x;
+	  });
+	};
+
+	flow.abs = function(x) {
+	  return unary(x, Math.abs);
+	};
+
+	flow.floor = function(x) {
+	  return unary(x, Math.floor);
+	};
+
+	flow.ceil = function(x) {
+	  return unary(x, Math.ceil);
+	};
+
+	flow.round = function(x) {
+	  return unary(x, Math.round);
+	};
+
+	flow.add = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x + y;
+	  });
+	};
+
+	flow.sub = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x - y;
+	  });
+	};
+
+	flow.mul = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x * y;
+	  });
+	};
+
+	flow.div = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x / y;
+	  });
+	};
+
+	flow.min = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return Math.min(x, y);
+	  });
+	};
+
+	flow.toggle = function(x) {
+	  return x(!x());
+	};
+
+	flow.if_ = function(test, then_, else_) {
+	  if (typeof test !== 'function') {
+	    if (test) {
+	      return then_;
+	    } else {
+	      return else_;
+	    }
+	  } else if (!test.invalidate) {
+	    if (typeof then_ === 'function' && typeof else_ === 'function') {
+	      return function() {
+	        if (test()) {
+	          return then_();
+	        } else {
+	          return else_();
+	        }
+	      };
+	    } else if (then_ === 'function') {
+	      return function() {
+	        if (test()) {
+	          return then_();
+	        } else {
+	          return else_;
+	        }
+	      };
+	    } else if (else_ === 'function') {
+	      return function() {
+	        if (test()) {
+	          return then_;
+	        } else {
+	          return else_();
+	        }
+	      };
+	    } else if (test()) {
+	      return then_;
+	    } else {
+	      return else_;
+	    }
+	  } else {
+	    if (typeof then_ === 'function' && typeof else_ === 'function') {
+	      if (then_.invalidate && else_.invalidate) {
+	        return flow(test, then_, else_, function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_();
+	          }
+	        });
+	      } else {
+	        return function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_();
+	          }
+	        };
+	      }
+	    } else if (typeof then_ === 'function') {
+	      if (then_.invalidate) {
+	        return flow(test, then_, (function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_;
+	          }
+	        }));
+	      } else {
+	        return function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_;
+	          }
+	        };
+	      }
+	    } else if (typeof else_ === 'function') {
+	      if (else_.invalidate) {
+	        return flow(else_, (function() {
+	          if (test()) {
+	            return then_;
+	          } else {
+	            return else_();
+	          }
+	        }));
+	      } else {
+	        return function() {
+	          if (test()) {
+	            return then_;
+	          } else {
+	            return else_();
+	          }
+	        };
+	      }
+	    } else {
+	      return flow(test, function() {
+	        if (test()) {
+	          return then_;
+	        } else {
+	          return else_;
+	        }
+	      });
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var extend, getBindProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,
 	  __slice = [].slice;
 
@@ -4644,7 +4941,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.tagHtml = tag.apply(null, [tagName].concat(__slice.call(arguments)));
 
-	inputTypes = 'text textarea checkbox radio date email number'.split(' ');
+	inputTypes = 'text checkbox radio date email number'.split(' ');
 
 	input = exports.input = function(type, attrs, value) {
 	  var component;
@@ -4685,6 +4982,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	  type = _ref[_j];
 	  _fn1(type);
 	}
+
+	exports.textarea = function(attrs, value) {
+	  var component;
+	  if (isAttrs(attrs)) {
+	    if (value != null) {
+	      attrs = extend({
+	        value: value
+	      }, attrs);
+	      component = tag('textarea', attrs);
+	      if (value.isDuplex) {
+	        component.bind('onchange', (function(event, comp) {
+	          return value(this.value);
+	        }), 'before');
+	      }
+	    } else {
+	      component = tag('textarea', attrs);
+	    }
+	  } else {
+	    if (attrs != null) {
+	      component = tag('textarea', {
+	        value: attrs
+	      });
+	      if (attrs.isDuplex) {
+	        component.bind('onchange', (function(event, comp) {
+	          return attrs(this.value);
+	        }), 'before');
+	      }
+	    } else {
+	      component = tag('textarea');
+	    }
+	  }
+	  return component;
+	};
 
 
 /***/ }

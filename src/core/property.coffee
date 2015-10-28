@@ -1,5 +1,5 @@
 {isArray, cloneObject} = require '../util'
-{domValue} = require '../dom-util'
+{domField} = require '../dom-util'
 {react} = require '../flow'
 extend = require '../extend'
 {isComponent} = require './base/isComponent'
@@ -59,7 +59,7 @@ exports.classFn = classFn = (items...) ->
       return
 
   processClassValue = (name, value) ->
-    value = domValue value
+    value = domField value
     oldValue=classMap[name]
     if typeof oldValue == 'function'
       oldValue.offInvalidate method.invalidate

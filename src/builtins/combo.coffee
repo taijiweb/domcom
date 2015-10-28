@@ -1,4 +1,7 @@
-{list, input, span, div, extendAttrs, see, flow} = dc
+{see, flow} = require "../flow/index"
+{input, span, div} = require "../core/tag"
+{list} = require "../core/instantiate"
+{extendAttrs} = require "../core/property"
 
 exports.combobox = combobox = (attrs, modelValue, valueList, direction) ->
   showingItems = see false

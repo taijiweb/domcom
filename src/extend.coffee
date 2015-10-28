@@ -1,5 +1,5 @@
-'use strict'
 # https://github.com/justmoon/node-extend
+
 hasOwn = Object::hasOwnProperty
 toString = Object::toString
 

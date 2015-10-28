@@ -27,3 +27,17 @@ module.exports = class BaseComponent extends Component
     if !@valid then return
     @valid = false
     @holder and @holder.invalidateContent(@)
+
+  removeDom: ->
+    @removeNode()
+    @emit('afterRemoveDom')
+    @
+
+  removeNode: ->
+    @node.parentNode.removeChild(@node)
+
+  attachNode: ->
+    node = @node
+    if @parentNode == node.parentNode then return node
+    @parentNode.insertBefore(node, @nextNode)
+    node
