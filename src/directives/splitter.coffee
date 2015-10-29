@@ -1,7 +1,4 @@
-{pairListDict} = require("../util")
-{classFn} = require("../core/property")
-{Component} = require("../core/base/component")
-{div, span} = require("../core/tag")
+{pairListDict, classFn, Component, div, span} = dc
 
 module.exports = (direction) -> (comp) ->
 

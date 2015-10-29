@@ -107,7 +107,7 @@ describe('properties ', function() {
     it('multiple handlers for one event', function() {
       var $a, comp, spy1, x;
       $a = duplex(x = {
-        a: 2
+        a: 1
       }, 'a');
       spy1 = sinon.spy();
       comp = text({

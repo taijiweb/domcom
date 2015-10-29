@@ -1559,7 +1559,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	extend = __webpack_require__(9);
 
-	module.exports = exports = extend({}, __webpack_require__(11), __webpack_require__(29), __webpack_require__(32), __webpack_require__(22));
+	module.exports = exports = extend({}, __webpack_require__(11), __webpack_require__(29), __webpack_require__(31), __webpack_require__(22));
 
 
 /***/ },
@@ -1587,7 +1587,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Func: __webpack_require__(20),
 	  Each: __webpack_require__(27),
 	  Defer: __webpack_require__(28),
-	  Router: route.Router,
+	  Route: route.Route,
 	  route: route
 	};
 
@@ -1618,7 +1618,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  **
 	  *
 	 */
-	var Router, TransformComponent, getRoutePattern, isComponent, isEven, matchCurvedString, matchRoute, navigate, navigateTo, processPiecePatterns, processRouteItem, route, toComponent, _ref, _route,
+	var Route, TransformComponent, getRoutePattern, isComponent, isEven, matchCurvedString, matchRoute, navigate, navigateTo, processPiecePatterns, processRouteItem, route, toComponent, _ref, _route,
 	  __slice = [].slice,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1671,7 +1671,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    routeList2.push([routeList[i], routeList[i + 1]]);
 	    i += 2;
 	  }
-	  return new Router(routeList2, otherwise, baseIndex);
+	  return new Route(routeList2, otherwise, baseIndex);
 	};
 
 	route._navigateTo = navigateTo = function(oldPath, path, baseIndex) {
@@ -1722,10 +1722,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	route.to = navigate(0);
 
-	route.Router = Router = (function(_super) {
-	  __extends(Router, _super);
+	route.Route = Route = (function(_super) {
+	  __extends(Route, _super);
 
-	  function Router(routeList, otherwise, baseIndex) {
+	  function Route(routeList, otherwise, baseIndex) {
 	    var patternRoute, _i, _len;
 	    this.routeList = routeList;
 	    this.otherwise = otherwise;
@@ -1738,7 +1738,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return;
 	  }
 
-	  Router.prototype.getContentComponent = function() {
+	  Route.prototype.getContentComponent = function() {
 	    var component, path, patternRoute, _i, _len, _ref1;
 	    path = this.getPath();
 	    _ref1 = this.routeList;
@@ -1751,7 +1751,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.otherwise;
 	  };
 
-	  Router.prototype.getPath = function() {
+	  Route.prototype.getPath = function() {
 	    var match;
 	    if (window.history && window.history.pushState) {
 	      return decodeURI(location.pathname + location.search).replace(/\?(.*)$/, '');
@@ -1762,7 +1762,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
-	  return Router;
+	  return Route;
 
 	})(TransformComponent);
 
@@ -3066,7 +3066,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    delete attrs.style;
 	    this.hasActiveEvents = false;
-	    this.cacheEvents = {};
 	    this.events = events = {};
 	    this.eventUpdateConfig = {};
 	    directives = [];
@@ -3167,66 +3166,59 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Tag.prototype.bind = function(eventNames, handler, before) {
-	    var name, names, _i, _len;
-	    names = eventNames.split('\s+');
-	    for (_i = 0, _len = names.length; _i < _len; _i++) {
-	      name = names[_i];
-	      this._addEventProp(name, handler, before);
-	    }
-	    return this;
-	  };
-
-	  Tag.prototype._addEventProp = function(prop, handler, before) {
-	    var events;
-	    if (prop.slice(0, 2) !== 'on') {
-	      prop = 'on' + prop;
-	    }
+	    var eventHandlers, eventName, events, index, _i, _len;
+	    eventNames = eventNames.split('\s+');
 	    events = this.events;
-	    if (typeof handler === 'function') {
-	      handler = [handler];
-	    }
-	    if (!events[prop]) {
-	      this.addActivity(events, prop, 'Events');
-	      events[prop] = handler;
-	    } else {
-	      if (before) {
-	        events[prop] = handler.concat(events[prop]);
+	    for (_i = 0, _len = eventNames.length; _i < _len; _i++) {
+	      eventName = eventNames[_i];
+	      if (eventName.slice(0, 2) !== 'on') {
+	        eventName = 'on' + eventName;
+	      }
+	      eventHandlers = events[eventName];
+	      if (!eventHandlers) {
+	        events[eventName] = [handler];
+	        if (this.node) {
+	          this.node[eventName] = eventHandlerFromArray(events[eventName], eventName, this);
+	        } else {
+	          this.hasActiveEvents = true;
+	          this.hasActiveProperties = true;
+	        }
 	      } else {
-	        events[prop] = events[prop].concat(handler);
+	        index = eventHandlers.indexOf(handler);
+	        if (index >= 0) {
+	          continue;
+	        }
+	        if (before) {
+	          eventHandlers.unshift.call(eventHandlers, handler);
+	        } else {
+	          eventHandlers.push.call(eventHandlers, handler);
+	        }
 	      }
 	    }
 	    return this;
 	  };
 
 	  Tag.prototype.unbind = function(eventNames, handler) {
-	    var name, names, _i, _len;
-	    names = eventNames.split('\s+');
-	    for (_i = 0, _len = names.length; _i < _len; _i++) {
-	      name = names[_i];
-	      this._removeEventHandlers(name, handler);
-	    }
-	    return this;
-	  };
-
-	  Tag.prototype._removeEventHandlers = function(eventName, handler) {
-	    var eventHandlers, events, index;
-	    if (!this.hasActiveEvents) {
-	      return this;
-	    }
-	    if (eventName.slice(0, 2) !== 'on') {
-	      eventName = 'on' + eventName;
-	    }
+	    var eventHandlers, eventName, events, index, _i, _len;
+	    eventNames = eventNames.split('\s+');
 	    events = this.events;
-	    eventHandlers = events[eventName];
-	    if (!eventHandlers) {
-	      return this;
-	    }
-	    index = eventHandlers.indexOf(handler);
-	    if (index >= 0) {
-	      eventHandlers.splice(index, 1);
-	    }
-	    if (!eventHandlers.length) {
-	      delete events[eventName];
+	    for (_i = 0, _len = eventNames.length; _i < _len; _i++) {
+	      eventName = eventNames[_i];
+	      if (eventName.slice(0, 2) !== 'on') {
+	        eventName = 'on' + eventName;
+	      }
+	      eventHandlers = events[eventName];
+	      if (!eventHandlers) {
+	        continue;
+	      }
+	      index = eventHandlers.indexOf(handler);
+	      if (index >= 0) {
+	        eventHandlers.splice(index, 1);
+	        if (!eventHandlers.length) {
+	          events[eventName] = null;
+	          this.node && (this.node[prop] = null);
+	        }
+	      }
 	    }
 	    return this;
 	  };
@@ -3395,7 +3387,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Tag.prototype.updateProperties = function() {
-	    var cacheEvents, cacheProps, cacheStyle, callbackList, className, classValue, elementStyle, eventName, events, node, prop, props, style, value;
+	    var cacheProps, cacheStyle, callbackList, className, classValue, elementStyle, eventName, events, node, prop, props, style, value;
 	    this.hasActiveProperties = false;
 	    node = this.node, className = this.className;
 	    if (!className.valid) {
@@ -3436,11 +3428,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 	    if (this.hasActiveEvents) {
-	      events = this.events, cacheEvents = this.cacheEvents;
+	      events = this.events;
 	      for (eventName in events) {
 	        callbackList = events[eventName];
-	        cacheEvents[eventName] = events[eventName];
-	        delete events[eventName];
 	        node[eventName] = eventHandlerFromArray(callbackList, eventName, this);
 	      }
 	    }
@@ -4652,7 +4642,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Comment, Func, Html, Text, if_, isComponent, mergeThenElseValue, toComponent, _ref;
+	var Comment, Func, Html, Text, isComponent, mergeThenElseValue, toComponent, _ref;
 
 	_ref = __webpack_require__(11), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
 
@@ -4664,14 +4654,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	Comment = __webpack_require__(23);
 
-	if_ = __webpack_require__(31).if_;
-
 	exports.isAttrs = function(item) {
 	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
 	};
 
 	mergeThenElseValue = function(test, thenValue, elseValue) {
-	  return if_(test, thenValue, elseValue);
+	  return dc.flow.if_(test, thenValue, elseValue);
 	};
 
 	exports._maybeIf = function(test, then_, else_) {
@@ -4715,205 +4703,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var binary, bind, duplex, flow, unary, _ref;
-
-	_ref = __webpack_require__(2), bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
-
-	module.exports = flow;
-
-	dc.bindings = flow.bindings = function(model, name) {
-	  var key, result;
-	  result = {};
-	  for (key in model) {
-	    result[key + '$'] = duplex(model, key, name);
-	    result[key + '_'] = bind(model, key, name);
-	  }
-	  return result;
-	};
-
-	flow.neg = function(x) {
-	  return unary(x, function(x) {
-	    return -x;
-	  });
-	};
-
-	flow.no = function(x) {
-	  return unary(x, function(x) {
-	    return !x;
-	  });
-	};
-
-	flow.bitnot = function(x) {
-	  return unary(x, function(x) {
-	    return ~x;
-	  });
-	};
-
-	flow.reciprocal = function(x) {
-	  return unary(x, function(x) {
-	    return 1 / x;
-	  });
-	};
-
-	flow.abs = function(x) {
-	  return unary(x, Math.abs);
-	};
-
-	flow.floor = function(x) {
-	  return unary(x, Math.floor);
-	};
-
-	flow.ceil = function(x) {
-	  return unary(x, Math.ceil);
-	};
-
-	flow.round = function(x) {
-	  return unary(x, Math.round);
-	};
-
-	flow.add = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return x + y;
-	  });
-	};
-
-	flow.sub = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return x - y;
-	  });
-	};
-
-	flow.mul = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return x * y;
-	  });
-	};
-
-	flow.div = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return x / y;
-	  });
-	};
-
-	flow.min = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return Math.min(x, y);
-	  });
-	};
-
-	flow.toggle = function(x) {
-	  return x(!x());
-	};
-
-	flow.if_ = function(test, then_, else_) {
-	  if (typeof test !== 'function') {
-	    if (test) {
-	      return then_;
-	    } else {
-	      return else_;
-	    }
-	  } else if (!test.invalidate) {
-	    if (typeof then_ === 'function' && typeof else_ === 'function') {
-	      return function() {
-	        if (test()) {
-	          return then_();
-	        } else {
-	          return else_();
-	        }
-	      };
-	    } else if (then_ === 'function') {
-	      return function() {
-	        if (test()) {
-	          return then_();
-	        } else {
-	          return else_;
-	        }
-	      };
-	    } else if (else_ === 'function') {
-	      return function() {
-	        if (test()) {
-	          return then_;
-	        } else {
-	          return else_();
-	        }
-	      };
-	    } else if (test()) {
-	      return then_;
-	    } else {
-	      return else_;
-	    }
-	  } else {
-	    if (typeof then_ === 'function' && typeof else_ === 'function') {
-	      if (then_.invalidate && else_.invalidate) {
-	        return flow(test, then_, else_, function() {
-	          if (test()) {
-	            return then_();
-	          } else {
-	            return else_();
-	          }
-	        });
-	      } else {
-	        return function() {
-	          if (test()) {
-	            return then_();
-	          } else {
-	            return else_();
-	          }
-	        };
-	      }
-	    } else if (typeof then_ === 'function') {
-	      if (then_.invalidate) {
-	        return flow(test, then_, (function() {
-	          if (test()) {
-	            return then_();
-	          } else {
-	            return else_;
-	          }
-	        }));
-	      } else {
-	        return function() {
-	          if (test()) {
-	            return then_();
-	          } else {
-	            return else_;
-	          }
-	        };
-	      }
-	    } else if (typeof else_ === 'function') {
-	      if (else_.invalidate) {
-	        return flow(else_, (function() {
-	          if (test()) {
-	            return then_;
-	          } else {
-	            return else_();
-	          }
-	        }));
-	      } else {
-	        return function() {
-	          if (test()) {
-	            return then_;
-	          } else {
-	            return else_();
-	          }
-	        };
-	      }
-	    } else {
-	      return flow(test, function() {
-	        if (test()) {
-	          return then_;
-	        } else {
-	          return else_;
-	        }
-	      });
-	    }
-	  }
-	};
-
-
-/***/ },
-/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var extend, getBindProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,

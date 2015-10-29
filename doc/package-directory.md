@@ -37,7 +37,7 @@
     |  |  |  |- Func.coffee    ..................  // Func transform component class, new Func(func)
     |  |  |  |- Each.coffee    ..................  // Each transform component class, new Each(items, itemFn, options)
     |  |  |  |- route.coffee    .................  // Route transform component class, route(routeList..., otherwise, baseIndex)
-    |  |  |  |- Defer.coffee    .................  // Defer transform component class, new Nefer(promise, fulfill, reject, init)
+    |  |  |  |- Defer.coffee    .................  // Defer transform component class, new Defer(promise, fulfill, reject, init)
     |  |  |  |- isComponent.coffee    ...........  // check whether an item is a component, isComponent(item)
     |  |  |  |- toComponent.coffee    ...........  // convert anything to component, toComponent(item)
     |  |  |  \- index.coffee    .................  // the index file to enable requiring core/base/ folder
@@ -91,7 +91,7 @@
     |  |  |- test-route.coffee    ...............   // tests for Route component
     |  |  |- test-toString.coffee    ............   // tests toString of component classes
     |  |  |- test-util.coffee    ................   // tests for dc/util module
-    |  |  |- test-helper.coffee    ..............   // some helper functions for testing
+    |  |  |- helper.coffee    ...................   // some helper functions for testing
     |  |  \- index.coffee    ....................   // the index file for all tests, used in mocha-runner.html and mocha-runner-dist.html
     |  |
     |  |- mocha-runner.html    ..................   // mocha runner html for test, using webpack-hot-server

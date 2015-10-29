@@ -73,7 +73,7 @@ describe 'properties ', ->
       expect(x).to.equal(2)
 
     it 'multiple handlers for one event', ->
-      $a = duplex(x={a:2}, 'a')
+      $a = duplex(x={a:1}, 'a')
       spy1 = sinon.spy()
       comp = text({onchange:spy1, $model:$a})
       comp.mount()

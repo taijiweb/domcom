@@ -6,9 +6,8 @@
     |- BaseComponent  ............  // the base class for base component classes
     |  |- Tag  ...................  // Tag base component class for window.Element: document.createElement
     |  |- Text  ..................  // Text base component class for window.Text: document.createTextNode(text)
-    |  |  |- Html  ...............  // Html base component class for generating dom nodes by setting innerHTML: node.innerHTML = text
-    |  |  \- Comment  ............  // Comment base component class for window.Comment: document.createComment(text)
-    |  |
+    |  |- Html  ..................  // Html base component class for generating dom nodes by setting innerHTML: node.innerHTML = text
+    |  |- Comment  ...............  // Comment base component class for window.Comment: document.createComment(text)
     |  |- List  ..................  // List base component class, contains a group of children components
     |  \- Nothing  ...............  // Nothing base component class, which won't genenate any dom node
     |
@@ -19,7 +18,7 @@
        |- Cond  ..................  // Cond transform component class, new Cond(testComponents, else_)
        |- Each  ..................  // Each transform component class, new Each(items, itemFn, options)
        |- Route  .................  // Route transform component class, route(routeList..., otherwise, baseIndex)
-       \- Defer  .................  // Defer transform component class, new Nefer(promise, fulfill, reject, init)
+       \- Defer  .................  // Defer transform component class, new Defer(promise, fulfill, reject, init)
 
 
 ## DomNode class

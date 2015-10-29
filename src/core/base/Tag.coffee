@@ -56,7 +56,6 @@ module.exports = class Tag extends List
     delete attrs.style
 
     @hasActiveEvents = false
-    @cacheEvents = {}
     @events = events = {}
     @eventUpdateConfig = {}
 
@@ -127,36 +126,38 @@ module.exports = class Tag extends List
     @invalidate()
 
   bind: (eventNames, handler, before) ->
-    names = eventNames.split('\s+')
-    for name in names then @_addEventProp(name, handler, before)
-    @
-
-  _addEventProp: (prop, handler, before) ->
-    if prop[...2]!='on' then prop = 'on'+prop
+    eventNames = eventNames.split('\s+')
     {events} = @
-    if typeof handler == 'function' then handler = [handler]
-    if !events[prop]
-      @addActivity(events, prop, 'Events')
-      events[prop] = handler
-    else
-      if before then events[prop] = handler.concat(events[prop])
-      else events[prop] = events[prop].concat(handler)
+    for eventName in eventNames
+      if eventName[...2]!='on' then eventName = 'on'+eventName
+      eventHandlers = events[eventName]
+      if !eventHandlers
+        events[eventName] = [handler]
+        if @node
+          @node[eventName] = eventHandlerFromArray(events[eventName], eventName, @)
+        else
+          @hasActiveEvents = true
+          @hasActiveProperties = true
+      else
+        index = eventHandlers.indexOf(handler)
+        if index>=0 then continue
+        if before then eventHandlers.unshift.call(eventHandlers, handler)
+        else eventHandlers.push.call(eventHandlers, handler)
     @
 
   unbind: (eventNames, handler) ->
-    names = eventNames.split('\s+')
-    for name in names then @_removeEventHandlers(name, handler)
-    @
-
-  _removeEventHandlers: (eventName, handler) ->
-    if !@hasActiveEvents then return @
-    if eventName[..1]!='on' then eventName = 'on'+eventName
+    eventNames = eventNames.split('\s+')
     {events} = @
-    eventHandlers = events[eventName]
-    if !eventHandlers then return @
-    index = eventHandlers.indexOf(handler)
-    if index>=0 then eventHandlers.splice(index, 1)
-    if !eventHandlers.length then delete events[eventName]
+    for eventName in eventNames
+      if eventName[..1]!='on' then eventName = 'on'+eventName
+      eventHandlers = events[eventName]
+      if !eventHandlers then continue
+      index = eventHandlers.indexOf(handler)
+      if index>=0
+        eventHandlers.splice(index, 1)
+        if !eventHandlers.length
+          events[eventName] = null
+          @node and @node[prop] = null
     @
 
   addClass: (items...) ->
@@ -291,10 +292,8 @@ module.exports = class Tag extends List
         cacheStyle[prop] = elementStyle[prop] = value
 
     if @hasActiveEvents
-      {events, cacheEvents} = @
+      {events} = @
       for eventName, callbackList of events
-        cacheEvents[eventName] = events[eventName]
-        delete events[eventName]
         node[eventName] = eventHandlerFromArray(callbackList, eventName, @)
     @hasActiveEvents = false
 

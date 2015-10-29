@@ -1,7 +1,5 @@
 {see, flow, pipe} = require "../flow/index"
-{div, text} = require "../core/tag"
-Tag = require "../core/base/Tag"
-{overAttrs} = require "../core/property"
+{div, text, overAttrs, Tag} = dc
 
 exports.AutoWidthEdit = class AutoWidthEdit extends Tag
   constructor: (contextEditAttrs, inputAttrs, inputKeyFn=@inputKeyFn) ->

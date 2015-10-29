@@ -1,4 +1,4 @@
-{see, flow} = require("../flow/index")
+{see, flow} = dc
 
 module.exports = (interval) -> (comp) ->
   if !interval? then interval = 500

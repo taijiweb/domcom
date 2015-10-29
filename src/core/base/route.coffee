@@ -57,7 +57,7 @@ _route = (routeList, otherwise, baseIndex, defaultBaseIndex) ->
     routeList2.push [routeList[i], routeList[i+1]]
     i += 2
 
-  new Router(routeList2, otherwise, baseIndex)
+  new Route(routeList2, otherwise, baseIndex)
 
 route._navigateTo = navigateTo = (oldPath, path, baseIndex=0) ->
   path = ''+path
@@ -90,7 +90,7 @@ navigate = (baseIndex) -> (path) ->
 
 route.to = navigate(0)
 
-route.Router = class Router extends TransformComponent
+route.Route = class Route extends TransformComponent
   constructor: (@routeList, @otherwise, @baseIndex) ->
     for patternRoute in routeList
       patternRoute[0] = getRoutePattern(patternRoute[0])

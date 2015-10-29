@@ -1,4 +1,4 @@
-{getBindProp} = require("../dom-util")
+{getBindProp} = dc
 
 module.exports = (binding, eventName) -> (comp) ->
   {props} = comp

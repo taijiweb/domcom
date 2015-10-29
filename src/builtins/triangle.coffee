@@ -1,5 +1,4 @@
-{div} = require "../core/tag"
-{extendAttrs} = require "../core/property"
+{div, extendAttrs} = dc
 
 reverseSide = {left:'right', right:'left', top:'bottom', bottom:'top'}
 

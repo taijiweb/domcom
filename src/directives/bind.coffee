@@ -1,4 +1,4 @@
-{getBindProp, domField} = require("../dom-util")
+{getBindProp, domField} = dc
 
 module.exports = (binding) -> (comp) ->
   comp.setProp(getBindProp(comp), binding, props, 'Props')

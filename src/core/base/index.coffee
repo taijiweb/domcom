@@ -16,5 +16,5 @@ module.exports =
   Func: require './Func'
   Each: require './Each'
   Defer: require './Defer'
-  Router: route.Router
+  Route: route.Route
   route: route

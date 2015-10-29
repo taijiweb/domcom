@@ -1,7 +1,4 @@
-{see}  = require "../flow/index"
-{div} = require "../core/tag"
-{list} = require "../core/instantiate"
-Component = require "../core/base/component"
+{Component, list, div}  = dc
 
 globalID = 0
 

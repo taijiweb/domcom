@@ -7,13 +7,10 @@ Text = require "./base/Text"
 Html = require "./base/Html"
 Comment = require "./base/Comment"
 
-{if_}  = require "../flow/addon"
-
 exports.isAttrs = (item) ->
   typeof item == 'object' and item!=null and !isComponent(item) and item not instanceof Array
 
-
-mergeThenElseValue = (test, thenValue, elseValue) -> if_(test, thenValue, elseValue)
+mergeThenElseValue = (test, thenValue, elseValue) -> dc.flow.if_(test, thenValue, elseValue)
 
 exports._maybeIf = (test, then_, else_) ->
   then_ = toComponent then_
