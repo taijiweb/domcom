@@ -1,20 +1,22 @@
-# domcom
-the web framework to provide dom component
+# Domcom
+  the web framework to provide dom component
 
 ## Features
 * declarational composable components with reactive function
 
-* automatically render only the invalidate parts in the dom with fine granularity
+* only render the invalidated components and refresh the really changed dom nodes and properties with better automatic updation checking
 
 * decouple with model and controller completely
 
-* simple but powerful router
+* simple but powerful route
 
 * convenient support for promise
 
 * never pollute the dom because of the framework itself
 
-* the root of the component may be multiple dom elements
+* good browser compatiblity, even wieh IE 6, 7, 8
+
+* no dependencies, no polyfill for the browsers or the language, no immutable data, no companion libraries or solutions is necessary
 
 ## Samples
 There is [some  samples](https://github.com/taijiweb/domcom/tree/master/demo), and a [todoMVC implementation](https://github.com/taijiweb/domcom/tree/master/demo/todomvc).
@@ -23,35 +25,43 @@ The code below give a taste of domcom:
 
 In javascript:
 
-    // Although it's not necessary, but I recommend to use some tool to support ES6, especially destructive syntax
+    // Although it's not necessary, 
+    // but I recommend to use some tool like babel to support ES6, especially destructive syntax
+
     {list, text, p, flow, see} = dc
 
-    // otherwise you need write the the code like below
+    // otherwise you need write the the code like below, it's not an ideal method:
     // var demoSum, flow, list, p, see, text;​
     // list = dc.list, text = dc.text, p = dc.p, flow = dc.flow, see = dc.see;
     ​
     demoSum = function() {
       var a, b, comp, p1, t1, t2;
+
       a = see(1);
       b = see(2);
+
       comp = list((t1 = text({
         value: a,
-        onchange: (function() {
-          return a(this.value * 1);
-        })
+        onchange() { return a(this.value * 1); } // ES 6
+
+        // onchange: function() { return a(this.value * 1) } // ES5
+
       })), (t2 = text({
         value: b,
-        onchange: (function() {
-          return b(this.value * 1);
-        })
+        onchange() { return b(this.value * 1); } // ES 6
+
+        // onchange: function() { return b(this.value * 1);}  // ES5
+
       })), p1 = p(flow.add(a, b)));
+
       dc.updateWhen([t1, t2], 'change', p1);
+
       return comp.mount();
     };
     ​
     demoSum();
 ​
-In coffee-script:
+In coffee-script(recommended):
 
     {list, text, p, flow, see} = dc
 
@@ -60,8 +70,8 @@ In coffee-script:
         a = see 1; b = see 2
 
         comp = list \
-            (t1 = text value: a, onchange: (-> a @value*1)),
-            (t2 = text value: b, onchange: (-> b @value*1)),
+            (t1 = text value: a, onchange: -> a @value*1),
+            (t2 = text value: b, onchange: -> b @value*1),
             p1 = p flow.add a, b
 
         dc.updateWhen [t1, t2], 'change', p1
@@ -70,7 +80,7 @@ In coffee-script:
 
     demoSum()
 
-## get start
+## get Domcom:
 `npm install domcom`
 
 `<script src="path/to/domcom.js"/>`
