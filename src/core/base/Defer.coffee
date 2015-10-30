@@ -13,9 +13,9 @@ module.exports = class Defer extends TransformComponent
 
     super
 
-    @fulfill = fulfill
-    @reject = reject or ->
-    @init = init and init(promise) or new Nothing()
+    @fulfill = fulfill or (result) -> result
+    @reject = reject or (error) -> error
+    @init = init and init(promise, @) or new Nothing()
 
     @family = family = intersect([fullfill.family, reject.family, init.family])
     family[@dcid] = true
@@ -33,21 +33,19 @@ module.exports = class Defer extends TransformComponent
       @promiseState = REJECT
       @invalidateTransform()
 
-    @
+    this
 
   getContentComponent: ->
     if (state=@promiseState)==INIT then init
     else if state==FULFILL then toComponent(@fulfill(@promiseResult, @promise, @))
     else toComponent(@reject(@promiseResult, @promise, @))
 
-  @clone = -> (new Defer(@promise, @fulfill, @reject, @init.clone)).copyEventListeners(@)
+  clone: -> (new Defer(@promise, @fulfill, @reject, @init.clone)).copyEventListeners(@)
 
-  @toString = (indent=0, addNewLine='') ->
+  toString: (indent=0, addNewLine='') ->
     newLine('', indent, addNewLine)+'<Defer '+@promise+'>' + \
       newLine('', indent, addNewLine) + funcString(@fulfill) + \
       newLine('', indent, addNewLine) + funcString(@reject) +  \
       @init.toString(indent+2, true) + newLine('</Defer>', indent, true)
-
-  this
 
 extend Defer, {INIT, FULFILL, REJECT}

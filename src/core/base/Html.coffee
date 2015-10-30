@@ -57,3 +57,5 @@ module.exports = class Html extends BaseComponent
     return
 
   toString: (indent=2, addNewLine) -> newLine("<Html #{funcString(@text)}/>", indent, addNewLine)
+
+# todo: implement another WrapHtml, which is always wraped in a tag
