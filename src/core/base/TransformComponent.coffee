@@ -21,14 +21,16 @@ module.exports = class TransformComponent extends Component
 
   renderDom: ->
     if !@parentNode
+      @holder = null
       if @node and @node.parentNode
         return @removeDom()
       else return @
+
     if @valid then return @
     @valid = true
-    if !@parentNode and @node.parentNode
-      @removeDom()
+
     !@node and @emit('beforeAttach')
+
     oldContent = @content
     if !@transformValid
       @transformValid = true
@@ -41,6 +43,7 @@ module.exports = class TransformComponent extends Component
           oldContent.removeDom()
       @content = content
     else content = oldContent
+
     content.holder = @
     content.parentNode = @parentNode
     content.nextNode = @nextNode
@@ -53,6 +56,7 @@ module.exports = class TransformComponent extends Component
   removeDom: ->
     content = @content
     if content.holder==@
+      content.holder = null
       content.parentNode = null
       content.removeDom()
     @emit('afterRemoveDom')

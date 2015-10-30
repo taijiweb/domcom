@@ -19,11 +19,11 @@ module.exports = toComponent = (item) ->
     Func = require './Func' # avoid loop require
     component = new Func react -> component.promiseResult
 
-    item.then (value) ->
+    item
+    .then (value) ->
       component.promiseResult = value
       component.invalideTransform()
-
-    item.catch (error) ->
+    .catch (error) ->
       component.promiseResult = error
       component.invalideTransform()
 

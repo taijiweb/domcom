@@ -5,14 +5,13 @@ TransformComponent = require './TransformComponent'
 
 module.exports = class If extends TransformComponent
   constructor: (test, then_, else_) ->
+    if then_==else_ then return toComponent then_
+
     then_ = toComponent(then_)
     else_ = toComponent(else_)
 
-    if then_==else_ then return then_
-
     if typeof test != 'function'
       return if test then then_ else else_
-    else if then_==else_ then return then_
 
     super()
 

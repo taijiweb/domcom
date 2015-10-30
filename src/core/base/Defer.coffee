@@ -23,7 +23,7 @@ module.exports = class Defer extends TransformComponent
     @promiseState = INIT
 
     promise
-    .then (valu) ->
+    .then (value) ->
       @promiseResult = value
       @promiseState = FULFILL
       @invalidateTransform()

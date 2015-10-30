@@ -46,13 +46,13 @@ exports.domField = (value) ->
 
   if typeof value != 'function'
 
-   if value.then and x.catch
+   if value.then and value.catch
      fn = react -> fn.promiseResult
 
-     value.then (value) ->
-        fn.promiseResult = value
+     value
+     .then (result) ->
+        fn.promiseResult = result
         fn.invalidate()
-
      .catch (error) ->
         fn.promiseResult = error
         fn.invalidate()

@@ -16,17 +16,12 @@ exports = module.exports = class Text extends BaseComponent
     if !@textValid then return @node
     @textValid = true
     text = domValue(@text)
-    if text!=@node.textContent
+    if text!=@cacheText
       if @node.parentNode  then @removeNode()
       @node = document.createTextNode(text)
       @firstNode = @node
       @cacheText = text
     @node
-
-  removeDom: ->
-    @removeNode()
-    @emit('afterRemoveDom')
-    @
 
   clone: -> (new @constructor(@text)).copyEventListeners(@)
 
