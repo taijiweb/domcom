@@ -58,10 +58,6 @@ github.com/taijiweb/domcom
 
 	npm install --save domcom
 
-  也可以用bower下载安装
-
-  bower install --save domcom
-
   [Github项目地址](https://www.github.com/taijiweb/domcom)
 
   [Github releases](https://github.com/taijiweb/domcom/releases)

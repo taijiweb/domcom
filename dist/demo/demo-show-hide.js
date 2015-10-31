@@ -12,7 +12,7 @@ module.exports = function() {
       toggle(x);
       return comp.update();
     }
-  }, 'change style'), p({
+  }, 'show/hide by changing style.display'), p({
     "class": {},
     style: {
       display: function() {

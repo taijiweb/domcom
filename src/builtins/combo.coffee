@@ -1,4 +1,4 @@
-{list, input, span, div, extendAttrs} = dc
+{list, input, span, div, extendAttrs, see} = dc
 
 exports.combobox = combobox = (attrs, modelValue, valueList, direction) ->
   showingItems = see false

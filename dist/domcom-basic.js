@@ -2458,7 +2458,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  BaseComponent.prototype.removeNode = function() {
-	    return this.node.parentNode.removeChild(this.node);
+	    return this.node.parentNode && this.node.parentNode.removeChild(this.node);
 	  };
 
 	  BaseComponent.prototype.attachNode = function() {

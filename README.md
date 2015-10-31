@@ -85,8 +85,6 @@ In coffee-script(recommended):
 ## download and install:
     npm install --save domcom
 
-    bower install --save domcom
-
     `<script src="path/to/domcom.js"/>`
 
     `<script src="path/to/domcom.min.js"/>`

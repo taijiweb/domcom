@@ -1,4 +1,4 @@
-var accordion, case_, demoCombo, demoEachPush, demoMap, demoTriangle, each, eachDemo1, eachDemo2, eachDemo3, eachDemo4, func, list, makeDemoComponent, p, see, select, splitterDemo, _ref, _ref1;
+var accordion, case_, chooseFramework, demoCombo, demoEachPush, demoMap, demoTriangle, each, eachDemo1, eachDemo2, eachDemo3, eachDemo4, func, list, makeDemoComponent, p, see, select, splitterDemo, _ref, _ref1;
 
 select = dc.select, see = dc.see, case_ = dc.case_, list = dc.list, func = dc.func, each = dc.each, p = dc.p;
 
@@ -27,8 +27,9 @@ splitterDemo = require('domcom/demo/demo-splitter');
 accordion = require('domcom/demo/demo-accordion');
 
 exports.demoMap = demoMap = {
+  'choose web framework': chooseFramework = func(require('domcom/demo/demo-choose-web-framework')),
   accordion: func(accordion),
-  arrow: func(demoTriangle),
+  triangle: func(demoTriangle),
   combo: func(demoCombo),
   "show hide": func(require('domcom/demo/demo-show-hide')),
   counter: func(require('domcom/demo/demo-counter')),
@@ -41,7 +42,6 @@ exports.demoMap = demoMap = {
   each3: func(eachDemo3),
   each4: func(eachDemo4),
   'switch 1 2 3 4': func(require('domcom/demo/demo-switch-1-2-3-4')),
-  'choose web framework': func(require('domcom/demo/demo-choose-web-framework')),
   splitter: func(splitterDemo),
   sum: func(require('domcom/demo/demo-sum')),
   'text model': func(require('domcom/demo/demo-text-model')),
@@ -52,13 +52,13 @@ exports.demoMap = demoMap = {
 exports.makeDemoComponent = makeDemoComponent = function(demoMap, initItem) {
   var currentItem, demoSelect;
   if (initItem == null) {
-    initItem = 'arrow';
+    initItem = 'choose web framework';
   }
   currentItem = see(initItem);
   return list(demoSelect = select({
     $options: [Object.keys(demoMap)],
     $model: currentItem
-  }), case_(currentItem, demoMap, accordion).updateWhen(demoSelect, 'change'));
+  }), case_(currentItem, demoMap, chooseFramework).updateWhen(demoSelect, 'change'));
 };
 
 exports.runDomComDemo = window.runDomComDemo = function() {

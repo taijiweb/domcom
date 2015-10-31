@@ -65,13 +65,20 @@
     |  |  \- index.coffee    ....................   // the index file to enable requiring builtins/ folder
     |  |
     |- doc    ...................................   // document folder
-    |  |- README.CN.md    .......................   // README for github and npm, in Chinese
-    |  |- API.md    .............................   // API references of domcom in English
-    |  |- API.CN.md    ..........................   // API references of domcom in Chinese
-    |  |- introduction.CN.md    .................   // introduction to domcom
-    |  |- package-directory.md   ................   // this file, package directory hierachy in English
-    |  |- package-directory-CN.md  ..............   // package directory hierachy in Chinese
-    |  \- ideas.md    ...........................   // history notes on idea sparks while developing domcom
+    |  |- api-referenc  .........................   // API references
+    |  |- class-hierachy.md   ...................   // class hierachy
+    |  |- package-directory.md   ................   // package directory hierachy
+    |  \- Chinese    ............................   // Chinese document
+    |     |- README.CN.md    .......................// README for github and npm, in Chinese
+    |     |- 介绍和辅导教程.md    ................. // introduction and tutorial (Chinese)
+    |     |- 概念和原理.md  .....................   // Concepts and theory (Chinese)
+    |     |- API参考.md  ........................   // API references (Chinese)
+    |     |- 类层次参考.md  .....................   // class hierachy (Chinese)
+    |     |- 目录结构.md  .......................   // package directory hierachy (Chinese)
+    |     |- 文件夹和模块介绍.md  ...............   // introduction to folder and module (Chinese)
+    |     |- 速查表.md  .........................   // cheatsheet (Chinese)
+    |     |- 从React到Domcom.md  ................   // declaration to release (Chinese)
+    |     |- 常问问题.md  .......................   // frequently asked questions (Chinese)
     |
     |- test/    .................................   // test folder
     |  |- mocha/    ..............................  // mocha test coffee-script folder

@@ -34,7 +34,7 @@ module.exports = class BaseComponent extends Component
     @
 
   removeNode: ->
-    @node.parentNode.removeChild(@node)
+    @node.parentNode and @node.parentNode.removeChild(@node)
 
   attachNode: ->
     node = @node

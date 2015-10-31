@@ -2469,7 +2469,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  BaseComponent.prototype.removeNode = function() {
-	    return this.node.parentNode.removeChild(this.node);
+	    return this.node.parentNode && this.node.parentNode.removeChild(this.node);
 	  };
 
 	  BaseComponent.prototype.attachNode = function() {
@@ -5311,9 +5311,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 44 */
 /***/ function(module, exports) {
 
-	var Component, div, globalID, list;
+	var Component, div, globalID, if_, list, see;
 
-	Component = dc.Component, list = dc.list, div = dc.div;
+	Component = dc.Component, list = dc.list, if_ = dc.if_, div = dc.div, see = dc.see;
 
 	globalID = 0;
 
@@ -5401,9 +5401,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 45 */
 /***/ function(module, exports) {
 
-	var combobox, div, extendAttrs, input, list, span;
+	var combobox, div, extendAttrs, input, list, see, span;
 
-	list = dc.list, input = dc.input, span = dc.span, div = dc.div, extendAttrs = dc.extendAttrs;
+	list = dc.list, input = dc.input, span = dc.span, div = dc.div, extendAttrs = dc.extendAttrs, see = dc.see;
 
 	exports.combobox = combobox = function(attrs, modelValue, valueList, direction) {
 	  var comp, disp, item, opts, showingItems;

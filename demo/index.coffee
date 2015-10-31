@@ -16,8 +16,9 @@ splitterDemo = require 'domcom/demo/demo-splitter'
 accordion = require 'domcom/demo/demo-accordion'
 
 exports.demoMap = demoMap =
+  'choose web framework': chooseFramework = func require 'domcom/demo/demo-choose-web-framework'
   accordion: func accordion
-  arrow: func demoTriangle
+  triangle: func demoTriangle
   combo: func demoCombo
   "show hide":  func require 'domcom/demo/demo-show-hide'
   counter:  func require 'domcom/demo/demo-counter'
@@ -30,17 +31,16 @@ exports.demoMap = demoMap =
   each3:  func eachDemo3
   each4:  func eachDemo4
   'switch 1 2 3 4':  func require 'domcom/demo/demo-switch-1-2-3-4'
-  'choose web framework':  func require 'domcom/demo/demo-choose-web-framework'
   splitter:  func splitterDemo
   sum:  func require 'domcom/demo/demo-sum'
   'text model':  func require 'domcom/demo/demo-text-model'
   'auto width edit':  func require 'domcom/demo/demo-auto-width-edit'
   'mount/unmount':  func require 'domcom/demo/demo-mount-unmount'
 
-exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem='arrow') ->
+exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem='choose web framework') ->
   currentItem = see initItem
   list demoSelect = select($options: [Object.keys(demoMap)], $model:currentItem),
-    case_(currentItem, demoMap, accordion).updateWhen(demoSelect, 'change')
+    case_(currentItem, demoMap, chooseFramework).updateWhen(demoSelect, 'change')
 
 exports.runDomComDemo = window.runDomComDemo = ->
 #  comp = accordion()
