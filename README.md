@@ -4,7 +4,7 @@
 ## Features
 * declarational composable components with reactive function
 
-* only render the invalidated components and refresh the really changed dom nodes and properties with better automatic updation checking
+* only render the invalidated components and refresh the really changed dom nodes with better automatic updation checking
 
 * decouple with model and controller completely
 
@@ -16,7 +16,9 @@
 
 * good browser compatiblity, even wieh IE 6, 7, 8
 
-* no dependencies, no polyfill for the browsers or the language, no immutable data, no companion libraries or solutions is necessary
+* no dependencies, no polyfill, no immutable data, no companion libraries is necessary
+
+* no necessary to use any template language
 
 ## Samples
 There is [some  samples](https://github.com/taijiweb/domcom/tree/master/demo), and a [todoMVC implementation](https://github.com/taijiweb/domcom/tree/master/demo/todomvc).
@@ -80,12 +82,14 @@ In coffee-script(recommended):
 
     demoSum()
 
-## get Domcom:
-`npm install domcom`
+## download and install:
+    npm install --save domcom
 
-`<script src="path/to/domcom.js"/>`
+    bower install --save domcom
 
-`<script src="path/to/domcom.min.js"/>`
+    `<script src="path/to/domcom.js"/>`
+
+    `<script src="path/to/domcom.min.js"/>`
 
 ## document
 
