@@ -1,8 +1,44 @@
 {
-  "name": "tiijide",
-  "version": "0.0.0",
-  "dependencies": {
+  "name": "domcom",
+  "version": "0.0.2",
+  "homepage": "http://github.com/taijiweb/domcom",
+  "description": "the web framework to provide dom component",
+  "authors": [
+    "Caoxingming <taijiweeb@gmail.com>",
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/taijiweb/domcom.git"
   },
-  "devDependencies": {
-  }
+  "main": [
+    "domcom.js",
+    "domcom.min.js"
+  ],
+  "ignore": [
+    "bin",
+    "editors",
+    "images",
+    "lib",
+    "support",
+    "test",
+    "demo",
+    "doc",
+    "node_modules",
+    "src",
+    ".gitignore",
+    ".npmignore",
+    ".travis.yml",
+    "component.json",
+    "index.js",
+    "Makefile",
+    "package.json"
+  ],
+  "keywords": [
+    "web",
+    "dom",
+    "virtual dom",
+    "reactive",
+    "component"
+  ],
+  "license": "MIT"
 }

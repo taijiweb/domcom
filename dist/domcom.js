@@ -1421,12 +1421,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return '';
 	  }
 	  if (typeof value !== 'function') {
-	    if (value.then && x["catch"]) {
+	    if (value.then && value["catch"]) {
 	      fn = react(function() {
 	        return fn.promiseResult;
 	      });
-	      value.then(function(value) {
-	        fn.promiseResult = value;
+	      value.then(function(result) {
+	        fn.promiseResult = result;
 	        return fn.invalidate();
 	      })["catch"](function(error) {
 	        fn.promiseResult = error;
@@ -2052,6 +2052,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  TransformComponent.prototype.renderDom = function() {
 	    var content, oldContent;
 	    if (!this.parentNode) {
+	      this.holder = null;
 	      if (this.node && this.node.parentNode) {
 	        return this.removeDom();
 	      } else {
@@ -2062,9 +2063,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this;
 	    }
 	    this.valid = true;
-	    if (!this.parentNode && this.node.parentNode) {
-	      this.removeDom();
-	    }
 	    !this.node && this.emit('beforeAttach');
 	    oldContent = this.content;
 	    if (!this.transformValid) {
@@ -2095,6 +2093,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var content;
 	    content = this.content;
 	    if (content.holder === this) {
+	      content.holder = null;
 	      content.parentNode = null;
 	      content.removeDom();
 	    }
@@ -2352,8 +2351,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    item.then(function(value) {
 	      component.promiseResult = value;
 	      return component.invalideTransform();
-	    });
-	    item["catch"](function(error) {
+	    })["catch"](function(error) {
 	      component.promiseResult = error;
 	      return component.invalideTransform();
 	    });
@@ -2524,7 +2522,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    this.textValid = true;
 	    text = domValue(this.text);
-	    if (text !== this.node.textContent) {
+	    if (text !== this.cacheText) {
 	      if (this.node.parentNode) {
 	        this.removeNode();
 	      }
@@ -2533,12 +2531,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.cacheText = text;
 	    }
 	    return this.node;
-	  };
-
-	  Text.prototype.removeDom = function() {
-	    this.removeNode();
-	    this.emit('afterRemoveDom');
-	    return this;
 	  };
 
 	  Text.prototype.clone = function() {
@@ -2964,25 +2956,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function Func(func) {
 	    Func.__super__.constructor.call(this);
 	    if (!func.invalidate) {
-	      func = renew(func);
+	      this.func = renew(func);
+	    } else {
+	      this.func = func;
 	    }
-	    func.onInvalidate(this.invalidateTransform.bind(this));
-	    this.getContentComponent = function() {
-	      return toComponent(func());
-	    };
-	    this.clone = function() {
-	      return (new Func((function() {
-	        return toComponent(func()).clone();
-	      }))).copyEventListeners(this);
-	    };
-	    this.toString = function(indent, addNewLine) {
-	      if (indent == null) {
-	        indent = 2;
-	      }
-	      return newLine("<Func " + (funcString(func)) + "/>", indent, addNewLine);
-	    };
+	    this.func.onInvalidate(this.invalidateTransform.bind(this));
 	    this;
 	  }
+
+	  Func.prototype.getContentComponent = function() {
+	    return toComponent(this.func());
+	  };
+
+	  Func.prototype.clone = function() {
+	    return (new Func((function() {
+	      return toComponent(func()).clone();
+	    }))).copyEventListeners(this);
+	  };
+
+	  Func.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 2;
+	    }
+	    return newLine("<Func " + (funcString(this.func)) + "/>", indent, addNewLine);
+	  };
 
 	  return Func;
 
@@ -3971,48 +3968,53 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function If(test, then_, else_) {
 	    var family;
+	    if (then_ === else_) {
+	      return toComponent(then_);
+	    }
 	    then_ = toComponent(then_);
 	    else_ = toComponent(else_);
-	    if (then_ === else_) {
-	      return then_;
-	    }
 	    if (typeof test !== 'function') {
 	      if (test) {
 	        return then_;
 	      } else {
 	        return else_;
 	      }
-	    } else if (then_ === else_) {
-	      return then_;
 	    }
 	    If.__super__.constructor.call(this);
+	    this.then_ = then_;
+	    this.else_ = else_;
 	    this.family = family = intersect([then_.family, else_.family]);
 	    family[this.dcid] = true;
 	    if (!test.invalidate) {
-	      test = renew(test);
+	      this.test = renew(test);
+	    } else {
+	      this.test = test;
 	    }
-	    test.onInvalidate(this.invalidateTransform.bind(this));
-	    this.getContentComponent = function() {
-	      if (test()) {
-	        return then_;
-	      } else {
-	        return else_;
-	      }
-	    };
-	    this.clone = function() {
-	      return (new If(test, then_.clone(), else_clone())).copyEventListeners(this);
-	    };
-	    this.toString = function(indent, addNewLine) {
-	      if (indent == null) {
-	        indent = 0;
-	      }
-	      if (addNewLine == null) {
-	        addNewLine = '';
-	      }
-	      return newLine('', indent, addNewLine) + '<if ' + funcString(test) + '>' + then_.toString(indent + 2, true) + else_.toString(indent + 2, true) + newLine('</if>', indent, true);
-	    };
+	    this.test.onInvalidate(this.invalidateTransform.bind(this));
 	    this;
 	  }
+
+	  If.prototype.getContentComponent = function() {
+	    if (this.test()) {
+	      return this.then_;
+	    } else {
+	      return this.else_;
+	    }
+	  };
+
+	  If.prototype.clone = function() {
+	    return (new If(this.test, this.then_.clone(), this.else_.clone())).copyEventListeners(this);
+	  };
+
+	  If.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 0;
+	    }
+	    if (addNewLine == null) {
+	      addNewLine = '';
+	    }
+	    return newLine('', indent, addNewLine) + '<if ' + funcString(this.test) + '>' + this.then_.toString(indent + 2, true) + this.else_.toString(indent + 2, true) + newLine('</if>', indent, true);
+	  };
 
 	  return If;
 
@@ -4179,9 +4181,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  Each.prototype.getContentComponent = function() {
 	    var isFunction, items, key, length, listComponent, needSort, value, watchingMe, _items;
 	    listComponent = this.listComponent, items = this.items, isFunction = this.isFunction, needSort = this.needSort;
+	    if (!items) {
+	      return this.emptyPlaceHolder || (this.emptyPlaceHolder = new Nothing());
+	    }
 	    if (isFunction) {
 	      items = items();
-	      if (!items || typeof items !== 'object') {
+	      if (!items) {
+	        return this.emptyPlaceHolder || (this.emptyPlaceHolder = new Nothing());
+	      }
+	      if (typeof items !== 'object') {
 	        throw new Error('Each Component need an array or object');
 	      }
 	    }
@@ -4354,13 +4362,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var family;
 	    this.promise = promise;
 	    Defer.__super__.constructor.apply(this, arguments);
-	    this.fulfill = fulfill;
-	    this.reject = reject || function() {};
-	    this.init = init && init(promise) || new Nothing();
+	    this.fulfill = fulfill || function(result) {
+	      return result;
+	    };
+	    this.reject = reject || function(error) {
+	      return error;
+	    };
+	    this.init = init && init(promise, this) || new Nothing();
 	    this.family = family = intersect([fullfill.family, reject.family, init.family]);
 	    family[this.dcid] = true;
 	    this.promiseState = INIT;
-	    promise.then(function(valu) {
+	    promise.then(function(value) {
 	      this.promiseResult = value;
 	      this.promiseState = FULFILL;
 	      return this.invalidateTransform();
@@ -4383,11 +4395,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  };
 
-	  Defer.clone = function() {
+	  Defer.prototype.clone = function() {
 	    return (new Defer(this.promise, this.fulfill, this.reject, this.init.clone)).copyEventListeners(this);
 	  };
 
-	  Defer.toString = function(indent, addNewLine) {
+	  Defer.prototype.toString = function(indent, addNewLine) {
 	    if (indent == null) {
 	      indent = 0;
 	    }
@@ -4396,8 +4408,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    return newLine('', indent, addNewLine) + '<Defer ' + this.promise + '>' + newLine('', indent, addNewLine) + funcString(this.fulfill) + newLine('', indent, addNewLine) + funcString(this.reject) + this.init.toString(indent + 2, true) + newLine('</Defer>', indent, true);
 	  };
-
-	  Defer;
 
 	  return Defer;
 
@@ -4571,6 +4581,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.every = every = function(attrs, list, itemFn) {
 	  var children, i, item, _i, _j, _len, _len1;
 	  if (isAttrs(attrs)) {
+	    if (!list) {
+	      return new Nothing();
+	    }
 	    children = [];
 	    for (i = _i = 0, _len = list.length; _i < _len; i = ++_i) {
 	      item = list[i];
@@ -4578,6 +4591,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    return new Tag('div', attrs, [new List(children)]);
 	  } else {
+	    if (!attrs) {
+	      return new Nothing();
+	    }
 	    children = [];
 	    for (i = _j = 0, _len1 = attrs.length; _j < _len1; i = ++_j) {
 	      item = attrs[i];
@@ -4590,6 +4606,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.all = function(attrs, hash, itemFn) {
 	  var children, i, key, value;
 	  if (isAttrs(attrs)) {
+	    if (!hash) {
+	      return new Nothing();
+	    }
 	    children = [];
 	    i = 0;
 	    for (key in hash) {
@@ -4602,6 +4621,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    return new Tag('div', attrs, [new List(children)]);
 	  } else {
+	    if (!attrs) {
+	      return new Nothing();
+	    }
 	    children = [];
 	    i = 0;
 	    for (key in attrs) {

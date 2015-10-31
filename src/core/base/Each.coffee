@@ -53,9 +53,11 @@ module.exports = class Each extends TransformComponent
   getContentComponent: ->
     {listComponent, items, isFunction, needSort} = @
 
+    if !items then return @emptyPlaceHolder or @emptyPlaceHolder = new Nothing()
     if isFunction
       items = items()
-      if !items or typeof(items)!='object' then throw new Error 'Each Component need an array or object'
+      if !items then return @emptyPlaceHolder or @emptyPlaceHolder = new Nothing()
+      if typeof(items)!='object' then throw new Error 'Each Component need an array or object'
 
     if !(@isArrayItems = items instanceof Array)
       items = for key, value of items then [key, value]

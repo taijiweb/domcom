@@ -88,11 +88,17 @@ exports.each = (attrs, list, itemFn) ->
 
 exports.every = every = (attrs, list, itemFn) ->
   if isAttrs(attrs)
+
+    if !list then return new Nothing()
+
     children = []
     for item, i in list
       children.push itemFn(item, i, list)
     new Tag('div', attrs, [new List(children)])
   else
+
+    if !attrs then return new Nothing()
+
     # attrs become list, list become itemFn
     children = []
     for item, i in attrs
@@ -101,6 +107,9 @@ exports.every = every = (attrs, list, itemFn) ->
 
 exports.all = (attrs, hash, itemFn) ->
   if isAttrs(attrs)
+
+    if !hash then return new Nothing()
+
     children = []
     i = 0
     for key, value of hash
@@ -109,6 +118,9 @@ exports.all = (attrs, hash, itemFn) ->
       i++
     new Tag('div', attrs, [new List(children)])
   else
+
+    if !attrs then return new Nothing()
+
     # attrs become list, list become itemFn
     children = []
     i = 0
