@@ -89,6 +89,10 @@ In coffee-script(recommended):
 
     `<script src="path/to/domcom.min.js"/>`
 
+  or cdn.jsdelivr.net can be used:
+
+    `<script src="http://cdn.jsdelivr.net/domcom/0.1/domcom.min.js"/>`
+
 ## document
 
   See [doc/](https://github.com/taijiweb/domcom/tree/master/doc) for the document. Both English and Chinese document are provided.

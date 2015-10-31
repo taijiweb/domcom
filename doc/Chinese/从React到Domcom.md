@@ -58,6 +58,10 @@ github.com/taijiweb/domcom
 
 	npm install --save domcom
 
+  或者使用cdn
+
+    http://cdn.jsdelivr.net/domcom/0.1/domcom.min.js
+
   [Github项目地址](https://www.github.com/taijiweb/domcom)
 
   [Github releases](https://github.com/taijiweb/domcom/releases)

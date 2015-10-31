@@ -90,15 +90,25 @@
 
   git clone https://www.github.com/taijiweb/domcom
 
+  下载github发布版本： [Github releases](https://github.com/taijiweb/domcom/releases)
+
+  使用cdn: 感谢cdn.jsdelivr.net 提供cdn链接：
+
+    http://cdn.jsdelivr.net/domcom/0.1/domcom.min.js
+
 ### 在页面中设置Domcom
 
-根据开发和应用需要从安装或下载的文件夹中选择domcom/dist/下的domcom.js, domcom.min.js, domcom-basic.js， domcom-basic.min.js中合适的文件，按照通常方法向html页面添加script标签：
+  根据开发和应用需要从安装或下载的文件夹中选择domcom/dist/下的domcom.js, domcom.min.js, domcom-basic.js， domcom-basic.min.js中合适的文件，按照通常方法向html页面添加script标签：
 
-`<script src="path/to/domcom-???.???.js"/>`
+    `<script src="path/to/domcom.min.js"/>`
 
-在domcom的script标签之后添加自己的js脚本：
+  如果使用cdn.jsdelivr.net提供的cdn链接， 则应该添加如下的script标签
 
-`<script src="path/to/my-app.js"/>`
+    `<script src="http://cdn.jsdelivr.net/domcom/0.1/domcom.min.js"/>`
+
+  在domcom的script标签之后添加自己的js脚本：
+
+    `<script src="path/to/my-app.js"/>`
 
 ### 导入和引用domcom提供的api
 
