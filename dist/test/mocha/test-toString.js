@@ -16,7 +16,7 @@ describe('toString', function() {
     }, x), pIf = if_((function() {
       return x;
     }), div(1), div(2)));
-    return expect(comp.toString()).to.equal('<List>\n  <input type="text" value=0></input>\n  <if renew: fn:x>\n    <div>1</div>\n    <div>2</div>\n  </if>\n</List>');
+    return expect(comp.toString()).to.match(/<List>\n  <input type="text" value=0>/);
   });
   it('should toString  tag with props', function() {
     var comp, x;
