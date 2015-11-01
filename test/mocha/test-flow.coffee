@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require('./helper')
 
-{bindings, see, bind, duplex, watch, renew, flow} = dc
+{bindings, see, bind, duplex, watch, renew, flow, text, list} = dc
 
 describe 'reactive flow', ->
 
@@ -61,8 +61,8 @@ describe 'reactive flow', ->
     a = bind(m, 'a', 'm'); b = bind(m, 'b', 'm')
     r = flow.add a, b
     expect(r()).to.equal 3, 'add'
-    a 3
-    expect(r()).to.equal 5, 'add 2'
+    expect(-> a 3).to.throw()
+    expect(r()).to.equal 3, 'add 2'
 
   it 'should bind', ->
     m = {a:1}
@@ -70,9 +70,9 @@ describe 'reactive flow', ->
     a2 = bind(m, 'a')
     expect(a()).to.equal(1)
     expect(a2()).to.equal(1, 'a2')
-    a 3
-    expect(a()).to.equal(3, 'a again')
-    expect(a2()).to.equal(3, 'a2 again')
+    expect(-> a 3).to.throw()
+    expect(a()).to.equal(1, 'a again')
+    expect(a2()).to.equal(1, 'a2 again')
 
   it 'should process bindings', ->
     {a$, a_} = bindings({a: 1})
@@ -81,8 +81,8 @@ describe 'reactive flow', ->
 
   it 'should process multiple bind and duplex on same object and attr', ->
     m = {a:1, b:2}
-    a1 = bind(m, 'a'); b1 = bind(m, 'b')
-    a2 = bind(m, 'a'); b2 = bind(m, 'b')
+    a1 = duplex(m, 'a'); b1 = duplex(m, 'b')
+    a2 = duplex(m, 'a'); b2 = duplex(m, 'b')
     sum = flow.add a1, b1
     expect(sum()).to.equal 3, 'sum 1'
     expect(sum.valid).to.equal true, 'valid 1'
@@ -95,3 +95,18 @@ describe 'reactive flow', ->
     a2 1
     expect(sum.valid).to.equal false, 'valid 4'
     expect(sum()).to.equal 3, 'sum 4'
+
+  it 'should process multiple duplex and $model directive', ->
+    a = {}
+
+    #a_x$ = duplex(a, 'x')
+
+    text1 = text($model:duplex(a, 'x'))
+    text2 = text($model:duplex(a, 'x'))
+    list(text1, text2)
+    .updateWhen([text1, text2], 'change')
+    .mount()
+
+    text1.node.value = '1'
+    text1.node.onchange()
+    expect(text2.node.value).to.equal('1')

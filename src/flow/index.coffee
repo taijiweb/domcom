@@ -2,24 +2,27 @@
 
 react = (method) ->
 
+  if method.invalidate then return method
+
   method.valid = false
 
-  invalidateCallbacks = []
+  method.invalidateCallbacks = []
 
   method.onInvalidate = (callback) ->
-    invalidateCallbacks = invalidateCallbacks or []
+    invalidateCallbacks = method.invalidateCallbacks or  method.invalidateCallbacks = []
     invalidateCallbacks.push(callback)
 
   method.offInvalidate = (callback) ->
+    {invalidateCallbacks} = method
     if !invalidateCallbacks then return
     index = invalidateCallbacks.indexOf(callback)
     if index<0 then return
     invalidateCallbacks.splice(index, 1)
-    if !invalidateCallbacks then invalidateCallbacks = null
+    if !invalidateCallbacks.length then method.invalidateCallbacks = null
 
   method.invalidate = ->
-    if !invalidateCallbacks then return
-    for callback in invalidateCallbacks
+    if !method.invalidateCallbacks then return
+    for callback in method.invalidateCallbacks
      callback()
     method.valid = false
     return
@@ -31,7 +34,7 @@ renew = (computation) ->
     if !arguments.length
       method.invalidate()
       method.value = computation()
-    else throw new Error 'flow.dynamic is not allowed to accept arguments'
+    else throw new Error 'flow.renew is not allowed to accept arguments'
 
   method.toString = () ->  "renew: #{funcString(computation)}"
 
@@ -133,55 +136,92 @@ flow.seeN = (computations...) ->
 # Object.defineProperty is ES5 feature, it's not supported in IE 6, 7, 8
 if Object.defineProperty
 
-  flow.bind = bindWithDefineProperty = (obj, attr, debugName) ->
+  flow.bind = (obj, attr, debugName) ->
 
+    d = Object.getOwnPropertyDescriptor(obj, attr)
+    if d
+      getter = d.get
+      {set} = d
+
+    if !getter or !getter.invalidate
+      cacheValue = obj[attr]
+      getter = ->
+        if arguments.length
+          throw new Error('should not set value on flow.bind')
+        cacheValue
+      setter = (value) ->
+        if value!=obj[attr]
+          if set then set(value)
+          getter.invalidate()
+          cacheValue = value
+      react getter
+      getter.toString = () ->  "#{debugName or 'm'}[#{attr}]"
+      Object.defineProperty(obj, attr, {get:getter, set:setter})
+    getter
+
+  flow.duplex = (obj, attr, debugName) ->
     d = Object.getOwnPropertyDescriptor(obj, attr)
     if d then {get, set} = d
 
     if !set or !set.invalidate
       cacheValue = obj[attr]
       method = (value) ->
-        if !arguments.length
-          if get then get()
-          else cacheValue
-        else if value!=obj[attr]
+        if !arguments.length then return cacheValue
+        if value!=obj[attr]
           if set then set(value)
+          get and get.invalidate and get.invalidate()
           method.invalidate()
           cacheValue = value
       react method
+      method.isDuplex = true
+      method.toString = () ->  "#{debugName or 'm'}[#{attr}]"
       Object.defineProperty(obj, attr, {get:method, set:method})
-    else method = set
-
-    method.toString = () ->  "#{debugName or 'm'}[#{attr}]"
-
-    method
+      method
+    else set
 
 else
 
   flow.bind = (obj, attr, debugName) ->
-    method = -> obj[attr]
-    react method
-    method.toString = () ->  "#{debugName or 'm'}[#{attr}]"
+    _dcBindMethodMap = obj._dcBindMethodMap
+    if !_dcBindMethodMap
+      _dcBindMethodMap = obj._dcBindMethodMap = {}
+
+    if !obj.dcSet$
+      obj.dcSet$ = (attr, value) ->
+        if value!=obj[attr]
+          _dcBindMethodMap and _dcBindMethodMap[attr] and _dcBindMethodMap[attr].invalidate()
+          (_dcDuplexMethodMap=@_dcDuplexMethodMap) and _dcDuplexMethodMap[attr] and _dcDuplexMethodMap[attr].invalidate()
+
+    method = _dcBindMethodMap[attr]
+    if !method
+      method = _dcBindMethodMap[attr] = -> obj[attr]
+      method.toString = () ->  "#{debugName or 'm'}[#{attr}]"
+      react method
+
     method
 
-if Object.defineProperty
-
   flow.duplex = (obj, attr, debugName) ->
-    reactive = bindWithDefineProperty(obj, attr)
-    reactive.isDuplex = true
-    reactive.toString = () ->  "#{debugName or 'm'}[#{attr}]"
-    reactive
+    _dcDuplexMethodMap = obj._dcDuplexMethodMap
+    if !_dcDuplexMethodMap
+      _dcDuplexMethodMap = obj._dcDuplexMethodMap = {}
 
-  flow.duplex = (obj, attr, debugName) ->
-    method = (value) ->
-      if !arguments.length then obj[attr]
-      else if value!=obj[attr]
-        obj[attr] = value
-        method.invalidate()
+    if !obj.dcSet$
+      obj.dcSet$ = (attr, value) ->
+        if value!=obj[attr]
+          (_dcBindMethodMap=@_dcBindMethodMap) and _dcBindMethodMap[attr] and _dcBindMethodMap[attr].invalidate()
+          _dcDuplexMethodMap and _dcDuplexMethodMap[attr] and _dcDuplexMethodMap[attr].invalidate()
         value
-    react method
-    method.isDuplex = true
-    method.toString = () ->  "#{debugName or 'm'}[#{attr}]"
+
+    method = _dcDuplexMethodMap[attr]
+
+    if !method
+      method = _dcDuplexMethodMap[attr] = (value) ->
+        if !arguments.length then obj[attr]
+        else obj.dcSet$(attr, value)
+      method.isDuplex = true
+      method.toString = () ->  "#{debugName or 'm'}[#{attr}]"
+      react method
+
     method
 
 flow.unary = (x, unaryFn) ->
