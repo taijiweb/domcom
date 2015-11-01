@@ -331,21 +331,25 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var bindWithDefineProperty, dependent, flow, funcString, newLine, react, renew, see, _ref,
+	var dependent, flow, funcString, newLine, react, renew, see, _ref,
 	  __slice = [].slice;
 
 	_ref = __webpack_require__(3), newLine = _ref.newLine, funcString = _ref.funcString;
 
 	react = function(method) {
-	  var invalidateCallbacks;
+	  if (method.invalidate) {
+	    return method;
+	  }
 	  method.valid = false;
-	  invalidateCallbacks = [];
+	  method.invalidateCallbacks = [];
 	  method.onInvalidate = function(callback) {
-	    invalidateCallbacks = invalidateCallbacks || [];
+	    var invalidateCallbacks;
+	    invalidateCallbacks = method.invalidateCallbacks || (method.invalidateCallbacks = []);
 	    return invalidateCallbacks.push(callback);
 	  };
 	  method.offInvalidate = function(callback) {
-	    var index;
+	    var index, invalidateCallbacks;
+	    invalidateCallbacks = method.invalidateCallbacks;
 	    if (!invalidateCallbacks) {
 	      return;
 	    }
@@ -354,17 +358,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return;
 	    }
 	    invalidateCallbacks.splice(index, 1);
-	    if (!invalidateCallbacks) {
-	      return invalidateCallbacks = null;
+	    if (!invalidateCallbacks.length) {
+	      return method.invalidateCallbacks = null;
 	    }
 	  };
 	  method.invalidate = function() {
-	    var callback, _i, _len;
-	    if (!invalidateCallbacks) {
+	    var callback, _i, _len, _ref1;
+	    if (!method.invalidateCallbacks) {
 	      return;
 	    }
-	    for (_i = 0, _len = invalidateCallbacks.length; _i < _len; _i++) {
-	      callback = invalidateCallbacks[_i];
+	    _ref1 = method.invalidateCallbacks;
+	    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+	      callback = _ref1[_i];
 	      callback();
 	    }
 	    method.valid = false;
@@ -379,7 +384,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      method.invalidate();
 	      return method.value = computation();
 	    } else {
-	      throw new Error('flow.dynamic is not allowed to accept arguments');
+	      throw new Error('flow.renew is not allowed to accept arguments');
 	    }
 	  };
 	  method.toString = function() {
@@ -542,7 +547,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	if (Object.defineProperty) {
-	  flow.bind = bindWithDefineProperty = function(obj, attr, debugName) {
+	  flow.bind = function(obj, attr, debugName) {
+	    var cacheValue, d, getter, set, setter;
+	    d = Object.getOwnPropertyDescriptor(obj, attr);
+	    if (d) {
+	      getter = d.get;
+	      set = d.set;
+	    }
+	    if (!getter || !getter.invalidate) {
+	      cacheValue = obj[attr];
+	      getter = function() {
+	        if (arguments.length) {
+	          throw new Error('should not set value on flow.bind');
+	        }
+	        return cacheValue;
+	      };
+	      setter = function(value) {
+	        if (value !== obj[attr]) {
+	          if (set) {
+	            set(value);
+	          }
+	          getter.invalidate();
+	          return cacheValue = value;
+	        }
+	      };
+	      react(getter);
+	      getter.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
+	      Object.defineProperty(obj, attr, {
+	        get: getter,
+	        set: setter
+	      });
+	    }
+	    return getter;
+	  };
+	  flow.duplex = function(obj, attr, debugName) {
 	    var cacheValue, d, get, method, set;
 	    d = Object.getOwnPropertyDescriptor(obj, attr);
 	    if (d) {
@@ -552,72 +592,90 @@ return /******/ (function(modules) { // webpackBootstrap
 	      cacheValue = obj[attr];
 	      method = function(value) {
 	        if (!arguments.length) {
-	          if (get) {
-	            return get();
-	          } else {
-	            return cacheValue;
-	          }
-	        } else if (value !== obj[attr]) {
+	          return cacheValue;
+	        }
+	        if (value !== obj[attr]) {
 	          if (set) {
 	            set(value);
 	          }
+	          get && get.invalidate && get.invalidate();
 	          method.invalidate();
 	          return cacheValue = value;
 	        }
 	      };
 	      react(method);
+	      method.isDuplex = true;
+	      method.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
 	      Object.defineProperty(obj, attr, {
 	        get: method,
 	        set: method
 	      });
+	      return method;
 	    } else {
-	      method = set;
+	      return set;
 	    }
-	    method.toString = function() {
-	      return "" + (debugName || 'm') + "[" + attr + "]";
-	    };
-	    return method;
 	  };
 	} else {
 	  flow.bind = function(obj, attr, debugName) {
-	    var method;
-	    method = function() {
-	      return obj[attr];
-	    };
-	    react(method);
-	    method.toString = function() {
-	      return "" + (debugName || 'm') + "[" + attr + "]";
-	    };
+	    var method, _dcBindMethodMap;
+	    _dcBindMethodMap = obj._dcBindMethodMap;
+	    if (!_dcBindMethodMap) {
+	      _dcBindMethodMap = obj._dcBindMethodMap = {};
+	    }
+	    if (!obj.dcSet$) {
+	      obj.dcSet$ = function(attr, value) {
+	        var _dcDuplexMethodMap;
+	        if (value !== obj[attr]) {
+	          _dcBindMethodMap && _dcBindMethodMap[attr] && _dcBindMethodMap[attr].invalidate();
+	          return (_dcDuplexMethodMap = this._dcDuplexMethodMap) && _dcDuplexMethodMap[attr] && _dcDuplexMethodMap[attr].invalidate();
+	        }
+	      };
+	    }
+	    method = _dcBindMethodMap[attr];
+	    if (!method) {
+	      method = _dcBindMethodMap[attr] = function() {
+	        return obj[attr];
+	      };
+	      method.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
+	      react(method);
+	    }
 	    return method;
 	  };
-	}
-
-	if (Object.defineProperty) {
 	  flow.duplex = function(obj, attr, debugName) {
-	    var reactive;
-	    reactive = bindWithDefineProperty(obj, attr);
-	    reactive.isDuplex = true;
-	    reactive.toString = function() {
-	      return "" + (debugName || 'm') + "[" + attr + "]";
-	    };
-	    return reactive;
-	  };
-	  flow.duplex = function(obj, attr, debugName) {
-	    var method;
-	    method = function(value) {
-	      if (!arguments.length) {
-	        return obj[attr];
-	      } else if (value !== obj[attr]) {
-	        obj[attr] = value;
-	        method.invalidate();
+	    var method, _dcDuplexMethodMap;
+	    _dcDuplexMethodMap = obj._dcDuplexMethodMap;
+	    if (!_dcDuplexMethodMap) {
+	      _dcDuplexMethodMap = obj._dcDuplexMethodMap = {};
+	    }
+	    if (!obj.dcSet$) {
+	      obj.dcSet$ = function(attr, value) {
+	        var _dcBindMethodMap;
+	        if (value !== obj[attr]) {
+	          (_dcBindMethodMap = this._dcBindMethodMap) && _dcBindMethodMap[attr] && _dcBindMethodMap[attr].invalidate();
+	          _dcDuplexMethodMap && _dcDuplexMethodMap[attr] && _dcDuplexMethodMap[attr].invalidate();
+	        }
 	        return value;
-	      }
-	    };
-	    react(method);
-	    method.isDuplex = true;
-	    method.toString = function() {
-	      return "" + (debugName || 'm') + "[" + attr + "]";
-	    };
+	      };
+	    }
+	    method = _dcDuplexMethodMap[attr];
+	    if (!method) {
+	      method = _dcDuplexMethodMap[attr] = function(value) {
+	        if (!arguments.length) {
+	          return obj[attr];
+	        } else {
+	          return obj.dcSet$(attr, value);
+	        }
+	      };
+	      method.isDuplex = true;
+	      method.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
+	      react(method);
+	    }
 	    return method;
 	  };
 	}
@@ -2039,16 +2097,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  TransformComponent.prototype.renderDom = function() {
-	    var content, oldContent;
-	    if (!this.parentNode) {
+	    var baseComponent, content, node, oldContent, parentNode;
+	    parentNode = this.parentNode, node = this.node;
+	    if (!parentNode) {
 	      this.holder = null;
-	      if (this.node && this.node.parentNode) {
+	      if (node && node.parentNode) {
 	        return this.removeDom();
 	      } else {
 	        return this;
 	      }
 	    }
 	    if (this.valid) {
+	      if (parentNode && !node.parentNode) {
+	        baseComponent = this.baseComponent;
+	        baseComponent.parentNode = parentNode;
+	        baseComponent.nextNode = this.nextNode;
+	        baseComponent.attachNode();
+	      }
 	      return this;
 	    }
 	    this.valid = true;
@@ -2081,11 +2146,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  TransformComponent.prototype.removeDom = function() {
 	    var content;
 	    content = this.content;
-	    if (content.holder === this) {
-	      content.holder = null;
-	      content.parentNode = null;
-	      content.removeDom();
-	    }
+	    content.holder = null;
+	    content.parentNode = null;
+	    content.removeDom();
 	    this.emit('afterRemoveDom');
 	    return this;
 	  };
@@ -2231,8 +2294,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 
-	  /* component.updateWhen [components, events] ...
-	  component.updateWhen components..., events...
+	  /*
+	  component.updateWhen components, events
 	  component.updateWhen setInterval, interval, options
 	  component.updateWhen dc.raf, options
 	   */
@@ -2250,34 +2313,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Component.prototype._renderWhenBy = function(method, args) {
-	    var i, item, length, _i, _len;
-	    if (args[0] instanceof Array) {
-	      for (_i = 0, _len = args.length; _i < _len; _i++) {
-	        item = args[_i];
-	        dc._renderWhenBy.apply(dc, [method].concat(__slice.call(item), [[this]]));
-	      }
-	    } else {
-	      i = 0;
-	      length = args.length;
-	      while (i < length) {
-	        if (!isComponent(args[i])) {
-	          break;
-	        }
-	        i++;
-	      }
-	      if (i > 0) {
-	        dc._renderWhenBy(method, args.slice(0, i), args.slice(i), [this]);
+	    if (args[0] === setInterval) {
+	      if (args[1] === 'number') {
+	        dc._renderWhenBy(method, setInterval, args[1], [this], args[2]);
 	      } else {
-	        if (args[0] === setInterval) {
-	          if (args[1] === 'number') {
-	            dc._renderWhenBy(method, setInterval, args[1], [this], args[2]);
-	          } else {
-	            dc._renderWhenBy(setInterval, [this], args[1]);
-	          }
-	        } else if (args[1] === dc.raf) {
-	          dc._renderWhenBy(method, dc.raf, [this], args[1]);
-	        }
+	        dc._renderWhenBy(method, setInterval, [this], args[1]);
 	      }
+	    } else if (args[1] === dc.raf) {
+	      dc._renderWhenBy(method, dc.raf, [this], args[1]);
+	    } else {
+	      dc._renderWhenBy(method, args[0], args[1], [this]);
 	    }
 	    return this;
 	  };
@@ -2853,7 +2898,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  List.prototype.attachNode = function() {
-	    var child, children, index, nextNode, parentNode;
+	    var baseComponent, child, children, index, nextNode, parentNode;
 	    children = this.children;
 	    if ((parentNode = this.parentNode) !== this.node.parentNode) {
 	      this.node.parentNode = parentNode;
@@ -2864,7 +2909,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        while (index >= 0) {
 	          child = children[index];
 	          child.parentNode = parentNode;
-	          child.baseComponent.attachNode();
+	          baseComponent = child.baseComponent;
+	          baseComponent.parentNode = parentNode;
+	          baseComponent.nextNode = child.nextNode;
+	          baseComponent.attachNode();
 	          index && (children[index - 1].nextNode = child.firstNode || child.nextNode);
 	          index--;
 	        }

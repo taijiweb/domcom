@@ -6,8 +6,7 @@ list
 hcombo, vcombo} = dc
 
 exports.demoTriangle =  ->
-#  comp = triangle({}, 'top', 10, 'blue')
-  triangles = div({},
+  div({},
     triangle({}, 'top', 10, 'blue'),
     triangle({}, 'bottom', 10, 'black'),
     triangle({}, 'left', 10, 'red')
@@ -15,9 +14,10 @@ exports.demoTriangle =  ->
 
 exports.demoCombo =  ->
   a = {}
-  combo1 = hcombo({style:{display:'inline-block'}}, duplex(a, 'x'), 'a b'.split(' '))
+  a_x$ = duplex(a, 'x')
+  combo1 = hcombo({style:{display:'inline-block'}}, a_x$, 'a b'.split(' '))
   #comp.mount()
-  combo2 = vcombo({style:{display:'inline-block'}}, duplex(a, 'x'), 'a b'.split(' '))
+  combo2 = vcombo({style:{display:'inline-block'}}, a_x$, 'a b'.split(' '))
   #  comp.mount()
   comp = list(combo2, combo1)
   combo1.on 'update', -> comp.update()

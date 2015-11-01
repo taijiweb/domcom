@@ -23,6 +23,5 @@ module.exports = function() {
       return alert('child');
     }
   }, 'do not propagation'));
-  noPropagation.mount();
   return list(propagation, noPropagation);
 };

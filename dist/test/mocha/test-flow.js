@@ -1,8 +1,8 @@
-var bind, bindings, duplex, expect, flow, idescribe, iit, ndescribe, nit, renew, see, watch, _ref;
+var bind, bindings, duplex, expect, flow, idescribe, iit, list, ndescribe, nit, renew, see, text, watch, _ref;
 
 _ref = require('./helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
 
-bindings = dc.bindings, see = dc.see, bind = dc.bind, duplex = dc.duplex, watch = dc.watch, renew = dc.renew, flow = dc.flow;
+bindings = dc.bindings, see = dc.see, bind = dc.bind, duplex = dc.duplex, watch = dc.watch, renew = dc.renew, flow = dc.flow, text = dc.text, list = dc.list;
 
 describe('reactive flow', function() {
   it('should see', function() {
@@ -88,8 +88,10 @@ describe('reactive flow', function() {
     b = bind(m, 'b', 'm');
     r = flow.add(a, b);
     expect(r()).to.equal(3, 'add');
-    a(3);
-    return expect(r()).to.equal(5, 'add 2');
+    expect(function() {
+      return a(3);
+    }).to["throw"]();
+    return expect(r()).to.equal(3, 'add 2');
   });
   it('should bind', function() {
     var a, a2, m;
@@ -100,9 +102,11 @@ describe('reactive flow', function() {
     a2 = bind(m, 'a');
     expect(a()).to.equal(1);
     expect(a2()).to.equal(1, 'a2');
-    a(3);
-    expect(a()).to.equal(3, 'a again');
-    return expect(a2()).to.equal(3, 'a2 again');
+    expect(function() {
+      return a(3);
+    }).to["throw"]();
+    expect(a()).to.equal(1, 'a again');
+    return expect(a2()).to.equal(1, 'a2 again');
   });
   it('should process bindings', function() {
     var a$, a_, _ref1;
@@ -112,16 +116,16 @@ describe('reactive flow', function() {
     a$(3);
     return expect(a_()).to.equal(3);
   });
-  return it('should process multiple bind and duplex on same object and attr', function() {
+  it('should process multiple bind and duplex on same object and attr', function() {
     var a1, a2, b1, b2, m, sum;
     m = {
       a: 1,
       b: 2
     };
-    a1 = bind(m, 'a');
-    b1 = bind(m, 'b');
-    a2 = bind(m, 'a');
-    b2 = bind(m, 'b');
+    a1 = duplex(m, 'a');
+    b1 = duplex(m, 'b');
+    a2 = duplex(m, 'a');
+    b2 = duplex(m, 'b');
     sum = flow.add(a1, b1);
     expect(sum()).to.equal(3, 'sum 1');
     expect(sum.valid).to.equal(true, 'valid 1');
@@ -134,5 +138,19 @@ describe('reactive flow', function() {
     a2(1);
     expect(sum.valid).to.equal(false, 'valid 4');
     return expect(sum()).to.equal(3, 'sum 4');
+  });
+  return it('should process multiple duplex and $model directive', function() {
+    var a, text1, text2;
+    a = {};
+    text1 = text({
+      $model: duplex(a, 'x')
+    });
+    text2 = text({
+      $model: duplex(a, 'x')
+    });
+    list(text1, text2).updateWhen([text1, text2], 'change').mount();
+    text1.node.value = '1';
+    text1.node.onchange();
+    return expect(text2.node.value).to.equal('1');
   });
 });

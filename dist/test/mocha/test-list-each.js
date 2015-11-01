@@ -375,7 +375,7 @@ describe('list, each', function() {
       comp.update();
       return expect(comp.node.innerHTML).to.equal('1');
     });
-    return it('should update each with component as the item of list 3', function() {
+    it('should update each with component as the item of list 3', function() {
       var comp, s;
       comp = div(div(each([txt(1)], function(item) {
         return item;
@@ -384,6 +384,23 @@ describe('list, each', function() {
       expect(comp.node.innerHTML).to.equal(s = '<div>1</div>');
       comp.update();
       return expect(comp.node.innerHTML).to.equal('<div>1</div>');
+    });
+    return it('should always attach and detach each in multiple iteration', function() {
+      var comp, lst4, showingEach$;
+      showingEach$ = see(true);
+      lst4 = [1, 2];
+      comp = if_(showingEach$, each(lst4, function(item) {
+        return div(item);
+      }));
+      comp.mount();
+      showingEach$(false);
+      comp.render();
+      showingEach$(true);
+      comp.render();
+      expect(comp.node.parentNode).to.equal(document.body);
+      showingEach$(false);
+      comp.render();
+      return expect(comp.node.parentNode).not.to.equal(document.body);
     });
   });
 });
