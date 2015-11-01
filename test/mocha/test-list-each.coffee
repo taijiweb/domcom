@@ -274,3 +274,17 @@ describe 'list, each', ->
       expect(comp.node.innerHTML).to.equal s='<div>1</div>'
       comp.update()
       expect(comp.node.innerHTML).to.equal '<div>1</div>'
+
+    it  'should always attach and detach each in multiple iteration', ->
+      showingEach$ = see true
+      lst4 = [1, 2]
+      comp = if_ showingEach$, each(lst4, (item) -> div item)
+      comp.mount()
+      showingEach$ false
+      comp.render()
+      showingEach$ true
+      comp.render()
+      expect(comp.node.parentNode).to.equal document.body
+      showingEach$ false
+      comp.render()
+      expect(comp.node.parentNode).not.to.equal document.body

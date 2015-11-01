@@ -20,13 +20,20 @@ module.exports = class TransformComponent extends Component
     @invalidate()
 
   renderDom: ->
-    if !@parentNode
+    {parentNode, node} = @
+    if !parentNode
       @holder = null
-      if @node and @node.parentNode
+      if node and node.parentNode
         return @removeDom()
       else return @
 
-    if @valid then return @
+    if @valid
+      if parentNode and !node.parentNode
+        {baseComponent} = @
+        baseComponent.parentNode = parentNode
+        baseComponent.nextNode = @nextNode
+        baseComponent.attachNode()
+      return @
     @valid = true
 
     !@node and @emit('beforeAttach')
@@ -55,10 +62,9 @@ module.exports = class TransformComponent extends Component
 
   removeDom: ->
     content = @content
-    if content.holder==@
-      content.holder = null
-      content.parentNode = null
-      content.removeDom()
+    content.holder = null
+    content.parentNode = null
+    content.removeDom()
     @emit('afterRemoveDom')
     @
 

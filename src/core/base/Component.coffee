@@ -89,8 +89,8 @@ module.exports = class Component
     @emit('afterMount')
     child
 
-  ### component.updateWhen [components, events] ...
-  component.updateWhen components..., events...
+  ###
+  component.updateWhen components, events
   component.updateWhen setInterval, interval, options
   component.updateWhen dc.raf, options
   ###
@@ -98,20 +98,11 @@ module.exports = class Component
   renderWhen: (args...) -> @_renderWhenBy('render', args)
 
   _renderWhenBy: (method, args) ->
-    if args[0] instanceof Array
-      for item in args
-        dc._renderWhenBy(method, item..., [@])
-    else
-      i = 0; length = args.length
-      while i<length
-        if !isComponent(args[i]) then break
-        i++
-      if i>0 then dc._renderWhenBy(method, args.slice(0, i), args.slice(i), [@])
-      else
-        if args[0]==setInterval
-          if args[1]=='number' then dc._renderWhenBy(method, setInterval, args[1], [@], args[2])
-          else dc._renderWhenBy(setInterval, [@], args[1])
-        else if args[1]==dc.raf then dc._renderWhenBy(method, dc.raf, [@], args[1])
+    if args[0]==setInterval
+      if args[1]=='number' then dc._renderWhenBy(method, setInterval, args[1], [@], args[2])
+      else dc._renderWhenBy(method, setInterval, [@], args[1])
+    else if args[1]==dc.raf then dc._renderWhenBy(method, dc.raf, [@], args[1])
+    else dc._renderWhenBy(method, args[0], args[1], [@])
     @
 
   copyEventListeners: (srcComponent) ->

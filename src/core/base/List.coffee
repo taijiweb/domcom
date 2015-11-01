@@ -253,7 +253,10 @@ module.exports = exports = class List extends BaseComponent
         while index>=0
           child = children[index]
           child.parentNode = parentNode
-          child.baseComponent.attachNode()
+          {baseComponent} = child
+          baseComponent.parentNode = parentNode
+          baseComponent.nextNode = child.nextNode
+          baseComponent.attachNode()
           index and children[index-1].nextNode = child.firstNode or child.nextNode
           index--
     @node

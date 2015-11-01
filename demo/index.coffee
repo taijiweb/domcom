@@ -1,48 +1,48 @@
 # domcom demo
-{select, see, case_, list, func, each, p} = dc
+{select, see, if_, case_, list, func, each, div, p} = dc
 
 dc.directives $options: dc.$options,  $model: dc.$model
 
-demoEachPush = ->
-  lst = [1, 2]
-  comp = list each(lst, (item) -> p item), 'some other thing'
-  comp.mount()
-  lst.push 3
-  comp.render()
+{eachDemo1, eachDemo2, eachDemo3, eachDemo4} = require('./demo-each')
+{demoTriangle, demoCombo, demoModelOnMultipleInput} = require './demo-builtins'
+splitterDemo = require './demo-splitter'
+accordion = require './demo-accordion'
+chooseFramework = require('./demo-choose-web-framework')
 
-{eachDemo1, eachDemo2, eachDemo3, eachDemo4} = require 'domcom/demo/demo-each'
-{demoTriangle, demoCombo} = require 'domcom/demo/demo-builtins'
-splitterDemo = require 'domcom/demo/demo-splitter'
-accordion = require 'domcom/demo/demo-accordion'
+{demoEachPush, demoIfEach, demoModelOnMultipleInput} = require('./demo-debug')
 
 exports.demoMap = demoMap =
-  'choose web framework': chooseFramework = func require 'domcom/demo/demo-choose-web-framework'
-  accordion: func accordion
-  triangle: func demoTriangle
-  combo: func demoCombo
-  "show hide":  func require 'domcom/demo/demo-show-hide'
-  counter:  func require 'domcom/demo/demo-counter'
-  dialog:  func require 'domcom/demo/demo-dialog'
-  event:  func require 'domcom/demo/demo-event'
-  controls:  func require 'domcom/demo/demo-controls'
-  if:  func require 'domcom/demo/demo-if-component'
-  each1:  func eachDemo1
-  each2:  func eachDemo2
-  each3:  func eachDemo3
-  each4:  func eachDemo4
-  'switch 1 2 3 4':  func require 'domcom/demo/demo-switch-1-2-3-4'
-  splitter:  func splitterDemo
-  sum:  func require 'domcom/demo/demo-sum'
-  'text model':  func require 'domcom/demo/demo-text-model'
-  'auto width edit':  func require 'domcom/demo/demo-auto-width-edit'
-  'mount/unmount':  func require 'domcom/demo/demo-mount-unmount'
+  'choose web framework':chooseFramework()
+  accordion: accordion()
+  triangle: demoTriangle()
+  combo: demoCombo()
+  "show hide":  require('./demo-show-hide')()
+  counter:  require('./demo-counter')()
+  dialog:  require('./demo-dialog')()
+  event:  require('./demo-event')()
+  controls:  require('./demo-controls')()
+  if:  require('./demo-if-component')()
+  each1:  eachDemo1()
+  each2:  eachDemo2()
+  each3:  eachDemo3()
+  each4:  eachDemo4()
+  'switch 1 2 3 4':  require('./demo-switch-1-2-3-4')()
+  splitter:  splitterDemo()
+  sum:  require('./demo-sum')()
+  'text model':  require('./demo-text-model')()
+  'auto width edit':  require('./demo-auto-width-edit')()
+  'mount/unmount':  require('./demo-mount-unmount')()
 
-exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem='choose web framework') ->
+exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem) ->
   currentItem = see initItem
   list demoSelect = select($options: [Object.keys(demoMap)], $model:currentItem),
-    case_(currentItem, demoMap, chooseFramework).updateWhen(demoSelect, 'change')
+    case_(currentItem, demoMap, else_=demoMap[initItem]).updateWhen(demoSelect, 'change')
 
-exports.runDomComDemo = window.runDomComDemo = ->
+exports.runDemo = (demoMap, initItem) ->
+  comp = makeDemoComponent(demoMap, initItem)
+  comp.mount()
+
+window.onload = ->
 #  comp = accordion()
 #  comp = demoCombo()
 #  comp = demoTriangle()
@@ -62,7 +62,11 @@ exports.runDomComDemo = window.runDomComDemo = ->
 #  comp = demoMap["text model"]
 #  comp = demoMap["auto width edit"]
 #  comp = demoMap["mount/unmount"]
-#  comp = makeDemoComponent(demoMap, demoTriangle)
+#  comp = chooseFramework()
+#  comp.mount()
 
-  comp = makeDemoComponent(demoMap)
-  comp.mount()
+#  demoEachPush()
+#  demoIfEach()
+#  demoModelOnMultipleInput()
+
+  exports.runDemo demoMap, 'choose web framework'
