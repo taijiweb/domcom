@@ -1,18 +1,16 @@
-var $b, a, a$, a_, b_, bindings, checkbox, list, p, text, _ref;
+var a, bindings, checkbox, list, p, text;
 
 list = dc.list, a = dc.a, checkbox = dc.checkbox, text = dc.text, p = dc.p, bindings = dc.bindings;
 
-_ref = bindings({
-  a: 1,
-  b: 2
-}), a$ = _ref.a$, $b = _ref.$b, a_ = _ref.a_, b_ = _ref.b_;
-
 module.exports = function() {
-  var cbx, checkboxes, comp, texts;
-  checkboxes = list(cbx = checkbox(a$), cbx = checkbox(a$));
-  texts = list(a = text(a$), text(a$));
+  var a$, cbx1, cbx2, checkboxes, comp, text1, text2, texts;
+  a$ = bindings({
+    a: 1
+  }).a$;
+  checkboxes = list(cbx1 = checkbox(a$), cbx2 = checkbox(a$));
+  texts = list((text1 = text(a$)), (text2 = text(a$)));
   a$(6);
   comp = list(checkboxes, texts);
-  dc.updateWhen(cbx, 'change', comp);
+  dc.updateWhen([cbx1, cbx2, text1, text2], 'change', comp);
   return comp;
 };

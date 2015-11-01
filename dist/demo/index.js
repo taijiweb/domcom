@@ -48,7 +48,7 @@ exports.makeDemoComponent = makeDemoComponent = function(demoMap, initItem) {
   return list(demoSelect = select({
     $options: [Object.keys(demoMap)],
     $model: currentItem
-  }), case_(currentItem, demoMap, else_ = demoMap[initItem]).updateWhen(demoSelect, 'change'));
+  }), div(case_(currentItem, demoMap, else_ = demoMap[initItem]).updateWhen(demoSelect, 'change')));
 };
 
 exports.runDemo = function(demoMap, initItem) {

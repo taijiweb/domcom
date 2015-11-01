@@ -1,12 +1,13 @@
 {list,
 a, checkbox, text, p
 bindings} = dc
-{a$, $b, a_, b_} = bindings({a: 1, b: 2})
+
 
 module.exports = ->
-  checkboxes = list(cbx=checkbox(a$), cbx=checkbox(a$))
-  texts = list(a=text(a$), text(a$))
+  {a$} = bindings({a: 1})
+  checkboxes = list(cbx1=checkbox(a$), cbx2=checkbox(a$))
+  texts = list((text1=text(a$)), (text2=text(a$)))
   a$(6)
   comp = list(checkboxes, texts)
-  dc.updateWhen(cbx, 'change', comp)
+  dc.updateWhen([cbx1, cbx2, text1, text2], 'change', comp)
   comp

@@ -89,7 +89,7 @@ In coffee-script(recommended):
 
     `<script src="path/to/domcom.min.js"/>`
 
-  or cdn.jsdelivr.net can be used:
+  or use the cdn provided by jsdelivr.net:
 
     `<script src="http://cdn.jsdelivr.net/domcom/0.1/domcom.min.js"/>`
 

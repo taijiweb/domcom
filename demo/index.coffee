@@ -36,7 +36,7 @@ exports.demoMap = demoMap =
 exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem) ->
   currentItem = see initItem
   list demoSelect = select($options: [Object.keys(demoMap)], $model:currentItem),
-    case_(currentItem, demoMap, else_=demoMap[initItem]).updateWhen(demoSelect, 'change')
+    div case_(currentItem, demoMap, else_=demoMap[initItem]).updateWhen(demoSelect, 'change')
 
 exports.runDemo = (demoMap, initItem) ->
   comp = makeDemoComponent(demoMap, initItem)
