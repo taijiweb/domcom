@@ -1,6 +1,13 @@
 # Domcom
   the web framework to provide dom component
 
+## document
+
+  See [doc/](https://github.com/taijiweb/domcom/tree/master/doc) for the document. Both English and Chinese document are provided.
+
+### 中文文档
+  **请看 [doc/Chinese/](https://github.com/taijiweb/domcom/tree/master/doc/Chinese) 文件夹。**
+
 ## Features
 * declarational composable components with reactive function
 
@@ -91,13 +98,7 @@ In coffee-script(recommended):
 
   or use the cdn provided by jsdelivr.net:
 
-    `<script src="http://cdn.jsdelivr.net/domcom/0.1/domcom.min.js"/>`
-
-## document
-
-  See [doc/](https://github.com/taijiweb/domcom/tree/master/doc) for the document. Both English and Chinese document are provided.
-
-  **中文文档在 [doc/Chinese/](https://github.com/taijiweb/domcom/tree/master/doc/Chinese) 文件夹。**
+    `<script src="http://cdn.jsdelivr.net/domcom/0.1.1/domcom.min.js"/>`
 
 ## LICENSE
 MIT, see [LICENSE](https://github.com/taijiweb/domcom/blob/master/LICENSE)

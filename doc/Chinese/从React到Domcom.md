@@ -5,7 +5,7 @@ github.com/taijiweb/domcom
 
 ## 设计背景  
   
-  ReactJS给前端Web应用开发的思路带来巨大转变，颠覆了很多以前的观念。我有多次机会接触和学习ReactJS，在理解它先进的理念的同时也发现它存在一些问题，最初主要集中在性能方面，比如重复生成部件的虚拟dom，整体性计算Diff和进行patch，更新检测机制不够完善等。我的思路是用一种方法标识所有Dom节点特性以及其它所有部件特性的有效性和可变性。首先我想到的用普通的值和特殊的对象来加以区别，后来发现用响应函数是最合适的手段。响应函数的采用使我得以进一步改善部件的更新检测机制。后来我发现，相比于性能，不断演进后得到的这些设计决策给数据管理和应用设计带来的提升和便利更为明显和重要。最终，超出我  Domcom超出预期地实现了我所有的设计目标，不但避免了影响ReactJS性能的基本因素，也同时弥补了ReactJS整体架构影响应用设计和实现复杂性的一些明显缺陷。
+  ReactJS给前端Web应用开发的思路带来巨大转变，颠覆了很多以前的观念。我有多次机会接触和学习ReactJS，在理解它先进的理念的同时也发现它存在一些问题，最初主要集中在性能方面，比如重复生成部件的虚拟dom，整体性计算Diff和进行patch，更新检测机制不够完善等。我的思路是用一种方法标识所有Dom节点特性以及其它所有部件特性的有效性和可变性。首先想到的用普通的值和特殊的对象来加以区别，后来发现用响应函数是最合适的手段。响应函数的采用使我得以进一步改善部件的更新检测机制。后来我发现，相比于性能，不断演进后得到的这些设计决策给数据管理和应用设计带来的提升和便利更为明显和重要。最终Domcom超出预期地实现了我所有的设计目标，不但避免了影响ReactJS性能的基本因素，也同时弥补了ReactJS整体架构影响应用设计和实现复杂性的一些明显缺陷。
 
 
 ## Domcom整体特性
@@ -50,7 +50,7 @@ github.com/taijiweb/domcom
 
 * 不需要模板语言
 
-  Domcom设计的中尽量方便直接使用Coffee-script语言和javascript语言。用Javascript语言的代码已经非常简练可读，还可以用Coffee-script达到更好的效果，基本上能与媲美Jade模板语言，而灵活性更强。因此Domcom并没有模板语言的必要性。当然，要为之加上适当的模板语言也是很可行的。如果有人能完成这项工作，我非常欢迎并期待与之合作。我个人更倾向于缩进风格而不是类似JS那种XML风格的模板语言。考虑到不同用户的习惯，能够两种并存也是很好的。 
+  Domcom设计的中尽量方便直接使用Coffee-script语言和javascript语言。用Javascript语言的代码已经非常简练可读，还可以用Coffee-script达到更好的效果，基本上能媲美Jade模板语言而灵活性更强。因此Domcom不存在多强的模板语言需求。当然，要为之加上适当的模板语言也是很可行的。如果有人能完成这项工作，我非常欢迎并期待合作。我个人更倾向于缩进风格而不是类似JSX那种XML风格的模板语言。考虑到不同用户的习惯，如果能够两种并存就更好了。 
 
 ## 链接、文档和下载
 
@@ -60,7 +60,7 @@ github.com/taijiweb/domcom
 
   或者使用cdn
 
-    http://cdn.jsdelivr.net/domcom/0.1/domcom.min.js
+    http://cdn.jsdelivr.net/domcom/0.1.1/domcom.min.js
 
   [Github项目地址](https://www.github.com/taijiweb/domcom)
 
@@ -70,7 +70,7 @@ github.com/taijiweb/domcom
 
 ### 文档
 
-  Domcom已经提供全面的文档，都在[doc/文件夹](https://github.com/taijiweb/domcom/blob/master/doc)。中文文档集中在[doc/Chinese文件夹](https://github.com/taijiweb/domcom/blob/master/doc/Chinese)：
+  Domcom已经提供全面的文档（特别是中文文档），都在[doc/文件夹](https://github.com/taijiweb/domcom/blob/master/doc)。中文文档集中在[doc/Chinese文件夹](https://github.com/taijiweb/domcom/blob/master/doc/Chinese)：
 
   [README](https://github.com/taijiweb/domcom/blob/master/doc/Chinese)
 
@@ -80,11 +80,11 @@ github.com/taijiweb/domcom
 
   [API参考](https://github.com/taijiweb/domcom/blob/master/doc/Chinese/API参考.md)：关于Domcom所有公开的API的正式而详细的参考资料。
 
-  [速查表](https://github.com/taijiweb/domcom/blob/master/doc/Chinese/速查表.md)：熟悉Domcom的api，常用技巧和惯用法。
+  [速查表](https://github.com/taijiweb/domcom/blob/master/doc/Chinese/速查表.md)：熟悉Domcom的API，常用技巧和惯用法。
 
   [常问问题](https://github.com/taijiweb/domcom/blob/master/doc/Chinese/常问问题.md)：大家经常想了解的一些关于Domcom的问题。
 
-  [doc/Chinese/](https://github.com/taijiweb/domcom/blob/master/doc/Chinese)文件夹还有更多的文档内容。
+  [doc/](https://github.com/taijiweb/domcom/blob/master/doc)文件夹还有更多的文档内容。
 
 ## 社区
 
@@ -94,6 +94,6 @@ github.com/taijiweb/domcom
 
 ## 说明
 
-  Domcom的开发从2015年1月开始，经历了多次迭代，核心代码进行了多次很大的重构，当前实现结构合理，简明优化，具备丰富的测试。今年上半年我的一个项目已经彻底从jQuery和Angular转向Domcom，和Domcom协调开发，体验非常好。欢迎参与Domcom，共建社区，让Web开发更轻松，开发出更多改变世界的应用。
+  本框架从2015年1月产生思路，4月份开始开发，其间经历了多次迭代，核心代码进行了多次很大的重构，当前实现合理，简明、优化，具备丰富的测试。今年上半年我的一个项目已经彻底弃用jQuery和Angular转向Domcom，有良好的体验。欢迎参与Domcom项目，共建社区，让Web开发更轻松，开发出更多改变世界的应用。
 
   

@@ -10,7 +10,7 @@
 	
 	functionName()
 
-#### 方法原型记法:
+#### 方法原型记法
 
 	object.methodName arg1[: Type1], arg2[: Type2], ...
 	
@@ -53,11 +53,11 @@
 
 * fn:(param1[: Type1] [, param2[: Type2] [, ...] ]) -> [Type]:    函数类型。
 
-* item:Type1|Type2:    代表item:可以是类型1或者类型2的值。
+* item:Type1|Type2:    代表item:可以是Type1或者Type2的值。
 
 * item:ValueReactive：    item可以是任何值，也可以是响应函数，如果item是普通函数，会被转换为强制响应函数。
 
-* attrs:Attrs:    代表attrs可以作为Tag部件的attrs属性。在instantiate.coffee中，isAttrs(attrs)应该为true
+* attrs:Attrs:    代表attrs可以作为Tag部件的attrs属性。core/util.coffee中，isAttrs(attrs)应该为true
 
 * item：Index:    代表item是数组的下标索引。该数组一般是相关函数的某个参数或宿主对象的某个字段。
 
@@ -79,7 +79,7 @@
 
 ### 关于方法的说明
 
-本文档只描述公用的方法，包括类或类的实例提供的公用方法和模块提供的模块方法。
+本文档只描述公用的方法，包括类、类的实例、对象，响应函数（附带提供）的公用方法。
 
 ************************************************************************
 
@@ -207,7 +207,7 @@
 
   > 函数原型： `component.renderWhen when:dc.render, options`  
 
-  dc.render函数中绘制或更新部件component。options可设置test函数在绘制或更新前进行测试。clear可以控制停止绘制或更新的时机。可以参考如下代码来帮助理解：
+  让dc.render函数绘制或更新部件component。options可设置test函数在绘制或更新前进行测试。clear可以控制停止绘制或更新的时机。可以参考如下代码来帮助理解：
 
 	addRenderUpdate = (method, component, options) ->
 	  {test, clear} = options
@@ -348,7 +348,7 @@
 
 ##### List部件方法
 
-列表部件提供了一组动态管理子部件的方法。这组方法可以增减部件特性children中包含的子部件。注意，这些方法并不会立即影响Dom，而是先失效列表部件，等到调用部件更新方法时才会实际刷新Dom。除了在定制、扩展部件的时候，程序绝大多数时候可能不需要使用这些方法。建议尽量不要使用这组方法直接强制性动态修改部件结构。
+  列表部件提供了一组动态管理子部件的方法。这组方法可以增减部件特性children中包含的子部件。注意，这些方法并不会立即影响Dom，而是先失效列表部件，等到调用部件更新方法时才会实际刷新Dom。除了在定制、扩展部件的时候，程序绝大多数时候可能不需要使用这些方法。建议尽量不要使用这组方法直接强制性动态修改部件结构。
 
 * **pushChild**
 
@@ -402,7 +402,7 @@
 
   > 函数原型： `dcTagName([attrs:Attrs] [, children:[toComponent]...])`
   
-  DCTagName是可以实例化Tag部件的函数名，必须从dc名字空间引入对于的名字方可使用，例如div, p, span, input, textarea, select等。
+  dcTagName是可以实例化Tag部件的函数名，必须从dc名字空间引入之后方可使用，例如div, p, span, input, textarea, select等。
 
   > 函数原型： `inputType([attrs:Attrs][, value:domField])`
 
@@ -412,7 +412,7 @@
 
   > 函数原型： `tag tagName:TagName [attrs:Attrs][, children:[toComponent]...]`
 
-  tagName是任何可以作为html标签名的字符。
+  tagName是任何可以作为html标签名的字符串。
 
 ##### 示例
 
@@ -427,7 +427,7 @@
 
   Tag部件对应于Dom的Element类型节点，可以管理对应Dom节点的特性，Css Style， Dom事件等。Tag部件所定义的Dom节点特性是响应式的，即这些值如果是函数，则成为响应函数。只有响应函数的计算失效时，Tag部件才需要更新这些特性。而更新特性时，会将计算所得新值与缓存值进行比较，只有两者不相同才需要实际修改Dom节点特性，执行Dom操作以刷新Dom。Dom事件是发生在Dom节点上的事件，不同于Domcom部件事件，这些事件包括onclick，onchange等。对于Dom事件处理函数，domcom主要通过构造Tag部件时利用attrs参数进行声明，也可以通过Tag.bind，Tag.unbind来管理。$model指令，Component.renderWhen, Component.updateWhen, dc,renderWhen, dc,updateWhen等函数也可以添加事件处理函数。
 
-  Tag部件的大部分方法都不直接操作Dom，也不会立即起作用。而是要等到调用本部件或上层部件的render或update方法才会刷新Dom。如果设置的新特性和缓存特性有相等的值，不会导致Dom操作。因此Domcom可以提高应用的性能。这些方法包括Tag.prop, Tag.css, Tag.addClass, Tag.removeClass, Tag.show, Tag.hide等。
+  Tag部件的大部分方法都不直接操作Dom，也不会立即起作用。而是要等到调用本部件或上层部件的render或update方法才会刷新Dom。如果设置的新特性和缓存特性有相等的值，不会导致Dom操作。因此Domcom可以提高应用的性能。这些方法包括prop, css, addClass, removeClass, show, hide等。
 
   Tag.bind, Tag.unbind和上述描述不同。这两个方法则将直接操作Dom节点事件处理函数中用到的Dom部件事件处理函数数组，从而也将会直接影响Dom节点的事件行为，如果Dom部件事件处理函数数组中的事件函数增加第一个处理函数数或者全都被删除，则会向Dom节点赋值或解除Dom节点的事件处理函数。这种机制是不会影响性能的。因为Dom节点事件处理函数的赋值或解除赋值是不会引起Dom刷新或重新布局的。
 
@@ -435,7 +435,7 @@
 
   > 函数原型： `tag.prop prop:PropName|PropSet, value：domField`
 
-   prop: 如果参数个数是1，则prop为特性名，此时函数返回部件对应的node的该特性名的值，或者为包含特性与值的集合的object，函数将扩展部件的特性集，如果参数个数为2， 则本方法将设置部件的prop特性为（tag.props[prop]=value）。
+   prop: 如果参数个数是1，且prop为特性名，此时函数返回部件对应的node的该特性名的值，若prop为包含特性与值的集合的object，函数将扩展部件的特性集，如果参数个数为2， 则本方法将设置部件的prop特性为（tag.props[prop]=value）。
 
    value: undefined,或者被设置的特性的值，可以是函数。如果是函数，部件对应的dom node的prop特性（tag.node[prop])将在每次更新的时候与该函数的值动态保持一致。
 
@@ -443,7 +443,7 @@
 
   > 函数原型： `tag.css prop:PropName|PropSet, value：domField`
     
-  如果参数个数是1，则prop为特性名，此时本方法返回部件的style中prop的值（tag.style[prop]），或者为包含特性与值的集合的object，本方法将扩展部件的style的特性集；如果参数个数为2， 则本方法将设置部件的style的prop特性（tag.style[prop]=value）。
+  如果参数个数是1，且prop为特性名，此时本方法返回部件的style中prop的值（tag.style[prop]），若prop为包含特性与值的集合的object，本方法将扩展部件的style的特性集；如果参数个数为2， 则本方法将设置部件的style的prop特性（tag.style[prop]=value）。
     
   prop: 特性名，或者包含特性与值的集合的object，函数将扩展部件的style的特性集
   
@@ -779,7 +779,6 @@
         [reject: ((value, promise, component) -> toComponent)
         [init:toComponent]]
 
-##### 示例
 
 ***********************************************************
 
