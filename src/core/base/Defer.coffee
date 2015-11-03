@@ -33,7 +33,7 @@ module.exports = class Defer extends TransformComponent
       @promiseState = REJECT
       @invalidateTransform()
 
-    this
+    return this
 
   getContentComponent: ->
     if (state=@promiseState)==INIT then init

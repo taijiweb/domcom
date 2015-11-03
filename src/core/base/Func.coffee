@@ -12,7 +12,7 @@ module.exports = class Func extends TransformComponent
 
     @func.onInvalidate(@invalidateTransform.bind(@))
 
-    this
+    return this
 
   getContentComponent: -> toComponent(@func())
 

@@ -145,7 +145,7 @@ exports.eventHandlerFromArray = (callbackList, eventName, component) ->
 
 attrPropNameMap = {'for':'htmlFor'}
 exports.attrToPropName = (name) ->
-  if newName=attrPropNameMap[name] then newName
+  if newName=attrPropNameMap[name] then return newName
   pieces = name.split('-')
   if pieces.length==1 then return name
   i = 1

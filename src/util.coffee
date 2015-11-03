@@ -79,8 +79,8 @@ exports.binarySearch = (item, items) ->
   length = items.length
   if !length then return 0
   if length==1
-    if items[0]>=item then 0
-    else 1
+    if items[0]>=item then return 0
+    else return 1
   start = 0; end = length-1
   while 1
     index = start+Math.floor((end-start)/2)

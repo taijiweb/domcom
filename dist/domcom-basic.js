@@ -897,9 +897,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	  if (length === 1) {
 	    if (items[0] >= item) {
-	      0;
+	      return 0;
 	    } else {
-	      1;
+	      return 1;
 	    }
 	  }
 	  start = 0;
@@ -2426,7 +2426,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.node;
 	  };
 
-	  Nothing.prototype.attachNode = function(parentNode, nextNode) {
+	  Nothing.prototype.attachNode = function() {
 	    return this.node;
 	  };
 
@@ -2998,7 +2998,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.func = func;
 	    }
 	    this.func.onInvalidate(this.invalidateTransform.bind(this));
-	    this;
+	    return this;
 	  }
 
 	  Func.prototype.getContentComponent = function() {
@@ -3821,7 +3821,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.attrToPropName = function(name) {
 	  var i, len, newName, pieces;
 	  if (newName = attrPropNameMap[name]) {
-	    newName;
+	    return newName;
 	  }
 	  pieces = name.split('-');
 	  if (pieces.length === 1) {
@@ -4028,7 +4028,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.test = test;
 	    }
 	    this.test.onInvalidate(this.invalidateTransform.bind(this));
-	    this;
+	    return this;
 	  }
 
 	  If.prototype.getContentComponent = function() {
@@ -4418,7 +4418,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.promiseState = REJECT;
 	      return this.invalidateTransform();
 	    });
-	    this;
+	    return this;
 	  }
 
 	  Defer.prototype.getContentComponent = function() {

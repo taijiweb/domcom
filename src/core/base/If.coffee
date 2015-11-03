@@ -26,7 +26,7 @@ module.exports = class If extends TransformComponent
 
     @test.onInvalidate(@invalidateTransform.bind(@))
 
-    this
+    return this
 
   getContentComponent: -> if @test() then @then_ else @else_
 
