@@ -5,8 +5,15 @@
 
   See [doc/](https://github.com/taijiweb/domcom/tree/master/doc) for the document. Both English and Chinese document are provided.
 
-### 中文文档
-  **请看 [doc/Chinese/](https://github.com/taijiweb/domcom/tree/master/doc/Chinese) 文件夹。**
+#### 中文文档: **请看 [doc/Chinese/](https://github.com/taijiweb/domcom/tree/master/doc/Chinese) 文件夹。**
+
+## download and install
+
+    npm install --save domcom
+
+  or use the cdn provided by jsdelivr.net:
+
+    `<script src="http://cdn.jsdelivr.net/domcom/0.1.1/domcom.min.js"/>`
 
 ## Features
 * declarational composable components with reactive function
@@ -88,17 +95,6 @@ In coffee-script(recommended):
         comp.mount()
 
     demoSum()
-
-## download and install:
-    npm install --save domcom
-
-    `<script src="path/to/domcom.js"/>`
-
-    `<script src="path/to/domcom.min.js"/>`
-
-  or use the cdn provided by jsdelivr.net:
-
-    `<script src="http://cdn.jsdelivr.net/domcom/0.1.1/domcom.min.js"/>`
 
 ## LICENSE
 MIT, see [LICENSE](https://github.com/taijiweb/domcom/blob/master/LICENSE)

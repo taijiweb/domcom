@@ -864,11 +864,11 @@
 
 ##### 自动绑定
 
-  根据模型数据生成一组单向绑定(flow.bind)和双向绑定(flow.duplex),其中单向绑定的特性名前缀为"_", 双向绑定的的特性名前缀为"$"。
+  根据模型数据生成一组单向绑定(flow.bind)和双向绑定(flow.duplex),其中单向绑定的特性名后缀为"_", 双向绑定的的特性名后缀为"$"。
 
-  > 函数原型：bindings model:Object[, name:String]
+  > 函数原型：bindings model:Object[, debugName:String]
 
-  name参数可选，为生成的响应函数的toString所用。
+  debugName参数可选，为生成的响应函数的toString所用。
 
   以下为参考实现：
 
@@ -910,6 +910,10 @@
 * dc
 
   > 函数原型：`dc element: DomSelector|Node|[Node]|NodeList, options={}`
+
+  从Dom节点或选择器所查询到的Dom节点产生DomNode类的实例
+
+  dc(document), dc("#demo"), dc(".some-class")
    
 
 * dc.directives
@@ -919,6 +923,8 @@
 * dc.onReady
 
   > 函数原型：`dc.onReady fn:Callback`
+
+  注册回调函数，当dc.onReady被调用，这些回调将被执行。
 
 
 * dc.ready
@@ -934,7 +940,6 @@
 
 
   > 函数原型：`dc.onRender callback:Callback`
-  
 
 * dc.offRender
 
