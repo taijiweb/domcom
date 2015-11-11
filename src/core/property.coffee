@@ -86,6 +86,7 @@ exports.classFn = classFn = (items...) ->
       else if item instanceof Array
         extendClassMap(item)
       else if item and item.classMap
+        # another classFn
         for name, value of item.classMap
           if typeof value != 'function' then value = true
           processClassValue(name, value)
@@ -93,6 +94,7 @@ exports.classFn = classFn = (items...) ->
         for name, value of item
           if typeof value != 'function' then value = true
           processClassValue(name, value)
+
     return
 
   react method

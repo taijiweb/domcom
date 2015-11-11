@@ -4,7 +4,7 @@ module.exports = (direction) -> (comp) ->
 
   dc.directives $show: dc.$show
 
-  attrs = comp.attrs
+  props = comp.props
   direction = direction or 'vertical'
 
   if direction == 'vertical'
@@ -18,7 +18,7 @@ module.exports = (direction) -> (comp) ->
 
   children = comp.children
   paneA = children[0]; paneB = children[1]
-  minAWidth = attrs.minAWidth or 0; minBWidth = attrs.minBWidth or 0
+  minAWidth = props.minAWidth or 0; minBWidth = props.minBWidth or 0
   splitBarAttr = {
     "class": splitbarClass,  unselectable: "on",
     style: splitBarAttrCss = {

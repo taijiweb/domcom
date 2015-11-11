@@ -23,63 +23,72 @@ module.exports = class Tag extends List
       if tagName=='svg' then @namespace = "http://www.w3.org/2000/svg"
       else if tagName=='math' then @namespace = "http://www.w3.org/1998/Math/MathML"
 
-    @attrs = attrs
-    @processAttrs()
+    @initAttrs()
+    @extendAttrs(attrs)
+
     return
 
-  processAttrs: ->
+  initAttrs: ->
     me = @
     @hasActiveProperties = false
-
-    attrs = @attrs
     @cacheClassName = ""
-    @className = className = classFn(attrs.className, attrs.class)
-    delete attrs.className
-    delete attrs['class']
-    if !className.valid then @hasActiveProperties = true
-    className.onInvalidate ->
+    @className = className = classFn()
+    @className.onInvalidate ->
       if className.valid
         me.hasActiveProperties = true
         me.invalidate()
-
     @hasActiveProps = false
     @cacheProps = {}
     @props = props = {}
-
     @['invalidateProps'] = {}
     @hasActiveStyle = false
     @cacheStyle = {}
     @style = style = {}
     @['invalidateStyle'] = {}
-    attrStyle = styleFrom(attrs.style)
-    for key, value of attrStyle then @setProp(key, value, style, 'Style')
-    delete attrs.style
-
     @hasActiveEvents = false
     @events = events = {}
     @eventUpdateConfig = {}
 
-    directives = []
+  extendAttrs: (attrs)->
+
+    {className, style, props} = @
+
     for key, value of attrs
 
-      if key[..1]=='on'
-        if typeof value == 'function'
-          events[key] = [value]
-        else events[key] = value
-        @hasActiveEvents = true
-        @hasActiveProperties = true
+      if key=='style'
+        styles = styleFrom(value)
+        for key, value of styles
+          @setProp(key, value, style, 'Style')
+
+      else if key=='class' or key=='className'
+        className.extend(value)
+
+      # events and its handler
+      else if key[..1]=='on'
+        if !value then continue
+        else if typeof value == 'function'
+          @bindOne(key, value)
+        else
+          v0 = value[0]
+          if v0=='before' or v0=='after'
+            for v in value[1...]
+              # value is an array of handlers
+              @bindOne(key, v, v0=='before')
+          else
+            for v in value
+              # value is an array of handlers
+              @bindOne(key, v)
 
       else if key[0]=='$'
         # $directiveName: generator arguments list
         generator = directiveRegistry[key]
         if value instanceof Array then handler = generator.apply(null, value)
         else handler = generator.apply(null, [value])
-        directives.push(handler)
+        handler(@)
 
       else @setProp(key, value, props, 'Props')
-    for directive in directives then directive(@)
 
-    return
+    @
 
   prop: (args...) -> @_prop(args, @props, 'Props')
 
@@ -117,7 +126,8 @@ module.exports = class Tag extends List
         props[prop] = value
       value.onInvalidate(fn)
     props[prop] = value
-    return
+
+    @
 
   addActivity: (props, prop, type) ->
     @['hasActive'+type] = true
@@ -127,22 +137,26 @@ module.exports = class Tag extends List
 
   bind: (eventNames, handler, before) ->
     eventNames = eventNames.split('\s+')
-    {events} = @
     for eventName in eventNames
-      if eventName[...2]!='on' then eventName = 'on'+eventName
-      eventHandlers = events[eventName]
-      if !eventHandlers
-        events[eventName] = [handler]
-        if @node
-          @node[eventName] = eventHandlerFromArray(events[eventName], eventName, @)
-        else
-          @hasActiveEvents = true
-          @hasActiveProperties = true
+      @bindOne(eventName, handler, before)
+    @
+
+  bindOne: (eventName, handler, before) ->
+    if eventName[...2]!='on' then eventName = 'on'+eventName
+    {events} = @
+    eventHandlers = events[eventName]
+    if !eventHandlers
+      events[eventName] = [handler]
+      if @node
+        @node[eventName] = eventHandlerFromArray(events[eventName], eventName, @)
       else
-        index = eventHandlers.indexOf(handler)
-        if index>=0 then continue
-        if before then eventHandlers.unshift.call(eventHandlers, handler)
-        else eventHandlers.push.call(eventHandlers, handler)
+        @hasActiveEvents = true
+        @hasActiveProperties = true
+    else
+      index = eventHandlers.indexOf(handler)
+      if index>=0 then return @
+      if before then eventHandlers.unshift.call(eventHandlers, handler)
+      else eventHandlers.push.call(eventHandlers, handler)
     @
 
   unbind: (eventNames, handler) ->
@@ -162,14 +176,14 @@ module.exports = class Tag extends List
 
   addClass: (items...) ->
     @className.extend(items)
-    if !@className.valid
+    if  @node and !@className.valid
       @hasActiveProperties = true
       @invalidate()
     this
 
   removeClass: (items...) ->
     @className.removeClass(items...)
-    if !@className.valid
+    if @node and !@className.valid
       @hasActiveProperties = true
       @invalidate()
     this

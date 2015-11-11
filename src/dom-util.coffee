@@ -13,7 +13,7 @@ exports.getBindProp = (component)  ->
   {tagName} = component
   if !tagName then throw new Error 'trying to bind a Component which is not a Tag'
   else if tagName=='textarea' or tagName=='select' then return 'value'
-  else if component.attrs.type=='checkbox' then return 'checked'
+  else if component.props.type=='checkbox' then return 'checked'
   else return 'value'
 
 # add browser compatability for addEventListener and removeEventListener in ie 6, 7, 8

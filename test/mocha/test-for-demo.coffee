@@ -120,6 +120,11 @@ describe 'demo', ->
       comp.unmount()
 
   describe 'todomvc', ->
+    it 'should process class', ->
+      comp = a({className:{selected: 1}, href:"#/"})
+      comp.mount('#demo')
+      expect(comp.node.className).to.equal('selected')
+
     it 'should construct and create components', ->
       comp = li(a({className:{selected: 1}, href:"#/"}, "All"))
       comp.mount('#demo')
