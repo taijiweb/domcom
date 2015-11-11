@@ -1440,7 +1440,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    throw new Error('trying to bind a Component which is not a Tag');
 	  } else if (tagName === 'textarea' || tagName === 'select') {
 	    return 'value';
-	  } else if (component.attrs.type === 'checkbox') {
+	  } else if (component.props.type === 'checkbox') {
 	    return 'checked';
 	  } else {
 	    return 'value';
@@ -3088,24 +3088,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.namespace = "http://www.w3.org/1998/Math/MathML";
 	      }
 	    }
-	    this.attrs = attrs;
-	    this.processAttrs();
+	    this.initAttrs();
+	    this.extendAttrs(attrs);
 	    return;
 	  }
 
-	  Tag.prototype.processAttrs = function() {
-	    var attrStyle, attrs, className, directive, directives, events, generator, handler, key, me, props, style, value, _i, _len;
+	  Tag.prototype.initAttrs = function() {
+	    var className, events, me, props, style;
 	    me = this;
 	    this.hasActiveProperties = false;
-	    attrs = this.attrs;
 	    this.cacheClassName = "";
-	    this.className = className = classFn(attrs.className, attrs["class"]);
-	    delete attrs.className;
-	    delete attrs['class'];
-	    if (!className.valid) {
-	      this.hasActiveProperties = true;
-	    }
-	    className.onInvalidate(function() {
+	    this.className = className = classFn();
+	    this.className.onInvalidate(function() {
 	      if (className.valid) {
 	        me.hasActiveProperties = true;
 	        return me.invalidate();
@@ -3119,26 +3113,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.cacheStyle = {};
 	    this.style = style = {};
 	    this['invalidateStyle'] = {};
-	    attrStyle = styleFrom(attrs.style);
-	    for (key in attrStyle) {
-	      value = attrStyle[key];
-	      this.setProp(key, value, style, 'Style');
-	    }
-	    delete attrs.style;
 	    this.hasActiveEvents = false;
 	    this.events = events = {};
-	    this.eventUpdateConfig = {};
-	    directives = [];
+	    return this.eventUpdateConfig = {};
+	  };
+
+	  Tag.prototype.extendAttrs = function(attrs) {
+	    var className, generator, handler, key, props, style, styles, v, v0, value, _i, _j, _len, _len1, _ref2;
+	    className = this.className, style = this.style, props = this.props;
 	    for (key in attrs) {
 	      value = attrs[key];
-	      if (key.slice(0, 2) === 'on') {
-	        if (typeof value === 'function') {
-	          events[key] = [value];
-	        } else {
-	          events[key] = value;
+	      if (key === 'style') {
+	        styles = styleFrom(value);
+	        for (key in styles) {
+	          value = styles[key];
+	          this.setProp(key, value, style, 'Style');
 	        }
-	        this.hasActiveEvents = true;
-	        this.hasActiveProperties = true;
+	      } else if (key === 'class' || key === 'className') {
+	        className.extend(value);
+	      } else if (key.slice(0, 2) === 'on') {
+	        if (!value) {
+	          continue;
+	        } else if (typeof value === 'function') {
+	          this.bindOne(key, value);
+	        } else {
+	          v0 = value[0];
+	          if (v0 === 'before' || v0 === 'after') {
+	            _ref2 = value.slice(1);
+	            for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+	              v = _ref2[_i];
+	              this.bindOne(key, v, v0 === 'before');
+	            }
+	          } else {
+	            for (_j = 0, _len1 = value.length; _j < _len1; _j++) {
+	              v = value[_j];
+	              this.bindOne(key, v);
+	            }
+	          }
+	        }
 	      } else if (key[0] === '$') {
 	        generator = directiveRegistry[key];
 	        if (value instanceof Array) {
@@ -3146,15 +3158,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        } else {
 	          handler = generator.apply(null, [value]);
 	        }
-	        directives.push(handler);
+	        handler(this);
 	      } else {
 	        this.setProp(key, value, props, 'Props');
 	      }
 	    }
-	    for (_i = 0, _len = directives.length; _i < _len; _i++) {
-	      directive = directives[_i];
-	      directive(this);
-	    }
+	    return this;
 	  };
 
 	  Tag.prototype.prop = function() {
@@ -3214,6 +3223,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      value.onInvalidate(fn);
 	    }
 	    props[prop] = value;
+	    return this;
 	  };
 
 	  Tag.prototype.addActivity = function(props, prop, type) {
@@ -3226,33 +3236,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Tag.prototype.bind = function(eventNames, handler, before) {
-	    var eventHandlers, eventName, events, index, _i, _len;
+	    var eventName, _i, _len;
 	    eventNames = eventNames.split('\s+');
-	    events = this.events;
 	    for (_i = 0, _len = eventNames.length; _i < _len; _i++) {
 	      eventName = eventNames[_i];
-	      if (eventName.slice(0, 2) !== 'on') {
-	        eventName = 'on' + eventName;
-	      }
-	      eventHandlers = events[eventName];
-	      if (!eventHandlers) {
-	        events[eventName] = [handler];
-	        if (this.node) {
-	          this.node[eventName] = eventHandlerFromArray(events[eventName], eventName, this);
-	        } else {
-	          this.hasActiveEvents = true;
-	          this.hasActiveProperties = true;
-	        }
+	      this.bindOne(eventName, handler, before);
+	    }
+	    return this;
+	  };
+
+	  Tag.prototype.bindOne = function(eventName, handler, before) {
+	    var eventHandlers, events, index;
+	    if (eventName.slice(0, 2) !== 'on') {
+	      eventName = 'on' + eventName;
+	    }
+	    events = this.events;
+	    eventHandlers = events[eventName];
+	    if (!eventHandlers) {
+	      events[eventName] = [handler];
+	      if (this.node) {
+	        this.node[eventName] = eventHandlerFromArray(events[eventName], eventName, this);
 	      } else {
-	        index = eventHandlers.indexOf(handler);
-	        if (index >= 0) {
-	          continue;
-	        }
-	        if (before) {
-	          eventHandlers.unshift.call(eventHandlers, handler);
-	        } else {
-	          eventHandlers.push.call(eventHandlers, handler);
-	        }
+	        this.hasActiveEvents = true;
+	        this.hasActiveProperties = true;
+	      }
+	    } else {
+	      index = eventHandlers.indexOf(handler);
+	      if (index >= 0) {
+	        return this;
+	      }
+	      if (before) {
+	        eventHandlers.unshift.call(eventHandlers, handler);
+	      } else {
+	        eventHandlers.push.call(eventHandlers, handler);
 	      }
 	    }
 	    return this;
@@ -3287,7 +3303,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var items;
 	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	    this.className.extend(items);
-	    if (!this.className.valid) {
+	    if (this.node && !this.className.valid) {
 	      this.hasActiveProperties = true;
 	      this.invalidate();
 	    }
@@ -3298,7 +3314,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var items, _ref2;
 	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	    (_ref2 = this.className).removeClass.apply(_ref2, items);
-	    if (!this.className.valid) {
+	    if (this.node && !this.className.valid) {
 	      this.hasActiveProperties = true;
 	      this.invalidate();
 	    }
@@ -5045,11 +5061,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = function(direction) {
 	  return function(comp) {
-	    var arrawAAttr, arrawBAttr, arrowA, arrowAHovering, arrowB, arrowBHovering, attrs, barsize, buttonClass, children, clientX, cursor, drag, getSize, left, minAWidth, minBWidth, paneA, paneB, percent, pos, right, size, splitBar, splitBarAttr, splitBarAttrCss, splitbarClass, width;
+	    var arrawAAttr, arrawBAttr, arrowA, arrowAHovering, arrowB, arrowBHovering, barsize, buttonClass, children, clientX, cursor, drag, getSize, left, minAWidth, minBWidth, paneA, paneB, percent, pos, props, right, size, splitBar, splitBarAttr, splitBarAttrCss, splitbarClass, width;
 	    dc.directives({
 	      $show: dc.$show
 	    });
-	    attrs = comp.attrs;
+	    props = comp.props;
 	    direction = direction || 'vertical';
 	    if (direction === 'vertical') {
 	      left = "top";
@@ -5078,8 +5094,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    children = comp.children;
 	    paneA = children[0];
 	    paneB = children[1];
-	    minAWidth = attrs.minAWidth || 0;
-	    minBWidth = attrs.minBWidth || 0;
+	    minAWidth = props.minAWidth || 0;
+	    minBWidth = props.minBWidth || 0;
 	    splitBarAttr = {
 	      "class": splitbarClass,
 	      unselectable: "on",
@@ -5521,20 +5537,20 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 46 */
 /***/ function(module, exports) {
 
-	var autoWidthEditController, div, extend, extendAttrs, pipe, see, text;
+	var div, extend, extendAttrs, pipe, see, setAutoWidth, text;
 
 	see = dc.see, pipe = dc.pipe, div = dc.div, text = dc.text, extendAttrs = dc.extendAttrs, extend = dc.extend;
 
-	exports.autoWidthEditController = autoWidthEditController = function(options) {
-	  var controller, initialWidth, inputAttrs, inputEvent, inputEvents, inputText$, inputTextWidth$, spaceWidth, testSubject, testSubjectStyle, _i, _len;
+	exports.setAutoWidth = setAutoWidth = function(container, options) {
+	  var initialWidth, inputAttrs, inputComponent, inputEventHandler, inputEvents, inputText$, inputTextWidth$, spaceWidth, testSubject, testSubjectStyle;
 	  if (options == null) {
 	    options = {};
 	  }
-	  controller = {};
 	  initialWidth = options.initialWidth || 48;
 	  spaceWidth = options.spaceWidth || 40;
 	  inputTextWidth$ = see(initialWidth);
-	  inputEvents = options.inputEvents && options.inputEvents.split(/\s+/) || ["onkeydown"];
+	  inputEvents = options.inputEvents || "onkeydown";
+	  inputComponent = options.inputComponent || container.children[0];
 	  inputText$ = see("");
 	  testSubjectStyle = {
 	    position: 'absolute',
@@ -5546,16 +5562,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    margin: '0',
 	    padding: '0',
 	    fontSize: function() {
-	      return controller.component.css('fontSize');
+	      return container.css('fontSize');
 	    },
 	    fontFamily: function() {
-	      return controller.component.css('fontFamily');
+	      return container.css('fontFamily');
 	    },
 	    fontWeight: function() {
-	      return controller.component.css('fontWeight');
+	      return container.css('fontWeight');
 	    },
 	    letterSpacing: function() {
-	      return controller.component.css('letterSpacing');
+	      return container.css('letterSpacing');
 	    },
 	    visibility: 'hidden'
 	  };
@@ -5571,27 +5587,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	      whiteSpace: 'nowrap'
 	    }
 	  };
-	  for (_i = 0, _len = inputEvents.length; _i < _len; _i++) {
-	    inputEvent = inputEvents[_i];
-	    inputAttrs[inputEvent] = function(event, comp) {
-	      event.executeDefault = true;
-	      inputText$(this.value);
-	      inputTextWidth$(testSubject.node.getBoundingClientRect().width);
-	      controller.component.update();
-	      return this.focus();
-	    };
-	  }
-	  return extend(controller, {
-	    testSubject: testSubject,
-	    inputAttrs: inputAttrs
-	  });
+	  inputEventHandler = function(event, comp) {
+	    event.executeDefault = true;
+	    inputText$(this.value);
+	    inputTextWidth$(testSubject.node.getBoundingClientRect().width);
+	    container.update();
+	    return this.focus();
+	  };
+	  inputComponent.extendAttrs(inputAttrs);
+	  inputComponent.bind(inputEvents, inputEventHandler);
+	  container.pushChild(testSubject);
+	  return container;
 	};
 
 	exports.autoWidthEdit = function(attrs, inputAttrs, options) {
-	  var controller, inputComp;
-	  controller = autoWidthEditController(options);
-	  inputComp = text(extendAttrs(controller.inputAttrs, inputAttrs));
-	  return div(attrs, [inputComp, controller.testSubject]).addController(controller);
+	  var component, inputComp;
+	  component = div(attrs, inputComp = text());
+	  return setAutoWidth(component, options);
 	};
 
 

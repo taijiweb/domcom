@@ -1429,7 +1429,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    throw new Error('trying to bind a Component which is not a Tag');
 	  } else if (tagName === 'textarea' || tagName === 'select') {
 	    return 'value';
-	  } else if (component.attrs.type === 'checkbox') {
+	  } else if (component.props.type === 'checkbox') {
 	    return 'checked';
 	  } else {
 	    return 'value';
@@ -3077,24 +3077,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.namespace = "http://www.w3.org/1998/Math/MathML";
 	      }
 	    }
-	    this.attrs = attrs;
-	    this.processAttrs();
+	    this.initAttrs();
+	    this.extendAttrs(attrs);
 	    return;
 	  }
 
-	  Tag.prototype.processAttrs = function() {
-	    var attrStyle, attrs, className, directive, directives, events, generator, handler, key, me, props, style, value, _i, _len;
+	  Tag.prototype.initAttrs = function() {
+	    var className, events, me, props, style;
 	    me = this;
 	    this.hasActiveProperties = false;
-	    attrs = this.attrs;
 	    this.cacheClassName = "";
-	    this.className = className = classFn(attrs.className, attrs["class"]);
-	    delete attrs.className;
-	    delete attrs['class'];
-	    if (!className.valid) {
-	      this.hasActiveProperties = true;
-	    }
-	    className.onInvalidate(function() {
+	    this.className = className = classFn();
+	    this.className.onInvalidate(function() {
 	      if (className.valid) {
 	        me.hasActiveProperties = true;
 	        return me.invalidate();
@@ -3108,26 +3102,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.cacheStyle = {};
 	    this.style = style = {};
 	    this['invalidateStyle'] = {};
-	    attrStyle = styleFrom(attrs.style);
-	    for (key in attrStyle) {
-	      value = attrStyle[key];
-	      this.setProp(key, value, style, 'Style');
-	    }
-	    delete attrs.style;
 	    this.hasActiveEvents = false;
 	    this.events = events = {};
-	    this.eventUpdateConfig = {};
-	    directives = [];
+	    return this.eventUpdateConfig = {};
+	  };
+
+	  Tag.prototype.extendAttrs = function(attrs) {
+	    var className, generator, handler, key, props, style, styles, v, v0, value, _i, _j, _len, _len1, _ref2;
+	    className = this.className, style = this.style, props = this.props;
 	    for (key in attrs) {
 	      value = attrs[key];
-	      if (key.slice(0, 2) === 'on') {
-	        if (typeof value === 'function') {
-	          events[key] = [value];
-	        } else {
-	          events[key] = value;
+	      if (key === 'style') {
+	        styles = styleFrom(value);
+	        for (key in styles) {
+	          value = styles[key];
+	          this.setProp(key, value, style, 'Style');
 	        }
-	        this.hasActiveEvents = true;
-	        this.hasActiveProperties = true;
+	      } else if (key === 'class' || key === 'className') {
+	        className.extend(value);
+	      } else if (key.slice(0, 2) === 'on') {
+	        if (!value) {
+	          continue;
+	        } else if (typeof value === 'function') {
+	          this.bindOne(key, value);
+	        } else {
+	          v0 = value[0];
+	          if (v0 === 'before' || v0 === 'after') {
+	            _ref2 = value.slice(1);
+	            for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+	              v = _ref2[_i];
+	              this.bindOne(key, v, v0 === 'before');
+	            }
+	          } else {
+	            for (_j = 0, _len1 = value.length; _j < _len1; _j++) {
+	              v = value[_j];
+	              this.bindOne(key, v);
+	            }
+	          }
+	        }
 	      } else if (key[0] === '$') {
 	        generator = directiveRegistry[key];
 	        if (value instanceof Array) {
@@ -3135,15 +3147,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        } else {
 	          handler = generator.apply(null, [value]);
 	        }
-	        directives.push(handler);
+	        handler(this);
 	      } else {
 	        this.setProp(key, value, props, 'Props');
 	      }
 	    }
-	    for (_i = 0, _len = directives.length; _i < _len; _i++) {
-	      directive = directives[_i];
-	      directive(this);
-	    }
+	    return this;
 	  };
 
 	  Tag.prototype.prop = function() {
@@ -3203,6 +3212,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      value.onInvalidate(fn);
 	    }
 	    props[prop] = value;
+	    return this;
 	  };
 
 	  Tag.prototype.addActivity = function(props, prop, type) {
@@ -3215,33 +3225,39 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  Tag.prototype.bind = function(eventNames, handler, before) {
-	    var eventHandlers, eventName, events, index, _i, _len;
+	    var eventName, _i, _len;
 	    eventNames = eventNames.split('\s+');
-	    events = this.events;
 	    for (_i = 0, _len = eventNames.length; _i < _len; _i++) {
 	      eventName = eventNames[_i];
-	      if (eventName.slice(0, 2) !== 'on') {
-	        eventName = 'on' + eventName;
-	      }
-	      eventHandlers = events[eventName];
-	      if (!eventHandlers) {
-	        events[eventName] = [handler];
-	        if (this.node) {
-	          this.node[eventName] = eventHandlerFromArray(events[eventName], eventName, this);
-	        } else {
-	          this.hasActiveEvents = true;
-	          this.hasActiveProperties = true;
-	        }
+	      this.bindOne(eventName, handler, before);
+	    }
+	    return this;
+	  };
+
+	  Tag.prototype.bindOne = function(eventName, handler, before) {
+	    var eventHandlers, events, index;
+	    if (eventName.slice(0, 2) !== 'on') {
+	      eventName = 'on' + eventName;
+	    }
+	    events = this.events;
+	    eventHandlers = events[eventName];
+	    if (!eventHandlers) {
+	      events[eventName] = [handler];
+	      if (this.node) {
+	        this.node[eventName] = eventHandlerFromArray(events[eventName], eventName, this);
 	      } else {
-	        index = eventHandlers.indexOf(handler);
-	        if (index >= 0) {
-	          continue;
-	        }
-	        if (before) {
-	          eventHandlers.unshift.call(eventHandlers, handler);
-	        } else {
-	          eventHandlers.push.call(eventHandlers, handler);
-	        }
+	        this.hasActiveEvents = true;
+	        this.hasActiveProperties = true;
+	      }
+	    } else {
+	      index = eventHandlers.indexOf(handler);
+	      if (index >= 0) {
+	        return this;
+	      }
+	      if (before) {
+	        eventHandlers.unshift.call(eventHandlers, handler);
+	      } else {
+	        eventHandlers.push.call(eventHandlers, handler);
 	      }
 	    }
 	    return this;
@@ -3276,7 +3292,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var items;
 	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	    this.className.extend(items);
-	    if (!this.className.valid) {
+	    if (this.node && !this.className.valid) {
 	      this.hasActiveProperties = true;
 	      this.invalidate();
 	    }
@@ -3287,7 +3303,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var items, _ref2;
 	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	    (_ref2 = this.className).removeClass.apply(_ref2, items);
-	    if (!this.className.valid) {
+	    if (this.node && !this.className.valid) {
 	      this.hasActiveProperties = true;
 	      this.invalidate();
 	    }

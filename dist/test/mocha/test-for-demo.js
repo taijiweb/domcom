@@ -195,6 +195,17 @@ describe('demo', function() {
   });
   return describe('todomvc', function() {
     var makeTodo;
+    it('should process class', function() {
+      var comp;
+      comp = a({
+        className: {
+          selected: 1
+        },
+        href: "#/"
+      });
+      comp.mount('#demo');
+      return expect(comp.node.className).to.equal('selected');
+    });
     it('should construct and create components', function() {
       var comp;
       comp = li(a({
