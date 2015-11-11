@@ -2327,6 +2327,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this;
 	  };
 
+	  Component.prototype.addController = function(controller) {
+	    return controller.component = this;
+	  };
+
 	  Component.prototype.copyEventListeners = function(srcComponent) {
 	    var event, myListeners, srcListeners;
 	    myListeners = this.listeners;

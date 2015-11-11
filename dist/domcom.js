@@ -2338,6 +2338,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this;
 	  };
 
+	  Component.prototype.addController = function(controller) {
+	    return controller.component = this;
+	  };
+
 	  Component.prototype.copyEventListeners = function(srcComponent) {
 	    var event, myListeners, srcListeners;
 	    myListeners = this.listeners;
@@ -5515,92 +5519,79 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 46 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	var AutoWidthEdit, Tag, div, flow, overAttrs, pipe, see, text, _ref,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+	var autoWidthEditController, div, extend, extendAttrs, pipe, see, text;
 
-	_ref = __webpack_require__(3), see = _ref.see, flow = _ref.flow, pipe = _ref.pipe;
+	see = dc.see, pipe = dc.pipe, div = dc.div, text = dc.text, extendAttrs = dc.extendAttrs, extend = dc.extend;
 
-	div = dc.div, text = dc.text, overAttrs = dc.overAttrs, Tag = dc.Tag;
-
-	exports.AutoWidthEdit = AutoWidthEdit = (function(_super) {
-	  __extends(AutoWidthEdit, _super);
-
-	  function AutoWidthEdit(contextEditAttrs, inputAttrs, inputKeyFn) {
-	    var editWidth, me, testSubject, testSubjectStyle, _inputAttrs;
-	    if (inputKeyFn == null) {
-	      inputKeyFn = this.inputKeyFn;
-	    }
-	    me = this;
-	    editWidth = see(48);
-	    testSubjectStyle = {
-	      position: 'absolute',
-	      top: '30px',
-	      width: 'auto',
-	      height: '20px',
-	      whiteSpace: 'nowrap',
-	      display: 'inline-block',
-	      margin: '0',
-	      padding: '0',
-	      fontSize: function() {
-	        return me.css('fontSize');
-	      },
-	      fontFamily: function() {
-	        return me.css('fontFamily');
-	      },
-	      fontWeight: function() {
-	        return me.css('fontWeight');
-	      },
-	      letterSpacing: function() {
-	        return me.css('letterSpacing');
-	      },
-	      visibility: 'hidden'
-	    };
-	    testSubject = div({
-	      style: testSubjectStyle
-	    }, ((function(_this) {
-	      return function() {
-	        return _this.value;
-	      };
-	    })(this)));
-	    this.inputKeyFn = function(event, comp) {
-	      var node;
-	      event.executeDefault = true;
-	      node = comp.node;
-	      me.value = node.value;
-	      editWidth(testSubject.node.getBoundingClientRect().width);
-	      me.update();
-	      return node.focus();
-	    };
-	    _inputAttrs = {
-	      style: {
-	        'z-index': '10',
-	        width: pipe(editWidth, function(w) {
-	          return Math.max(Math.floor(w) + 40, 48) + 'px';
-	        }),
-	        whiteSpace: 'nowrap'
-	      },
-	      onkeydown: function(event, comp) {
-	        return me.inputKeyFn(event, comp);
-	      }
-	    };
-	    this.inputComp = text(overAttrs(_inputAttrs, inputAttrs));
-	    contextEditAttrs = overAttrs({
-	      onclick: function(event, comp) {
-	        return this.focus();
-	      }
-	    }, contextEditAttrs);
-	    AutoWidthEdit.__super__.constructor.call(this, 'div', contextEditAttrs, [this.inputComp, testSubject]);
+	exports.autoWidthEditController = autoWidthEditController = function(options) {
+	  var controller, initialWidth, inputAttrs, inputEvent, inputEvents, inputText$, inputTextWidth$, spaceWidth, testSubject, testSubjectStyle, _i, _len;
+	  if (options == null) {
+	    options = {};
 	  }
+	  controller = {};
+	  initialWidth = options.initialWidth || 48;
+	  spaceWidth = options.spaceWidth || 40;
+	  inputTextWidth$ = see(initialWidth);
+	  inputEvents = options.inputEvents && options.inputEvents.split(/\s+/) || ["onkeydown"];
+	  inputText$ = see("");
+	  testSubjectStyle = {
+	    position: 'absolute',
+	    top: '30px',
+	    width: 'auto',
+	    height: '20px',
+	    whiteSpace: 'nowrap',
+	    display: 'inline-block',
+	    margin: '0',
+	    padding: '0',
+	    fontSize: function() {
+	      return controller.component.css('fontSize');
+	    },
+	    fontFamily: function() {
+	      return controller.component.css('fontFamily');
+	    },
+	    fontWeight: function() {
+	      return controller.component.css('fontWeight');
+	    },
+	    letterSpacing: function() {
+	      return controller.component.css('letterSpacing');
+	    },
+	    visibility: 'hidden'
+	  };
+	  testSubject = div({
+	    style: testSubjectStyle
+	  }, inputText$);
+	  inputAttrs = {
+	    style: {
+	      'z-index': '10',
+	      width: pipe(inputTextWidth$, function(w) {
+	        return Math.max(Math.floor(w) + spaceWidth, initialWidth) + 'px';
+	      }),
+	      whiteSpace: 'nowrap'
+	    }
+	  };
+	  for (_i = 0, _len = inputEvents.length; _i < _len; _i++) {
+	    inputEvent = inputEvents[_i];
+	    inputAttrs[inputEvent] = function(event, comp) {
+	      event.executeDefault = true;
+	      inputText$(this.value);
+	      inputTextWidth$(testSubject.node.getBoundingClientRect().width);
+	      controller.component.update();
+	      return this.focus();
+	    };
+	  }
+	  return extend(controller, {
+	    testSubject: testSubject,
+	    inputAttrs: inputAttrs
+	  });
+	};
 
-	  return AutoWidthEdit;
-
-	})(Tag);
-
-	exports.autoWidthEdit = function(contextEditAttrs, inputAttrs, inputKeyFn) {
-	  return new AutoWidthEdit(contextEditAttrs, inputAttrs, inputKeyFn);
+	exports.autoWidthEdit = function(attrs, inputAttrs, options) {
+	  var controller, inputComp;
+	  controller = autoWidthEditController(options);
+	  inputComp = text(extendAttrs(controller.inputAttrs, inputAttrs));
+	  return div(attrs, [inputComp, controller.testSubject]).addController(controller);
 	};
 
 
