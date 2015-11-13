@@ -1,6 +1,6 @@
 {isArray, cloneObject} = require 'dc-util'
 {domField} = require '../dom-util'
-{react} = require '../flow'
+{react} = require 'lazy-flow'
 extend = require 'extend'
 {isComponent} = require './base/isComponent'
 

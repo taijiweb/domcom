@@ -2,7 +2,7 @@ toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
 extend = require 'extend'
 {funcString, newLine, intersect} = require 'dc-util'
-{renew} = require '../../flow'
+{renew} = require 'lazy-flow'
 
 INIT = 0
 FULFILL = 1

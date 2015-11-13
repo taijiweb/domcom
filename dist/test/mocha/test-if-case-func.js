@@ -2,6 +2,8 @@ var Component, Tag, Text, TransformComponent, a, accordion, accordionGroup, case
 
 _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
+newDemoNode = require('./helper').newDemoNode;
+
 see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, accordionGroup = dc.accordionGroup, accordion = dc.accordion, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
 describe('if, case, func', function() {

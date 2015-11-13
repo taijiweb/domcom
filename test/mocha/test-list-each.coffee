@@ -1,4 +1,5 @@
 {expect, iit, idescribe, nit, ndescribe, newDemoNode} = require('bdd-test-helper')
+{newDemoNode} = require('./helper')
 
 {isComponent
 Component, TransformComponent, Tag, Text,

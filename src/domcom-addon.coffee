@@ -10,8 +10,10 @@ extend(dc,
 
 {flow} = dc
 extend(flow,
-  require('./flow/addon')
-  require('./flow/watch-list')
+  require('lazy-flow/addon')
+  require('dc-watch-list')
 )
+
+dc.bindings = flow.bindings
 
 module.exports = dc

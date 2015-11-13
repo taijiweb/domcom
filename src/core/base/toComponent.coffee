@@ -2,7 +2,7 @@ Component = require './component'
 isComponent = require './isComponent'
 Nothing = require './Nothing'
 Text = require './Text'
-{react} = require '../../flow/index'
+{react} = require 'lazy-flow'
 
 module.exports = toComponent = (item) ->
   if isComponent(item) then item

@@ -4,8 +4,8 @@ List = require './List'
 Func = require './Func'
 Text = require './Text'
 {isArray, funcString, newLine} = require 'dc-util'
-{react, renew, flow} = require '../../flow/index'
-{watchEachList, watchEachObject} = require '../../flow/watch-list'
+{react, renew, flow} = require 'lazy-flow'
+{watchEachList, watchEachObject} = require 'dc-watch-list'
 
 # itemFn:
 # (item, index, items, component) -> Component

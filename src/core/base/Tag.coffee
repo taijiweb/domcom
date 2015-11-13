@@ -6,7 +6,7 @@ Text = require './Text'
 List = require './List'
 {funcString, newLine, cloneObject} = require 'dc-util'
 {directiveRegistry} = require '../../config'
-{flow} = require '../../flow'
+{flow} = require 'lazy-flow'
 {domField} = require '../../dom-util'
 toComponent = require './toComponent'
 

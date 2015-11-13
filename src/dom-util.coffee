@@ -38,7 +38,7 @@ exports.isElement = (item) ->
   if typeof HTMLElement == "object" then item instanceof HTMLElement
   else item and typeof item == "object" and item != null && item.nodeType == 1 && typeof item.nodeName=="string"
 
-{renew} = require './flow/index'
+{renew} = require 'lazy-flow'
 
 exports.domField = (value) ->
 

@@ -7,8 +7,8 @@ extend dc,
   require('./config'),
 
   # utilities
-  require('./flow/index'),
-  require('./flow/watch-list'),
+  require('lazy-flow'),
+  require('dc-watch-list'),
   require('./dom-util'),
   require('dc-util'),
 

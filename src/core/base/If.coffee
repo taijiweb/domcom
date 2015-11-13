@@ -1,7 +1,7 @@
 toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
 {funcString, newLine, intersect} = require 'dc-util'
-{renew} = require '../../flow'
+{renew} = require 'lazy-flow'
 
 module.exports = class If extends TransformComponent
   constructor: (test, then_, else_) ->
