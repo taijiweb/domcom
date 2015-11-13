@@ -1,7 +1,7 @@
-extend = require '../../extend'
+extend = require 'extend'
 
 {normalizeDomElement} = require '../../dom-util'
-{newDcid} = require '../../util'
+{newDcid} = require 'dc-util'
 isComponent = require './isComponent'
 dc = require '../../dc'
 

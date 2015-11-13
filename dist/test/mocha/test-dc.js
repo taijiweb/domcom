@@ -3,7 +3,7 @@
  */
 var expect, idescribe, iit, isComponent, ndescribe, nit, rinterval, rtimeout, _ref;
 
-_ref = require('./helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, rtimeout = _ref.rtimeout, rinterval = _ref.rinterval;
+_ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, rtimeout = _ref.rtimeout, rinterval = _ref.rinterval;
 
 isComponent = dc.isComponent;
 

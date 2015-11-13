@@ -53,7 +53,7 @@ onTaskDone = -> (err, stats) ->
   return
 
 webpack = require("webpack")
-ClosureCompilerPlugin = require('webpack-closure-compiler')
+#ClosureCompilerPlugin = require('webpack-closure-compiler')
 
 domcomBasicEntry = {
   'domcom-basic': './src/domcom-basic'

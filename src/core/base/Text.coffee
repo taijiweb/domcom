@@ -1,5 +1,5 @@
 BaseComponent = require './BaseComponent'
-{funcString, newLine, value, dynamic} = require '../../util'
+{funcString, newLine, value, dynamic} = require 'dc-util'
 {domField, domValue} = require '../../dom-util'
 
 exports = module.exports = class Text extends BaseComponent

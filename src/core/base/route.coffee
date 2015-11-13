@@ -23,7 +23,7 @@
 TransformComponent = require './TransformComponent'
 isComponent = require './isComponent'
 toComponent = require './toComponent'
-{isEven, matchCurvedString} = require '../../util'
+{isEven, matchCurvedString} = require 'dc-util'
 
 module.exports = route = (routeList..., otherwise, baseIndex) -> _route(routeList, otherwise, baseIndex, 0)
 

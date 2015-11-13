@@ -28,10 +28,20 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "mocha": "1.14.0",
     "chai": "~1.9.1",
-    "coffee-loader": "0.7.2",
+
     "coffee-script": "1.8.0",
+
+    "bdd-test-helper": "latest",
+    "dc-util": "latest",
+    "lazy-flow": "latest",
+    "dc-watch-list": "latest",
+    "extend": "latest",
+
     "del": "^2.0.2",
+    "minimist": "1.1.0",
+
     "gulp": "~3.8.10",
     "gulp-cached": "~1.0.1",
     "gulp-changed": "~1.0.0",
@@ -42,14 +52,14 @@
     "gulp-plumber": "~0.6.5",
     "gulp-rename": "~1.2.0",
     "gulp-util": "~3.0.1",
-    "minimist": "1.1.0",
-    "mocha": "1.14.0",
     "run-sequence": "~1.0.2",
+
     "todomvc-app-css": "~2.0.1",
     "todomvc-common": "~1.0.1",
+
     "webpack": "~1.10.1",
-    "webpack-closure-compiler": "^1.1.0",
-    "webpack-dev-server": "~1.10.1"
+    "webpack-dev-server": "~1.10.1",
+    "coffee-loader": "0.7.2"
   },
   "engines": {
     "node": ">=0.8.0"

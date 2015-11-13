@@ -1,4 +1,4 @@
-extend = require '../extend'
+extend = require 'extend'
 
 {tag} = require('./instantiate')
 {getBindProp} = require '../dom-util'

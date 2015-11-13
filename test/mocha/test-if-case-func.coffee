@@ -1,4 +1,4 @@
-{expect, iit, idescribe, nit, ndescribe, newDemoNode} = require('./helper')
+{expect, iit, idescribe, nit, ndescribe, newDemoNode} = require('bdd-test-helper')
 
 {see, flow
 Component, TransformComponent, Tag, Text,

@@ -1,4 +1,4 @@
-{newLine, funcString} = require '../util'
+{newLine, funcString} = require 'dc-util'
 
 react = (method) ->
 

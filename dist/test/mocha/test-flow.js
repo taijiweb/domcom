@@ -1,6 +1,6 @@
 var bind, bindings, duplex, expect, flow, idescribe, iit, list, ndescribe, nit, renew, see, text, watch, _ref;
 
-_ref = require('./helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
+_ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
 
 bindings = dc.bindings, see = dc.see, bind = dc.bind, duplex = dc.duplex, watch = dc.watch, renew = dc.renew, flow = dc.flow, text = dc.text, list = dc.list;
 

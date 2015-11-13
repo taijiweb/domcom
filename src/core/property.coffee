@@ -1,7 +1,7 @@
-{isArray, cloneObject} = require '../util'
+{isArray, cloneObject} = require 'dc-util'
 {domField} = require '../dom-util'
 {react} = require '../flow'
-extend = require '../extend'
+extend = require 'extend'
 {isComponent} = require './base/isComponent'
 
 exports.extendEventValue = extendEventValue = (props, prop, value, before) ->

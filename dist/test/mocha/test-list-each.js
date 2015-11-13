@@ -1,6 +1,6 @@
 var Component, List, Tag, Text, TransformComponent, a, accordion, accordionGroup, bind, case_, div, each, expect, func, idescribe, if_, iit, isComponent, list, ndescribe, newDemoNode, nit, p, pour, see, span, text, txt, _ref;
 
-_ref = require('./helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
+_ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
 isComponent = dc.isComponent, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, List = dc.List, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, accordionGroup = dc.accordionGroup, accordion = dc.accordion, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div, bind = dc.bind, pour = dc.pour, see = dc.see;
 

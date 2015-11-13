@@ -3,7 +3,7 @@
  */
 var Html, List, Nothing, Tag, Text, a_, bindings, classFn, div, expect, html, idescribe, iit, list, ndescribe, newDemoNode, nit, p, see, styleFrom, txt, _ref;
 
-_ref = require('./helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
+_ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
 bindings = dc.bindings, see = dc.see, Tag = dc.Tag, Text = dc.Text, List = dc.List, txt = dc.txt, list = dc.list, p = dc.p, div = dc.div, Html = dc.Html, html = dc.html, classFn = dc.classFn, styleFrom = dc.styleFrom, Nothing = dc.Nothing;
 

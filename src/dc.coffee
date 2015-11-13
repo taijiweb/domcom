@@ -1,6 +1,6 @@
 DomNode = require './DomNode'
 {requestAnimationFrame, raf, isElement} = require  './dom-util'
-{newDcid, isEven} = require './util'
+{newDcid, isEven} = require 'dc-util'
 {domNodeCache, readyFnList, directiveRegistry, renderCallbackList} = require './config'
 isComponent = require './core/base/isComponent'
 

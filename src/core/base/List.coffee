@@ -1,7 +1,7 @@
 toComponent = require './toComponent'
 BaseComponent = require './BaseComponent'
 Nothing = require './Nothing'
-{checkContainer, newLine, binarySearch, binaryInsert, substractSet} = require '../../util'
+{checkContainer, newLine, binarySearch, binaryInsert, substractSet} = require 'dc-util'
 {checkConflictOffspring} = require '../../dom-util'
 
 module.exports = exports = class List extends BaseComponent

@@ -1,4 +1,4 @@
-{expect, iit, idescribe, nit, ndescribe} = require('./helper')
+{expect, iit, idescribe, nit, ndescribe} = require('bdd-test-helper')
 
 {bindings, see, bind, duplex, watch, renew, flow, text, list} = dc
 

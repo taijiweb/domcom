@@ -1,4 +1,4 @@
-{newLine} = require './util'
+{newLine} = require 'dc-util'
 
 {addEventListener, removeEventListener} = require './dom-util'
 

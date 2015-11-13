@@ -1,6 +1,6 @@
 var Component, a, attrToPropName, bind, checkbox, classFn, div, duplex, expect, func, hide, idescribe, if_, iit, li, list, model, ndescribe, nit, options, p, see, show, span, splitter, styleFrom, text, util, _ref;
 
-_ref = require('./helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
+_ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
 
 util = dc.util, bind = dc.bind, duplex = dc.duplex, see = dc.see, classFn = dc.classFn, styleFrom = dc.styleFrom, attrToPropName = dc.attrToPropName, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, checkbox = dc.checkbox, model = dc.model, show = dc.show, hide = dc.hide, splitter = dc.splitter, options = dc.options;
 

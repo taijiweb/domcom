@@ -1,10 +1,9 @@
-{isArray} = require '../../util'
 toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
 List = require './List'
 Func = require './Func'
 Text = require './Text'
-{funcString, newLine} = require '../../util'
+{isArray, funcString, newLine} = require 'dc-util'
 {react, renew, flow} = require '../../flow/index'
 {watchEachList, watchEachObject} = require '../../flow/watch-list'
 

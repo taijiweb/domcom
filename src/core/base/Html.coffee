@@ -1,6 +1,6 @@
 BaseComponent = require './BaseComponent'
 {constructTextLikeComponent} = require './Text'
-{funcString, newLine} = require '../../util'
+{funcString, newLine} = require 'dc-util'
 {domValue} = require '../../dom-util'
 
 # !!! Warning:

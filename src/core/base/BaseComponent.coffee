@@ -1,5 +1,5 @@
 Component = require './component'
-{cloneObject} = require '../../util'
+{cloneObject} = require 'dc-util'
 
 module.exports = class BaseComponent extends Component
   constructor: ->

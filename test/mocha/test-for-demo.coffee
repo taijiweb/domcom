@@ -1,4 +1,4 @@
-{expect, iit, idescribe, nit, ndescribe} = require('./helper')
+{expect, iit, idescribe, nit, ndescribe} = require('bdd-test-helper')
 
 {bindings, duplex, flow, see
 classFn, styleFrom, extendAttrs

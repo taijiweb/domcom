@@ -1,6 +1,6 @@
 toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
-{funcString, newLine} = require '../../util'
+{funcString, newLine} = require 'dc-util'
 {renew} = require '../../flow'
 
 module.exports = class Cond extends TransformComponent

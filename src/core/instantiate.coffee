@@ -1,7 +1,7 @@
 {Component, toComponent, isComponent,
 Tag, Text, Comment, Html
 If, Case, Func, List, Each, Defer} = require './base'
-{isEven, numbers} = require '../util'
+{isEven, numbers} = require 'dc-util'
 
 {isAttrs} = require './util'
 
