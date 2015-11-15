@@ -1,5 +1,6 @@
-require('./test-util')
-require('./test-flow')
+require('dc-util/test-util')
+require('lazy-flow/test-flow')
+require('lazy-flow-at/test-at')
 require('./test-property')
 require('./test-toString')
 require('./test-dc')

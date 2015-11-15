@@ -20,7 +20,7 @@ Here the [] represents that the content can be omitted.The occurences of [...] i
 
 Depending on the context, if the type is obvious, not convenience or not necessary to decript it, then the type description will be omitted.
 
-The notations above applies to the next section(Type Description) and the function or method Prototype instructions in the following document.
+The notations above applies to the next section(type description) and the function or method Prototype instructions in the following document.
 
 ### type description
 
@@ -1132,23 +1132,23 @@ Domcom implements this group functions to provided for the framework itself. It 
 
 **********************************************
 
-#### dom-util工具函数
+#### dom-util utilities
 
 #####  module: domcom/dom-util
 
 ##### domField
 
-  如果value是undefind或null，返回""；如果是普通函数，返回强制响应函数; 如果是响应函数，直接返回该项；如果是Promise(有then方法和catch方法), 返回该promise的响应函数代理。其它情况返回该项自身(因为domField一般用作Dom特性，因此后续一般会因Javascript语言的类型转换机制而调用该项的toString转换成字符串）。
+  If the value is undefind or null, "" is returned; if the value is normal function, renew reactive function is returned; if the value is a reactive function, the value itself is returned; if the value is Promise (which has then method and catch method), a reactive function is returned to proxy the promise. In other cases the value itself is returned (because domField is used as Dom properties, so it will be converted to string by calling toString method because the feature of Javascript language itself).
 
-  domField通常由domcom自动调用。用户程序一般无需直接使用该函数。
+  domField is generally called by domcom automatically, the user does not need to call this method directly.
 
 * function type
 
   > function prototype: `domField item:domField`
 
-* 实现代码参考: 
+* the implementation code:
 
-  如下代码位于domcom/src/dom-util.coffee: 
+  The code below is in domcom/src/dom-util.coffee:
 
 	exports.domField = (value) ->
 
@@ -1177,17 +1177,17 @@ Domcom implements this group functions to provided for the framework itself. It 
 
 ##### domValue
 
-  如果value是undefind或null，返回""；如果是函数fn, 则返回fn()（如果函数值是是undefind或null，返回"")。其它情况返回该项自身(因为domValue一般用作Dom特性，因此后续一般会因Javascript语言的类型转换机制而调用该项的toString转换成字符串）。
+  If the value is undefind or null, "" is returned; if the value is normal function, renew reactive function is returned; if the value is a reactive function, the value itself is returned; if the value is Promise (which has then method and catch method), a reactive function is returned to proxy the promise. In other cases the value itself is returned (because domField is used as Dom properties, so it will be converted to string by calling toString method because the feature of Javascript language itself).
 
-  domValue通常由domcom自动调用。用户程序一般无需直接使用该函数。
+  domValue is generally called by domcom automatically, the user does not need to call this method directly.
 
 * function type
 
   > function prototype: `domValue item:domField`
 
-* 实现代码参考: 
+* the implementation code:
 
-  如下代码位于domcom/src/dom-util.coffee: 
+  The code below is in domcom/src/dom-util.coffee:
 
     exports.domValue = (value) ->
       if !value? then return ''
@@ -1199,7 +1199,7 @@ Domcom implements this group functions to provided for the framework itself. It 
 
 ##### requestAnimationFrame (即dc.raf)
 
-  window.requestAnimationFrame或其腻子函数，被dc.renderLoop使用。
+  window.requestAnimationFrame or its polyfill. This method is used by dc.renderLoop.
 
 * function type
 
@@ -1207,7 +1207,7 @@ Domcom implements this group functions to provided for the framework itself. It 
 
 * sample
 
- 如下代码位于domcom/src/dc.coffee: 
+ The code below is in domcom/src/dc.coffee:
 
 	dc.renderLoop = renderLoop = ->
 	  requestAnimFrame renderLoop
@@ -1216,11 +1216,11 @@ Domcom implements this group functions to provided for the framework itself. It 
 
 *********************************************************
 
-####  module: domcom/extend
+####  module: require('extend'): https://github.com/justmoon/node-extend
 
-##### extend函数
+##### extend
 
-将第二个开始的对象类型参数(或者叫做hasn, map)的特性补充到底一个对象类型参数。采用https://github.com/justmoon/node-extend。
+  Augment the key/value in the first argument with the following arguments.
 
 * module: domcom/src/extend
 
@@ -1230,7 +1230,7 @@ Domcom implements this group functions to provided for the framework itself. It 
 
 * sample
 
-  如下代码位于domcom/src/index.coffee: 
+  The code below i sin domcom/src/index.coffee:
 
 	extend dc,
 
@@ -1245,85 +1245,85 @@ Domcom implements this group functions to provided for the framework itself. It 
 	  # component
 	  require './core/index'
 
-### Domcom指令
+### Domcom directives
 
- domcom通过使用指令可以在某些情况下让代码更为简明，更为符合人的书写和阅读习惯。domcom的指令设计借鉴了angular的指令，但是，在domcom中指令只是作为语法糖存在，并不具有独立的不可替代的作用。任何时候都可以用普通的函数代替指令来实现完全相同的需求，区别只存在于代码格式方面。
+ domcom let the code to be simpler and more readable by using directives in some cases. domcom directives is somewhat similar to angular.js directives, but with different semantics. In domcom the directives are just some syntax sugar, and they do not play some important role, and they can always can be replaced by normal function.
 
- 指令只允许用在Tag部件上。指令的使用方法是: 
+ The directives can only be used on Tag components. The method to use directive is like below:
 
    tag { ..., $directiveName: directiveArguments, ...}, ...
 
- 在执行Tag部件的初始化期间处理Tag的属性集的时候，如果遇到以"$"字符开头的属性，domcom认为这是一个指令，会查找预先注册的指令集，如果找到该指令的指令处理函数生成器，则以directiveArguments作为参数调用该生成器，然后用该调用返回的指令处理函数来处理该部件。如果没有注册该指令，domcom将认为是一个错误。
+ While initializing Tag component and processing its attributes, domcom will treat the attribute leading by the "$" character as a directive, it will look up the registered directives to find one directive handler generator, call the generator with directiveArguments, and execute the returned directive handler on the component.
 
-#### 注册指令
+#### Regiester directive
 
-  domcom中使用任何指令前必须显式地注册。注册方法有两种。可以批量注册
+  To use the directives in domcom, they must be regesited explicitly. There are two methods to register. The first one is to register directives batchly:
 
   > function prototype: `dc.directives {$directiveName:generator:DirectiveHandlerGenerator ... }`
 
-  或者注册单个指令
+  The second one is to register a single directive:
 
   > function prototype: `dc.directives $directiveName:String, generator:DirectiveHandlerGenerator`
 
-  其中，DirectiveHandlerGenerator表示指令处理函数生成器，是个返回指令处理函数的函数。其类型如下
+  As above, DirectiveHandlerGenerator is the directive handler generator, which is a function to return a directive handler. Its type is like below:
 
   > function prototype: `DirectiveHandlerGenerator: (...) -> DirectiveHandler`
 
-  DirectiveHandler表示指令处理函数，它接受部件参数，对该部件进行处理，并返回该部件，其类型如下: 
+  DirectiveHandler is the directive handler generator, it receives the component as its argument, and it processes the component and returns the component itself. Its type is like below:
 
   > function prototype: `DirectiveHandler: (component) -> component`
 
-#### 内建指令
+#### builtin directives
 
-  Domcom预定义了一组内建指令。
+  Domcom predifines some builtin directives.
 
-##### 文件夹路径: src/directives/
+##### subfolder: src/directives/
 
-##### 说明
+##### explanation
 
-在上述文件夹定义了一组内建指令，也就是说定义了一组函数，这组函数可以充当指令处理函数生成器。可以通过如下代码注册所有内置指令:
+  Some  directives are defined in the folder above. They are just some functions, which can be used as directive handler generator, and can be registered as directives with the code below:
 
     dc.directives dc.builtinDirectives
 
-也可以单个地注册需要使用的指令, 例如: 
+  You can also register a single directive once, e.g.
 
     {$model} = dc
     dc.directives $model:$model
 
-##### $model指令
+##### $model directive
 
 * module: src/directives/model
 
-* 用法: tag $model: model
+* usage: tag $model: model
 
-##### $bind指令
+##### $bind directive
 
 * module: src/directives/bind
-* 用法: tag $bind: model
+* usage: tag $bind: model
 
-##### $show和$hide指令
+##### $show and $hide directive
 
 * module: src/directives/show-hide
-* 用法: 
+* usage:
   tag $show:test
   tag $show: [test, display]
   tag $hide: test
   tag $hide: [test, display]
 
-##### $splitter指令
+##### $splitter directive
 
 * module: src/directives/splitter
 * $splitter: direction
 
-##### $options指令
+##### $options directive
 
 * module: src/directives/options
 
-* 说明: 只能配合`<select>`标签部件使用
+* explanation: can only be used with `<select>` tag component
 
-* 用法: select $options: [items]
+* usage: select $options: [items]
 
-##### $blink指令
+##### $blink usage
 
 * module: src/directives/blink
 * tag $blink: delay
@@ -1337,8 +1337,8 @@ Domcom implements this group functions to provided for the framework itself. It 
 
 ***********************************************************
 
-### 内置部件
+### builtin components
 
-  Domcom预定义了一组内置部件，包括combo, dialog, triangle, autoWidthEdit, accordion等。这些部件主要起演示作用，实际项目中请视情况选用。从这些实例可以看到，在Domcom框架下，要扩充新的部件是非常简单的。
+  Domcom predefined some builtin compnents, including combo, dialog, triangle, autoWidthEdit, accordion, etc. These components existed mainly to demonstrate extending domcom. From the samples we can find it is very simple to extend or combine the components under the domcom framework.
 
-#### 子文件夹路径: domcom/src/builtins/
+#### subfolder: domcom/src/builtins/

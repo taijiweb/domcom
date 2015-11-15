@@ -1,6 +1,8 @@
-require('./test-util');
+require('dc-util/test-util');
 
-require('./test-flow');
+require('lazy-flow/test-flow');
+
+require('lazy-flow-at/test-at');
 
 require('./test-property');
 

@@ -42,7 +42,7 @@
     "del": "^2.0.2",
     "minimist": "1.1.0",
 
-    "gulp": "~3.8.10",
+    "gulp": "~3.9.0",
     "gulp-cached": "~1.0.1",
     "gulp-changed": "~1.0.0",
     "gulp-coffee": "~2.2.0",

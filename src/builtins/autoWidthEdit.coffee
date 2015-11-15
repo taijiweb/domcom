@@ -1,5 +1,7 @@
 {see, pipe, div, text, extendAttrs, extend} = dc
 
+#  options.inputComponent is not given, container.children[0] will be used as inputComponent <input type="text">
+# options.inputEvents can be like "onkeydown onkeyup ...", the default value is "onkeydown"
 exports.setAutoWidth = setAutoWidth = (container, options={}) ->
 
   initialWidth = options.initialWidth or 48
