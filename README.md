@@ -44,7 +44,7 @@ In javascript:
     // Although it's not necessary, 
     // but I recommend to use some tool like babel to support ES6, especially destructive syntax
 
-    {list, text, p, flow, see} = dc
+    var {list, text, p, flow, see} = dc
 
     // otherwise you need write the the code like below, it's not an ideal method:
     // var demoSum, flow, list, p, see, text;​
