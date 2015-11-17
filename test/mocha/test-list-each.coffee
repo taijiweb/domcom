@@ -6,6 +6,7 @@ Component, TransformComponent, Tag, Text,
 txt, list, List, func, if_, case_, func, each
 accordionGroup, accordion
 a, p, span, text, div
+all, every, nItems
 bind, pour, see} = dc
 
 describe 'list, each', ->
@@ -83,6 +84,25 @@ describe 'list, each', ->
       comp.setLength(0)
       comp.update();
       expect(demoNode.innerHTML).to.equal ''
+
+  describe 'every, all, nItems', ->
+    it 'every ', ->
+      comp = every([1, 2], (item) -> item)
+      comp.mount(demoNode=newDemoNode('list'))
+      comp.update()
+      expect(comp.node.length).to.equal 2
+
+    it 'all ', ->
+      comp = all({a:1, b:2}, (key, value) -> list(key, value))
+      comp.mount(demoNode=newDemoNode('list'))
+      comp.update()
+      expect(comp.node.length).to.equal 2
+
+    it 'nItems ', ->
+      comp = nItems(2, (index) -> index)
+      comp.mount(demoNode=newDemoNode('list'))
+      comp.update()
+      expect(comp.node.length).to.equal 2
 
   describe 'Each', ->
     it  'should create empty each component', ->

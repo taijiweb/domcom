@@ -1,10 +1,10 @@
-var Component, List, Tag, Text, TransformComponent, a, accordion, accordionGroup, bind, case_, div, each, expect, func, idescribe, if_, iit, isComponent, list, ndescribe, newDemoNode, nit, p, pour, see, span, text, txt, _ref;
+var Component, List, Tag, Text, TransformComponent, a, accordion, accordionGroup, all, bind, case_, div, each, every, expect, func, idescribe, if_, iit, isComponent, list, nItems, ndescribe, newDemoNode, nit, p, pour, see, span, text, txt, _ref;
 
 _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
 newDemoNode = require('./helper').newDemoNode;
 
-isComponent = dc.isComponent, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, List = dc.List, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, accordionGroup = dc.accordionGroup, accordion = dc.accordion, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div, bind = dc.bind, pour = dc.pour, see = dc.see;
+isComponent = dc.isComponent, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, List = dc.List, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, accordionGroup = dc.accordionGroup, accordion = dc.accordion, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div, all = dc.all, every = dc.every, nItems = dc.nItems, bind = dc.bind, pour = dc.pour, see = dc.see;
 
 describe('list, each', function() {
   describe('List', function() {
@@ -109,6 +109,38 @@ describe('list, each', function() {
       comp.setLength(0);
       comp.update();
       return expect(demoNode.innerHTML).to.equal('');
+    });
+  });
+  describe('every, all, nItems', function() {
+    it('every ', function() {
+      var comp, demoNode;
+      comp = every([1, 2], function(item) {
+        return item;
+      });
+      comp.mount(demoNode = newDemoNode('list'));
+      comp.update();
+      return expect(comp.node.length).to.equal(2);
+    });
+    it('all ', function() {
+      var comp, demoNode;
+      comp = all({
+        a: 1,
+        b: 2
+      }, function(key, value) {
+        return list(key, value);
+      });
+      comp.mount(demoNode = newDemoNode('list'));
+      comp.update();
+      return expect(comp.node.length).to.equal(2);
+    });
+    return it('nItems ', function() {
+      var comp, demoNode;
+      comp = nItems(2, function(index) {
+        return index;
+      });
+      comp.mount(demoNode = newDemoNode('list'));
+      comp.update();
+      return expect(comp.node.length).to.equal(2);
     });
   });
   return describe('Each', function() {

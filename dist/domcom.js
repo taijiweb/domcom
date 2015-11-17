@@ -5237,10 +5237,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Case, Comment, Component, Defer, Each, Func, Html, If, List, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
+	var Case, Comment, Component, Defer, Each, Func, Html, If, List, Nothing, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
 	  __slice = [].slice;
 
-	_ref = __webpack_require__(14), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, Defer = _ref.Defer;
+	_ref = __webpack_require__(14), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, Nothing = _ref.Nothing, Defer = _ref.Defer;
 
 	_ref1 = __webpack_require__(7), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
@@ -5416,53 +5416,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-	exports.all = function(attrs, hash, itemFn) {
+	exports.all = function(hash, itemFn) {
 	  var children, i, key, value;
-	  if (isAttrs(attrs)) {
-	    if (!hash) {
-	      return new Nothing();
-	    }
-	    children = [];
-	    i = 0;
-	    for (key in hash) {
-	      value = hash[key];
-	      if (!hash.hasOwnProperty(key)) {
-	        break;
-	      }
-	      children.push(itemFn(key, value, i, hash));
-	      i++;
-	    }
-	    return new Tag('div', attrs, [new List(children)]);
-	  } else {
-	    if (!attrs) {
-	      return new Nothing();
-	    }
-	    children = [];
-	    i = 0;
-	    for (key in attrs) {
-	      value = attrs[key];
-	      if (!attrs.hasOwnProperty(key)) {
-	        break;
-	      }
-	      children.push(itemFn(key, value, i, hash));
-	      i++;
-	    }
-	    return new List(children);
+	  if (!hash) {
+	    return new Nothing();
 	  }
+	  children = [];
+	  i = 0;
+	  for (key in hash) {
+	    value = hash[key];
+	    if (!hash.hasOwnProperty(key)) {
+	      break;
+	    }
+	    children.push(itemFn(key, value, i, hash));
+	    i++;
+	  }
+	  return new List(children);
 	};
 
 	exports.nItems = function(attrs, n, itemFn) {
-	  if (isAttrs) {
+	  if (isAttrs(attrs)) {
 	    if (typeof n === 'function') {
 	      return new Tag('div', attrs, [new Each(numbers(n), itemFn)]);
 	    } else {
 	      return new Tag('div', every(numbers(n), itemFn));
 	    }
 	  } else {
-	    if (typeof atrrs === 'function') {
-	      return new Each(numbers(atrrs), n);
+	    if (typeof attrs === 'function') {
+	      return new Each(numbers(attrs), n);
 	    } else {
-	      return every(numbers(atrrs), n);
+	      return every(numbers(attrs), n);
 	    }
 	  }
 	};

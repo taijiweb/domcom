@@ -13,12 +13,12 @@
 
   or use the cdn provided by jsdelivr.net:
 
-    `<script src="http://cdn.jsdelivr.net/domcom/0.1.1/domcom.min.js"/>`
+    `<script src="http://cdn.jsdelivr.net/domcom/0.1.2/domcom.min.js"/>`
 
 ## Features
-* declarational composable components with reactive function
+* declarative composable components with reactive function
 
-* only render the invalidated components and refresh the really changed dom nodes with better automatic updation checking
+* only render the invalidated components and refresh the really changed dom nodes with better automatic update status checking
 
 * decouple with model and controller completely
 
@@ -44,7 +44,7 @@ In javascript:
     // Although it's not necessary, 
     // but I recommend to use some tool like babel to support ES6, especially destructive syntax
 
-    var {list, text, p, flow, see} = dc
+    const {list, text, p, flow, see} = dc
 
     // otherwise you need write the the code like below, it's not an ideal method:
     // var demoSum, flow, list, p, see, text;​

@@ -1,6 +1,7 @@
 {Component, toComponent, isComponent,
 Tag, Text, Comment, Html
-If, Case, Func, List, Each, Defer} = require './base'
+If, Case, Func, List, Each,
+Nothing, Defer} = require './base'
 {isEven, numbers} = require 'dc-util'
 
 {isAttrs} = require './util'
@@ -105,9 +106,8 @@ exports.every = every = (attrs, list, itemFn) ->
       children.push list(item, i, attrs)
     new List(children)
 
-exports.all = (attrs, hash, itemFn) ->
-  if isAttrs(attrs)
-
+# all can not use attrs directly
+exports.all = (hash, itemFn) ->
     if !hash then return new Nothing()
 
     children = []
@@ -116,31 +116,19 @@ exports.all = (attrs, hash, itemFn) ->
       if !hash.hasOwnProperty((key)) then break
       children.push itemFn(key, value, i, hash)
       i++
-    new Tag('div', attrs, [new List(children)])
-  else
-
-    if !attrs then return new Nothing()
-
-    # attrs become list, list become itemFn
-    children = []
-    i = 0
-    for key, value of attrs
-      if !attrs.hasOwnProperty((key)) then break
-      children.push itemFn(key, value, i, hash)
-      i++
     new List(children)
 
 # each(0...n , itemFn) if n is function
 # otherwise every(0...n, itemFn)
 exports.nItems = (attrs, n, itemFn) ->
-  if isAttrs
+  if isAttrs(attrs)
     if typeof n == 'function'
       new Tag('div', attrs, [new Each(numbers(n), itemFn)])
     else new Tag('div', every(numbers(n), itemFn))
   else
-    if typeof atrrs == 'function'
-      new Each(numbers(atrrs), n)
-    else every(numbers(atrrs), n)
+    if typeof attrs == 'function'
+      new Each(numbers(attrs), n)
+    else every(numbers(attrs), n)
 
 # promise is a promise, which have .then and .catch the two method
 # fulfill: (value, promise, component) ->
