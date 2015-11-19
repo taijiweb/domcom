@@ -3175,13 +3175,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.isTag = true;
 	    this.tagName = tagName = tagName.toLowerCase();
 	    this.namespace = attrs.namespace;
-	    if (!this.namespace) {
-	      if (tagName === 'svg') {
-	        this.namespace = "http://www.w3.org/2000/svg";
-	      } else if (tagName === 'math') {
-	        this.namespace = "http://www.w3.org/1998/Math/MathML";
-	      }
-	    }
 	    this.initAttrs();
 	    this.extendAttrs(attrs);
 	    return;
@@ -4890,7 +4883,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	getBindProp = __webpack_require__(7).getBindProp;
 
-	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section";
+	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section" + " svg iframe";
 
 	tagNames = tagNames.split(' ');
 

@@ -19,9 +19,6 @@ module.exports = class Tag extends List
 
     @tagName = tagName = tagName.toLowerCase()
     @namespace = attrs.namespace
-    if !@namespace
-      if tagName=='svg' then @namespace = "http://www.w3.org/2000/svg"
-      else if tagName=='math' then @namespace = "http://www.w3.org/1998/Math/MathML"
 
     @initAttrs()
     @extendAttrs(attrs)
