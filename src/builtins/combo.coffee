@@ -1,4 +1,6 @@
-{list, input, span, div, extendAttrs, see} = dc
+{see} = require 'lazy-flow'
+{list, input, span, div} = require '../core/instantiate'
+{extendAttrs} = require '../core/property'
 
 exports.combobox = combobox = (attrs, modelValue, valueList, direction) ->
   showingItems = see false

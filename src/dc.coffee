@@ -27,13 +27,14 @@ querySelector = (selector, all) ->
   if all then new DomNode(document.querySelectorAll(selector))
   else new DomNode(document.querySelector(selector))
 
-window.dcid = newDcid()
-# can not write window.$document = dc(document)
-# why so strange? browser can predict the document.dcid=1, document.body.dcid=2 and assigns it in advance !!!!!!!
-dcid = document.dcid = newDcid()
-window.$document = dc.$document = domNodeCache[dcid] = new DomNode(document)
-dcid = document.body.dcid = newDcid()
-window.$body = dc.$body = domNodeCache[dcid] = new DomNode(document.body)
+if typeof window != 'undefined'
+  window.dcid = newDcid()
+  # can not write window.$document = dc(document)
+  # why so strange? browser can predict the document.dcid=1, document.body.dcid=2 and assigns it in advance !!!!!!!
+  dcid = document.dcid = newDcid()
+  window.$document = dc.$document = domNodeCache[dcid] = new DomNode(document)
+  dcid = document.body.dcid = newDcid()
+  window.$body = dc.$body = domNodeCache[dcid] = new DomNode(document.body)
 
 dc.onReady = (callback) -> readyFnList.push callback
 
@@ -44,7 +45,8 @@ dc.ready = ->
   for callback in readyFnList then callback()
   return
 
-document.addEventListener 'DOMContentLoaded', dc.ready, false
+if typeof window != 'undefined'
+  document.addEventListener 'DOMContentLoaded', dc.ready, false
 
 dc.render = render = ->
   for callback in renderCallbackList

@@ -1,4 +1,7 @@
-{see, pipe, div, text, extendAttrs, extend} = dc
+{see, pipe} = require 'lazy-flow'
+{extend} = require 'extend'
+{div, text} = require '../core/instantiate'
+{extendAttrs} = require '../core/property'
 
 #  options.inputComponent is not given, container.children[0] will be used as inputComponent <input type="text">
 # options.inputEvents can be like "onkeydown onkeyup ...", the default value is "onkeydown"

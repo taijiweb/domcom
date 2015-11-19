@@ -105,6 +105,12 @@ module.exports = class Component
     else dc._renderWhenBy(method, args[0], args[1], [@])
     @
 
+  reachTag: ->
+    {holder} = @
+    while !holder.isTag and holder.holder
+      holder = holder.holder
+    holder
+
   # just one kind of many design patterns in domcom
   # sometimes this can make code simpler
   # controller can be any object

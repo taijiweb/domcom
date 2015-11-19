@@ -1,4 +1,5 @@
-{div, extendAttrs} = dc
+{div} = require '../core/instantiate'
+{extendAttrs} = require '../core/property'
 
 reverseSide = {left:'right', right:'left', top:'bottom', bottom:'top'}
 

@@ -1,4 +1,6 @@
-{Component, list, if_, div, see}  = dc
+{see} = require 'lazy-flow'
+{list, if_, div} = require '../core/instantiate'
+{Component} = require '../core/base/Component'
 
 globalID = 0
 

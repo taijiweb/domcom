@@ -1,4 +1,7 @@
-window.dc = module.exports = dc = require './dc'
+module.exports = dc = require './dc'
+
+if typeof window != 'undefined'
+  window.dc = dc
 
 dc.extend = extend = require 'extend'
 

@@ -19,7 +19,7 @@
       "url": "https://raw.github.com/taijiweb/domcom/master/LICENSE"
     }
   ],
-  "main": "lib/index.js",
+  "main": "lib/domcom.js",
   "homepage": "https://github.com/taijiweb/domcom",
   "bugs": "https://github.com/taijiweb/domcom/issues",
   "repository": {

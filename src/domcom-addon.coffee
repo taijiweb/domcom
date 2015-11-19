@@ -1,4 +1,4 @@
-{extend} = dc
+{extend} = dc = require('./domcom-basic')
 
 dc.builtinDirectives = require('./directives/index')
 

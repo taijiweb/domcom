@@ -1,4 +1,4 @@
-{see, flow} = dc
+{see, flow} = require 'lazy-flow'
 
 module.exports = (interval) -> (comp) ->
   if !interval? then interval = 500

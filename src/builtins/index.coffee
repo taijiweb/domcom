@@ -1,4 +1,4 @@
-{extend} = dc
+extend = require 'extend'
 extend exports, require './accordion'
 exports.triangle = require './triangle'
 exports.dialog = require './dialog'
