@@ -8,6 +8,7 @@ module.exports =
   Tag: require './Tag'
   Text: require './Text'
   Comment: require './Comment'
+  Cdata: require './Cdata'
   Html: require './Html'
   Nothing: require './Nothing'
   TransformComponent: require './TransformComponent'

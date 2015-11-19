@@ -58,7 +58,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	dc = __webpack_require__(1);
 
-	__webpack_require__(33);
+	__webpack_require__(34);
 
 	module.exports = dc;
 
@@ -1661,7 +1661,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	extend = __webpack_require__(10);
 
-	module.exports = exports = extend({}, __webpack_require__(12), __webpack_require__(30), __webpack_require__(32), __webpack_require__(23));
+	module.exports = exports = extend({}, __webpack_require__(12), __webpack_require__(31), __webpack_require__(33), __webpack_require__(24));
 
 
 /***/ },
@@ -1670,25 +1670,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var route;
 
-	route = __webpack_require__(13);
+	route = __webpack_require__(17);
 
 	module.exports = {
 	  isComponent: __webpack_require__(9),
-	  toComponent: __webpack_require__(16),
+	  toComponent: __webpack_require__(19),
 	  Component: __webpack_require__(15),
-	  BaseComponent: __webpack_require__(18),
-	  List: __webpack_require__(20),
-	  Tag: __webpack_require__(22),
-	  Text: __webpack_require__(19),
-	  Comment: __webpack_require__(24),
-	  Html: __webpack_require__(25),
-	  Nothing: __webpack_require__(17),
-	  TransformComponent: __webpack_require__(14),
-	  If: __webpack_require__(26),
-	  Case: __webpack_require__(27),
-	  Func: __webpack_require__(21),
-	  Each: __webpack_require__(28),
-	  Defer: __webpack_require__(29),
+	  BaseComponent: __webpack_require__(14),
+	  List: __webpack_require__(21),
+	  Tag: __webpack_require__(23),
+	  Text: __webpack_require__(16),
+	  Comment: __webpack_require__(25),
+	  Cdata: __webpack_require__(13),
+	  Html: __webpack_require__(26),
+	  Nothing: __webpack_require__(20),
+	  TransformComponent: __webpack_require__(18),
+	  If: __webpack_require__(27),
+	  Case: __webpack_require__(28),
+	  Func: __webpack_require__(22),
+	  Each: __webpack_require__(29),
+	  Defer: __webpack_require__(30),
 	  Route: route.Route,
 	  route: route
 	};
@@ -1696,6 +1697,405 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var BaseComponent, Cdata, constructTextLikeComponent, domValue, funcString, newLine, _ref,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	BaseComponent = __webpack_require__(14);
+
+	constructTextLikeComponent = __webpack_require__(16).constructTextLikeComponent;
+
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
+
+	domValue = __webpack_require__(7).domValue;
+
+	module.exports = Cdata = (function(_super) {
+	  __extends(Cdata, _super);
+
+	  function Cdata(text) {
+	    Cdata.__super__.constructor.call(this);
+	    constructTextLikeComponent.call(this, text);
+	  }
+
+
+	  /*
+	    this operation is not supported in html document
+	   */
+
+	  Cdata.prototype.createDom = function(parentNode, nextNode) {
+	    this.node = document.createCDATASection(domValue(this.text));
+	    return this.node;
+	  };
+
+	  Cdata.prototype.updateDom = function(parentNode, nextNode) {
+	    this.text && (this.node.data = domValue(this.text));
+	    return this.node;
+	  };
+
+	  Cdata.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 2;
+	    }
+	    return newLine("<CDATA " + (funcString(this.text)) + "/>", indent, addNewLine);
+	  };
+
+	  return Cdata;
+
+	})(BaseComponent);
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var BaseComponent, Component, cloneObject,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	Component = __webpack_require__(15);
+
+	cloneObject = __webpack_require__(4).cloneObject;
+
+	module.exports = BaseComponent = (function(_super) {
+	  __extends(BaseComponent, _super);
+
+	  function BaseComponent() {
+	    BaseComponent.__super__.constructor.call(this);
+	    this.isBaseComponent = true;
+	    this.baseComponent = this;
+	  }
+
+	  BaseComponent.prototype.renderDom = function() {
+	    if (!this.parentNode) {
+	      if (this.node && this.node.parentNode) {
+	        this.valid = true;
+	        return this.removeDom();
+	      } else {
+	        return this;
+	      }
+	    }
+	    if (!this.node) {
+	      this.valid = true;
+	      this.emit('beforeAttach');
+	      this.createDom();
+	    } else if (!this.valid) {
+	      this.valid = true;
+	      this.updateDom();
+	    }
+	    this.attachNode(this.parentNode, this.nextNode);
+	    return this;
+	  };
+
+	  BaseComponent.prototype.invalidate = function() {
+	    if (!this.valid) {
+	      return;
+	    }
+	    this.valid = false;
+	    return this.holder && this.holder.invalidateContent(this);
+	  };
+
+	  BaseComponent.prototype.removeDom = function() {
+	    this.removeNode();
+	    this.emit('afterRemoveDom');
+	    return this;
+	  };
+
+	  BaseComponent.prototype.removeNode = function() {
+	    return this.node.parentNode && this.node.parentNode.removeChild(this.node);
+	  };
+
+	  BaseComponent.prototype.attachNode = function() {
+	    var node;
+	    node = this.node;
+	    if (this.parentNode === node.parentNode) {
+	      return node;
+	    }
+	    this.parentNode.insertBefore(node, this.nextNode);
+	    return node;
+	  };
+
+	  return BaseComponent;
+
+	})(Component);
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Component, componentId, dc, extend, isComponent, mountList, newDcid, normalizeDomElement,
+	  __slice = [].slice;
+
+	extend = __webpack_require__(10);
+
+	normalizeDomElement = __webpack_require__(7).normalizeDomElement;
+
+	newDcid = __webpack_require__(4).newDcid;
+
+	isComponent = __webpack_require__(9);
+
+	dc = __webpack_require__(5);
+
+	componentId = 1;
+
+	mountList = [];
+
+	module.exports = Component = (function() {
+	  function Component() {
+	    this.listeners = {};
+	    this.baseComponent = null;
+	    this.parentNode = null;
+	    this.node = null;
+	    this.dcid = newDcid();
+	  }
+
+	  Component.prototype.on = function(event, callback) {
+	    var callbacks;
+	    callbacks = this.listeners[event] || (this.listeners[event] = []);
+	    callbacks.push(callback);
+	    return this;
+	  };
+
+	  Component.prototype.off = function(event, callback) {
+	    var callbacks;
+	    callbacks = this.listeners[event] || (this.listeners[event] = []);
+	    callbacks.indexOf(callback) >= 0 && callbacks.splice(index, 1);
+	    !callbacks.length && (this.listeners[event] = null);
+	    return this;
+	  };
+
+	  Component.prototype.emit = function() {
+	    var args, callback, callbacks, event, _i, _len;
+	    event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+	    if (!(callbacks = this.listeners[event])) {
+	      return;
+	    }
+	    for (_i = 0, _len = callbacks.length; _i < _len; _i++) {
+	      callback = callbacks[_i];
+	      callback.apply(this, args);
+	    }
+	    return this;
+	  };
+
+
+	  /* if mountNode is given, it should not the node of any Component
+	  only use beforeNode if mountNode is given
+	   */
+
+	  Component.prototype.mount = function(mountNode, beforeNode) {
+	    this.emit('beforeMount');
+	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.getElementsByTagName('body')[0];
+	    this.renderDom();
+	    this.emit('afterMount');
+	    return this;
+	  };
+
+	  Component.prototype.create = function() {
+	    return this.renderDom();
+	  };
+
+	  Component.prototype.render = function() {
+	    return this.renderDom();
+	  };
+
+	  Component.prototype.update = function() {
+	    this.emit('update');
+	    this.renderDom();
+	    return this;
+	  };
+
+	  Component.prototype.unmount = function() {
+	    var child, holder;
+	    this.emit('beforeUnmount');
+	    if (!this.node || !this.node.parentNode) {
+	      this.emit('afterUnmount');
+	      return this;
+	    }
+	    child = this;
+	    holder = this.holder;
+	    while (holder && !holder.isBaseComponent) {
+	      child = holder;
+	      holder = holder.holder;
+	    }
+	    if (holder && (holder.isList || holder.isTag)) {
+	      holder.removeChild(holder.dcidIndexMap[child.dcid]);
+	    }
+	    child.parentNode = null;
+	    if (holder && (holder.isList || holder.isTag)) {
+	      holder.renderDom();
+	    } else {
+	      child.renderDom();
+	    }
+	    this.emit('afterUnmount');
+	    return child;
+	  };
+
+	  Component.prototype.remount = function(parentNode) {
+	    var child, holder, index;
+	    this.emit('beforeMount');
+	    child = this;
+	    holder = this.holder;
+	    while (holder && !holder.isBaseComponent) {
+	      child = holder;
+	      holder = holder.holder;
+	    }
+	    if ((holder.isList || holder.isTag) && (index = holder.dcidIndexMap[child.dcid])) {
+	      index = index != null ? index : holder.children.length;
+	      holder.insertChild(index, child);
+	    }
+	    child.parentNode = holder ? holder.parentNode : parentNode ? parentNode : document.body;
+	    child.invalidate();
+	    if (holder && (holder.isList || holder.isTag)) {
+	      holder.renderDom();
+	    } else {
+	      child.renderDom();
+	    }
+	    this.emit('afterMount');
+	    return child;
+	  };
+
+
+	  /*
+	  component.updateWhen components, events
+	  component.updateWhen setInterval, interval, options
+	  component.updateWhen dc.raf, options
+	   */
+
+	  Component.prototype.updateWhen = function() {
+	    var args;
+	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return this._renderWhenBy('update', args);
+	  };
+
+	  Component.prototype.renderWhen = function() {
+	    var args;
+	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return this._renderWhenBy('render', args);
+	  };
+
+	  Component.prototype._renderWhenBy = function(method, args) {
+	    if (args[0] === setInterval) {
+	      if (args[1] === 'number') {
+	        dc._renderWhenBy(method, setInterval, args[1], [this], args[2]);
+	      } else {
+	        dc._renderWhenBy(method, setInterval, [this], args[1]);
+	      }
+	    } else if (args[1] === dc.raf) {
+	      dc._renderWhenBy(method, dc.raf, [this], args[1]);
+	    } else {
+	      dc._renderWhenBy(method, args[0], args[1], [this]);
+	    }
+	    return this;
+	  };
+
+	  Component.prototype.reachTag = function() {
+	    var holder;
+	    holder = this.holder;
+	    while (!holder.isTag && holder.holder) {
+	      holder = holder.holder;
+	    }
+	    return holder;
+	  };
+
+	  Component.prototype.addController = function(controller) {
+	    return controller.component = this;
+	  };
+
+	  Component.prototype.copyEventListeners = function(srcComponent) {
+	    var event, myListeners, srcListeners;
+	    myListeners = this.listeners;
+	    srcListeners = srcComponent.listeners;
+	    for (event in srcListeners) {
+	      srcListeners[event] && (myListeners[event] = srcListeners[event].splice());
+	    }
+	    return this;
+	  };
+
+	  return Component;
+
+	})();
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var BaseComponent, Text, constructTextLikeComponent, domField, domValue, dynamic, exports, funcString, newLine, value, _ref, _ref1,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	BaseComponent = __webpack_require__(14);
+
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
+
+	_ref1 = __webpack_require__(7), domField = _ref1.domField, domValue = _ref1.domValue;
+
+	exports = module.exports = Text = (function(_super) {
+	  __extends(Text, _super);
+
+	  function Text(text) {
+	    Text.__super__.constructor.call(this);
+	    constructTextLikeComponent.call(this, text);
+	  }
+
+	  Text.prototype.createDom = function() {
+	    this.textValid = true;
+	    this.firstNode = this.node = document.createTextNode(domValue(this.text));
+	    return this.node;
+	  };
+
+	  Text.prototype.updateDom = function() {
+	    var text;
+	    if (!this.textValid) {
+	      return this.node;
+	    }
+	    this.textValid = true;
+	    text = domValue(this.text);
+	    if (text !== this.cacheText) {
+	      if (this.node.parentNode) {
+	        this.removeNode();
+	      }
+	      this.node = document.createTextNode(text);
+	      this.firstNode = this.node;
+	      this.cacheText = text;
+	    }
+	    return this.node;
+	  };
+
+	  Text.prototype.clone = function() {
+	    return (new this.constructor(this.text)).copyEventListeners(this);
+	  };
+
+	  Text.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 2;
+	    }
+	    return newLine(funcString(this.text), indent, addNewLine);
+	  };
+
+	  return Text;
+
+	})(BaseComponent);
+
+	exports.constructTextLikeComponent = constructTextLikeComponent = function(text) {
+	  var me;
+	  me = this;
+	  this.text = text = domField(text);
+	  if (typeof text === 'function') {
+	    text.onInvalidate(function() {
+	      return me.invalidate();
+	    });
+	  }
+	  this.family = {};
+	  this.family[this.dcid] = true;
+	  return this;
+	};
+
+
+/***/ },
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -1725,11 +2125,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	TransformComponent = __webpack_require__(14);
+	TransformComponent = __webpack_require__(18);
 
 	isComponent = __webpack_require__(9);
 
-	toComponent = __webpack_require__(16);
+	toComponent = __webpack_require__(19);
 
 	_ref = __webpack_require__(4), isEven = _ref.isEven, matchCurvedString = _ref.matchCurvedString;
 
@@ -2104,7 +2504,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, TransformComponent,
@@ -2203,204 +2603,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Component, componentId, dc, extend, isComponent, mountList, newDcid, normalizeDomElement,
-	  __slice = [].slice;
-
-	extend = __webpack_require__(10);
-
-	normalizeDomElement = __webpack_require__(7).normalizeDomElement;
-
-	newDcid = __webpack_require__(4).newDcid;
-
-	isComponent = __webpack_require__(9);
-
-	dc = __webpack_require__(5);
-
-	componentId = 1;
-
-	mountList = [];
-
-	module.exports = Component = (function() {
-	  function Component() {
-	    this.listeners = {};
-	    this.baseComponent = null;
-	    this.parentNode = null;
-	    this.node = null;
-	    this.dcid = newDcid();
-	  }
-
-	  Component.prototype.on = function(event, callback) {
-	    var callbacks;
-	    callbacks = this.listeners[event] || (this.listeners[event] = []);
-	    callbacks.push(callback);
-	    return this;
-	  };
-
-	  Component.prototype.off = function(event, callback) {
-	    var callbacks;
-	    callbacks = this.listeners[event] || (this.listeners[event] = []);
-	    callbacks.indexOf(callback) >= 0 && callbacks.splice(index, 1);
-	    !callbacks.length && (this.listeners[event] = null);
-	    return this;
-	  };
-
-	  Component.prototype.emit = function() {
-	    var args, callback, callbacks, event, _i, _len;
-	    event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-	    if (!(callbacks = this.listeners[event])) {
-	      return;
-	    }
-	    for (_i = 0, _len = callbacks.length; _i < _len; _i++) {
-	      callback = callbacks[_i];
-	      callback.apply(this, args);
-	    }
-	    return this;
-	  };
-
-
-	  /* if mountNode is given, it should not the node of any Component
-	  only use beforeNode if mountNode is given
-	   */
-
-	  Component.prototype.mount = function(mountNode, beforeNode) {
-	    this.emit('beforeMount');
-	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.getElementsByTagName('body')[0];
-	    this.renderDom();
-	    this.emit('afterMount');
-	    return this;
-	  };
-
-	  Component.prototype.create = function() {
-	    return this.renderDom();
-	  };
-
-	  Component.prototype.render = function() {
-	    return this.renderDom();
-	  };
-
-	  Component.prototype.update = function() {
-	    this.emit('update');
-	    this.renderDom();
-	    return this;
-	  };
-
-	  Component.prototype.unmount = function() {
-	    var child, holder;
-	    this.emit('beforeUnmount');
-	    if (!this.node || !this.node.parentNode) {
-	      this.emit('afterUnmount');
-	      return this;
-	    }
-	    child = this;
-	    holder = this.holder;
-	    while (holder && !holder.isBaseComponent) {
-	      child = holder;
-	      holder = holder.holder;
-	    }
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.removeChild(holder.dcidIndexMap[child.dcid]);
-	    }
-	    child.parentNode = null;
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.renderDom();
-	    } else {
-	      child.renderDom();
-	    }
-	    this.emit('afterUnmount');
-	    return child;
-	  };
-
-	  Component.prototype.remount = function(parentNode) {
-	    var child, holder, index;
-	    this.emit('beforeMount');
-	    child = this;
-	    holder = this.holder;
-	    while (holder && !holder.isBaseComponent) {
-	      child = holder;
-	      holder = holder.holder;
-	    }
-	    if ((holder.isList || holder.isTag) && (index = holder.dcidIndexMap[child.dcid])) {
-	      index = index != null ? index : holder.children.length;
-	      holder.insertChild(index, child);
-	    }
-	    child.parentNode = holder ? holder.parentNode : parentNode ? parentNode : document.body;
-	    child.invalidate();
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.renderDom();
-	    } else {
-	      child.renderDom();
-	    }
-	    this.emit('afterMount');
-	    return child;
-	  };
-
-
-	  /*
-	  component.updateWhen components, events
-	  component.updateWhen setInterval, interval, options
-	  component.updateWhen dc.raf, options
-	   */
-
-	  Component.prototype.updateWhen = function() {
-	    var args;
-	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    return this._renderWhenBy('update', args);
-	  };
-
-	  Component.prototype.renderWhen = function() {
-	    var args;
-	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    return this._renderWhenBy('render', args);
-	  };
-
-	  Component.prototype._renderWhenBy = function(method, args) {
-	    if (args[0] === setInterval) {
-	      if (args[1] === 'number') {
-	        dc._renderWhenBy(method, setInterval, args[1], [this], args[2]);
-	      } else {
-	        dc._renderWhenBy(method, setInterval, [this], args[1]);
-	      }
-	    } else if (args[1] === dc.raf) {
-	      dc._renderWhenBy(method, dc.raf, [this], args[1]);
-	    } else {
-	      dc._renderWhenBy(method, args[0], args[1], [this]);
-	    }
-	    return this;
-	  };
-
-	  Component.prototype.reachTag = function() {
-	    var holder;
-	    holder = this.holder;
-	    while (!holder.isTag && holder.holder) {
-	      holder = holder.holder;
-	    }
-	    return holder;
-	  };
-
-	  Component.prototype.addController = function(controller) {
-	    return controller.component = this;
-	  };
-
-	  Component.prototype.copyEventListeners = function(srcComponent) {
-	    var event, myListeners, srcListeners;
-	    myListeners = this.listeners;
-	    srcListeners = srcComponent.listeners;
-	    for (event in srcListeners) {
-	      srcListeners[event] && (myListeners[event] = srcListeners[event].splice());
-	    }
-	    return this;
-	  };
-
-	  return Component;
-
-	})();
-
-
-/***/ },
-/* 16 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, Nothing, Text, isComponent, react, toComponent;
@@ -2409,9 +2612,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	isComponent = __webpack_require__(9);
 
-	Nothing = __webpack_require__(17);
+	Nothing = __webpack_require__(20);
 
-	Text = __webpack_require__(19);
+	Text = __webpack_require__(16);
 
 	react = __webpack_require__(3).react;
 
@@ -2422,7 +2625,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } else if (typeof item === 'function') {
 	    return new Text(item);
 	  } else if (item instanceof Array) {
-	    List = __webpack_require__(20);
+	    List = __webpack_require__(21);
 	    return new List((function() {
 	      var _i, _len, _results;
 	      _results = [];
@@ -2435,7 +2638,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } else if (item == null) {
 	    return new Nothing();
 	  } else if (item.then && item["catch"]) {
-	    Func = __webpack_require__(21);
+	    Func = __webpack_require__(22);
 	    component = new Func(react(function() {
 	      return component.promiseResult;
 	    }));
@@ -2454,14 +2657,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Nothing, newLine,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(18);
+	BaseComponent = __webpack_require__(14);
 
 	newLine = __webpack_require__(4).newLine;
 
@@ -2504,158 +2707,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var BaseComponent, Component, cloneObject,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	Component = __webpack_require__(15);
-
-	cloneObject = __webpack_require__(4).cloneObject;
-
-	module.exports = BaseComponent = (function(_super) {
-	  __extends(BaseComponent, _super);
-
-	  function BaseComponent() {
-	    BaseComponent.__super__.constructor.call(this);
-	    this.isBaseComponent = true;
-	    this.baseComponent = this;
-	  }
-
-	  BaseComponent.prototype.renderDom = function() {
-	    if (!this.parentNode) {
-	      if (this.node && this.node.parentNode) {
-	        this.valid = true;
-	        return this.removeDom();
-	      } else {
-	        return this;
-	      }
-	    }
-	    if (!this.node) {
-	      this.valid = true;
-	      this.emit('beforeAttach');
-	      this.createDom();
-	    } else if (!this.valid) {
-	      this.valid = true;
-	      this.updateDom();
-	    }
-	    this.attachNode(this.parentNode, this.nextNode);
-	    return this;
-	  };
-
-	  BaseComponent.prototype.invalidate = function() {
-	    if (!this.valid) {
-	      return;
-	    }
-	    this.valid = false;
-	    return this.holder && this.holder.invalidateContent(this);
-	  };
-
-	  BaseComponent.prototype.removeDom = function() {
-	    this.removeNode();
-	    this.emit('afterRemoveDom');
-	    return this;
-	  };
-
-	  BaseComponent.prototype.removeNode = function() {
-	    return this.node.parentNode && this.node.parentNode.removeChild(this.node);
-	  };
-
-	  BaseComponent.prototype.attachNode = function() {
-	    var node;
-	    node = this.node;
-	    if (this.parentNode === node.parentNode) {
-	      return node;
-	    }
-	    this.parentNode.insertBefore(node, this.nextNode);
-	    return node;
-	  };
-
-	  return BaseComponent;
-
-	})(Component);
-
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var BaseComponent, Text, constructTextLikeComponent, domField, domValue, dynamic, exports, funcString, newLine, value, _ref, _ref1,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	BaseComponent = __webpack_require__(18);
-
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
-
-	_ref1 = __webpack_require__(7), domField = _ref1.domField, domValue = _ref1.domValue;
-
-	exports = module.exports = Text = (function(_super) {
-	  __extends(Text, _super);
-
-	  function Text(text) {
-	    Text.__super__.constructor.call(this);
-	    constructTextLikeComponent.call(this, text);
-	  }
-
-	  Text.prototype.createDom = function() {
-	    this.textValid = true;
-	    this.firstNode = this.node = document.createTextNode(domValue(this.text));
-	    return this.node;
-	  };
-
-	  Text.prototype.updateDom = function() {
-	    var text;
-	    if (!this.textValid) {
-	      return this.node;
-	    }
-	    this.textValid = true;
-	    text = domValue(this.text);
-	    if (text !== this.cacheText) {
-	      if (this.node.parentNode) {
-	        this.removeNode();
-	      }
-	      this.node = document.createTextNode(text);
-	      this.firstNode = this.node;
-	      this.cacheText = text;
-	    }
-	    return this.node;
-	  };
-
-	  Text.prototype.clone = function() {
-	    return (new this.constructor(this.text)).copyEventListeners(this);
-	  };
-
-	  Text.prototype.toString = function(indent, addNewLine) {
-	    if (indent == null) {
-	      indent = 2;
-	    }
-	    return newLine(funcString(this.text), indent, addNewLine);
-	  };
-
-	  return Text;
-
-	})(BaseComponent);
-
-	exports.constructTextLikeComponent = constructTextLikeComponent = function(text) {
-	  var me;
-	  me = this;
-	  this.text = text = domField(text);
-	  if (typeof text === 'function') {
-	    text.onInvalidate(function() {
-	      return me.invalidate();
-	    });
-	  }
-	  this.family = {};
-	  this.family[this.dcid] = true;
-	  return this;
-	};
-
-
-/***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, List, Nothing, binaryInsert, binarySearch, checkConflictOffspring, checkContainer, exports, newLine, substractSet, toComponent, _ref,
@@ -2663,11 +2715,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
 
-	toComponent = __webpack_require__(16);
+	toComponent = __webpack_require__(19);
 
-	BaseComponent = __webpack_require__(18);
+	BaseComponent = __webpack_require__(14);
 
-	Nothing = __webpack_require__(17);
+	Nothing = __webpack_require__(20);
 
 	_ref = __webpack_require__(4), checkContainer = _ref.checkContainer, newLine = _ref.newLine, binarySearch = _ref.binarySearch, binaryInsert = _ref.binaryInsert, substractSet = _ref.substractSet;
 
@@ -3029,16 +3081,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Func, TransformComponent, funcString, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(16);
+	toComponent = __webpack_require__(19);
 
-	TransformComponent = __webpack_require__(14);
+	TransformComponent = __webpack_require__(18);
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -3081,7 +3133,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, eventHandlerFromArray, extend, flow, funcString, newLine, styleFrom, toComponent, updating, _ref, _ref1,
@@ -3093,13 +3145,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	dc = __webpack_require__(5);
 
-	_ref = __webpack_require__(23), classFn = _ref.classFn, styleFrom = _ref.styleFrom, eventHandlerFromArray = _ref.eventHandlerFromArray, attrToPropName = _ref.attrToPropName, updating = _ref.updating;
+	_ref = __webpack_require__(24), classFn = _ref.classFn, styleFrom = _ref.styleFrom, eventHandlerFromArray = _ref.eventHandlerFromArray, attrToPropName = _ref.attrToPropName, updating = _ref.updating;
 
-	BaseComponent = __webpack_require__(18);
+	BaseComponent = __webpack_require__(14);
 
-	Text = __webpack_require__(19);
+	Text = __webpack_require__(16);
 
-	List = __webpack_require__(20);
+	List = __webpack_require__(21);
 
 	_ref1 = __webpack_require__(4), funcString = _ref1.funcString, newLine = _ref1.newLine, cloneObject = _ref1.cloneObject;
 
@@ -3109,7 +3161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	domField = __webpack_require__(7).domField;
 
-	toComponent = __webpack_require__(16);
+	toComponent = __webpack_require__(19);
 
 	module.exports = Tag = (function(_super) {
 	  __extends(Tag, _super);
@@ -3616,7 +3668,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var attrPropNameMap, classFn, cloneObject, config, domField, extend, extendEventValue, isArray, isComponent, overAttrs, react, styleFrom, _ref,
@@ -3911,16 +3963,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Comment, constructTextLikeComponent, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(18);
+	BaseComponent = __webpack_require__(14);
 
-	constructTextLikeComponent = __webpack_require__(19).constructTextLikeComponent;
+	constructTextLikeComponent = __webpack_require__(16).constructTextLikeComponent;
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -3957,16 +4009,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Html, constructTextLikeComponent, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(18);
+	BaseComponent = __webpack_require__(14);
 
-	constructTextLikeComponent = __webpack_require__(19).constructTextLikeComponent;
+	constructTextLikeComponent = __webpack_require__(16).constructTextLikeComponent;
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -4058,16 +4110,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var If, TransformComponent, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(16);
+	toComponent = __webpack_require__(19);
 
-	TransformComponent = __webpack_require__(14);
+	TransformComponent = __webpack_require__(18);
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
@@ -4132,16 +4184,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Case, TransformComponent, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(16);
+	toComponent = __webpack_require__(19);
 
-	TransformComponent = __webpack_require__(14);
+	TransformComponent = __webpack_require__(18);
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
@@ -4222,22 +4274,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Each, Func, List, Text, TransformComponent, flow, funcString, isArray, newLine, react, renew, toComponent, watchEachList, watchEachObject, _ref, _ref1, _ref2,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(16);
+	toComponent = __webpack_require__(19);
 
-	TransformComponent = __webpack_require__(14);
+	TransformComponent = __webpack_require__(18);
 
-	List = __webpack_require__(20);
+	List = __webpack_require__(21);
 
-	Func = __webpack_require__(21);
+	Func = __webpack_require__(22);
 
-	Text = __webpack_require__(19);
+	Text = __webpack_require__(16);
 
 	_ref = __webpack_require__(4), isArray = _ref.isArray, funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -4440,16 +4492,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Defer, FULFILL, INIT, REJECT, TransformComponent, extend, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(16);
+	toComponent = __webpack_require__(19);
 
-	TransformComponent = __webpack_require__(14);
+	TransformComponent = __webpack_require__(18);
 
 	extend = __webpack_require__(10);
 
@@ -4529,7 +4581,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Case, Comment, Component, Defer, Each, Func, Html, If, List, Nothing, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
@@ -4539,7 +4591,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	_ref1 = __webpack_require__(4), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
-	isAttrs = __webpack_require__(31).isAttrs;
+	isAttrs = __webpack_require__(32).isAttrs;
 
 	attrsChildren = function(args) {
 	  var attrs;
@@ -4763,20 +4815,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Comment, Func, Html, Text, isComponent, mergeThenElseValue, toComponent, _ref;
 
 	_ref = __webpack_require__(12), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
 
-	Func = __webpack_require__(21);
+	Func = __webpack_require__(22);
 
-	Text = __webpack_require__(19);
+	Text = __webpack_require__(16);
 
-	Html = __webpack_require__(25);
+	Html = __webpack_require__(26);
 
-	Comment = __webpack_require__(24);
+	Comment = __webpack_require__(25);
 
 	exports.isAttrs = function(item) {
 	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
@@ -4826,7 +4878,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var extend, getBindProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,
@@ -4834,7 +4886,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	extend = __webpack_require__(10);
 
-	tag = __webpack_require__(30).tag;
+	tag = __webpack_require__(31).tag;
 
 	getBindProp = __webpack_require__(7).getBindProp;
 
@@ -4931,20 +4983,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var dc, extend, flow;
 
 	extend = (dc = __webpack_require__(1)).extend;
 
-	dc.builtinDirectives = __webpack_require__(34);
+	dc.builtinDirectives = __webpack_require__(35);
 
-	extend(dc, dc.builtinDirectives, __webpack_require__(42));
+	extend(dc, dc.builtinDirectives, __webpack_require__(43));
 
 	flow = dc.flow;
 
-	extend(flow, __webpack_require__(48), __webpack_require__(2));
+	extend(flow, __webpack_require__(49), __webpack_require__(2));
 
 	dc.bindings = flow.bindings;
 
@@ -4952,30 +5004,30 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $hide, $show, _ref;
 
-	exports.$model = __webpack_require__(36);
+	exports.$model = __webpack_require__(37);
 
-	exports.$bind = __webpack_require__(37);
+	exports.$bind = __webpack_require__(38);
 
-	_ref = __webpack_require__(38), $show = _ref.$show, $hide = _ref.$hide;
+	_ref = __webpack_require__(39), $show = _ref.$show, $hide = _ref.$hide;
 
 	exports.$show = $show;
 
 	exports.$hide = $hide;
 
-	exports.$blink = __webpack_require__(35);
+	exports.$blink = __webpack_require__(36);
 
-	exports.$splitter = __webpack_require__(39);
+	exports.$splitter = __webpack_require__(40);
 
-	exports.$options = __webpack_require__(41);
+	exports.$options = __webpack_require__(42);
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var flow, see, _ref;
@@ -5016,7 +5068,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var getBindProp;
@@ -5038,7 +5090,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var domField, getBindProp, _ref;
@@ -5054,7 +5106,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports) {
 
 	
@@ -5077,20 +5129,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, classFn, div, option, pairListDict, span, _ref;
 
 	pairListDict = __webpack_require__(4).pairListDict;
 
-	classFn = __webpack_require__(23).classFn;
+	classFn = __webpack_require__(24).classFn;
 
-	_ref = __webpack_require__(30), div = _ref.div, span = _ref.span;
+	_ref = __webpack_require__(31), div = _ref.div, span = _ref.span;
 
-	option = __webpack_require__(32).option;
+	option = __webpack_require__(33).option;
 
-	Component = __webpack_require__(40);
+	Component = __webpack_require__(41);
 
 	module.exports = function(direction) {
 	  return function(comp) {
@@ -5252,7 +5304,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, componentId, dc, extend, isComponent, mountList, newDcid, normalizeDomElement,
@@ -5449,16 +5501,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Tag, every, option, txt, _ref;
 
-	_ref = __webpack_require__(30), every = _ref.every, txt = _ref.txt;
+	_ref = __webpack_require__(31), every = _ref.every, txt = _ref.txt;
 
-	option = __webpack_require__(32).option;
+	option = __webpack_require__(33).option;
 
-	Tag = __webpack_require__(22);
+	Tag = __webpack_require__(23);
 
 	module.exports = function(items, attrs) {
 	  return function(comp) {
@@ -5474,35 +5526,35 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var extend;
 
 	extend = __webpack_require__(10);
 
-	extend(exports, __webpack_require__(44));
+	extend(exports, __webpack_require__(45));
 
-	exports.triangle = __webpack_require__(45);
+	exports.triangle = __webpack_require__(46);
 
-	exports.dialog = __webpack_require__(43);
-
-	extend(exports, __webpack_require__(46));
+	exports.dialog = __webpack_require__(44);
 
 	extend(exports, __webpack_require__(47));
 
+	extend(exports, __webpack_require__(48));
+
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, div, globalID, if_, list, see, _ref;
 
 	see = __webpack_require__(3).see;
 
-	_ref = __webpack_require__(30), list = _ref.list, if_ = _ref.if_, div = _ref.div;
+	_ref = __webpack_require__(31), list = _ref.list, if_ = _ref.if_, div = _ref.div;
 
-	Component = __webpack_require__(40).Component;
+	Component = __webpack_require__(41).Component;
 
 	globalID = 0;
 
@@ -5587,7 +5639,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -5598,11 +5650,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	extend = __webpack_require__(10).extend;
 
-	_ref = __webpack_require__(30), div = _ref.div, h4 = _ref.h4, a = _ref.a, span = _ref.span, img = _ref.img, each = _ref.each;
+	_ref = __webpack_require__(31), div = _ref.div, h4 = _ref.h4, a = _ref.a, span = _ref.span, img = _ref.img, each = _ref.each;
 
-	extendAttrs = __webpack_require__(23).extendAttrs;
+	extendAttrs = __webpack_require__(24).extendAttrs;
 
-	Component = __webpack_require__(40).Component;
+	Component = __webpack_require__(41).Component;
 
 	module.exports = exports = accordion = function(attrs, accordionGroupList, options) {
 	  var accordionOptions, comp;
@@ -5671,14 +5723,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var arrowStyle, div, extendAttrs, reverseSide;
 
-	div = __webpack_require__(30).div;
+	div = __webpack_require__(31).div;
 
-	extendAttrs = __webpack_require__(23).extendAttrs;
+	extendAttrs = __webpack_require__(24).extendAttrs;
 
 	reverseSide = {
 	  left: 'right',
@@ -5712,16 +5764,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var combobox, div, extendAttrs, input, list, see, span, _ref;
 
 	see = __webpack_require__(3).see;
 
-	_ref = __webpack_require__(30), list = _ref.list, input = _ref.input, span = _ref.span, div = _ref.div;
+	_ref = __webpack_require__(31), list = _ref.list, input = _ref.input, span = _ref.span, div = _ref.div;
 
-	extendAttrs = __webpack_require__(23).extendAttrs;
+	extendAttrs = __webpack_require__(24).extendAttrs;
 
 	exports.combobox = combobox = function(attrs, modelValue, valueList, direction) {
 	  var comp, disp, item, opts, showingItems;
@@ -5784,7 +5836,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var div, extend, extendAttrs, pipe, see, setAutoWidth, text, _ref, _ref1;
@@ -5793,9 +5845,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	extend = __webpack_require__(10).extend;
 
-	_ref1 = __webpack_require__(30), div = _ref1.div, text = _ref1.text;
+	_ref1 = __webpack_require__(31), div = _ref1.div, text = _ref1.text;
 
-	extendAttrs = __webpack_require__(23).extendAttrs;
+	extendAttrs = __webpack_require__(24).extendAttrs;
 
 	exports.setAutoWidth = setAutoWidth = function(container, options) {
 	  var initialWidth, inputAttrs, inputComponent, inputEventHandler, inputEvents, inputText$, inputTextWidth$, spaceWidth, testSubject, testSubjectStyle;
@@ -5864,7 +5916,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var binary, bind, duplex, flow, unary, _ref;
