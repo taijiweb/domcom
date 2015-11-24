@@ -7,9 +7,6 @@ app
 build
 
 public
-/public/angular1.2.0rc3
-
-before-dc
 
 .tmp
 temp
