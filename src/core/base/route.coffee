@@ -92,6 +92,8 @@ route.to = navigate(0)
 
 route.Route = class Route extends TransformComponent
   constructor: (@routeList, @otherwise, @baseIndex) ->
+    super()
+
     for patternRoute in routeList
       patternRoute[0] = getRoutePattern(patternRoute[0])
 

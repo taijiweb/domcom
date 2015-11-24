@@ -1,5 +1,5 @@
 {see} = require 'lazy-flow'
-{list, input, span, div} = require '../core/instantiate'
+{list, input, span, div} = require '../core/tag'
 {extendAttrs} = require '../core/property'
 
 exports.combobox = combobox = (attrs, modelValue, valueList, direction) ->

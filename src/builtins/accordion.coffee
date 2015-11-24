@@ -3,7 +3,8 @@
 ###
 
 {extend} = require 'extend'
-{div, h4, a, span, img, each} = require '../core/instantiate'
+{each} = require '../core/instantiate'
+{div, h4, a, span, img} = require '../core/tag'
 {extendAttrs} = require '../core/property'
 {Component} = require '../core/base/Component'
 

@@ -1,6 +1,6 @@
 {see, pipe} = require 'lazy-flow'
 {extend} = require 'extend'
-{div, text} = require '../core/instantiate'
+{text, div} = require '../core/tag'
 {extendAttrs} = require '../core/property'
 
 #  options.inputComponent is not given, container.children[0] will be used as inputComponent <input type="text">
