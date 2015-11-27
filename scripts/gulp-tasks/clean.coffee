@@ -1,4 +1,4 @@
-{task} = require("gulp-helper")
+{task} = require("gulp-task-helper")
 
 del = require('del')
 

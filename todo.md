@@ -1,6 +1,10 @@
 ### todo
-* Isomorphic JavaScript: rendering htmlm on the server side
+* Isomorphic JavaScript: rendering html on the server side
 * error processing: dc.onerror and dc.error: should can skip error and continue to process the components afterwards
+* minify the removing and reinsert of node as possible
+  A B C D -> B C D A, should only removing and reinsert A, because only A's succ is changed
+  A B C D -> D A B C, should only removing reinsert D, because only D's succ is changed.
+  method: record parent and nextNode, and the status of whether they are lived in dom
 
 #### done
 * browser compatibility

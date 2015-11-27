@@ -1,4 +1,4 @@
-{task, logTime} = require("gulp-helper")
+{task, logTime} = require("gulp-task-helper")
 
 webpack = require 'webpack'
 
