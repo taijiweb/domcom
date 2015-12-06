@@ -15,6 +15,7 @@ module.exports =
   If: require './If'
   Case: require './Case'
   Func: require './Func'
+  ActiveView: require './ActiveView'
   Each: require './Each'
   Defer: require './Defer'
   Route: route.Route

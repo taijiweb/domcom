@@ -1,6 +1,7 @@
 {Component, toComponent, isComponent,
 Tag, Text, Comment, Html
 If, Case, Func, List, Each,
+ActiveView
 Nothing, Defer} = require './base'
 {isEven, numbers} = require 'dc-util'
 
@@ -69,6 +70,10 @@ exports.cond = (attrs, condComponents..., else_) ->
 exports.func = (attrs, fn) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Func(fn)])
   else new Func(attrs) # attrs become fn
+
+exports.activeView = (attrs, content) ->
+  if isAttrs(attrs) then new Tag('div', attrs, [new ActiveView(content)])
+  else new ActiveView(attrs) # attrs become content
 
 exports.list = list = (attrs, lst...) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new List(lst)])

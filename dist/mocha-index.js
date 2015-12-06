@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "a78a46a019f74d1f48be"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "50a66bb26552bacae3b7"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -3701,15 +3701,15 @@
   \*********************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Component, Tag, Text, TransformComponent, a, accordion, accordionGroup, case_, div, each, expect, flow, func, idescribe, if_, iit, list, ndescribe, newDemoNode, nit, p, see, span, text, txt, _ref;
+	var Component, Tag, Text, TransformComponent, a, activeView, case_, div, expect, flow, func, idescribe, if_, iit, list, ndescribe, newDemoNode, nit, p, see, span, text, txt, _ref;
 
 	_ref = __webpack_require__(/*! bdd-test-helper */ 2), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
 	newDemoNode = __webpack_require__(/*! ./helper */ 17).newDemoNode;
 
-	see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, accordionGroup = dc.accordionGroup, accordion = dc.accordion, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
+	see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, activeView = dc.activeView, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
-	describe('if, case, func', function() {
+	describe('if, case, func, activeView', function() {
 	  describe('If', function() {
 	    it('should optimize if_', function() {
 	      var t, x;
@@ -3980,7 +3980,7 @@
 	      return expect(comp.node.innerHTML).to.equal('1');
 	    });
 	  });
-	  return describe('Func', function() {
+	  describe('Func', function() {
 	    it('func(->12) ', function() {
 	      var comp;
 	      comp = func(function() {
@@ -4060,6 +4060,36 @@
 	      expect(comp.children[0]).to.be["instanceof"](Text);
 	      comp.mount();
 	      return expect(comp.node.innerHTML).to.equal('1');
+	    });
+	  });
+	  return describe('ActiveView', function() {
+	    it('activeView(1)', function() {
+	      var comp, x;
+	      comp = activeView(1);
+	      x = 0;
+	      comp.onSetActiveView = function(value) {
+	        return x = value;
+	      };
+	      comp.mount();
+	      expect(comp.node.textContent).to.equal('1');
+	      comp.activeView = 2;
+	      expect(x).to.equal(2);
+	      comp.update();
+	      return expect(comp.node.textContent).to.equal('2');
+	    });
+	    return it('activeView(1) by setActivView', function() {
+	      var comp, x;
+	      comp = activeView(1);
+	      x = 0;
+	      comp.onSetActiveView = function(value) {
+	        return x = value;
+	      };
+	      comp.mount();
+	      expect(comp.node.textContent).to.equal('1');
+	      comp.setActiveView(2);
+	      expect(x).to.equal(2);
+	      comp.update();
+	      return expect(comp.node.textContent).to.equal('2');
 	    });
 	  });
 	});

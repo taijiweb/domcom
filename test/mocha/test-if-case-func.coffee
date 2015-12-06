@@ -3,11 +3,11 @@
 
 {see, flow
 Component, TransformComponent, Tag, Text,
-txt, list, func, if_, case_, func, each
-accordionGroup, accordion
+txt, list, func, if_, case_, func,
+activeView
 a, p, span, text, div} = dc
 
-describe 'if, case, func', ->
+describe 'if, case, func, activeView', ->
 
   describe 'If', ->
     it 'should optimize if_', ->
@@ -299,3 +299,25 @@ describe 'if, case, func', ->
       comp.mount()
       expect(comp.node.innerHTML).to.equal '1'
 
+  describe 'ActiveView', ->
+    it 'activeView(1)', ->
+      comp = activeView(1)
+      x = 0
+      comp.onSetActiveView = (value) -> x = value
+      comp.mount()
+      expect(comp.node.textContent).to.equal '1'
+      comp.activeView = 2
+      expect(x).to.equal 2
+      comp.update()
+      expect(comp.node.textContent).to.equal '2'
+
+    it 'activeView(1) by setActivView', ->
+      comp = activeView(1)
+      x = 0
+      comp.onSetActiveView = (value) -> x = value
+      comp.mount()
+      expect(comp.node.textContent).to.equal '1'
+      comp.setActiveView 2
+      expect(x).to.equal 2
+      comp.update()
+      expect(comp.node.textContent).to.equal '2'

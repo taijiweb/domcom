@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "598a0c5691e463be2b8f"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "ee731334ca006570b946"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -2201,7 +2201,7 @@
 
 	extend = __webpack_require__(/*! extend */ 9);
 
-	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 11), __webpack_require__(/*! ./instantiate */ 30), __webpack_require__(/*! ./tag */ 32), __webpack_require__(/*! ./property */ 23));
+	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 11), __webpack_require__(/*! ./instantiate */ 31), __webpack_require__(/*! ./tag */ 33), __webpack_require__(/*! ./property */ 22));
 
 
 /***/ },
@@ -2213,26 +2213,27 @@
 
 	var route;
 
-	route = __webpack_require__(/*! ./route */ 16);
+	route = __webpack_require__(/*! ./route */ 12);
 
 	module.exports = {
 	  isComponent: __webpack_require__(/*! ./isComponent */ 8),
-	  toComponent: __webpack_require__(/*! ./toComponent */ 18),
+	  toComponent: __webpack_require__(/*! ./toComponent */ 15),
 	  Component: __webpack_require__(/*! ./component */ 14),
-	  BaseComponent: __webpack_require__(/*! ./BaseComponent */ 13),
-	  List: __webpack_require__(/*! ./List */ 20),
-	  Tag: __webpack_require__(/*! ./Tag */ 22),
-	  Text: __webpack_require__(/*! ./Text */ 15),
-	  Comment: __webpack_require__(/*! ./Comment */ 24),
-	  Cdata: __webpack_require__(/*! ./Cdata */ 12),
+	  BaseComponent: __webpack_require__(/*! ./BaseComponent */ 17),
+	  List: __webpack_require__(/*! ./List */ 19),
+	  Tag: __webpack_require__(/*! ./Tag */ 21),
+	  Text: __webpack_require__(/*! ./Text */ 18),
+	  Comment: __webpack_require__(/*! ./Comment */ 23),
+	  Cdata: __webpack_require__(/*! ./Cdata */ 24),
 	  Html: __webpack_require__(/*! ./Html */ 25),
-	  Nothing: __webpack_require__(/*! ./Nothing */ 19),
-	  TransformComponent: __webpack_require__(/*! ./TransformComponent */ 17),
+	  Nothing: __webpack_require__(/*! ./Nothing */ 16),
+	  TransformComponent: __webpack_require__(/*! ./TransformComponent */ 13),
 	  If: __webpack_require__(/*! ./If */ 26),
 	  Case: __webpack_require__(/*! ./Case */ 27),
-	  Func: __webpack_require__(/*! ./Func */ 21),
-	  Each: __webpack_require__(/*! ./Each */ 28),
-	  Defer: __webpack_require__(/*! ./Defer */ 29),
+	  Func: __webpack_require__(/*! ./Func */ 20),
+	  ActiveView: __webpack_require__(/*! ./ActiveView */ 28),
+	  Each: __webpack_require__(/*! ./Each */ 29),
+	  Defer: __webpack_require__(/*! ./Defer */ 30),
 	  Route: route.Route,
 	  route: route
 	};
@@ -2240,417 +2241,6 @@
 
 /***/ },
 /* 12 */
-/*!************************************!*\
-  !*** ./src/core/base/Cdata.coffee ***!
-  \************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var BaseComponent, Cdata, constructTextLikeComponent, domValue, funcString, newLine, _ref,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 13);
-
-	constructTextLikeComponent = __webpack_require__(/*! ./Text */ 15).constructTextLikeComponent;
-
-	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
-
-	domValue = __webpack_require__(/*! ../../dom-util */ 6).domValue;
-
-	module.exports = Cdata = (function(_super) {
-	  __extends(Cdata, _super);
-
-	  function Cdata(text) {
-	    Cdata.__super__.constructor.call(this);
-	    constructTextLikeComponent.call(this, text);
-	  }
-
-
-	  /*
-	    this operation is not supported in html document
-	   */
-
-	  Cdata.prototype.createDom = function(parentNode, nextNode) {
-	    this.node = document.createCDATASection(domValue(this.text));
-	    return this.node;
-	  };
-
-	  Cdata.prototype.updateDom = function(parentNode, nextNode) {
-	    this.text && (this.node.data = domValue(this.text));
-	    return this.node;
-	  };
-
-	  Cdata.prototype.toString = function(indent, addNewLine) {
-	    if (indent == null) {
-	      indent = 2;
-	    }
-	    return newLine("<CDATA " + (funcString(this.text)) + "/>", indent, addNewLine);
-	  };
-
-	  return Cdata;
-
-	})(BaseComponent);
-
-
-/***/ },
-/* 13 */
-/*!********************************************!*\
-  !*** ./src/core/base/BaseComponent.coffee ***!
-  \********************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var BaseComponent, Component, cloneObject,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	Component = __webpack_require__(/*! ./component */ 14);
-
-	cloneObject = __webpack_require__(/*! dc-util */ 3).cloneObject;
-
-	module.exports = BaseComponent = (function(_super) {
-	  __extends(BaseComponent, _super);
-
-	  function BaseComponent() {
-	    BaseComponent.__super__.constructor.call(this);
-	    this.isBaseComponent = true;
-	    this.baseComponent = this;
-	  }
-
-	  BaseComponent.prototype.renderDom = function() {
-	    if (!this.parentNode) {
-	      if (this.node && this.node.parentNode) {
-	        this.valid = true;
-	        return this.removeDom();
-	      } else {
-	        return this;
-	      }
-	    }
-	    if (!this.node) {
-	      this.valid = true;
-	      this.emit('beforeAttach');
-	      this.createDom();
-	    } else if (!this.valid) {
-	      this.valid = true;
-	      this.updateDom();
-	    }
-	    this.attachNode(this.parentNode, this.nextNode);
-	    return this;
-	  };
-
-	  BaseComponent.prototype.invalidate = function() {
-	    if (!this.valid) {
-	      return;
-	    }
-	    this.valid = false;
-	    return this.holder && this.holder.invalidateContent(this);
-	  };
-
-	  BaseComponent.prototype.removeDom = function() {
-	    this.removeNode();
-	    this.emit('afterRemoveDom');
-	    return this;
-	  };
-
-	  BaseComponent.prototype.removeNode = function() {
-	    return this.node.parentNode && this.node.parentNode.removeChild(this.node);
-	  };
-
-	  BaseComponent.prototype.attachNode = function() {
-	    var node;
-	    node = this.node;
-	    if (this.parentNode === node.parentNode) {
-	      return node;
-	    }
-	    this.parentNode.insertBefore(node, this.nextNode);
-	    return node;
-	  };
-
-	  return BaseComponent;
-
-	})(Component);
-
-
-/***/ },
-/* 14 */
-/*!****************************************!*\
-  !*** ./src/core/base/component.coffee ***!
-  \****************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var Component, componentId, dc, extend, isComponent, mountList, newDcid, normalizeDomElement,
-	  __slice = [].slice;
-
-	extend = __webpack_require__(/*! extend */ 9);
-
-	normalizeDomElement = __webpack_require__(/*! ../../dom-util */ 6).normalizeDomElement;
-
-	newDcid = __webpack_require__(/*! dc-util */ 3).newDcid;
-
-	isComponent = __webpack_require__(/*! ./isComponent */ 8);
-
-	dc = __webpack_require__(/*! ../../dc */ 4);
-
-	componentId = 1;
-
-	mountList = [];
-
-	module.exports = Component = (function() {
-	  function Component() {
-	    this.listeners = {};
-	    this.baseComponent = null;
-	    this.parentNode = null;
-	    this.node = null;
-	    this.dcid = newDcid();
-	  }
-
-	  Component.prototype.on = function(event, callback) {
-	    var callbacks;
-	    callbacks = this.listeners[event] || (this.listeners[event] = []);
-	    callbacks.push(callback);
-	    return this;
-	  };
-
-	  Component.prototype.off = function(event, callback) {
-	    var callbacks;
-	    callbacks = this.listeners[event] || (this.listeners[event] = []);
-	    callbacks.indexOf(callback) >= 0 && callbacks.splice(index, 1);
-	    !callbacks.length && (this.listeners[event] = null);
-	    return this;
-	  };
-
-	  Component.prototype.emit = function() {
-	    var args, callback, callbacks, event, _i, _len;
-	    event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-	    if (!(callbacks = this.listeners[event])) {
-	      return;
-	    }
-	    for (_i = 0, _len = callbacks.length; _i < _len; _i++) {
-	      callback = callbacks[_i];
-	      callback.apply(this, args);
-	    }
-	    return this;
-	  };
-
-
-	  /* if mountNode is given, it should not the node of any Component
-	  only use beforeNode if mountNode is given
-	   */
-
-	  Component.prototype.mount = function(mountNode, beforeNode) {
-	    this.emit('beforeMount');
-	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.getElementsByTagName('body')[0];
-	    this.renderDom();
-	    this.emit('afterMount');
-	    return this;
-	  };
-
-	  Component.prototype.create = function() {
-	    return this.renderDom();
-	  };
-
-	  Component.prototype.render = function() {
-	    return this.renderDom();
-	  };
-
-	  Component.prototype.update = function() {
-	    this.emit('update');
-	    this.renderDom();
-	    return this;
-	  };
-
-	  Component.prototype.unmount = function() {
-	    var child, holder;
-	    this.emit('beforeUnmount');
-	    if (!this.node || !this.node.parentNode) {
-	      this.emit('afterUnmount');
-	      return this;
-	    }
-	    child = this;
-	    holder = this.holder;
-	    while (holder && !holder.isBaseComponent) {
-	      child = holder;
-	      holder = holder.holder;
-	    }
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.removeChild(holder.dcidIndexMap[child.dcid]);
-	    }
-	    child.parentNode = null;
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.renderDom();
-	    } else {
-	      child.renderDom();
-	    }
-	    this.emit('afterUnmount');
-	    return child;
-	  };
-
-	  Component.prototype.remount = function(parentNode) {
-	    var child, holder, index;
-	    this.emit('beforeMount');
-	    child = this;
-	    holder = this.holder;
-	    while (holder && !holder.isBaseComponent) {
-	      child = holder;
-	      holder = holder.holder;
-	    }
-	    if ((holder.isList || holder.isTag) && (index = holder.dcidIndexMap[child.dcid])) {
-	      index = index != null ? index : holder.children.length;
-	      holder.insertChild(index, child);
-	    }
-	    child.parentNode = holder ? holder.parentNode : parentNode ? parentNode : document.body;
-	    child.invalidate();
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.renderDom();
-	    } else {
-	      child.renderDom();
-	    }
-	    this.emit('afterMount');
-	    return child;
-	  };
-
-
-	  /*
-	  component.updateWhen components, events
-	  component.updateWhen setInterval, interval, options
-	  component.updateWhen dc.raf, options
-	   */
-
-	  Component.prototype.updateWhen = function() {
-	    var args;
-	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    return this._renderWhenBy('update', args);
-	  };
-
-	  Component.prototype.renderWhen = function() {
-	    var args;
-	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    return this._renderWhenBy('render', args);
-	  };
-
-	  Component.prototype._renderWhenBy = function(method, args) {
-	    if (args[0] === setInterval) {
-	      if (args[1] === 'number') {
-	        dc._renderWhenBy(method, setInterval, args[1], [this], args[2]);
-	      } else {
-	        dc._renderWhenBy(method, setInterval, [this], args[1]);
-	      }
-	    } else if (args[1] === dc.raf) {
-	      dc._renderWhenBy(method, dc.raf, [this], args[1]);
-	    } else {
-	      dc._renderWhenBy(method, args[0], args[1], [this]);
-	    }
-	    return this;
-	  };
-
-	  Component.prototype.reachTag = function() {
-	    var holder;
-	    holder = this.holder;
-	    while (!holder.isTag && holder.holder) {
-	      holder = holder.holder;
-	    }
-	    return holder;
-	  };
-
-	  Component.prototype.addController = function(controller) {
-	    return controller.component = this;
-	  };
-
-	  Component.prototype.copyEventListeners = function(srcComponent) {
-	    var event, myListeners, srcListeners;
-	    myListeners = this.listeners;
-	    srcListeners = srcComponent.listeners;
-	    for (event in srcListeners) {
-	      srcListeners[event] && (myListeners[event] = srcListeners[event].splice());
-	    }
-	    return this;
-	  };
-
-	  return Component;
-
-	})();
-
-
-/***/ },
-/* 15 */
-/*!***********************************!*\
-  !*** ./src/core/base/Text.coffee ***!
-  \***********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var BaseComponent, Text, constructTextLikeComponent, domField, domValue, dynamic, exports, funcString, newLine, value, _ref, _ref1,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 13);
-
-	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
-
-	_ref1 = __webpack_require__(/*! ../../dom-util */ 6), domField = _ref1.domField, domValue = _ref1.domValue;
-
-	exports = module.exports = Text = (function(_super) {
-	  __extends(Text, _super);
-
-	  function Text(text) {
-	    Text.__super__.constructor.call(this);
-	    constructTextLikeComponent.call(this, text);
-	  }
-
-	  Text.prototype.createDom = function() {
-	    this.textValid = true;
-	    this.firstNode = this.node = document.createTextNode(domValue(this.text));
-	    return this.node;
-	  };
-
-	  Text.prototype.updateDom = function() {
-	    var text;
-	    if (!this.textValid) {
-	      return this.node;
-	    }
-	    this.textValid = true;
-	    text = domValue(this.text);
-	    if (text !== this.cacheText) {
-	      if (this.node.parentNode) {
-	        this.removeNode();
-	      }
-	      this.node = document.createTextNode(text);
-	      this.firstNode = this.node;
-	      this.cacheText = text;
-	    }
-	    return this.node;
-	  };
-
-	  Text.prototype.clone = function() {
-	    return (new this.constructor(this.text)).copyEventListeners(this);
-	  };
-
-	  Text.prototype.toString = function(indent, addNewLine) {
-	    if (indent == null) {
-	      indent = 2;
-	    }
-	    return newLine(funcString(this.text), indent, addNewLine);
-	  };
-
-	  return Text;
-
-	})(BaseComponent);
-
-	exports.constructTextLikeComponent = constructTextLikeComponent = function(text) {
-	  var me;
-	  me = this;
-	  this.text = text = domField(text);
-	  if (typeof text === 'function') {
-	    text.onInvalidate(function() {
-	      return me.invalidate();
-	    });
-	  }
-	  this.family = {};
-	  this.family[this.dcid] = true;
-	  return this;
-	};
-
-
-/***/ },
-/* 16 */
 /*!************************************!*\
   !*** ./src/core/base/route.coffee ***!
   \************************************/
@@ -2683,11 +2273,11 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 17);
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 13);
 
 	isComponent = __webpack_require__(/*! ./isComponent */ 8);
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 18);
+	toComponent = __webpack_require__(/*! ./toComponent */ 15);
 
 	_ref = __webpack_require__(/*! dc-util */ 3), isEven = _ref.isEven, matchCurvedString = _ref.matchCurvedString;
 
@@ -3063,7 +2653,7 @@
 
 
 /***/ },
-/* 17 */
+/* 13 */
 /*!*************************************************!*\
   !*** ./src/core/base/TransformComponent.coffee ***!
   \*************************************************/
@@ -3165,7 +2755,207 @@
 
 
 /***/ },
-/* 18 */
+/* 14 */
+/*!****************************************!*\
+  !*** ./src/core/base/component.coffee ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Component, componentId, dc, extend, isComponent, mountList, newDcid, normalizeDomElement,
+	  __slice = [].slice;
+
+	extend = __webpack_require__(/*! extend */ 9);
+
+	normalizeDomElement = __webpack_require__(/*! ../../dom-util */ 6).normalizeDomElement;
+
+	newDcid = __webpack_require__(/*! dc-util */ 3).newDcid;
+
+	isComponent = __webpack_require__(/*! ./isComponent */ 8);
+
+	dc = __webpack_require__(/*! ../../dc */ 4);
+
+	componentId = 1;
+
+	mountList = [];
+
+	module.exports = Component = (function() {
+	  function Component() {
+	    this.listeners = {};
+	    this.baseComponent = null;
+	    this.parentNode = null;
+	    this.node = null;
+	    this.dcid = newDcid();
+	  }
+
+	  Component.prototype.on = function(event, callback) {
+	    var callbacks;
+	    callbacks = this.listeners[event] || (this.listeners[event] = []);
+	    callbacks.push(callback);
+	    return this;
+	  };
+
+	  Component.prototype.off = function(event, callback) {
+	    var callbacks;
+	    callbacks = this.listeners[event] || (this.listeners[event] = []);
+	    callbacks.indexOf(callback) >= 0 && callbacks.splice(index, 1);
+	    !callbacks.length && (this.listeners[event] = null);
+	    return this;
+	  };
+
+	  Component.prototype.emit = function() {
+	    var args, callback, callbacks, event, _i, _len;
+	    event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+	    if (!(callbacks = this.listeners[event])) {
+	      return;
+	    }
+	    for (_i = 0, _len = callbacks.length; _i < _len; _i++) {
+	      callback = callbacks[_i];
+	      callback.apply(this, args);
+	    }
+	    return this;
+	  };
+
+
+	  /* if mountNode is given, it should not the node of any Component
+	  only use beforeNode if mountNode is given
+	   */
+
+	  Component.prototype.mount = function(mountNode, beforeNode) {
+	    this.emit('beforeMount');
+	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.getElementsByTagName('body')[0];
+	    this.renderDom();
+	    this.emit('afterMount');
+	    return this;
+	  };
+
+	  Component.prototype.create = function() {
+	    return this.renderDom();
+	  };
+
+	  Component.prototype.render = function() {
+	    return this.renderDom();
+	  };
+
+	  Component.prototype.update = function() {
+	    this.emit('update');
+	    this.renderDom();
+	    return this;
+	  };
+
+	  Component.prototype.unmount = function() {
+	    var child, holder;
+	    this.emit('beforeUnmount');
+	    if (!this.node || !this.node.parentNode) {
+	      this.emit('afterUnmount');
+	      return this;
+	    }
+	    child = this;
+	    holder = this.holder;
+	    while (holder && !holder.isBaseComponent) {
+	      child = holder;
+	      holder = holder.holder;
+	    }
+	    if (holder && (holder.isList || holder.isTag)) {
+	      holder.removeChild(holder.dcidIndexMap[child.dcid]);
+	    }
+	    child.parentNode = null;
+	    if (holder && (holder.isList || holder.isTag)) {
+	      holder.renderDom();
+	    } else {
+	      child.renderDom();
+	    }
+	    this.emit('afterUnmount');
+	    return child;
+	  };
+
+	  Component.prototype.remount = function(parentNode) {
+	    var child, holder, index;
+	    this.emit('beforeMount');
+	    child = this;
+	    holder = this.holder;
+	    while (holder && !holder.isBaseComponent) {
+	      child = holder;
+	      holder = holder.holder;
+	    }
+	    if ((holder.isList || holder.isTag) && (index = holder.dcidIndexMap[child.dcid])) {
+	      index = index != null ? index : holder.children.length;
+	      holder.insertChild(index, child);
+	    }
+	    child.parentNode = holder ? holder.parentNode : parentNode ? parentNode : document.body;
+	    child.invalidate();
+	    if (holder && (holder.isList || holder.isTag)) {
+	      holder.renderDom();
+	    } else {
+	      child.renderDom();
+	    }
+	    this.emit('afterMount');
+	    return child;
+	  };
+
+
+	  /*
+	  component.updateWhen components, events
+	  component.updateWhen setInterval, interval, options
+	  component.updateWhen dc.raf, options
+	   */
+
+	  Component.prototype.updateWhen = function() {
+	    var args;
+	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return this._renderWhenBy('update', args);
+	  };
+
+	  Component.prototype.renderWhen = function() {
+	    var args;
+	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return this._renderWhenBy('render', args);
+	  };
+
+	  Component.prototype._renderWhenBy = function(method, args) {
+	    if (args[0] === setInterval) {
+	      if (args[1] === 'number') {
+	        dc._renderWhenBy(method, setInterval, args[1], [this], args[2]);
+	      } else {
+	        dc._renderWhenBy(method, setInterval, [this], args[1]);
+	      }
+	    } else if (args[1] === dc.raf) {
+	      dc._renderWhenBy(method, dc.raf, [this], args[1]);
+	    } else {
+	      dc._renderWhenBy(method, args[0], args[1], [this]);
+	    }
+	    return this;
+	  };
+
+	  Component.prototype.reachTag = function() {
+	    var holder;
+	    holder = this.holder;
+	    while (!holder.isTag && holder.holder) {
+	      holder = holder.holder;
+	    }
+	    return holder;
+	  };
+
+	  Component.prototype.addController = function(controller) {
+	    return controller.component = this;
+	  };
+
+	  Component.prototype.copyEventListeners = function(srcComponent) {
+	    var event, myListeners, srcListeners;
+	    myListeners = this.listeners;
+	    srcListeners = srcComponent.listeners;
+	    for (event in srcListeners) {
+	      srcListeners[event] && (myListeners[event] = srcListeners[event].splice());
+	    }
+	    return this;
+	  };
+
+	  return Component;
+
+	})();
+
+
+/***/ },
+/* 15 */
 /*!******************************************!*\
   !*** ./src/core/base/toComponent.coffee ***!
   \******************************************/
@@ -3177,9 +2967,9 @@
 
 	isComponent = __webpack_require__(/*! ./isComponent */ 8);
 
-	Nothing = __webpack_require__(/*! ./Nothing */ 19);
+	Nothing = __webpack_require__(/*! ./Nothing */ 16);
 
-	Text = __webpack_require__(/*! ./Text */ 15);
+	Text = __webpack_require__(/*! ./Text */ 18);
 
 	react = __webpack_require__(/*! lazy-flow */ 2).react;
 
@@ -3190,7 +2980,7 @@
 	  } else if (typeof item === 'function') {
 	    return new Text(item);
 	  } else if (item instanceof Array) {
-	    List = __webpack_require__(/*! ./List */ 20);
+	    List = __webpack_require__(/*! ./List */ 19);
 	    return new List((function() {
 	      var _i, _len, _results;
 	      _results = [];
@@ -3203,7 +2993,7 @@
 	  } else if (item == null) {
 	    return new Nothing();
 	  } else if (item.then && item["catch"]) {
-	    Func = __webpack_require__(/*! ./Func */ 21);
+	    Func = __webpack_require__(/*! ./Func */ 20);
 	    component = new Func(react(function() {
 	      return component.promiseResult;
 	    }));
@@ -3222,7 +3012,7 @@
 
 
 /***/ },
-/* 19 */
+/* 16 */
 /*!**************************************!*\
   !*** ./src/core/base/Nothing.coffee ***!
   \**************************************/
@@ -3232,7 +3022,7 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 13);
+	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 17);
 
 	newLine = __webpack_require__(/*! dc-util */ 3).newLine;
 
@@ -3275,7 +3065,164 @@
 
 
 /***/ },
-/* 20 */
+/* 17 */
+/*!********************************************!*\
+  !*** ./src/core/base/BaseComponent.coffee ***!
+  \********************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var BaseComponent, Component, cloneObject,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	Component = __webpack_require__(/*! ./component */ 14);
+
+	cloneObject = __webpack_require__(/*! dc-util */ 3).cloneObject;
+
+	module.exports = BaseComponent = (function(_super) {
+	  __extends(BaseComponent, _super);
+
+	  function BaseComponent() {
+	    BaseComponent.__super__.constructor.call(this);
+	    this.isBaseComponent = true;
+	    this.baseComponent = this;
+	  }
+
+	  BaseComponent.prototype.renderDom = function() {
+	    if (!this.parentNode) {
+	      if (this.node && this.node.parentNode) {
+	        this.valid = true;
+	        return this.removeDom();
+	      } else {
+	        return this;
+	      }
+	    }
+	    if (!this.node) {
+	      this.valid = true;
+	      this.emit('beforeAttach');
+	      this.createDom();
+	    } else if (!this.valid) {
+	      this.valid = true;
+	      this.updateDom();
+	    }
+	    this.attachNode(this.parentNode, this.nextNode);
+	    return this;
+	  };
+
+	  BaseComponent.prototype.invalidate = function() {
+	    if (!this.valid) {
+	      return;
+	    }
+	    this.valid = false;
+	    return this.holder && this.holder.invalidateContent(this);
+	  };
+
+	  BaseComponent.prototype.removeDom = function() {
+	    this.removeNode();
+	    this.emit('afterRemoveDom');
+	    return this;
+	  };
+
+	  BaseComponent.prototype.removeNode = function() {
+	    return this.node.parentNode && this.node.parentNode.removeChild(this.node);
+	  };
+
+	  BaseComponent.prototype.attachNode = function() {
+	    var node;
+	    node = this.node;
+	    if (this.parentNode === node.parentNode) {
+	      return node;
+	    }
+	    this.parentNode.insertBefore(node, this.nextNode);
+	    return node;
+	  };
+
+	  return BaseComponent;
+
+	})(Component);
+
+
+/***/ },
+/* 18 */
+/*!***********************************!*\
+  !*** ./src/core/base/Text.coffee ***!
+  \***********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var BaseComponent, Text, constructTextLikeComponent, domField, domValue, dynamic, exports, funcString, newLine, value, _ref, _ref1,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 17);
+
+	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
+
+	_ref1 = __webpack_require__(/*! ../../dom-util */ 6), domField = _ref1.domField, domValue = _ref1.domValue;
+
+	exports = module.exports = Text = (function(_super) {
+	  __extends(Text, _super);
+
+	  function Text(text) {
+	    Text.__super__.constructor.call(this);
+	    constructTextLikeComponent.call(this, text);
+	  }
+
+	  Text.prototype.createDom = function() {
+	    this.textValid = true;
+	    this.firstNode = this.node = document.createTextNode(domValue(this.text));
+	    return this.node;
+	  };
+
+	  Text.prototype.updateDom = function() {
+	    var text;
+	    if (!this.textValid) {
+	      return this.node;
+	    }
+	    this.textValid = true;
+	    text = domValue(this.text);
+	    if (text !== this.cacheText) {
+	      if (this.node.parentNode) {
+	        this.removeNode();
+	      }
+	      this.node = document.createTextNode(text);
+	      this.firstNode = this.node;
+	      this.cacheText = text;
+	    }
+	    return this.node;
+	  };
+
+	  Text.prototype.clone = function() {
+	    return (new this.constructor(this.text)).copyEventListeners(this);
+	  };
+
+	  Text.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 2;
+	    }
+	    return newLine(funcString(this.text), indent, addNewLine);
+	  };
+
+	  return Text;
+
+	})(BaseComponent);
+
+	exports.constructTextLikeComponent = constructTextLikeComponent = function(text) {
+	  var me;
+	  me = this;
+	  this.text = text = domField(text);
+	  if (typeof text === 'function') {
+	    text.onInvalidate(function() {
+	      return me.invalidate();
+	    });
+	  }
+	  this.family = {};
+	  this.family[this.dcid] = true;
+	  return this;
+	};
+
+
+/***/ },
+/* 19 */
 /*!***********************************!*\
   !*** ./src/core/base/List.coffee ***!
   \***********************************/
@@ -3286,13 +3233,13 @@
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 18);
+	toComponent = __webpack_require__(/*! ./toComponent */ 15);
 
 	isComponent = __webpack_require__(/*! ./isComponent */ 8);
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 13);
+	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 17);
 
-	Nothing = __webpack_require__(/*! ./Nothing */ 19);
+	Nothing = __webpack_require__(/*! ./Nothing */ 16);
 
 	_ref = __webpack_require__(/*! dc-util */ 3), checkContainer = _ref.checkContainer, newLine = _ref.newLine, binarySearch = _ref.binarySearch, binaryInsert = _ref.binaryInsert, substractSet = _ref.substractSet;
 
@@ -3660,7 +3607,7 @@
 
 
 /***/ },
-/* 21 */
+/* 20 */
 /*!***********************************!*\
   !*** ./src/core/base/Func.coffee ***!
   \***********************************/
@@ -3670,9 +3617,9 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 18);
+	toComponent = __webpack_require__(/*! ./toComponent */ 15);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 17);
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 13);
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -3715,7 +3662,7 @@
 
 
 /***/ },
-/* 22 */
+/* 21 */
 /*!**********************************!*\
   !*** ./src/core/base/Tag.coffee ***!
   \**********************************/
@@ -3730,13 +3677,13 @@
 
 	dc = __webpack_require__(/*! ../../dc */ 4);
 
-	_ref = __webpack_require__(/*! ../property */ 23), classFn = _ref.classFn, styleFrom = _ref.styleFrom, eventHandlerFromArray = _ref.eventHandlerFromArray, attrToPropName = _ref.attrToPropName, updating = _ref.updating;
+	_ref = __webpack_require__(/*! ../property */ 22), classFn = _ref.classFn, styleFrom = _ref.styleFrom, eventHandlerFromArray = _ref.eventHandlerFromArray, attrToPropName = _ref.attrToPropName, updating = _ref.updating;
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 13);
+	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 17);
 
-	Text = __webpack_require__(/*! ./Text */ 15);
+	Text = __webpack_require__(/*! ./Text */ 18);
 
-	List = __webpack_require__(/*! ./List */ 20);
+	List = __webpack_require__(/*! ./List */ 19);
 
 	_ref1 = __webpack_require__(/*! dc-util */ 3), funcString = _ref1.funcString, newLine = _ref1.newLine, cloneObject = _ref1.cloneObject;
 
@@ -3746,7 +3693,7 @@
 
 	domField = __webpack_require__(/*! ../../dom-util */ 6).domField;
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 18);
+	toComponent = __webpack_require__(/*! ./toComponent */ 15);
 
 	module.exports = Tag = (function(_super) {
 	  __extends(Tag, _super);
@@ -4250,7 +4197,7 @@
 
 
 /***/ },
-/* 23 */
+/* 22 */
 /*!**********************************!*\
   !*** ./src/core/property.coffee ***!
   \**********************************/
@@ -4548,7 +4495,7 @@
 
 
 /***/ },
-/* 24 */
+/* 23 */
 /*!**************************************!*\
   !*** ./src/core/base/Comment.coffee ***!
   \**************************************/
@@ -4558,9 +4505,9 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 13);
+	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 17);
 
-	constructTextLikeComponent = __webpack_require__(/*! ./Text */ 15).constructTextLikeComponent;
+	constructTextLikeComponent = __webpack_require__(/*! ./Text */ 18).constructTextLikeComponent;
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -4597,6 +4544,60 @@
 
 
 /***/ },
+/* 24 */
+/*!************************************!*\
+  !*** ./src/core/base/Cdata.coffee ***!
+  \************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var BaseComponent, Cdata, constructTextLikeComponent, domValue, funcString, newLine, _ref,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 17);
+
+	constructTextLikeComponent = __webpack_require__(/*! ./Text */ 18).constructTextLikeComponent;
+
+	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
+
+	domValue = __webpack_require__(/*! ../../dom-util */ 6).domValue;
+
+	module.exports = Cdata = (function(_super) {
+	  __extends(Cdata, _super);
+
+	  function Cdata(text) {
+	    Cdata.__super__.constructor.call(this);
+	    constructTextLikeComponent.call(this, text);
+	  }
+
+
+	  /*
+	    this operation is not supported in html document
+	   */
+
+	  Cdata.prototype.createDom = function(parentNode, nextNode) {
+	    this.node = document.createCDATASection(domValue(this.text));
+	    return this.node;
+	  };
+
+	  Cdata.prototype.updateDom = function(parentNode, nextNode) {
+	    this.text && (this.node.data = domValue(this.text));
+	    return this.node;
+	  };
+
+	  Cdata.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 2;
+	    }
+	    return newLine("<CDATA " + (funcString(this.text)) + "/>", indent, addNewLine);
+	  };
+
+	  return Cdata;
+
+	})(BaseComponent);
+
+
+/***/ },
 /* 25 */
 /*!***********************************!*\
   !*** ./src/core/base/Html.coffee ***!
@@ -4607,9 +4608,9 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 13);
+	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 17);
 
-	constructTextLikeComponent = __webpack_require__(/*! ./Text */ 15).constructTextLikeComponent;
+	constructTextLikeComponent = __webpack_require__(/*! ./Text */ 18).constructTextLikeComponent;
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -4711,9 +4712,9 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 18);
+	toComponent = __webpack_require__(/*! ./toComponent */ 15);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 17);
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 13);
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
@@ -4788,9 +4789,9 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 18);
+	toComponent = __webpack_require__(/*! ./toComponent */ 15);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 17);
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 13);
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
@@ -4872,6 +4873,90 @@
 
 /***/ },
 /* 28 */
+/*!*****************************************!*\
+  !*** ./src/core/base/ActiveView.coffee ***!
+  \*****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var ActiveView, TransformComponent, extend, newLine, setActiveView, toComponent,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	toComponent = __webpack_require__(/*! ./toComponent */ 15);
+
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 13);
+
+	newLine = __webpack_require__(/*! dc-util */ 3).newLine;
+
+	extend = __webpack_require__(/*! extend */ 9);
+
+	module.exports = ActiveView = (function(_super) {
+	  __extends(ActiveView, _super);
+
+	  function ActiveView(activeView) {
+	    var family, get, set;
+	    ActiveView.__super__.constructor.call(this);
+	    this._activeView = activeView = toComponent(activeView);
+	    this.family = family = extend({}, activeView.family);
+	    family[this.dcid] = true;
+	    if (Object.defineProperty) {
+	      get = function() {
+	        return this._activeView;
+	      };
+	      set = function(activeView) {
+	        return setActiveView(this, activeView);
+	      };
+	      Object.defineProperty(this, 'activeView', {
+	        get: get,
+	        set: set
+	      });
+	    }
+	  }
+
+	  ActiveView.prototype.setActiveView = function(activeView) {
+	    return setActiveView(this, activeView);
+	  };
+
+	  ActiveView.prototype.onSetActiveView = function(activeView, oldActiveView) {};
+
+	  ActiveView.prototype.getContentComponent = function() {
+	    return this._activeView;
+	  };
+
+	  ActiveView.prototype.clone = function() {
+	    return (new this.constructor(this.activeView)).copyEventListeners(this);
+	  };
+
+	  ActiveView.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 0;
+	    }
+	    if (addNewLine == null) {
+	      addNewLine = '';
+	    }
+	    return newLine('', indent, addNewLine) + '<ActiveView ' + this.activeView.toString(indent + 2, true) + '>';
+	  };
+
+	  return ActiveView;
+
+	})(TransformComponent);
+
+	setActiveView = function(component, activeView) {
+	  var oldActiveView;
+	  oldActiveView = component._activeView;
+	  if (activeView === oldActiveView) {
+	    return activeView;
+	  } else {
+	    component.onSetActiveView(activeView, oldActiveView);
+	    activeView = toComponent(activeView);
+	    component.invalidateTransform();
+	    return component._activeView = activeView;
+	  }
+	};
+
+
+/***/ },
+/* 29 */
 /*!***********************************!*\
   !*** ./src/core/base/Each.coffee ***!
   \***********************************/
@@ -4881,17 +4966,17 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 18);
+	toComponent = __webpack_require__(/*! ./toComponent */ 15);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 17);
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 13);
 
-	List = __webpack_require__(/*! ./List */ 20);
+	List = __webpack_require__(/*! ./List */ 19);
 
-	Func = __webpack_require__(/*! ./Func */ 21);
+	Func = __webpack_require__(/*! ./Func */ 20);
 
-	Text = __webpack_require__(/*! ./Text */ 15);
+	Text = __webpack_require__(/*! ./Text */ 18);
 
-	Nothing = __webpack_require__(/*! ./Nothing */ 19);
+	Nothing = __webpack_require__(/*! ./Nothing */ 16);
 
 	_ref = __webpack_require__(/*! dc-util */ 3), isArray = _ref.isArray, funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -5094,7 +5179,7 @@
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /*!************************************!*\
   !*** ./src/core/base/Defer.coffee ***!
   \************************************/
@@ -5104,9 +5189,9 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 18);
+	toComponent = __webpack_require__(/*! ./toComponent */ 15);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 17);
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 13);
 
 	extend = __webpack_require__(/*! extend */ 9);
 
@@ -5186,20 +5271,20 @@
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /*!*************************************!*\
   !*** ./src/core/instantiate.coffee ***!
   \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Case, Comment, Component, Defer, Each, Func, Html, If, List, Nothing, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
+	var ActiveView, Case, Comment, Component, Defer, Each, Func, Html, If, List, Nothing, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
 	  __slice = [].slice;
 
-	_ref = __webpack_require__(/*! ./base */ 11), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, Nothing = _ref.Nothing, Defer = _ref.Defer;
+	_ref = __webpack_require__(/*! ./base */ 11), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, ActiveView = _ref.ActiveView, Nothing = _ref.Nothing, Defer = _ref.Defer;
 
 	_ref1 = __webpack_require__(/*! dc-util */ 3), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
-	isAttrs = __webpack_require__(/*! ./util */ 31).isAttrs;
+	isAttrs = __webpack_require__(/*! ./util */ 32).isAttrs;
 
 	attrsChildren = function(args) {
 	  var attrs;
@@ -5316,6 +5401,14 @@
 	  }
 	};
 
+	exports.activeView = function(attrs, content) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new ActiveView(content)]);
+	  } else {
+	    return new ActiveView(attrs);
+	  }
+	};
+
 	exports.list = list = function() {
 	  var attrs, lst;
 	  attrs = arguments[0], lst = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
@@ -5423,7 +5516,7 @@
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /*!******************************!*\
   !*** ./src/core/util.coffee ***!
   \******************************/
@@ -5433,13 +5526,13 @@
 
 	_ref = __webpack_require__(/*! ./base */ 11), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
 
-	Func = __webpack_require__(/*! ./base/Func */ 21);
+	Func = __webpack_require__(/*! ./base/Func */ 20);
 
-	Text = __webpack_require__(/*! ./base/Text */ 15);
+	Text = __webpack_require__(/*! ./base/Text */ 18);
 
 	Html = __webpack_require__(/*! ./base/Html */ 25);
 
-	Comment = __webpack_require__(/*! ./base/Comment */ 24);
+	Comment = __webpack_require__(/*! ./base/Comment */ 23);
 
 	exports.isAttrs = function(item) {
 	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
@@ -5489,7 +5582,7 @@
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /*!*****************************!*\
   !*** ./src/core/tag.coffee ***!
   \*****************************/
@@ -5500,7 +5593,7 @@
 
 	extend = __webpack_require__(/*! extend */ 9);
 
-	tag = __webpack_require__(/*! ./instantiate */ 30).tag;
+	tag = __webpack_require__(/*! ./instantiate */ 31).tag;
 
 	getBindProp = __webpack_require__(/*! ../dom-util */ 6).getBindProp;
 
