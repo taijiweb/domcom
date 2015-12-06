@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "18f557ff36b73d4230d5"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "a3ebeb80693ff63fb4c6"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -3297,12 +3297,14 @@
   \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, List, Nothing, binaryInsert, binarySearch, checkConflictOffspring, checkContainer, exports, newLine, substractSet, toComponent, _ref,
+	var BaseComponent, List, Nothing, binaryInsert, binarySearch, checkConflictOffspring, checkContainer, exports, isComponent, newLine, substractSet, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+
+	isComponent = __webpack_require__(/*! ./isComponent */ 9);
 
 	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
 
@@ -3317,8 +3319,13 @@
 
 	  function List(children) {
 	    var child, dcidIndexMap, family, i, _i, _len;
-	    this.children = children;
+	    if (children == null) {
+	      children = [];
+	    }
 	    List.__super__.constructor.call(this);
+	    if (isComponent(children)) {
+	      children = [children];
+	    }
 	    this.family = family = {};
 	    family[this.dcid] = true;
 	    this.dcidIndexMap = dcidIndexMap = {};
@@ -3329,6 +3336,7 @@
 	      child.holder = this;
 	      dcidIndexMap[child.dcid] = i;
 	    }
+	    this.children = children;
 	    this.isList = true;
 	    return;
 	  }
@@ -3763,10 +3771,14 @@
 	    if (attrs == null) {
 	      attrs = {};
 	    }
+	    if (!(this instanceof Tag)) {
+	      throw 'should use new SubclassComponent(...) with the subclass of Tag';
+	    }
 	    Tag.__super__.constructor.call(this, children);
 	    delete this.isList;
 	    this.isTag = true;
-	    this.tagName = tagName = tagName.toLowerCase();
+	    tagName = tagName || 'div';
+	    this.tagName = tagName.toLowerCase();
 	    this.namespace = attrs.namespace;
 	    this.initAttrs();
 	    this.extendAttrs(attrs);

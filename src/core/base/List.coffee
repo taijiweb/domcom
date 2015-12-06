@@ -1,12 +1,18 @@
 toComponent = require './toComponent'
+isComponent = require './isComponent'
+
 BaseComponent = require './BaseComponent'
+
 Nothing = require './Nothing'
 {checkContainer, newLine, binarySearch, binaryInsert, substractSet} = require 'dc-util'
 {checkConflictOffspring} = require '../../dom-util'
 
 module.exports = exports = class List extends BaseComponent
-  constructor: (@children) ->
+  constructor: (children=[]) ->
     super()
+
+    if isComponent(children)
+      children = [children]
 
     @family = family = {}
     family[@dcid] = true
@@ -17,6 +23,7 @@ module.exports = exports = class List extends BaseComponent
       checkConflictOffspring(family, child)
       child.holder = @
       dcidIndexMap[child.dcid] = i
+    @children = children
 
     @isList = true
     return

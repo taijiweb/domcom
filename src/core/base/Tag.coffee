@@ -12,12 +12,17 @@ toComponent = require './toComponent'
 
 module.exports = class Tag extends List
   constructor: (tagName, attrs={}, children) ->
+
+    if this not instanceof Tag
+      throw 'should use new SubclassComponent(...) with the subclass of Tag'
+
     super(children)
 
     delete @isList
     @isTag = true
 
-    @tagName = tagName = tagName.toLowerCase()
+    tagName = tagName or 'div'
+    @tagName = tagName.toLowerCase()
     @namespace = attrs.namespace
 
     @initAttrs()
