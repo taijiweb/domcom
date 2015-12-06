@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "ee731334ca006570b946"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "3d4b6a22c058db0f708c"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -2231,7 +2231,7 @@
 	  If: __webpack_require__(/*! ./If */ 26),
 	  Case: __webpack_require__(/*! ./Case */ 27),
 	  Func: __webpack_require__(/*! ./Func */ 20),
-	  ActiveView: __webpack_require__(/*! ./ActiveView */ 28),
+	  Picker: __webpack_require__(/*! ./Picker */ 28),
 	  Each: __webpack_require__(/*! ./Each */ 29),
 	  Defer: __webpack_require__(/*! ./Defer */ 30),
 	  Route: route.Route,
@@ -4873,12 +4873,12 @@
 
 /***/ },
 /* 28 */
-/*!*****************************************!*\
-  !*** ./src/core/base/ActiveView.coffee ***!
-  \*****************************************/
+/*!*************************************!*\
+  !*** ./src/core/base/Picker.coffee ***!
+  \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var ActiveView, TransformComponent, extend, newLine, setActiveView, toComponent,
+	var Picker, TransformComponent, extend, newLine, setContent, toComponent,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -4890,67 +4890,67 @@
 
 	extend = __webpack_require__(/*! extend */ 9);
 
-	module.exports = ActiveView = (function(_super) {
-	  __extends(ActiveView, _super);
+	module.exports = Picker = (function(_super) {
+	  __extends(Picker, _super);
 
-	  function ActiveView(activeView) {
+	  function Picker(content) {
 	    var family, get, set;
-	    ActiveView.__super__.constructor.call(this);
-	    this._activeView = activeView = toComponent(activeView);
-	    this.family = family = extend({}, activeView.family);
+	    Picker.__super__.constructor.call(this);
+	    this._content = content = toComponent(content);
+	    this.family = family = extend({}, content.family);
 	    family[this.dcid] = true;
 	    if (Object.defineProperty) {
 	      get = function() {
-	        return this._activeView;
+	        return this._content;
 	      };
-	      set = function(activeView) {
-	        return setActiveView(this, activeView);
+	      set = function(content) {
+	        return setContent(this, content);
 	      };
-	      Object.defineProperty(this, 'activeView', {
+	      Object.defineProperty(this, 'content', {
 	        get: get,
 	        set: set
 	      });
 	    }
 	  }
 
-	  ActiveView.prototype.setActiveView = function(activeView) {
-	    return setActiveView(this, activeView);
+	  Picker.prototype.setContent = function(content) {
+	    return setContent(this, content);
 	  };
 
-	  ActiveView.prototype.onSetActiveView = function(activeView, oldActiveView) {};
+	  Picker.prototype.onSetContent = function(content, oldContent) {};
 
-	  ActiveView.prototype.getContentComponent = function() {
-	    return this._activeView;
+	  Picker.prototype.getContentComponent = function() {
+	    return this._content;
 	  };
 
-	  ActiveView.prototype.clone = function() {
-	    return (new this.constructor(this.activeView)).copyEventListeners(this);
+	  Picker.prototype.clone = function() {
+	    return (new this.constructor(this.content)).copyEventListeners(this);
 	  };
 
-	  ActiveView.prototype.toString = function(indent, addNewLine) {
+	  Picker.prototype.toString = function(indent, addNewLine) {
 	    if (indent == null) {
 	      indent = 0;
 	    }
 	    if (addNewLine == null) {
 	      addNewLine = '';
 	    }
-	    return newLine('', indent, addNewLine) + '<ActiveView ' + this.activeView.toString(indent + 2, true) + '>';
+	    return newLine('', indent, addNewLine) + '<Picker ' + this.content.toString(indent + 2, true) + '>';
 	  };
 
-	  return ActiveView;
+	  return Picker;
 
 	})(TransformComponent);
 
-	setActiveView = function(component, activeView) {
-	  var oldActiveView;
-	  oldActiveView = component._activeView;
-	  if (activeView === oldActiveView) {
-	    return activeView;
+	setContent = function(component, content) {
+	  var oldContent;
+	  oldContent = component._content;
+	  if (content === oldContent) {
+	    return content;
 	  } else {
-	    component.onSetActiveView(activeView, oldActiveView);
-	    activeView = toComponent(activeView);
+	    component.onSetContent(content, oldContent);
+	    content = toComponent(content);
 	    component.invalidateTransform();
-	    return component._activeView = activeView;
+	    return component._content = content;
 	  }
 	};
 
@@ -5277,10 +5277,10 @@
   \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var ActiveView, Case, Comment, Component, Defer, Each, Func, Html, If, List, Nothing, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
+	var Case, Comment, Component, Defer, Each, Func, Html, If, List, Nothing, Picker, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
 	  __slice = [].slice;
 
-	_ref = __webpack_require__(/*! ./base */ 11), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, ActiveView = _ref.ActiveView, Nothing = _ref.Nothing, Defer = _ref.Defer;
+	_ref = __webpack_require__(/*! ./base */ 11), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, Picker = _ref.Picker, Nothing = _ref.Nothing, Defer = _ref.Defer;
 
 	_ref1 = __webpack_require__(/*! dc-util */ 3), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
@@ -5401,11 +5401,11 @@
 	  }
 	};
 
-	exports.activeView = function(attrs, content) {
+	exports.picker = function(attrs, content) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new ActiveView(content)]);
+	    return new Tag('div', attrs, [new Picker(content)]);
 	  } else {
-	    return new ActiveView(attrs);
+	    return new Picker(attrs);
 	  }
 	};
 

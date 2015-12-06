@@ -4,10 +4,10 @@
 {see, flow
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func,
-activeView
+picker
 a, p, span, text, div} = dc
 
-describe 'if, case, func, activeView', ->
+describe 'if, case, func, picker', ->
 
   describe 'If', ->
     it 'should optimize if_', ->
@@ -299,25 +299,25 @@ describe 'if, case, func, activeView', ->
       comp.mount()
       expect(comp.node.innerHTML).to.equal '1'
 
-  describe 'ActiveView', ->
-    it 'activeView(1)', ->
-      comp = activeView(1)
+  describe 'Picker', ->
+    it 'picker(1)', ->
+      comp = picker(1)
       x = 0
-      comp.onSetActiveView = (value) -> x = value
+      comp.onSetContent = (value) -> x = 'called'
       comp.mount()
       expect(comp.node.textContent).to.equal '1'
-      comp.activeView = 2
-      expect(x).to.equal 2
+      comp.content = 2
+      expect(x).to.equal 'called'
       comp.update()
       expect(comp.node.textContent).to.equal '2'
 
-    it 'activeView(1) by setActivView', ->
-      comp = activeView(1)
+    it 'picker(1) by setContent', ->
+      comp = picker(1)
       x = 0
-      comp.onSetActiveView = (value) -> x = value
+      comp.onSetContent = (value) -> x = 'called'
       comp.mount()
       expect(comp.node.textContent).to.equal '1'
-      comp.setActiveView 2
-      expect(x).to.equal 2
+      comp.setContent 2
+      expect(x).to.equal 'called'
       comp.update()
       expect(comp.node.textContent).to.equal '2'

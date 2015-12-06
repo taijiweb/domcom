@@ -4,7 +4,9 @@
 * minify the removing and reinsert of node as possible
   A B C D -> B C D A, should only removing and reinsert A, because only A's succ is changed
   A B C D -> D A B C, should only removing reinsert D, because only D's succ is changed.
-  method: record parent and nextNode, and the status of whether they are lived in dom
+  method:
+    record parent and nextNode, and the status of whether they are lived in dom
+    Component.alive field
 
 #### done
 * browser compatibility
