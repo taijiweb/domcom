@@ -241,29 +241,43 @@ module.exports = class Tag extends List
   hideOn: (test, display) -> @showHide(false, test, display)
 
   createDom: ->
-    @node = node =
+    node =
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
+
+    @setNode(node)
+    @setFirstNode node
+
     @hasActiveProperties and @updateProperties()
 
     {children} = @
     for child in children then child.parentNode = node
     if length=children.length then children[length-1].nextNode = null
     @childNodes = []
-    # @childrenNextNode = null # do not explicit set, by default this is true
+
+    # do not explicit set, this is always true for Tag
+    # @childrenNextNode should be null
+
     @createChildrenDom()
-    @firstNode = node
 
     node
 
   updateDom: ->
     @hasActiveProperties and @updateProperties()
     {children, node, invalidIndexes} = @
+
     for index in invalidIndexes
       children[index].parentNode = node
-    # @childrenNextNode = null # do not explicit set, by default this is true
+
+    # do not explicit set, this is always be true for Tag
+    # @childrenNextNode should be null
+
     @updateChildrenDom()
-    @firstNode = @node
+
+    # @node does not change
+    # so here do not need to call setNode and setFirstNode for holder
+
+    node
 
   removeDom: ->
     @removeNode()

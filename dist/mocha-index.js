@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "83e972b6ba4c0b39acc4"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "4f1a5821049cb036fe0b"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -3743,6 +3743,7 @@
 	      comp.mount();
 	      expect(comp.node.textContent).to.equal('2', 'mount');
 	      comp.update();
+	      expect(comp.node.textContent).to.equal('2', 'update');
 	      x(1);
 	      comp.update();
 	      expect(comp.node.textContent).to.equal('1', 'update x 1');
@@ -4052,7 +4053,7 @@
 	      expect(comp.node.fakeProp).to.equal(2);
 	      return expect(comp.node.childNodes[0].textContent).to.equal('2');
 	    });
-	    return it('should process tag with function', function() {
+	    it('should process tag with function', function() {
 	      var comp;
 	      comp = p(txt(function() {
 	        return 1;
@@ -4060,6 +4061,18 @@
 	      expect(comp.children[0]).to.be["instanceof"](Text);
 	      comp.mount();
 	      return expect(comp.node.innerHTML).to.equal('1');
+	    });
+	    return it('should create and update func with a closure variable', function() {
+	      var comp, x;
+	      x = see(1);
+	      comp = func(function() {
+	        return txt(x);
+	      });
+	      comp.mount();
+	      expect(comp.node.textContent).to.equal('1');
+	      x(2);
+	      comp.update();
+	      return expect(comp.node.textContent).to.equal('2');
 	    });
 	  });
 	  return describe('Picker', function() {
@@ -4410,6 +4423,35 @@
 	      expect(each1.node[0].textContent).to.equal('2');
 	      return expect(comp.node.innerHTML).to.equal('<span>2</span>');
 	    });
+	    it('should create and update each where item return a closure variable', function() {
+	      var comp, x;
+	      x = see(1);
+	      comp = each([1], function() {
+	        return txt(x);
+	      });
+	      comp.mount();
+	      expect(comp.node[0].textContent).to.equal('1');
+	      x(2);
+	      comp.update();
+	      return expect(comp.node[0].textContent).to.equal('2');
+	    });
+	    it('should create and update embedded each where item return a closure variable', function() {
+	      var comp, each1, x;
+	      x = see(1);
+	      comp = new Tag('span', {}, [
+	        each1 = each([1], function(item) {
+	          return txt(x);
+	        })
+	      ]);
+	      comp.mount();
+	      expect(each1.listComponent.parentNode).to.equal(comp.node);
+	      expect(each1.node[0].textContent).to.equal('1');
+	      x(2);
+	      comp.update();
+	      expect(each1.listComponent.parentNode).to.equal(comp.node);
+	      expect(each1.node[0].textContent).to.equal('2');
+	      return expect(comp.node.innerHTML).to.equal('2');
+	    });
 	    it('should create and update embedded each in 3 layer', function() {
 	      var comp, each1, span1, x;
 	      x = see(1);
@@ -4446,7 +4488,22 @@
 	      expect(each1.node[0].textContent).to.equal('2');
 	      return expect(comp.node.innerHTML).to.equal('<div><span>2</span></div>');
 	    });
-	    it('should process each under each', function() {
+	    it('should process each with function as items', function() {
+	      var comp, each2, x;
+	      x = 1;
+	      each2 = null;
+	      comp = each((function() {
+	        return [x];
+	      }), function(item) {
+	        return item;
+	      });
+	      comp.mount();
+	      expect(comp.node[0].textContent).to.equal('1');
+	      x = 2;
+	      comp.render();
+	      return expect(comp.node[0].textContent).to.equal('2', 'after x = 2');
+	    });
+	    it('should process each under each and with function as items', function() {
 	      var comp, each1, each2, x;
 	      x = 1;
 	      each2 = null;
@@ -4462,10 +4519,10 @@
 	      expect(each1.node[0][0].textContent).to.equal('1');
 	      expect(each2.node[0].textContent).to.equal('1');
 	      x = 2;
-	      comp.update();
+	      comp.render();
 	      expect(each1.listComponent.parentNode).to.equal(comp.node);
 	      expect(each2.node[0].textContent).to.equal('2');
-	      return expect(comp.node.innerHTML).to.equal('2');
+	      return expect(comp.node.innerHTML).to.equal('2', 'after x = 2');
 	    });
 	    it('should mount and update each', function() {
 	      var comp;

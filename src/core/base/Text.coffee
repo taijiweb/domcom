@@ -9,8 +9,12 @@ exports = module.exports = class Text extends BaseComponent
 
   createDom: ->
     @textValid = true
-    @firstNode = @node = document.createTextNode(domValue(@text))
-    @node
+    text = domValue(@text)
+    node = document.createTextNode(text)
+    @setNode(node)
+    @setFirstNode(node)
+    @cacheText = text
+    node
 
   updateDom: ->
     if !@textValid then return @node
@@ -18,8 +22,9 @@ exports = module.exports = class Text extends BaseComponent
     text = domValue(@text)
     if text!=@cacheText
       if @node.parentNode  then @removeNode()
-      @node = document.createTextNode(text)
-      @firstNode = @node
+      node = document.createTextNode(text)
+      @setNode(node)
+      @setFirstNode(node)
       @cacheText = text
     @node
 

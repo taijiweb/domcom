@@ -7,6 +7,8 @@ module.exports = class BaseComponent extends Component
     @isBaseComponent = true
     @baseComponent = @
 
+  getBaseComponent: -> @
+
   renderDom: ->
     if !@parentNode
       if @node and @node.parentNode

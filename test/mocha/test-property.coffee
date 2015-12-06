@@ -9,9 +9,11 @@ model, show, hide, splitter, options} = dc
 
 describe 'properties ', ->
   describe 'utilities', ->
+
     it 'styleFrom ', ->
       x = styleFrom("display:none; zIndex:100; backgroundColor:white;")
       expect(x).to.deep.equal {display:'none', zIndex:'100', backgroundColor:'white'}
+
     it 'attrToPropName ', ->
       x = attrToPropName("background-color")
       expect(x).to.equal 'backgroundColor'

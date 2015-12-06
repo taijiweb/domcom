@@ -10,9 +10,29 @@ module.exports = class Comment extends BaseComponent
     super()
     constructTextLikeComponent.call(this, text)
 
-  createDom: (parentNode, nextNode) -> @node = document.createComment(domValue(@text)); @node
-  updateDom: (parentNode, nextNode) -> @text and @node.data = domValue(@text); @node
+  createDom: ->
+    @textValid = true
+    text = domValue(@text)
+    node = document.createComment(text)
+    @setNode(node)
+    @setFirstNode(node)
+    @cacheText = text
+    @node
 
-  toString: (indent=2, addNewLine) -> newLine("<Comment #{funcString(@text)}/>", indent, addNewLine)
+  updateDom: ->
+    if !@textValid then return @node
+    @textValid = true
+    text = domValue(@text)
+    if text != @cacheText
+      if @node.parentNode
+        @removeNode()
+      node = document.createComment(text)
+      @setNode(node)
+      @setFirstNode(node)
+      @cacheText = text
+    @node
+
+  toString: (indent=2, addNewLine) ->
+    newLine("<Comment #{funcString(@text)}/>", indent, addNewLine)
 
 

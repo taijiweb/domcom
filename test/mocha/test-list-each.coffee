@@ -219,6 +219,27 @@ describe 'list, each', ->
       expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<span>2</span>'
 
+    it  'should create and update each where item return a closure variable', ->
+      x = see 1
+      comp = each([1], -> txt(x))
+      comp.mount()
+      expect(comp.node[0].textContent).to.equal '1'
+      x 2
+      comp.update()
+      expect(comp.node[0].textContent).to.equal('2')
+
+    it  'should create and update embedded each where item return a closure variable', ->
+      x = see 1
+      comp = new Tag('span', {}, [each1=each([1], (item) -> txt(x))])
+      comp.mount()
+      expect(each1.listComponent.parentNode).to.equal(comp.node)
+      expect(each1.node[0].textContent).to.equal '1'
+      x 2
+      comp.update()
+      expect(each1.listComponent.parentNode).to.equal(comp.node)
+      expect(each1.node[0].textContent).to.equal('2')
+      expect(comp.node.innerHTML).to.equal '2'
+
     it  'should create and update embedded each in 3 layer', ->
       x = see 1
       comp =  div({}, div({}, span1=new Tag('span', {}, [each1=each([1], (item) -> txt(x))])))
@@ -243,7 +264,17 @@ describe 'list, each', ->
       expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<div><span>2</span></div>'
 
-    it  'should process each under each', ->
+    it  'should process each with function as items', ->
+      x = 1
+      each2 = null
+      comp = each((-> [x]), (item) -> item)
+      comp.mount()
+      expect(comp.node[0].textContent).to.equal '1'
+      x = 2
+      comp.render()
+      expect(comp.node[0].textContent).to.equal '2', 'after x = 2'
+
+    it  'should process each under each and with function as items', ->
       x = 1
       each2 = null
       comp = div({}, each1=each([1], -> each2=each((-> [x]), (item) -> item)))
@@ -252,10 +283,10 @@ describe 'list, each', ->
       expect(each1.node[0][0].textContent).to.equal '1'
       expect(each2.node[0].textContent).to.equal '1'
       x = 2
-      comp.update()
+      comp.render()
       expect(each1.listComponent.parentNode).to.equal(comp.node)
       expect(each2.node[0].textContent).to.equal('2')
-      expect(comp.node.innerHTML).to.equal '2'
+      expect(comp.node.innerHTML).to.equal '2', 'after x = 2'
 
     it  'should mount and update each', ->
       comp = new Tag('span', {}, [each([1], (item) -> txt(1))])

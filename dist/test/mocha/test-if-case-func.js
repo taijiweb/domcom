@@ -40,6 +40,7 @@ describe('if, case, func, picker', function() {
       comp.mount();
       expect(comp.node.textContent).to.equal('2', 'mount');
       comp.update();
+      expect(comp.node.textContent).to.equal('2', 'update');
       x(1);
       comp.update();
       expect(comp.node.textContent).to.equal('1', 'update x 1');
@@ -349,7 +350,7 @@ describe('if, case, func, picker', function() {
       expect(comp.node.fakeProp).to.equal(2);
       return expect(comp.node.childNodes[0].textContent).to.equal('2');
     });
-    return it('should process tag with function', function() {
+    it('should process tag with function', function() {
       var comp;
       comp = p(txt(function() {
         return 1;
@@ -357,6 +358,18 @@ describe('if, case, func, picker', function() {
       expect(comp.children[0]).to.be["instanceof"](Text);
       comp.mount();
       return expect(comp.node.innerHTML).to.equal('1');
+    });
+    return it('should create and update func with a closure variable', function() {
+      var comp, x;
+      x = see(1);
+      comp = func(function() {
+        return txt(x);
+      });
+      comp.mount();
+      expect(comp.node.textContent).to.equal('1');
+      x(2);
+      comp.update();
+      return expect(comp.node.textContent).to.equal('2');
     });
   });
   return describe('Picker', function() {

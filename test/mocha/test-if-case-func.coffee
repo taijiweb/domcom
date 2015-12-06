@@ -33,7 +33,7 @@ describe 'if, case, func, picker', ->
       comp.mount()
       expect(comp.node.textContent).to.equal '2', 'mount'
       comp.update()
-#      expect(comp.node.textContent).to.equal '2', 'update'
+      expect(comp.node.textContent).to.equal '2', 'update'
       x 1
       comp.update()
       expect(comp.node.textContent).to.equal '1', 'update x 1'
@@ -59,6 +59,7 @@ describe 'if, case, func, picker', ->
       comp = if_(x, lst=list(t2, t1), t1)
       comp.mount(demoNode=newDemoNode('if-ref'))
       expect(demoNode.innerHTML).to.equal '21', 'mount'
+
       x 0
       comp.update()
       expect(demoNode.innerHTML).to.equal '1'
@@ -298,6 +299,15 @@ describe 'if, case, func, picker', ->
       expect(comp.children[0]).to.be.instanceof Text
       comp.mount()
       expect(comp.node.innerHTML).to.equal '1'
+
+    it  'should create and update func with a closure variable', ->
+      x = see 1
+      comp = func(-> txt(x))
+      comp.mount()
+      expect(comp.node.textContent).to.equal '1'
+      x 2
+      comp.update()
+      expect(comp.node.textContent).to.equal('2')
 
   describe 'Picker', ->
     it 'picker(1)', ->

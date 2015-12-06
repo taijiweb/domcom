@@ -41,11 +41,19 @@ module.exports = exports = class List extends BaseComponent
       for child, i in children
         child.parentNode = parentNode
 
-    @node = @childNodes = node = []
+    node = []
+    @setNode(node)
+
+    @childNodes = node
+
     node.parentNode = @parentNode
+
     @createChildrenDom()
-    @firstNode = @childFristNode
+
+    @setFirstNode @childFirstNode
+
     @childrenNextNode = @nextNode
+
     @node
 
   createChildrenDom: ->
@@ -53,6 +61,7 @@ module.exports = exports = class List extends BaseComponent
     @invalidIndexes = []
     @removedChildren = {}
     {children} = @
+
     index = children.length-1
     firstNode = null
     while index>=0
@@ -66,16 +75,25 @@ module.exports = exports = class List extends BaseComponent
       index and children[index-1].nextNode = firstNode or child.nextNode
       index--
 
-    @childFristNode = firstNode
+    @childFirstNode = firstNode
 
     node
 
   updateDom: ->
     {children, parentNode, invalidIndexes} = @
+
     for index in invalidIndexes
       children[index].parentNode = parentNode
+
     @childrenNextNode = @nextNode
     @updateChildrenDom()
+
+    # do not worry about Tag component
+    # 1. it does not call List.updateDom
+    # 2. setFirstNode will affect BaseComponent holder (including Tag)
+    @setFirstNode @childFirstNode
+
+    @node
 
   updateChildrenDom: ->
     {invalidIndexes} = @
@@ -88,10 +106,10 @@ module.exports = exports = class List extends BaseComponent
 
     {children} = @
     @invalidIndexes = []
-    {parentNode, nextNode, childNodes} = @
-    parentNextNode = nextNode
+    {nextNode, childNodes} = @
     i = invalidIndexes.length-1
     children[children.length-1].nextNode = @childrenNextNode
+    childFirstNode = null
     while i>=0
       listIndex = invalidIndexes[i]
       child = children[listIndex]
@@ -100,8 +118,12 @@ module.exports = exports = class List extends BaseComponent
         child.holder = @
       child.renderDom()
       childNodes[listIndex] = child.node
-      listIndex and children[listIndex-1].nextNode = child.firstNode or nextNode
+      childFirstNode = child.firstNode or nextNode
+      if listIndex
+        children[listIndex-1].nextNode = childFirstNode
       i--
+
+    @childFirstNode = childFirstNode
 
     for _, child of @removedChildren
       child.removeDom()
@@ -115,9 +137,11 @@ module.exports = exports = class List extends BaseComponent
       child.baseComponent.removeNode()
     return
 
-  pushChild: (child) -> @setChildren(@children.length, child)
+  pushChild: (child) ->
+    @setChildren(@children.length, child)
 
-  unshiftChild: (child) -> @insertChild(0, child)
+  unshiftChild: (child) ->
+    @insertChild(0, child)
 
   insertChild: (index, child) ->
     {children} = @
@@ -247,25 +271,42 @@ module.exports = exports = class List extends BaseComponent
       last--
     @
 
-  # Tag, Comment, Html, Text should have attached themself in advace
-  # But if the children is valid, and the List Component has been removeDom before, it must attachNode of all the children to the parentNode
+  # Tag, Comment, Html, Text should have attached them self in advace
+  # But if the children is valid, and the List Component has been removeDom before,
+  # it must attachNode of all the children to the parentNode
   attachNode: () ->
-    {children} = @
-    if (parentNode=@parentNode)!=@node.parentNode
+
+    {children, parentNode} = @
+
+    # different parentNode, removeDom before !
+    # attach it again
+    if parentNode != @node.parentNode
       @node.parentNode = parentNode
+
       if children.length
+
         {nextNode} = @
-        index = children.length-1
+        index = children.length - 1
         children[index].nextNode = nextNode
-        while index>=0
+
+        while index >= 0
           child = children[index]
           child.parentNode = parentNode
+
           {baseComponent} = child
           baseComponent.parentNode = parentNode
           baseComponent.nextNode = child.nextNode
           baseComponent.attachNode()
-          index and children[index-1].nextNode = child.firstNode or child.nextNode
+
+          if index
+            children[index-1].nextNode = child.firstNode or child.nextNode
+          #else null # meet the first children
           index--
+
+      # else null # no children, do nothing
+
+    # else null # parentNode does not change, do nothing
+
     @node
 
   removeDom: ->

@@ -20,9 +20,12 @@ module.exports = class Html extends BaseComponent
   createDom: ->
     @textValid = true
     node = document.createElement('DIV')
-    node.innerHTML = @cacheText = @transform and @transform(domValue(@text)) or domValue(@text)
-    # when the node in createElement('div').childNodes is inserted to dom, it is removed from the active childNodes
-    # so they should be keep in an inative array
+    text = @transform and @transform(domValue(@text)) or domValue(@text)
+    node.innerHTML = text
+    @cacheText = text
+    # when the node in createElement('div').childNodes is inserted to dom,
+    # it is removed from the active childNodes
+    # so they should be keep in an array
     @node = for node in node.childNodes then node
     @firstNode = @node[0]
     @
@@ -36,8 +39,12 @@ module.exports = class Html extends BaseComponent
       if @node.parentNode then @removeNode()
       node = document.createElement('DIV')
       node.innerHTML =  text
-      @node = node.childNodes
-      @firstNode = @node[0]
+      # when the node in createElement('div').childNodes is inserted to dom,
+      # it is removed from the active childNodes
+      # so they should be keep in an array
+      node = for n in node.childNodes then n
+      @setNode(node)
+      @setFirstNode = node[0]
       @cacheText = text
     @
 
