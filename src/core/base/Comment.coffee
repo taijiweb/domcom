@@ -24,8 +24,9 @@ module.exports = class Comment extends BaseComponent
     @textValid = true
     text = domValue(@text)
     if text != @cacheText
-      if @node.parentNode
-        @removeNode()
+      parentNode = node.parentNode
+      if parentNode
+        parentNode.removeChild(node)
       node = document.createComment(text)
       @setNode(node)
       @setFirstNode(node)

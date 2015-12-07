@@ -48,9 +48,7 @@ module.exports = class TransformComponent extends Component
     {parentNode, node} = @
     if !parentNode
       @holder = null
-      if node and node.parentNode
-        return @removeDom()
-      else return @
+      return @removeDom()
 
     if @valid
       if parentNode and !node.parentNode
@@ -72,20 +70,22 @@ module.exports = class TransformComponent extends Component
     if baseComponent != oldBaseComponent
 
       if oldBaseComponent
-        oldBaseComponent.parentNode = null
-        if oldBaseComponent.node and oldBaseComponent.node.parentNode
-          oldBaseComponent.removeDom()
-        #else null # do nothing
-      #else null # do nothing
+        oldBaseComponent.removeReplacedDom(parentNode)
+      #else null # have no oldBaseComponent, do nothing
+
       @setParentAndNextNode(baseComponent)
       baseComponent.renderDom()
+
       if @node != baseComponent.node
         @setNode baseComponent.node
       if @firstNode != baseComponent.firstNode
         @setFirstNode baseComponent.firstNode
 
     else
-      @setParentAndNextNode(baseComponent)
+      # since baseComponent do not change,
+      # so it is probably not necessary to do the thing below
+      # @setParentAndNextNode(baseComponent)
+
       baseComponent.renderDom()
 
     @
@@ -101,10 +101,10 @@ module.exports = class TransformComponent extends Component
     return
 
   removeDom: ->
-    content = @content
-    content.holder = null
-    content.parentNode = null
-    content.removeDom()
-    @emit('afterRemoveDom')
-    @
+    if @parentNode or !@node or !@node.parentNode
+      @
+    else
+      @emit('removeDom')
+      @baseComponent.removeDom()
+      @
 

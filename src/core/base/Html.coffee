@@ -35,6 +35,7 @@ module.exports = class Html extends BaseComponent
     @textValid = true
 
     text = @transform and @transform(domValue(@text)) or domValue(@text)
+
     if text!=@cacheText
       if @node.parentNode then @removeNode()
       node = document.createElement('DIV')
@@ -46,21 +47,32 @@ module.exports = class Html extends BaseComponent
       @setNode(node)
       @setFirstNode = node[0]
       @cacheText = text
+    # else null # text do not change, do nothing
+
     @
 
   attachNode: ->
-    {node, parentNode} = @
-    if parentNode == node.parentNode then return node
-    node.parentNode = parentNode
-    for childNode in node
-      parentNode.insertBefore(childNode, @nextNode)
-    node
+    {node, parentNode, nextNode} = @
+
+    if parentNode == node.parentNode and nextNode == node.nextNode
+      node
+    else
+      node.parentNode = parentNode
+      node.nextNode = nextNode
+
+      for childNode in node
+        parentNode.insertBefore(childNode, @nextNode)
+        # do not need set nextNode for every childNode
+        # domcom do not care about them
+
+      node
 
   removeNode: ->
-    parentNode = @node.parentNode
-    for childNode in @node
+    {node} = @
+    parentNode = node.parentNode
+    node.parentNode = null
+    for childNode in node
       parentNode.removeChild(childNode)
-    @node.parentNode = null
     return
 
   toString: (indent=2, addNewLine) -> newLine("<Html #{funcString(@text)}/>", indent, addNewLine)

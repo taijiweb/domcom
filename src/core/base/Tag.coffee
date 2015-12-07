@@ -279,16 +279,38 @@ module.exports = class Tag extends List
 
     node
 
-  removeDom: ->
-    @removeNode()
-    @emit('afterRemoveDom')
-    @
-
   attachNode: ->
-    node = @node
-    if @parentNode == node.parentNode then return node
-    @parentNode.insertBefore(node, @nextNode)
-    node
+    {node, parentNode, nextNode} = @
+
+    if parentNode == node.parentNode and  nextNode == node.nextNode
+      node
+    else
+      parentNode.insertBefore(node, nextNode)
+      # since dom have no nextNode field, so let domcom save it
+      node.nextNode = @nextNode
+      node
+
+  removeDom: ->
+    if @parentNode or !@node or !@node.parentNode
+      @
+    else
+      @emit('removeDom')
+      @removeNode()
+      @
+
+  # while TransformComponent.renderDom(),
+  # if oldBaseComponent is not the same as the new baseComponent
+  # oldBaseComponent should be removed from dom
+  # if and only if it's and its offspring's parentNode is equal to
+  # the transformComponent's parentNode
+  # be careful not to inherit the removeReplacedDom from List component
+  removeReplacedDom: (parentNode, nextNode) ->
+    if @parentNode != parentNode
+      return
+    else
+      @parentNode = null
+      @removeNode()
+      return
 
   removeNode: ->
     @node.parentNode.removeChild(@node)

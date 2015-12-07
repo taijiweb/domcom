@@ -1,5 +1,5 @@
 ### todo
-* Isomorphic JavaScript: rendering html on the server side
+* Isomorphic JavaScript: dynamically serve content
 * error processing: dc.onerror and dc.error: should can skip error and continue to process the components afterwards
 * minify the removing and reinsert of node as possible
   A B C D -> B C D A, should only removing and reinsert A, because only A's succ is changed
@@ -9,6 +9,8 @@
     Component.alive field
 
 #### done
+* rendering html on the server side: https://github.com/taijiweb/dc-html
+* instead of comparing TransformComponent.content too early, only refresh while new baseComponent is different from old baseComponent
 * browser compatibility
 * use requestAnimationFrame
 * Component Event: on, off, emit

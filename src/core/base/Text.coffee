@@ -21,7 +21,10 @@ exports = module.exports = class Text extends BaseComponent
     @textValid = true
     text = domValue(@text)
     if text!=@cacheText
-      if @node.parentNode  then @removeNode()
+      node = @node
+      parentNode = node.parentNode
+      if parentNode
+        parentNode.removeChild(node)
       node = document.createTextNode(text)
       @setNode(node)
       @setFirstNode(node)

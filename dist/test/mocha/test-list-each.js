@@ -101,7 +101,7 @@ describe('list, each', function() {
       comp.update();
       return expect(comp.node.innerHTML).to.equal('12');
     });
-    return it('list(txt(1)) ', function() {
+    it('list(txt(1)) ', function() {
       var comp, demoNode;
       comp = new List([txt(1)]);
       comp.mount(demoNode = newDemoNode('list'));
@@ -109,6 +109,16 @@ describe('list, each', function() {
       comp.setLength(0);
       comp.update();
       return expect(demoNode.innerHTML).to.equal('');
+    });
+    return it('list(txt(1), txt(2), txt(3)) and move child', function() {
+      var comp, demoNode, t1, t2;
+      comp = list(t1 = txt(1), t2 = txt(2), t2 = txt(3));
+      comp.mount(demoNode = newDemoNode('list'));
+      expect(demoNode.innerHTML).to.equal('123');
+      comp.removeChild(0);
+      comp.pushChild(t1);
+      comp.renderDom();
+      return expect(demoNode.innerHTML).to.equal('231');
     });
   });
   describe('every, all, nItems', function() {

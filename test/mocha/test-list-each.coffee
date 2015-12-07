@@ -85,6 +85,15 @@ describe 'list, each', ->
       comp.update();
       expect(demoNode.innerHTML).to.equal ''
 
+    it 'list(txt(1), txt(2), txt(3)) and move child', ->
+      comp = list(t1=txt(1), t2=txt(2), t2=txt(3))
+      comp.mount(demoNode=newDemoNode('list'))
+      expect(demoNode.innerHTML).to.equal '123'
+      comp.removeChild(0)
+      comp.pushChild(t1)
+      comp.renderDom()
+      expect(demoNode.innerHTML).to.equal '231'
+
   describe 'every, all, nItems', ->
     it 'every ', ->
       comp = every([1, 2], (item) -> item)

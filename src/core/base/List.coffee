@@ -98,38 +98,55 @@ module.exports = exports = class List extends BaseComponent
   updateChildrenDom: ->
     {invalidIndexes} = @
 
-    if !invalidIndexes.length
-      for _, child of @removedChildren
-        child.removeDom()
-      @removedChildren = {}
-      return childNodes
+    if invalidIndexes.length
 
-    {children} = @
-    @invalidIndexes = []
-    {nextNode, childNodes} = @
-    i = invalidIndexes.length-1
-    children[children.length-1].nextNode = @childrenNextNode
-    childFirstNode = null
-    while i>=0
-      listIndex = invalidIndexes[i]
-      child = children[listIndex]
-      if child.holder!=@
-        child.invalidate()
-        child.holder = @
-      child.renderDom()
-      childNodes[listIndex] = child.node
-      childFirstNode = child.firstNode or nextNode
-      if listIndex
-        children[listIndex-1].nextNode = childFirstNode
-      i--
+      {children} = @
+      @invalidIndexes = []
+      {nextNode, childNodes} = @
+      i = invalidIndexes.length-1
+      children[children.length-1].nextNode = @childrenNextNode
+      childFirstNode = null
+      while i>=0
+        listIndex = invalidIndexes[i]
+        child = children[listIndex]
+        if child.holder!=@
+          child.invalidate()
+          child.holder = @
+        child.renderDom()
+        childNodes[listIndex] = child.node
+        childFirstNode = child.firstNode or nextNode
+        if listIndex
+          children[listIndex-1].nextNode = childFirstNode
+        i--
 
-    @childFirstNode = childFirstNode
+      while listIndex >= 0
+        child = children[listIndex]
+        childFirstNode = child.firstNode or nextNode
+        listIndex--
+      @childFirstNode = childFirstNode
+
+    # else null # invalidIndexes == [], do nothing
 
     for _, child of @removedChildren
       child.removeDom()
     @removedChildren = {}
 
     childNodes
+
+  # while TransformComponent.renderDom(),
+  # if oldBaseComponent is not the same as the new baseComponent
+  # oldBaseComponent should be removed from dom
+  # if and only if it's and its offspring's parentNode is equal to
+  # the transformComponent's parentNode
+  removeReplacedDom: (parentNode) ->
+    if @parentNode != parentNode
+      return
+    else
+      @parentNode = null
+      @node.parentNode = null
+      for child in @children
+        child.baseComponent.removeReplacedDom(parentNode)
+      return
 
   removeNode: ->
     @node.parentNode = null
@@ -186,8 +203,14 @@ module.exports = exports = class List extends BaseComponent
     if @node
       {invalidIndexes} = @
       invalidIndex = binarySearch(index, invalidIndexes)
-      if invalidIndexes[invalidIndex]==index then invalidIndexes.splice(invalidIndexes, 1)
-      children[index-1] and children[index-1].nextNode = child.nextNode
+
+      if invalidIndexes[invalidIndex]==index
+        invalidIndexes.splice(invalidIndexes, 1)
+
+      prevIndex = index-1
+      if prevIndex >= 0
+        children[prevIndex].nextNode = child.nextNode
+
       @node.splice(index, 1)
       @removedChildren[child.dcid] = child
 
@@ -218,7 +241,7 @@ module.exports = exports = class List extends BaseComponent
       startIndex = oldChildrenLength
 
     if node
-      {invalidIndexes, removedChildren} = @
+      {invalidIndexes} = @
       insertLocation = binarySearch(startIndex, @invalidIndexes)
 
 
@@ -276,12 +299,13 @@ module.exports = exports = class List extends BaseComponent
   # it must attachNode of all the children to the parentNode
   attachNode: () ->
 
-    {children, parentNode} = @
+    {children, parentNode, nextNode, node} = @
 
-    # different parentNode, removeDom before !
+    # different parentNode, it was removeDom before !
     # attach it again
-    if parentNode != @node.parentNode
-      @node.parentNode = parentNode
+    if parentNode != @node.parentNode or  nextNode != node.nextNode
+      node.parentNode = parentNode
+      node.nextNode = nextNode
 
       if children.length
 
@@ -305,17 +329,20 @@ module.exports = exports = class List extends BaseComponent
 
       # else null # no children, do nothing
 
-    # else null # parentNode does not change, do nothing
+    # else null # both parentNode and nextNode does not change, do nothing
 
     @node
 
   removeDom: ->
-    @node.parentNode = null
-    for child in @children
-      child.parentNode = null
-      child.removeDom()
-    @emit('afterRemoveDom')
-    @
+    if @parentNode or !@node or !@node.parentNode
+      @
+    else
+      @emit('removeDom')
+      @node.parentNode = null
+      @node.nextNode = null
+      for child in @children
+        child.removeDom()
+      @
 
   clone: -> (new List((for child in @children then child.clone()))).copyEventListeners(@)
 
