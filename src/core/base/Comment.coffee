@@ -20,7 +20,9 @@ module.exports = class Comment extends BaseComponent
     @node
 
   updateDom: ->
-    if !@textValid then return @node
+    if @textValid
+      return @node
+
     @textValid = true
     text = domValue(@text)
     if text != @cacheText

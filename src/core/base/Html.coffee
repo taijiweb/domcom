@@ -31,7 +31,9 @@ module.exports = class Html extends BaseComponent
     @
 
   updateDom: ->
-    if !@textValid then return @
+    if @textValid
+      return @
+
     @textValid = true
 
     text = @transform and @transform(domValue(@text)) or domValue(@text)

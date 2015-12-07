@@ -260,7 +260,7 @@ describe('if, case, func, picker', function() {
       comp.update();
       return expect(pIf.node.innerHTML).to.equal('2');
     });
-    return iit('should process two list with same children', function() {
+    return it('should process two list with same children', function() {
       var comp, demoNode, t1, t2, t3, t4, x;
       x = see(1);
       t1 = txt(1);

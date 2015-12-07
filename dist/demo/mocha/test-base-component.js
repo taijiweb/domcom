@@ -160,7 +160,7 @@ describe("test base component", function() {
       comp.mount(demoNode = newDemoNode());
       return expect(demoNode.innerHTML).to.equal(s + 'a');
     });
-    return iit('should mount html component with reative function', function() {
+    return it('should mount html component with reative function', function() {
       var comp, demoNode, s, str;
       str = see(s = '<div>1</div><p>2</p>');
       comp = new Html(str, function(text) {

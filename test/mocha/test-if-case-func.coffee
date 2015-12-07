@@ -227,6 +227,22 @@ describe 'if, case, func, picker', ->
       comp.update()
       expect(pIf.node.innerHTML).to.equal '2'
 
+    it 'should process two list with same children', ->
+      x = see 1
+      t1 = txt(1)
+      t2 = txt(2)
+      t3 = txt(3)
+      t4 = txt(4)
+      comp = if_(x, list(t1, t2, t3, t4), list(t4, t1, t2, t3))
+      comp.mount(demoNode=newDemoNode('list'))
+      expect(demoNode.innerHTML).to.equal '1234'
+      x 0
+      comp.update()
+      expect(demoNode.innerHTML).to.equal '4123'
+      x 1
+      comp.update()
+      expect(demoNode.innerHTML).to.equal '1234'
+
   describe 'Case', ->
     it 'should create and render case_', ->
       x = see 0

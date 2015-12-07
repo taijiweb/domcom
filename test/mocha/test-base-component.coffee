@@ -120,7 +120,7 @@ describe "test base component", ->
 
     it 'should mount html component with reative function', ->
       str = see s='<div>1</div><p>2</p>'
-      comp = new Html(str, (text)-> text + 'a')
+      comp = new Html(str, (text) -> text + 'a')
       comp.mount(demoNode=newDemoNode())
       str 'x'
       comp.update()

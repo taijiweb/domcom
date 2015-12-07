@@ -17,7 +17,9 @@ exports = module.exports = class Text extends BaseComponent
     node
 
   updateDom: ->
-    if !@textValid then return @node
+    if @textValid
+      return @node
+
     @textValid = true
     text = domValue(@text)
     if text!=@cacheText
@@ -38,8 +40,12 @@ exports = module.exports = class Text extends BaseComponent
 exports.constructTextLikeComponent = constructTextLikeComponent = (text) ->
   me = @
   @text = text = domField(text)
+
   if typeof text == 'function'
-    text.onInvalidate -> me.invalidate()
+    text.onInvalidate ->
+      me.textValid = false
+      me.invalidate()
+
   @family = {}
   @family[@dcid] = true
   @
