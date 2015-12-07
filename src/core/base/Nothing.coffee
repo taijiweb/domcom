@@ -15,7 +15,9 @@ module.exports = class Nothing extends BaseComponent
 
   attachNode: -> @node
 
-  removeReplacedDom: (parentNode) ->
+  markRemovingDom: (parentNode) ->
+
+  removeDom: -> @
 
   clone: -> new Nothing()
 

@@ -303,13 +303,13 @@ module.exports = class Tag extends List
   # oldBaseComponent should be removed from dom
   # if and only if it's and its offspring's parentNode is equal to
   # the transformComponent's parentNode
-  # be careful not to inherit the removeReplacedDom from List component
-  removeReplacedDom: (parentNode, nextNode) ->
+  markRemovingDom: (parentNode) ->
+    # if the parentNode of this component has changed to other parentNode
+    # it should have bene moved to other places, or have been removed before
     if @parentNode != parentNode
       return
     else
       @parentNode = null
-      @removeNode()
       return
 
   removeNode: ->

@@ -133,19 +133,33 @@ module.exports = exports = class List extends BaseComponent
 
     childNodes
 
+
+  removeDom: ->
+    if @parentNode or !@node or !@node.parentNode
+      @
+    else
+      @emit('removeDom')
+      @node.parentNode = null
+      @node.nextNode = null
+      for child in @children
+        child.removeDom()
+      @
+
   # while TransformComponent.renderDom(),
   # if oldBaseComponent is not the same as the new baseComponent
   # oldBaseComponent should be removed from dom
   # if and only if it's and its offspring's parentNode is equal to
   # the transformComponent's parentNode
-  removeReplacedDom: (parentNode) ->
+  markRemovingDom: (parentNode) ->
+    # if the parentNode of this component has changed to other parentNode
+    # it should have bene moved to other places, or have been removed before
     if @parentNode != parentNode
       return
+
     else
       @parentNode = null
-      @node.parentNode = null
       for child in @children
-        child.baseComponent.removeReplacedDom(parentNode)
+        child.baseComponent.markRemovingDom(parentNode)
       return
 
   removeNode: ->
@@ -195,7 +209,7 @@ module.exports = exports = class List extends BaseComponent
     child = children[index]
 
     # to tell child will be removed from DOM while child.renderDom()
-    child.parentNode = null
+    child.markRemovingDom(@parentNode)
 
     substractSet(@family, child.family)
     children.splice(index, 1)
@@ -332,17 +346,6 @@ module.exports = exports = class List extends BaseComponent
     # else null # both parentNode and nextNode does not change, do nothing
 
     @node
-
-  removeDom: ->
-    if @parentNode or !@node or !@node.parentNode
-      @
-    else
-      @emit('removeDom')
-      @node.parentNode = null
-      @node.nextNode = null
-      for child in @children
-        child.removeDom()
-      @
 
   clone: -> (new List((for child in @children then child.clone()))).copyEventListeners(@)
 

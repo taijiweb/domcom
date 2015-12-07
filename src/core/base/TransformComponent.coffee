@@ -69,8 +69,12 @@ module.exports = class TransformComponent extends Component
     # and renderDom() for new baseComponent
     if baseComponent != oldBaseComponent
 
+      # mark remoing oldBaseComponent at first
+      # and then render baseComponent
+      # and tnen oldBaseComponent.removeDom()
+      # to avoid unnecessary remove and insert
       if oldBaseComponent
-        oldBaseComponent.removeReplacedDom(parentNode)
+        oldBaseComponent.markRemovingDom(parentNode)
       #else null # have no oldBaseComponent, do nothing
 
       @setParentAndNextNode(baseComponent)
@@ -80,6 +84,13 @@ module.exports = class TransformComponent extends Component
         @setNode baseComponent.node
       if @firstNode != baseComponent.firstNode
         @setFirstNode baseComponent.firstNode
+
+      # really removeDom()
+      # if it has not been recalled, it will be removed from dom
+      # otherwise do nothing
+      if oldBaseComponent
+        oldBaseComponent.removeDom()
+      #else null # have no oldBaseComponent, do nothing
 
     else
       # since baseComponent do not change,
@@ -99,6 +110,24 @@ module.exports = class TransformComponent extends Component
       if content == baseComponent then break
       else content = content.content
     return
+
+  # while TransformComponent.renderDom(),
+  # if oldBaseComponent is not the same as the new baseComponent
+  # oldBaseComponent should be removed from dom
+  # if and only if it's and its offspring's parentNode is equal to
+  # the transformComponent's parentNode
+  markRemovingDom: (parentNode) ->
+    # if the parentNode of this component has changed to other parentNode
+    # it should have bene moved to other places, or have been removed before
+    if @parentNode != parentNode
+      return
+    else
+      @parentNode = null
+      while content = @content
+        content.markRemovingDom(parentNode)
+        if content.isBaseComponent
+          break
+      return
 
   removeDom: ->
     if @parentNode or !@node or !@node.parentNode

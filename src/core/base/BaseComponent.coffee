@@ -41,6 +41,20 @@ module.exports = class BaseComponent extends Component
       @removeNode()
       return
 
+  # while TransformComponent.renderDom(),
+  # if oldBaseComponent is not the same as the new baseComponent
+  # oldBaseComponent should be removed from dom
+  # if and only if it's and its offspring's parentNode is equal to
+  # the transformComponent's parentNode
+  markRemovingDom: (parentNode) ->
+    # if the parentNode of this component has changed to other parentNode
+    # it should have bene moved to other places, or have been removed before
+    if @parentNode != parentNode
+      return
+    else
+      @parentNode = null
+      return
+
   removeDom: ->
     if @parentNode or !@node or !@node.parentNode
       @
