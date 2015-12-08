@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "9971041ccd6dec9406c0"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "61baba5a7b614d57c204"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -3950,7 +3950,7 @@
 	      t1.node.onchange();
 	      return expect(pIf.node.innerHTML).to.equal('2');
 	    });
-	    return it('should process embedded if 2', function() {
+	    it('should process embedded if 2', function() {
 	      var comp, pIf, t1, x;
 	      x = see(0);
 	      comp = list(t1 = text(x), pIf = if_(x, div(1), div(2)));
@@ -3962,6 +3962,23 @@
 	      x(0);
 	      comp.update();
 	      return expect(pIf.node.innerHTML).to.equal('2');
+	    });
+	    return it('should process two list with same children', function() {
+	      var comp, demoNode, t1, t2, t3, t4, x;
+	      x = see(1);
+	      t1 = txt(1);
+	      t2 = txt(2);
+	      t3 = txt(3);
+	      t4 = txt(4);
+	      comp = if_(x, list(t1, t2, t3, t4), list(t4, t1, t2, t3));
+	      comp.mount(demoNode = newDemoNode('list'));
+	      expect(demoNode.innerHTML).to.equal('1234');
+	      x(0);
+	      comp.update();
+	      expect(demoNode.innerHTML).to.equal('4123');
+	      x(1);
+	      comp.update();
+	      return expect(demoNode.innerHTML).to.equal('1234');
 	    });
 	  });
 	  describe('Case', function() {

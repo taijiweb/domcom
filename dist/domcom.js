@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "5bcef59e9ce028648b43"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "476ff702e8407fc78bcb"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -3292,7 +3292,7 @@
 
 	  Text.prototype.updateDom = function() {
 	    var node, parentNode, text;
-	    if (!this.textValid) {
+	    if (this.textValid) {
 	      return this.node;
 	    }
 	    this.textValid = true;
@@ -3332,6 +3332,7 @@
 	  this.text = text = domField(text);
 	  if (typeof text === 'function') {
 	    text.onInvalidate(function() {
+	      me.textValid = false;
 	      return me.invalidate();
 	    });
 	  }
@@ -4699,7 +4700,7 @@
 
 	  Comment.prototype.updateDom = function() {
 	    var node, parentNode, text;
-	    if (!this.textValid) {
+	    if (this.textValid) {
 	      return this.node;
 	    }
 	    this.textValid = true;
@@ -4834,7 +4835,7 @@
 
 	  Html.prototype.updateDom = function() {
 	    var n, node, text;
-	    if (!this.textValid) {
+	    if (this.textValid) {
 	      return this;
 	    }
 	    this.textValid = true;

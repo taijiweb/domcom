@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "ac8b21d148a9690aa65c"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "ad85f165155bf4e6c942"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -3276,7 +3276,7 @@
 
 	  Text.prototype.updateDom = function() {
 	    var node, parentNode, text;
-	    if (!this.textValid) {
+	    if (this.textValid) {
 	      return this.node;
 	    }
 	    this.textValid = true;
@@ -3316,6 +3316,7 @@
 	  this.text = text = domField(text);
 	  if (typeof text === 'function') {
 	    text.onInvalidate(function() {
+	      me.textValid = false;
 	      return me.invalidate();
 	    });
 	  }
@@ -4683,7 +4684,7 @@
 
 	  Comment.prototype.updateDom = function() {
 	    var node, parentNode, text;
-	    if (!this.textValid) {
+	    if (this.textValid) {
 	      return this.node;
 	    }
 	    this.textValid = true;
@@ -4818,7 +4819,7 @@
 
 	  Html.prototype.updateDom = function() {
 	    var n, node, text;
-	    if (!this.textValid) {
+	    if (this.textValid) {
 	      return this;
 	    }
 	    this.textValid = true;

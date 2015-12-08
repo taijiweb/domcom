@@ -67,8 +67,12 @@ module.exports = exports = class List extends BaseComponent
     while index>=0
       child = children[index]
       if child.holder != @
+
+        # here just set child.valid = false is enough
+        # it is necessary to invalidate old holder
+        # child.valid = false
         child.invalidate()
-        #child.valid = false
+
         child.holder = @
       child.renderDom()
       node.unshift(child.node)
