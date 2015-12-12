@@ -85,7 +85,9 @@
 
 `<script src="path/to/domcom.min.js"/>`
 
-请从[doc/Chinese中“介绍和辅导教程"](doc/Chinese/](https://github.com/taijiweb/domcom/tree/master/doc/Chinese/介绍和辅导教程.md)的内容开始起步。
+`<script src="http://cdn.jsdelivr.net/domcom/x.y.z/domcom.min.js"/>` (用实际的版本号代替"x.y.z")
+
+需要了解如何使用domcom，请先从[“介绍和辅导教程"](https://github.com/taijiweb/domcom/tree/master/doc/Chinese/介绍和辅导教程.md)开始。
 
 ## 文档
 

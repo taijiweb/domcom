@@ -4,10 +4,10 @@
 {see, flow
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func,
-picker
+pick
 a, p, span, text, div} = dc
 
-describe 'if, case, func, picker', ->
+describe 'singleton component: If, Case, Func, Pick, ...', ->
 
   describe 'If', ->
     it 'should optimize if_', ->
@@ -325,20 +325,23 @@ describe 'if, case, func, picker', ->
       comp.update()
       expect(comp.node.textContent).to.equal('2')
 
-  describe 'Picker', ->
-    it 'picker(1)', ->
-      comp = picker(1)
+  describe 'Pick', ->
+    it 'pick(host)', ->
+      host = {content:1}
+      # use content as field by default
+      comp = pick(host)
       x = 0
       comp.onSetContent = (value) -> x = 'called'
       comp.mount()
       expect(comp.node.textContent).to.equal '1'
-      comp.content = 2
+      host.content = 2
       expect(x).to.equal 'called'
       comp.update()
       expect(comp.node.textContent).to.equal '2'
 
-    it 'picker(1) by setContent', ->
-      comp = picker(1)
+    it 'pick(host, "content", 1) by setContent', ->
+      host = {content:1}
+      comp = pick(host)
       x = 0
       comp.onSetContent = (value) -> x = 'called'
       comp.mount()
@@ -348,19 +351,21 @@ describe 'if, case, func, picker', ->
       comp.update()
       expect(comp.node.textContent).to.equal '2'
 
-    it 'picker(1, "activeContent")', ->
-      comp = picker(1, "activeContent")
+    it 'pick(host, "activeContent", 1)', ->
+      host = {}
+      comp = pick(host, "activeContent", 1)
       x = 0
       comp.onSetContent = (value) -> x = 'called'
       comp.mount()
       expect(comp.node.textContent).to.equal '1'
-      comp.activeContent = 2
+      host.activeContent = 2
       expect(x).to.equal 'called'
       comp.update()
       expect(comp.node.textContent).to.equal '2'
 
-    it 'picker(1, "activeContent") by setContent', ->
-      comp = picker(1, "activeContent")
+    it 'pick(host, "activeContent", 1) by setContent', ->
+      host = {}
+      comp = pick(host, "activeContent", 1)
       x = 0
       comp.onSetContent = (value) -> x = 'called'
       comp.mount()

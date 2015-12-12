@@ -1,12 +1,12 @@
-var Component, Tag, Text, TransformComponent, a, case_, div, expect, flow, func, idescribe, if_, iit, list, ndescribe, newDemoNode, nit, p, picker, see, span, text, txt, _ref;
+var Component, Tag, Text, TransformComponent, a, case_, div, expect, flow, func, idescribe, if_, iit, list, ndescribe, newDemoNode, nit, p, pick, see, span, text, txt, _ref;
 
 _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
 newDemoNode = require('./helper').newDemoNode;
 
-see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, picker = dc.picker, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
+see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, pick = dc.pick, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
-describe('if, case, func, picker', function() {
+describe('singleton component: If, Case, Func, Pick, ...', function() {
   describe('If', function() {
     it('should optimize if_', function() {
       var t, x;
@@ -389,24 +389,30 @@ describe('if, case, func, picker', function() {
       return expect(comp.node.textContent).to.equal('2');
     });
   });
-  return describe('Picker', function() {
-    it('picker(1)', function() {
-      var comp, x;
-      comp = picker(1);
+  return describe('Pick', function() {
+    it('pick(host)', function() {
+      var comp, host, x;
+      host = {
+        content: 1
+      };
+      comp = pick(host);
       x = 0;
       comp.onSetContent = function(value) {
         return x = 'called';
       };
       comp.mount();
       expect(comp.node.textContent).to.equal('1');
-      comp.content = 2;
+      host.content = 2;
       expect(x).to.equal('called');
       comp.update();
       return expect(comp.node.textContent).to.equal('2');
     });
-    it('picker(1) by setContent', function() {
-      var comp, x;
-      comp = picker(1);
+    it('pick(host, "content", 1) by setContent', function() {
+      var comp, host, x;
+      host = {
+        content: 1
+      };
+      comp = pick(host);
       x = 0;
       comp.onSetContent = function(value) {
         return x = 'called';
@@ -418,23 +424,25 @@ describe('if, case, func, picker', function() {
       comp.update();
       return expect(comp.node.textContent).to.equal('2');
     });
-    it('picker(1, "activeContent")', function() {
-      var comp, x;
-      comp = picker(1, "activeContent");
+    it('pick(host, "activeContent", 1)', function() {
+      var comp, host, x;
+      host = {};
+      comp = pick(host, "activeContent", 1);
       x = 0;
       comp.onSetContent = function(value) {
         return x = 'called';
       };
       comp.mount();
       expect(comp.node.textContent).to.equal('1');
-      comp.activeContent = 2;
+      host.activeContent = 2;
       expect(x).to.equal('called');
       comp.update();
       return expect(comp.node.textContent).to.equal('2');
     });
-    return it('picker(1, "activeContent") by setContent', function() {
-      var comp, x;
-      comp = picker(1, "activeContent");
+    return it('pick(host, "activeContent", 1) by setContent', function() {
+      var comp, host, x;
+      host = {};
+      comp = pick(host, "activeContent", 1);
       x = 0;
       comp.onSetContent = function(value) {
         return x = 'called';

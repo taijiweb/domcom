@@ -84,7 +84,7 @@ This document only describe public method, including the public method in classe
 
 ## get Domcom, setup html pages, use Domcom API
 
-### getDomcom
+### get Domcom
   npm install --save domcom
 
   git clone https://www.github.com/taijiweb/domcom
@@ -250,7 +250,7 @@ This is the base class of all components. It provides the common method for comp
 
 #### toComponent
 
-Convert anything. If it is a component, return itself; if it is a function, return a Text Component, the text field is a reactive function; if it is an array, return a List component; if it is  a promise, return a proxy reactive function to the promise; if it is null or undefined, return a Nothing component; otherwise return a Text component.
+  Convert anything to component. If it is a component, return itself; if it is a function, return a Text Component, the text field is a reactive function; if it is an array, return a List component; if it is  a promise, return a proxy reactive function to the promise; if it is null or undefined, return a Nothing component; otherwise return a Text component.
 
 ##### function's type
 
@@ -283,6 +283,24 @@ Convert anything. If it is a component, return itself; if it is a function, retu
 	    component
 
 	  else new Text(item)
+
+#### toComponentList
+
+  Convert anything to an array of component. 
+
+##### function's type
+
+  > function prototype: `toComponentList item:Any`
+
+##### implementation
+
+	module.exports = toComponentList = (item) ->
+	  if !item then []
+	
+	  else if item instanceof Array
+	    for e in item then toComponent(e)
+	
+	  else [toComponent(item)]
 
 #### isComponent
 
@@ -568,6 +586,31 @@ Convert anything. If it is a component, return itself; if it is a function, retu
 
 ***********************************************************
 
+### CDATA component: Cdata
+
+  CDATA is not supported by html, but supported by xhtml and xml.
+
+##### module: Core/Base/Cdata
+
+##### direct super class: Text
+
+##### constructor function
+
+  > function prototype: new Cdata text:domField
+
+##### instantiate function
+
+  > function prototype: cdata text:domField
+
+  CDATA component instantiate function is not provided attrs:Attrs parameter.
+
+##### sample
+
+	cdata "this is a CDATA text"
+
+
+***********************************************************
+
 ### nothing component: Nothing
 
 ##### module: Core/Base/Nothing
@@ -635,7 +678,7 @@ Convert anything. If it is a component, return itself; if it is a function, retu
 
 ***********************************************************
 
-### Casecomponent: Case
+### Case component: Case
 
 ##### module: Core/Base/Case
 
@@ -661,7 +704,29 @@ Convert anything. If it is a component, return itself; if it is a function, retu
 
 ***********************************************************
 
-### Condcomponent
+### Pick component: Pick
+
+##### module: Core/Base/Pick
+
+##### direct super class: TransformComponent
+
+##### constructor function
+
+  > function prototype:  `new Pick host:Object, field:String [, initialContent:toComponent]`
+
+##### instantiate function
+
+  pick does not support "attrs" parameter, because host must be an object.
+
+  > function prototype:  `pick host:Object, field:String [, initialContent:toComponent]`
+
+##### sample
+
+    pick(host={}, 'activeField', 1)
+
+***********************************************************
+
+### Cond component
 
 ##### module: Core/Base/Cond
 
@@ -789,6 +854,10 @@ Convert anything. If it is a component, return itself; if it is a function, retu
 ***********************************************************
 
 ### reactive function
+
+  The reactive function in domcom is lazy. invalidation should not trigger any real computation except changing valid state.
+
+  (UPDATE: the reactive function is implemented in domcom before, but now they have been published as npm packages: lazy-flow, lazy-flow-at and dc-watch-list, and imported to domcom).
 
   The reactive function is the key to domcom different from other frameworks. Everything that connecting to data in Domcom, including Dom properties, If, Case, Cond component's test field, Func component's func field, Each component's items field, etc, can be reactive functions. Reactive functions have invalidateCallbacks field, which contains a list of invalidate callbacks, also the invalidate and onInvalidate methods, onInvalidate is used to register invalidate callback，invalidate is used to emit the excuection of all registed callbacks by onInvalidate.
 
@@ -1039,7 +1108,9 @@ Convert anything. If it is a component, return itself; if it is a function, retu
 
 #####  module: domcom/src/util
 
-Domcom implements this group functions to provided for the framework itself. It is not intended to be used as general utilities. Please choose them according to your user case.
+  (UPDATE: this module has been published as dc-util and imported to domcom).
+
+  Domcom implements this group functions to provided for the framework itself. It is not intended to be used as general utilities. Please choose them according to your user case.
 
 ##### isArray
 
@@ -1197,7 +1268,7 @@ Domcom implements this group functions to provided for the framework itself. It 
         if !value? then return ''
         else value
 
-##### requestAnimationFrame (即dc.raf)
+##### requestAnimationFrame (i.e. dc.raf)
 
   window.requestAnimationFrame or its polyfill. This method is used by dc.renderLoop.
 

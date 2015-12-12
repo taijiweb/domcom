@@ -284,6 +284,24 @@
 	
 	  else new Text(item)
 
+#### toComponentList函数
+
+  将任何项转化为部件数组。
+
+##### 函数类型
+
+  > 函数原型: `toComponentList item:Any`
+
+##### 参考实现
+
+	module.exports = toComponentList = (item) ->
+	  if !item then []
+	
+	  else if item instanceof Array
+	    for e in item then toComponent(e)
+	
+	  else [toComponent(item)]
+
 #### isComponent函数
 
   判断任何项是否为部件。
@@ -607,6 +625,8 @@
 
 ### If部件：If
 
+  domcom中的if语句。test可以是响应函数。
+
 ##### 直接基类：TransformComponent
 
 ##### 模块: Core/Base/If
@@ -632,6 +652,8 @@
 
 ### Case部件：Case
 
+  domcom中的switch case语句。test可以是响应函数。
+
 ##### 模块: Core/Base/Case
 
 ##### 直接基类：TransformComponent
@@ -653,6 +675,30 @@
         E: "Ember",
         R: "React"
     },  "some other")
+
+***********************************************************
+
+### Pick部件：Pick
+
+  从host对象取得field字段作为部件内容。
+
+##### 模块: Core/Base/Pick
+
+##### 直接基类：TransformComponent
+
+##### 构造函数
+
+  > 函数原型： `new Pick test:Object, field:String[, intialContent:toComponent]`
+
+##### 实例化函数
+
+  pick不能接受attrs作为封包div的内容。因为host必须是对象。
+
+  > 函数原型： `pick test:Object, field:String[, intialContent:toComponent]`
+
+##### 示例
+
+    pick(host={}, x, 1)
 
 ***********************************************************
 

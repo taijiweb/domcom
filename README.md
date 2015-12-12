@@ -11,9 +11,9 @@
 
     npm install --save domcom
 
-  or use the cdn provided by jsdelivr.net:
+  or use the cdn provided by jsdelivr.net (replace "x.y.z" with the real version number):
 
-    `<script src="http://cdn.jsdelivr.net/domcom/0.1.2/domcom.min.js"/>`
+    `<script src="http://cdn.jsdelivr.net/domcom/x.y.z/domcom.min.js"/>`
 
 ## Features
 * declarative composable components with reactive function

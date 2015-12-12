@@ -6,7 +6,7 @@ newDemoNode = require('./helper').newDemoNode;
 
 isComponent = dc.isComponent, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, List = dc.List, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, accordionGroup = dc.accordionGroup, accordion = dc.accordion, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div, all = dc.all, every = dc.every, nItems = dc.nItems, bind = dc.bind, pour = dc.pour, see = dc.see;
 
-describe('list, each', function() {
+describe('group component: List, Each', function() {
   describe('List', function() {
     it('all of item in list should be  component', function() {
       var comp;

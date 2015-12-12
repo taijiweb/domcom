@@ -188,4 +188,3 @@ describe 'demo', ->
       )
       comp.mount()
       comp.update()
-

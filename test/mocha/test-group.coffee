@@ -9,7 +9,7 @@ a, p, span, text, div
 all, every, nItems
 bind, pour, see} = dc
 
-describe 'list, each', ->
+describe 'group component: List, Each', ->
   describe 'List', ->
     it 'all of item in list should be  component', ->
       comp = list([1, 2])

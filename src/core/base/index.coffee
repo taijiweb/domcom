@@ -16,7 +16,7 @@ module.exports =
   If: require './If'
   Case: require './Case'
   Func: require './Func'
-  Picker: require './Picker'
+  Pick: require './Pick'
   Each: require './Each'
   Defer: require './Defer'
   Route: route.Route

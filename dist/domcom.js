@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "72e2dcbfc472f5271c5e"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "a2dac0ebdfeed577df58"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -2248,7 +2248,7 @@
 	  If: __webpack_require__(/*! ./If */ 28),
 	  Case: __webpack_require__(/*! ./Case */ 29),
 	  Func: __webpack_require__(/*! ./Func */ 23),
-	  Picker: __webpack_require__(/*! ./Picker */ 30),
+	  Pick: __webpack_require__(/*! ./Pick */ 30),
 	  Each: __webpack_require__(/*! ./Each */ 31),
 	  Defer: __webpack_require__(/*! ./Defer */ 32),
 	  Route: route.Route,
@@ -5098,12 +5098,12 @@
 
 /***/ },
 /* 30 */
-/*!*************************************!*\
-  !*** ./src/core/base/Picker.coffee ***!
-  \*************************************/
+/*!***********************************!*\
+  !*** ./src/core/base/Pick.coffee ***!
+  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Picker, TransformComponent, extend, newLine, setContent, toComponent,
+	var Picker, TransformComponent, extend, newLine, toComponent,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -5118,25 +5118,31 @@
 	module.exports = Picker = (function(_super) {
 	  __extends(Picker, _super);
 
-	  function Picker(content, field) {
-	    var family, get, set;
+	  function Picker(host, field, initialContent) {
+	    var family, get, me, set;
+	    this.host = host;
 	    Picker.__super__.constructor.call(this);
-	    this._content = content = toComponent(content);
-	    this.family = family = extend({}, content.family);
-	    family[this.dcid] = true;
+	    me = this;
 	    if (field == null) {
 	      this.field = field = 'content';
 	    } else {
 	      this.field = field;
 	    }
+	    if (initialContent) {
+	      this._content = host[field] = toComponent(initialContent);
+	    } else {
+	      this._content = host[field] = toComponent(host[field]);
+	    }
+	    this.family = family = extend({}, this._content.family);
+	    family[this.dcid] = true;
 	    if (Object.defineProperty) {
 	      get = function() {
-	        return this._content;
+	        return me._content;
 	      };
 	      set = function(content) {
-	        return setContent(this, content);
+	        return me.setContent(content);
 	      };
-	      Object.defineProperty(this, field, {
+	      Object.defineProperty(host, field, {
 	        get: get,
 	        set: set
 	      });
@@ -5144,7 +5150,15 @@
 	  }
 
 	  Picker.prototype.setContent = function(content) {
-	    return setContent(this, content);
+	    var oldContent;
+	    oldContent = this._content;
+	    if (content === oldContent) {
+	      return content;
+	    } else {
+	      this.invalidateTransform();
+	      this.onSetContent(content, oldContent);
+	      return this._content = toComponent(content);
+	    }
 	  };
 
 	  Picker.prototype.onSetContent = function(content, oldContent) {};
@@ -5154,7 +5168,7 @@
 	  };
 
 	  Picker.prototype.clone = function() {
-	    return (new this.constructor(this.content)).copyEventListeners(this);
+	    return (new this.constructor(this.host, this.field)).copyEventListeners(this);
 	  };
 
 	  Picker.prototype.toString = function(indent, addNewLine) {
@@ -5164,25 +5178,12 @@
 	    if (addNewLine == null) {
 	      addNewLine = '';
 	    }
-	    return newLine('', indent, addNewLine) + '<Picker:' + this.field + ': ' + this.content.toString(indent + 2, true) + '>';
+	    return newLine('', indent, addNewLine) + '<Pick:' + this.field + ': ' + this._content.toString(indent + 2, true) + '>';
 	  };
 
 	  return Picker;
 
 	})(TransformComponent);
-
-	setContent = function(component, content) {
-	  var oldContent;
-	  oldContent = component._content;
-	  if (content === oldContent) {
-	    return content;
-	  } else {
-	    component.onSetContent(content, oldContent);
-	    content = toComponent(content);
-	    component.invalidateTransform();
-	    return component._content = content;
-	  }
-	};
 
 
 /***/ },
@@ -5507,10 +5508,10 @@
   \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Case, Comment, Component, Defer, Each, Func, Html, If, List, Nothing, Picker, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
+	var Case, Comment, Component, Defer, Each, Func, Html, If, List, Nothing, Pick, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
 	  __slice = [].slice;
 
-	_ref = __webpack_require__(/*! ./base */ 12), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, Picker = _ref.Picker, Nothing = _ref.Nothing, Defer = _ref.Defer;
+	_ref = __webpack_require__(/*! ./base */ 12), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, Pick = _ref.Pick, Nothing = _ref.Nothing, Defer = _ref.Defer;
 
 	_ref1 = __webpack_require__(/*! dc-util */ 4), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
@@ -5631,12 +5632,8 @@
 	  }
 	};
 
-	exports.picker = function(attrs, content, field) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Picker(content, field)]);
-	  } else {
-	    return new Picker(attrs, content);
-	  }
+	exports.pick = function(host, field, initialContent) {
+	  return new Pick(host, field, initialContent);
 	};
 
 	exports.list = list = function() {

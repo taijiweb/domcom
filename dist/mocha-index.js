@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "4259b41429bea2958312"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "b26409523075eb43d695"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -569,9 +569,9 @@
 
 	__webpack_require__(/*! ./test-directive */ 1);
 
-	__webpack_require__(/*! ./test-if-case-func */ 19);
+	__webpack_require__(/*! ./test-singleton */ 19);
 
-	__webpack_require__(/*! ./test-list-each */ 20);
+	__webpack_require__(/*! ./test-group */ 20);
 
 	__webpack_require__(/*! ./test-ref-clone */ 21);
 
@@ -3696,20 +3696,20 @@
 
 /***/ },
 /* 19 */
-/*!*********************************************!*\
-  !*** ./test/mocha/test-if-case-func.coffee ***!
-  \*********************************************/
+/*!******************************************!*\
+  !*** ./test/mocha/test-singleton.coffee ***!
+  \******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Component, Tag, Text, TransformComponent, a, case_, div, expect, flow, func, idescribe, if_, iit, list, ndescribe, newDemoNode, nit, p, picker, see, span, text, txt, _ref;
+	var Component, Tag, Text, TransformComponent, a, case_, div, expect, flow, func, idescribe, if_, iit, list, ndescribe, newDemoNode, nit, p, pick, see, span, text, txt, _ref;
 
 	_ref = __webpack_require__(/*! bdd-test-helper */ 2), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
 	newDemoNode = __webpack_require__(/*! ./helper */ 17).newDemoNode;
 
-	see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, picker = dc.picker, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
+	see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, pick = dc.pick, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
-	describe('if, case, func, picker', function() {
+	describe('singleton component: If, Case, Func, Pick, ...', function() {
 	  describe('If', function() {
 	    it('should optimize if_', function() {
 	      var t, x;
@@ -4092,24 +4092,30 @@
 	      return expect(comp.node.textContent).to.equal('2');
 	    });
 	  });
-	  return describe('Picker', function() {
-	    it('picker(1)', function() {
-	      var comp, x;
-	      comp = picker(1);
+	  return describe('Pick', function() {
+	    it('pick(host)', function() {
+	      var comp, host, x;
+	      host = {
+	        content: 1
+	      };
+	      comp = pick(host);
 	      x = 0;
 	      comp.onSetContent = function(value) {
 	        return x = 'called';
 	      };
 	      comp.mount();
 	      expect(comp.node.textContent).to.equal('1');
-	      comp.content = 2;
+	      host.content = 2;
 	      expect(x).to.equal('called');
 	      comp.update();
 	      return expect(comp.node.textContent).to.equal('2');
 	    });
-	    it('picker(1) by setContent', function() {
-	      var comp, x;
-	      comp = picker(1);
+	    it('pick(host, "content", 1) by setContent', function() {
+	      var comp, host, x;
+	      host = {
+	        content: 1
+	      };
+	      comp = pick(host);
 	      x = 0;
 	      comp.onSetContent = function(value) {
 	        return x = 'called';
@@ -4121,23 +4127,25 @@
 	      comp.update();
 	      return expect(comp.node.textContent).to.equal('2');
 	    });
-	    it('picker(1, "activeContent")', function() {
-	      var comp, x;
-	      comp = picker(1, "activeContent");
+	    it('pick(host, "activeContent", 1)', function() {
+	      var comp, host, x;
+	      host = {};
+	      comp = pick(host, "activeContent", 1);
 	      x = 0;
 	      comp.onSetContent = function(value) {
 	        return x = 'called';
 	      };
 	      comp.mount();
 	      expect(comp.node.textContent).to.equal('1');
-	      comp.activeContent = 2;
+	      host.activeContent = 2;
 	      expect(x).to.equal('called');
 	      comp.update();
 	      return expect(comp.node.textContent).to.equal('2');
 	    });
-	    return it('picker(1, "activeContent") by setContent', function() {
-	      var comp, x;
-	      comp = picker(1, "activeContent");
+	    return it('pick(host, "activeContent", 1) by setContent', function() {
+	      var comp, host, x;
+	      host = {};
+	      comp = pick(host, "activeContent", 1);
 	      x = 0;
 	      comp.onSetContent = function(value) {
 	        return x = 'called';
@@ -4155,9 +4163,9 @@
 
 /***/ },
 /* 20 */
-/*!******************************************!*\
-  !*** ./test/mocha/test-list-each.coffee ***!
-  \******************************************/
+/*!**************************************!*\
+  !*** ./test/mocha/test-group.coffee ***!
+  \**************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, List, Tag, Text, TransformComponent, a, accordion, accordionGroup, all, bind, case_, div, each, every, expect, func, idescribe, if_, iit, isComponent, list, nItems, ndescribe, newDemoNode, nit, p, pour, see, span, text, txt, _ref;
@@ -4168,7 +4176,7 @@
 
 	isComponent = dc.isComponent, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, List = dc.List, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, accordionGroup = dc.accordionGroup, accordion = dc.accordion, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div, all = dc.all, every = dc.every, nItems = dc.nItems, bind = dc.bind, pour = dc.pour, see = dc.see;
 
-	describe('list, each', function() {
+	describe('group component: List, Each', function() {
 	  describe('List', function() {
 	    it('all of item in list should be  component', function() {
 	      var comp;

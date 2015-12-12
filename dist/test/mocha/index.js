@@ -16,9 +16,9 @@ require('./test-component');
 
 require('./test-directive');
 
-require('./test-if-case-func');
+require('./test-singleton');
 
-require('./test-list-each');
+require('./test-group');
 
 require('./test-ref-clone');
 

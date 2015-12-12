@@ -13,7 +13,7 @@
     |  |- domcom-addon.coffee    ................  // the index file for addon modules: builtins, directives, etc.
     |  |- dc.coffee    ..........................  // the methods and properties which belong to dc directly
     |  |- config.coffee    ......................  // config file for dc
-    |  |- util.coffee    ........................  // utilities for dc
+    |  |- util.coffee    ........................  // utilities for dc (UPDATE: removed and published as dc-util, imported to domcom)
     |  |- DomNode.coffee    .....................  // DomNode class, which provide an interface similar to jQuery for operating the dom node
     |  |- extend.coffee    ......................  // the extend function
     |  |- core/    ..............................  // the core implementation to domcom component
@@ -42,7 +42,8 @@
     |  |  |  |- toComponent.coffee    ...........  // convert anything to component, toComponent(item)
     |  |  |  \- index.coffee    .................  // the index file to enable requiring core/base/ folder
     |  |  |
-    |  |- flow/    ..............................  // the utilities to generate reactive functions
+    |  |- flow/    ..............................  // the utilities to generate reactive functions 
+    |  |  |                                        // UPDATE: removed and published as lazy-flow, lazy-flow-at and dc-watch-list, imported to domcom
     |  |  |- index.coffee    ....................  // some frequently used reative functions
     |  |  |- watch-list.coffee    ...............  // flow.watchEachList and flow.watchEachObject to play with Each component
     |  |  \- addon.coffee    ....................  // more reactive functions and utilities
@@ -90,8 +91,8 @@
     |  |  |- test-dc.coffee    ..................   // tests for utilities which are direclty hooked on dc
     |  |  |- test-flow.coffee    ................   // tests for reactive functions in flow/
     |  |  |- test-event.coffee    ...............   // tests for event on Tag component
-    |  |  |- test-if-case-func.coffee    ........   // tests for If, Case and Func component
-    |  |  |- test-list-each.coffee    ...........   // tests for List, Each component
+    |  |  |- test-singleton.coffee    ...........   // tests for If, Case, Func and Pick component
+    |  |  |- test-group.coffee    ...............   // tests for List, Each component
     |  |  |- test-directive.coffee    ...........   // tests for the directives
     |  |  |- test-property.coffee    ............   // tests for properties of Tag component
     |  |  |- test-ref-clone.coffee    ...........   // tests for references and clone to component

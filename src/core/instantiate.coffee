@@ -1,7 +1,7 @@
 {Component, toComponent, isComponent,
 Tag, Text, Comment, Html
 If, Case, Func, List, Each,
-Picker
+Pick
 Nothing, Defer} = require './base'
 {isEven, numbers} = require 'dc-util'
 
@@ -71,9 +71,10 @@ exports.func = (attrs, fn) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Func(fn)])
   else new Func(attrs) # attrs become fn
 
-exports.picker = (attrs, content, field) ->
-  if isAttrs(attrs) then new Tag('div', attrs, [new Picker(content, field)])
-  else new Picker(attrs, content) # attrs become content, content becomes field
+# pick can NOT wrapped with attrs
+# because host must be an object!!!
+exports.pick = (host, field, initialContent) ->
+  new Pick(host, field, initialContent)
 
 exports.list = list = (attrs, lst...) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new List(lst)])
