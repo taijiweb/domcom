@@ -7,7 +7,7 @@ TransformComponent = require './TransformComponent'
 extend = require 'extend'
 
 module.exports = class Picker extends TransformComponent
-  constructor: (content) ->
+  constructor: (content, field) ->
 
     super()
 
@@ -16,13 +16,17 @@ module.exports = class Picker extends TransformComponent
     @family = family = extend {}, content.family
     family[@dcid] = true
 
+    if !field?
+      @field = field = 'content'
+    else @field = field
+
     if Object.defineProperty
 
       get = -> @_content
       set = (content) ->
         setContent(@, content)
 
-      Object.defineProperty(this, 'content', {get, set})
+      Object.defineProperty(this, field, {get, set})
 
   setContent: (content) ->
     setContent(@, content)
@@ -35,7 +39,7 @@ module.exports = class Picker extends TransformComponent
   clone: -> (new @constructor(@content)).copyEventListeners(@)
 
   toString: (indent=0, addNewLine='') ->
-      newLine('', indent, addNewLine)+'<Picker '+@content.toString(indent+2, true)+'>'
+      newLine('', indent, addNewLine)+'<Picker:'+@field+': '+@content.toString(indent+2, true)+'>'
 
 setContent = (component, content) ->
   oldContent = component._content

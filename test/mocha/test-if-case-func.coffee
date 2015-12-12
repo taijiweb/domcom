@@ -347,3 +347,26 @@ describe 'if, case, func, picker', ->
       expect(x).to.equal 'called'
       comp.update()
       expect(comp.node.textContent).to.equal '2'
+
+    it 'picker(1, "activeContent")', ->
+      comp = picker(1, "activeContent")
+      x = 0
+      comp.onSetContent = (value) -> x = 'called'
+      comp.mount()
+      expect(comp.node.textContent).to.equal '1'
+      comp.activeContent = 2
+      expect(x).to.equal 'called'
+      comp.update()
+      expect(comp.node.textContent).to.equal '2'
+
+    it 'picker(1, "activeContent") by setContent', ->
+      comp = picker(1, "activeContent")
+      x = 0
+      comp.onSetContent = (value) -> x = 'called'
+      comp.mount()
+      expect(comp.node.textContent).to.equal '1'
+      comp.setContent 2
+      expect(x).to.equal 'called'
+      comp.update()
+      expect(comp.node.textContent).to.equal '2'
+

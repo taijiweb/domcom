@@ -20,6 +20,12 @@ module.exports = class TransformComponent extends Component
     @invalidate()
 
   getBaseComponent: ->
+
+    # assure getBaseComponent only be called in renderDom()
+    # otherwise beforeAttach will be emitted multiple times
+    if !@node
+      @emit('beforeAttach')
+
     if @transformValid
       content = @content
     else
@@ -59,8 +65,6 @@ module.exports = class TransformComponent extends Component
       return @
     else
       @valid = true
-
-    !@node and @emit('beforeAttach')
 
     oldBaseComponent = @baseComponent
     baseComponent = @getBaseComponent()

@@ -1,5 +1,5 @@
 toComponent = require './toComponent'
-isComponent = require './isComponent'
+toComponentList = require './toComponentList'
 
 BaseComponent = require './BaseComponent'
 
@@ -8,18 +8,17 @@ Nothing = require './Nothing'
 {checkConflictOffspring} = require '../../dom-util'
 
 module.exports = exports = class List extends BaseComponent
-  constructor: (children=[]) ->
+  constructor: (children) ->
     super()
 
-    if isComponent(children)
-      children = [children]
+    children = toComponentList(children)
 
     @family = family = {}
     family[@dcid] = true
     @dcidIndexMap = dcidIndexMap = {}
 
     for child, i in children
-      children[i] = child = toComponent(child)
+      child = children[i]
       checkConflictOffspring(family, child)
       child.holder = @
       dcidIndexMap[child.dcid] = i
@@ -164,7 +163,7 @@ module.exports = exports = class List extends BaseComponent
     else
       @parentNode = null
       for child in @children
-        child.baseComponent.markRemovingDom(parentNode)
+        child.markRemovingDom(parentNode)
       return
 
   removeNode: ->

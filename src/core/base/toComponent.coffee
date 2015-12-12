@@ -1,4 +1,3 @@
-Component = require './component'
 isComponent = require './isComponent'
 Nothing = require './Nothing'
 Text = require './Text'
