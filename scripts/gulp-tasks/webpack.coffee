@@ -27,12 +27,11 @@ runWebPack = (entry, filename, options) ->
 
 webpackDistribute = (mode) ->
   pathinfo = mode=='dev'
-  plugins = []
+  plugins = [new webpack.NoErrorsPlugin()]
   runWebPack(domcomBasicEntry, '[name].js', {path:'../dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
   runWebPack(domcomEntry, '[name].js', {path:'../dist', pathinfo:pathinfo, libraryTarget:'umd', library:'dc', plugins})
   if mode=='dist'
-    plugins = [new webpack.optimize.UglifyJsPlugin({minimize: true})]
-    #plugins = [new ClosureCompilerPlugin()]
+    plugins.push new webpack.optimize.UglifyJsPlugin({minimize: true})
     runWebPack(domcomBasicEntry, '[name].min.js', {path:'../dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
     runWebPack(domcomEntry, '[name].min.js', {path:'../dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
   runWebPack('./test/mocha/index', 'mocha-index.js', {path:'../dist', pathinfo:pathinfo, plugins})

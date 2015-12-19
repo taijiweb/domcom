@@ -97,37 +97,63 @@ module.exports = class Tag extends List
   css: (args...) -> @_prop(args, @style, 'Style')
 
   _prop: (args, props, type) ->
-    if args.length==0 then return props
+    if args.length==0
+      return props
+
     if args.length==1
       prop = args[0]
-      if typeof prop == 'string' then return props[prop]
+
+      if typeof prop == 'string'
+        cache =  @['cache'+type]
+        value = cache[prop]
+        if value?
+          return value
+        else
+          return props[prop]
+
       for key, v of prop
         @setProp(key, v, props, type)
+
     else if args.length==2
       @setProp(args[0], args[1], props, type)
+
     this
 
   setProp: (prop, value, props, type) ->
     prop = attrToPropName(prop)
     value = domField value
     oldValue = props[prop]
-    if !oldValue?
+
+    if value==oldValue
+      return @
+    else if !oldValue?
       if typeof value == 'function'
+        me = @
+        @['invalidate'+type][prop] = fn = ->
+          me.addActivity(props, prop, type, true)
+          props[prop] = value
+        value.onInvalidate(fn)
         @addActivity(props, prop, type)
+        props[prop] = value
       else if value!=@['cache'+type][prop]
           @addActivity(props, prop, type)
+          props[prop] = value
+      # else null # do nothing
     else
       # do not need to check cache
       # do not need check typeof value == 'function'
       if typeof oldValue =='function'
         oldValue.offInvalidate(@['invalidate'+type][prop])
-    if typeof value == 'function'
-      me = @
-      @['invalidate'+type][prop] = fn = ->
-        me.addActivity(props, prop, type, true)
-        props[prop] = value
-      value.onInvalidate(fn)
-    props[prop] = value
+      # else null # do not need to offInvalidate old callback
+
+      if typeof value == 'function'
+        me = @
+        @['invalidate'+type][prop] = fn = ->
+          me.addActivity(props, prop, type, true)
+          props[prop] = value
+        value.onInvalidate(fn)
+      # else null # do not need  value.onInvalidate
+      props[prop] = value
 
     @
 

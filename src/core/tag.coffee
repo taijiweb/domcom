@@ -11,12 +11,13 @@ tagNames = "a abbr acronym address area b base bdo big blockquote body br button
 tagNames = tagNames.split(' ')
 
 for tagName in tagNames
-  do (tagName=tagName) -> exports[tagName] = ->
-    tag(tagName, arguments...)
+  do (tagName=tagName) -> exports[tagName] = (args...) ->
+    tag(tagName, args...)
 
 # Because the name 'html' under dc has been used to instantiate Html component
 # So use tagHtml instead here
-exports.tagHtml = tag(tagName, arguments...)
+exports.tagHtml = (args...) ->
+  tag('html', args...)
 
 inputTypes = 'text checkbox radio date email number'.split(' ')
 

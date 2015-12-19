@@ -5,6 +5,7 @@ dc.builtinDirectives = require('./directives/index')
 extend(dc,
   dc.builtinDirectives
   require('./builtins/index')
+  require('./core/prop-util')
 )
 
 

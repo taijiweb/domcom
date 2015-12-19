@@ -16,18 +16,32 @@ exports.extendEventValue = extendEventValue = (props, prop, value, before) ->
 exports.extendAttrs = (attrs, obj, options={}) ->
   if !obj then return attrs
   else if !attrs then return obj
+
   objClass = classFn([obj.class, obj.className])
   if options.replaceClass then attrs.className = objClass
   else
     attrs.className = classFn([attrs.class, attrs.className])
     delete attrs.class
     attrs.className = classFn([attrs.className, objClass])
-  if obj.style then extend styleFrom(attrs.style), obj.style
+
+  style = styleFrom(attrs.style)
+  if obj.style
+    attrs.style = extend style, obj.style
+  else
+    attrs.style = style
+
   for key, value of obj
-    if key[..1]=='on'
+    if key=='class' or key=='className'
+      # class and className have been processed in advance
+      continue
+    else if key[..1]=='on'
       if options['replace_'+key] or options.replaceEvents then attrs[key] = value
       else extendEventValue(attrs, key, value)
-    else attrs[key] = value
+    else if key=='style'
+      continue
+    else
+      attrs[key] = value
+
   attrs
 
 exports.overAttrs = overAttrs = (attrs, obj) ->

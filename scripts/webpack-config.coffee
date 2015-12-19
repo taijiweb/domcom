@@ -3,6 +3,8 @@ path = require('path')
 webpack = require("webpack")
 
 exports.makeConfig = makeConfig = (entry, filename, options={}) ->
+  plugins = options.plugins or [ new webpack.NoErrorsPlugin() ]
+
   config =
     entry: entry
 
@@ -26,10 +28,7 @@ exports.makeConfig = makeConfig = (entry, filename, options={}) ->
         { test: /\.coffee$/, loader: 'coffee' }
       ]
 
-    plugins: [
-      new webpack.HotModuleReplacementPlugin()
-      new webpack.NoErrorsPlugin()
-    ]
+    plugins: plugins
 
     #devtool: '#eval-source-map'
     #debug: true
@@ -45,7 +44,13 @@ exports.makeConfig = makeConfig = (entry, filename, options={}) ->
 
 WebpackDevServer = require("webpack-dev-server")
 exports.makeWebpackDevServer = (entry, filename, options={}) ->
-  compilerConfig = makeConfig(entry, filename)
+
+  options.plugins = options.plugins or [
+    new webpack.HotModuleReplacementPlugin()
+    new webpack.NoErrorsPlugin()
+  ]
+
+  compilerConfig = makeConfig(entry, filename, options)
   webpackCompiler = webpack(compilerConfig)
 
   serverConfig =

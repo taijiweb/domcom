@@ -6,7 +6,7 @@ TransformComponent = require './TransformComponent'
 
 extend = require 'extend'
 
-module.exports = class Picker extends TransformComponent
+module.exports = class Pick extends TransformComponent
   constructor: (@host, field, initialContent) ->
 
     super()
