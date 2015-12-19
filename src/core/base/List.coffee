@@ -65,15 +65,21 @@ module.exports = exports = class List extends BaseComponent
     firstNode = null
     while index>=0
       child = children[index]
+
       if child.holder != @
 
-        # here just set child.valid = false is enough
+        # here just set child.valid = false is not enough
         # it is necessary to invalidate old holder
         # child.valid = false
         child.invalidate()
 
         child.holder = @
-      child.renderDom()
+
+      try
+        child.renderDom()
+      catch e
+        dc.onerror(e)
+
       node.unshift(child.node)
       firstNode = child.firstNode or firstNode
       index and children[index-1].nextNode = firstNode or child.nextNode
@@ -113,10 +119,16 @@ module.exports = exports = class List extends BaseComponent
       while i>=0
         listIndex = invalidIndexes[i]
         child = children[listIndex]
+
         if child.holder!=@
           child.invalidate()
           child.holder = @
-        child.renderDom()
+
+        try
+          child.renderDom()
+        catch e
+          dc.onerror(e)
+
         childNodes[listIndex] = child.node
         childFirstNode = child.firstNode or nextNode
         if listIndex

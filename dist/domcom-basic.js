@@ -49,286 +49,708 @@
 
 	var dc, extend;
 
-	module.exports = dc = __webpack_require__(/*! ./dc */ 4);
+	module.exports = dc = __webpack_require__(/*! ./dc */ 1);
 
 	if (typeof window !== 'undefined') {
 	  window.dc = dc;
 	}
 
-	dc.extend = extend = __webpack_require__(/*! extend */ 9);
+	dc.extend = extend = __webpack_require__(/*! extend */ 8);
 
-	extend(dc, __webpack_require__(/*! ./config */ 7), __webpack_require__(/*! lazy-flow */ 2), __webpack_require__(/*! dc-watch-list */ 1), __webpack_require__(/*! ./dom-util */ 6), __webpack_require__(/*! dc-util */ 3), __webpack_require__(/*! ./core/index */ 10));
+	extend(dc, __webpack_require__(/*! ./config */ 6), __webpack_require__(/*! lazy-flow */ 4), __webpack_require__(/*! dc-watch-list */ 9), __webpack_require__(/*! ./dom-util */ 5), __webpack_require__(/*! dc-util */ 3), __webpack_require__(/*! ./core/index */ 10), __webpack_require__(/*! ./dc-error */ 35));
 
 
 /***/ },
 /* 1 */
-/*!*********************************!*\
-  !*** ../dc-watch-list/index.js ***!
-  \*********************************/
+/*!***********************!*\
+  !*** ./src/dc.coffee ***!
+  \***********************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var flow, react, slice,
-	  __slice = [].slice;
+	var DomNode, addRenderUpdate, addSetIntervalUpdate, dc, dcid, directiveRegistry, domNodeCache, isComponent, isElement, isEven, newDcid, querySelector, raf, readyFnList, render, renderCallbackList, renderLoop, requestAnimationFrame, _ref, _ref1, _ref2, _renderComponentWhenBy;
 
-	react = (flow = __webpack_require__(/*! lazy-flow */ 2)).react;
+	DomNode = __webpack_require__(/*! ./DomNode */ 2);
 
-	module.exports = flow;
+	_ref = __webpack_require__(/*! ./dom-util */ 5), requestAnimationFrame = _ref.requestAnimationFrame, raf = _ref.raf, isElement = _ref.isElement;
 
-	slice = Array.prototype.slice;
+	_ref1 = __webpack_require__(/*! dc-util */ 3), newDcid = _ref1.newDcid, isEven = _ref1.isEven;
 
-	flow.watchEachList = function(listItems, component) {
-	  var pop, push, reverse, shift, sort, splice, unshift, watchingComponents;
-	  watchingComponents = listItems.watchingComponents || (listItems.watchingComponents = {});
-	  watchingComponents[component.dcid] = component;
-	  if (listItems.$dcWatching) {
-	    return;
+	_ref2 = __webpack_require__(/*! ./config */ 6), domNodeCache = _ref2.domNodeCache, readyFnList = _ref2.readyFnList, directiveRegistry = _ref2.directiveRegistry, renderCallbackList = _ref2.renderCallbackList;
+
+	isComponent = __webpack_require__(/*! ./core/base/isComponent */ 7);
+
+
+	/** @api dc(element) - dc component constructor
+	 *
+	 * @param element
+	 */
+
+	module.exports = dc = function(element, options) {
+	  if (options == null) {
+	    options = {};
 	  }
-	  listItems.$dcWatching = true;
-	  shift = listItems.shift;
-	  pop = listItems.pop;
-	  push = listItems.push;
-	  reverse = listItems.reverse;
-	  sort = listItems.sort;
-	  splice = listItems.splice;
-	  unshift = listItems.unshift;
-	  listItems.setItem = function() {
-	    var dcid, i, j, listLength, startIndex, values, valuesLength;
-	    startIndex = arguments[0], values = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-	    startIndex = startIndex >>> 0;
-	    if (startIndex < 0) {
-	      throw new Error('array index is negative');
-	    }
-	    listLength = listItems.length;
-	    i = startIndex;
-	    j = 0;
-	    valuesLength = values.length;
-	    while (j < valuesLength) {
-	      listItems[i] = values[j];
-	      i++;
-	      j++;
-	    }
-	    if (startIndex < listLength) {
-	      for (dcid in watchingComponents) {
-	        component = watchingComponents[dcid];
-	        component.invalidateChildren(startIndex, i);
-	      }
+	  if (typeof element === 'string') {
+	    if (options.noCache) {
+	      return querySelector(element, options.all);
 	    } else {
-	      for (dcid in watchingComponents) {
-	        component = watchingComponents[dcid];
-	        component.invalidateChildren(listLength, i);
-	      }
+	      return domNodeCache[element] || (domNodeCache[element] = querySelector(element, options.all));
 	    }
-	  };
-	  listItems.pop = function() {
-	    var dcid, listLength, result;
-	    listLength = listItems.length;
-	    if (!listLength) {
-	      return;
-	    }
-	    result = pop.call(this);
-	    for (dcid in watchingComponents) {
-	      component = watchingComponents[dcid];
-	      component.invalidateChildren(listLength - 1, listLength);
-	    }
-	    return result;
-	  };
-	  listItems.push = function() {
-	    var dcid, listLength, oldLength, result;
-	    oldLength = listItems.length;
-	    result = push.apply(listItems, arguments);
-	    listLength = listItems.length;
-	    for (dcid in watchingComponents) {
-	      component = watchingComponents[dcid];
-	      component.invalidateChildren(oldLength, listLength);
-	    }
-	    return result;
-	  };
-	  listItems.shift = function() {
-	    var dcid, listLength, result;
-	    if (!listItems.length) {
-	      return;
-	    }
-	    result = shift.call(this);
-	    listLength = listItems.length;
-	    for (dcid in watchingComponents) {
-	      component = watchingComponents[dcid];
-	      component.invalidateChildren(0, listLength);
-	    }
-	    return result;
-	  };
-	  listItems.unshift = function() {
-	    var dcid, listLength, result;
-	    result = unshift.apply(listItems, arguments);
-	    listLength = listItems.length;
-	    for (dcid in watchingComponents) {
-	      component = watchingComponents[dcid];
-	      component.invalidateChildren(0, listLength);
-	    }
-	    return result;
-	  };
-	  listItems.reverse = function() {
-	    var dcid, listLength;
-	    listLength = listItems.length;
-	    if (listLength <= 1) {
-	      return listItems;
-	    }
-	    reverse.call(listItems);
-	    for (dcid in watchingComponents) {
-	      component = watchingComponents[dcid];
-	      component.invalidateChildren(0, listLength);
-	    }
-	    return listItems;
-	  };
-	  listItems.sort = function() {
-	    var dcid, listLength;
-	    listLength = listItems.length;
-	    if (listLength <= 1) {
-	      return listItems;
-	    }
-	    sort.call(listItems);
-	    for (dcid in watchingComponents) {
-	      component = watchingComponents[dcid];
-	      component.invalidateChildren(0, listLength);
-	    }
-	    return listItems;
-	  };
-	  listItems.splice = function(start, deleteCount) {
-	    var dcid, inserted, len, listLength, oldListLength, result;
-	    len = arguments.length;
-	    oldListLength = listItems.length;
-	    start = start >>> 0;
-	    if (start < 0) {
-	      start = 0;
-	    }
-	    if (start > oldListLength) {
-	      start = oldListLength;
-	    }
-	    inserted = slice.call(arguments, 2);
-	    result = splice.apply(this, [start, deleteCount].concat(inserted));
-	    listLength = listItems.length;
-	    for (dcid in watchingComponents) {
-	      component = watchingComponents[dcid];
-	      if (oldListLength === listLength) {
-	        component.invalidateChildren(start, start + deleteCount);
+	  } else if (element instanceof Node || element instanceof NodeList || element instanceof Array) {
+	    if (options.noCache) {
+	      return new DomNode(element);
+	    } else {
+	      if (element.dcid) {
+	        return domNodeCache[element.dcid];
 	      } else {
-	        component.invalidateChildren(start, Math.max(oldListLength, listLength));
+	        element.dcid = newDcid();
+	        return domNodeCache[element.dcid] = new DomNode(element);
 	      }
 	    }
-	    return result;
-	  };
-	  return listItems.setLength = function(length) {
-	    var dcid, oldListLength;
-	    oldListLength = listItems.length;
-	    if (length === oldListLength) {
-	      return;
-	    }
-	    listItems.length = length;
-	    for (dcid in watchingComponents) {
-	      component = watchingComponents[dcid];
-	      if (length > oldListLength) {
-	        component.invalidateChildren(oldListLength, length);
-	      } else {
-	        component._setLength(length);
-	      }
-	    }
-	  };
+	  } else {
+	    throw new Error('error type for dc');
+	  }
 	};
 
-	flow.watchEachObject = function(objectItems, component) {
-	  var watchingComponents;
-	  watchingComponents = objectItems.watchingComponents || (objectItems.watchingComponents = {});
-	  watchingComponents[component.dcid] = component;
-	  if (objectItems.$dcWatching) {
-	    return;
+	querySelector = function(selector, all) {
+	  if (all) {
+	    return new DomNode(document.querySelectorAll(selector));
+	  } else {
+	    return new DomNode(document.querySelector(selector));
 	  }
-	  objectItems.$dcWatching = true;
-	  objectItems.deleteItem = function() {
-	    var dcid, index, items, key, key1, keys, min, oldItemsLength, _, _i, _j, _len, _len1, _ref, _ref1, _results;
-	    keys = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    items = component._items;
-	    oldItemsLength = items.length;
-	    _results = [];
-	    for (_i = 0, _len = keys.length; _i < _len; _i++) {
-	      key = keys[_i];
-	      if (!objectItems.hasOwnProperty(key)) {
-	        continue;
-	      }
-	      delete objectItems[key];
-	      for (dcid in watchingComponents) {
-	        component = watchingComponents[dcid];
-	        min = oldItemsLength;
-	        _ref = component.items;
-	        for (index = _j = 0, _len1 = _ref.length; _j < _len1; index = ++_j) {
-	          _ref1 = _ref[index], key1 = _ref1[0], _ = _ref1[1];
-	          if (key1==key) {
-	            items.splice(index, 1);
-	            if (index < min) {
-	              min = index;
-	            }
-	            component.invalidateChildren(min, oldItemsLength);
-	            break;
-	          }
-	        }
-	      }
-	      _results.push(oldItemsLength--);
-	    }
-	    return _results;
-	  };
-	  objectItems.setItem = function(key, value) {
-	    var dcid, index, items, key1, length, _, _results, _results1;
-	    items = component._items;
-	    if (objectItems.hasOwnProperty(key)) {
-	      if (objectItems[key] !== value) {
-	        _results = [];
-	        for (dcid in watchingComponents) {
-	          component = watchingComponents[dcid];
-	          _results.push((function() {
-	            var _i, _len, _ref, _results1;
-	            _results1 = [];
-	            for (index = _i = 0, _len = items.length; _i < _len; index = ++_i) {
-	              _ref = items[index], key1 = _ref[0], _ = _ref[1];
-	              if (key1==key) {
-	                component.invalidateChildren(index, index + 1);
-	                break;
-	              } else {
-	                _results1.push(void 0);
-	              }
-	            }
-	            return _results1;
-	          })());
-	        }
-	        return _results;
-	      }
-	    } else {
-	      length = _items.length;
-	      _results1 = [];
-	      for (dcid in watchingComponents) {
-	        component = watchingComponents[dcid];
-	        _items.push([key, value]);
-	        _results1.push(component.invalidateChildren(length, length + 1));
-	      }
-	      return _results1;
-	    }
-	  };
-	  return objectItems.extend = function(obj) {
-	    var key, value, _results;
-	    _results = [];
-	    for (key in obj) {
-	      value = obj[key];
-	      _results.push(objectItems.setItem(key, value));
-	    }
-	    return _results;
-	  };
 	};
 
-	flow.pour = function(itemFn) {
-	  itemFn.pouring = true;
-	  return itemFn;
+	if (typeof window !== 'undefined') {
+	  window.dcid = newDcid();
+	  dcid = document.dcid = newDcid();
+	  window.$document = dc.$document = domNodeCache[dcid] = new DomNode(document);
+	  dcid = document.body.dcid = newDcid();
+	  window.$body = dc.$body = domNodeCache[dcid] = new DomNode(document.body);
+	}
+
+	dc.onReady = function(callback) {
+	  return readyFnList.push(callback);
+	};
+
+	dc.offReady = function(callback) {
+	  return readyFnList.indexOf(callback) >= 0 && readyFnList.splice(index, 1);
+	};
+
+	dc.ready = function() {
+	  var callback, e, _i, _len;
+	  for (_i = 0, _len = readyFnList.length; _i < _len; _i++) {
+	    callback = readyFnList[_i];
+	    try {
+	      callback();
+	    } catch (_error) {
+	      e = _error;
+	      dc.onerror(e);
+	    }
+	  }
+	};
+
+	if (typeof window !== 'undefined') {
+	  document.addEventListener('DOMContentLoaded', dc.ready, false);
+	}
+
+	dc.render = render = function() {
+	  var callback, e, _i, _len;
+	  for (_i = 0, _len = renderCallbackList.length; _i < _len; _i++) {
+	    callback = renderCallbackList[_i];
+	    try {
+	      callback();
+	    } catch (_error) {
+	      e = _error;
+	      dc.onerror(e);
+	    }
+	  }
+	};
+
+	dc.onRender = function(callback) {
+	  return renderCallbackList.push(callback);
+	};
+
+	dc.offRender = function(callback) {
+	  return renderCallbackList.indexOf(callback) >= 0 && renderCallbackList.splice(index, 1);
+	};
+
+	dc.renderLoop = renderLoop = function() {
+	  requestAnimFrame(renderLoop);
+	  render();
+	};
+
+	dc.updateWhen = function(components, events, updateList, options) {
+	  return dc._renderWhenBy('update', components, events, updateList, options);
+	};
+
+	dc.renderWhen = function(components, events, updateList, options) {
+	  return dc._renderWhenBy('render', components, events, updateList, options);
+	};
+
+	dc._renderWhenBy = function(method, components, events, updateList, options) {
+	  var component, event, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n;
+	  if (components instanceof Array) {
+	    if (!(updateList instanceof Array)) {
+	      updateList = [updateList];
+	    }
+	    if (events instanceof Array) {
+	      for (_i = 0, _len = components.length; _i < _len; _i++) {
+	        component = components[_i];
+	        for (_j = 0, _len1 = events.length; _j < _len1; _j++) {
+	          event = events[_j];
+	          _renderComponentWhenBy(method, component, event, updateList);
+	        }
+	      }
+	    } else {
+	      for (_k = 0, _len2 = components.length; _k < _len2; _k++) {
+	        component = components[_k];
+	        _renderComponentWhenBy(method, component, events, updateList);
+	      }
+	    }
+	  } else if (components === setInterval) {
+	    if (isComponent(events)) {
+	      addSetIntervalUpdate(method, events, updateList);
+	    } else if (events instanceof Array) {
+	      for (_l = 0, _len3 = events.length; _l < _len3; _l++) {
+	        component = events[_l];
+	        addSetIntervalUpdate(method, events, updateList);
+	      }
+	    } else if (typeof events === 'number') {
+	      options = options || {};
+	      options.interval = events;
+	      addSetIntervalUpdate(method, updateList, options);
+	    }
+	  } else if (components === render) {
+	    if (isComponent(events)) {
+	      addRafUpdate(method, events, updateList);
+	    } else if (events instanceof Array) {
+	      for (_m = 0, _len4 = events.length; _m < _len4; _m++) {
+	        component = events[_m];
+	        addRafUpdate(method, events, updateList);
+	      }
+	    }
+	  } else if (events instanceof Array) {
+	    if (!(updateList instanceof Array)) {
+	      updateList = [updateList];
+	    }
+	    for (_n = 0, _len5 = events.length; _n < _len5; _n++) {
+	      event = events[_n];
+	      _renderComponentWhenBy(method, components, event, updateList);
+	    }
+	  } else {
+	    if (!(updateList instanceof Array)) {
+	      updateList = [updateList];
+	    }
+	    _renderComponentWhenBy(method, components, events, updateList);
+	  }
+	};
+
+	_renderComponentWhenBy = function(method, component, event, updateList, options) {
+	  var comp, i, item, _i, _len;
+	  if (event.slice(0, 2) !== 'on') {
+	    event = 'on' + event;
+	  }
+	  if (options) {
+	    options.method = method;
+	    component.eventUpdateConfig[event] = (function() {
+	      var _i, _len, _results;
+	      _results = [];
+	      for (_i = 0, _len = updateList.length; _i < _len; _i++) {
+	        comp = updateList[_i];
+	        _results.push([comp, options]);
+	      }
+	      return _results;
+	    })();
+	  } else {
+	    for (i = _i = 0, _len = updateList.length; _i < _len; i = ++_i) {
+	      item = updateList[i];
+	      updateList[i] = isComponent(item) ? [
+	        item, {
+	          method: method
+	        }
+	      ] : item;
+	    }
+	    component.eventUpdateConfig[event] = updateList;
+	  }
+	};
+
+	addSetIntervalUpdate = function(method, component, options) {
+	  var callback, clear, handler, interval, test;
+	  handler = null;
+	  test = options.test, interval = options.interval, clear = options.clear;
+	  callback = function() {
+	    if (!test || test()) {
+	      component[method]();
+	    }
+	    if (clear && clear()) {
+	      return clearInterval(handler);
+	    }
+	  };
+	  return handler = setInterval(callback, interval || 16);
+	};
+
+	addRenderUpdate = function(method, component, options) {
+	  var callback, clear, test;
+	  test = options.test, clear = options.clear;
+	  callback = function() {
+	    if (!test || test()) {
+	      component[method]();
+	    }
+	    if (clear && clear()) {
+	      return dc.offRender(callback);
+	    }
+	  };
+	  return dc.onRender(callback);
+	};
+
+	dc.directives = function(directiveName, directiveHandlerGenerator) {
+	  var generator, name, _results;
+	  if (arguments.length === 1) {
+	    _results = [];
+	    for (name in directiveName) {
+	      generator = directiveName[name];
+	      if (name[0] !== '$') {
+	        name = '$' + name;
+	      }
+	      _results.push(directiveRegistry[name] = generator);
+	    }
+	    return _results;
+	  } else {
+	    if (directiveName[0] !== '$') {
+	      directiveName = '$' + directiveName;
+	    }
+	    return directiveRegistry[directiveName] = directiveHandlerGenerator;
+	  }
 	};
 
 
 /***/ },
 /* 2 */
+/*!****************************!*\
+  !*** ./src/DomNode.coffee ***!
+  \****************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var DomNode, addEventListener, newLine, processProp, removeEventListener, _ref;
+
+	newLine = __webpack_require__(/*! dc-util */ 3).newLine;
+
+	_ref = __webpack_require__(/*! ./dom-util */ 5), addEventListener = _ref.addEventListener, removeEventListener = _ref.removeEventListener;
+
+	processProp = function(props, cache, prop, value) {
+	  var p, _i, _len, _results;
+	  if (prop == null) {
+	    return props;
+	  }
+	  if (value == null) {
+	    if (typeof prop === 'string') {
+	      return props[prop];
+	    } else {
+	      _results = [];
+	      for (value = _i = 0, _len = prop.length; _i < _len; value = ++_i) {
+	        p = prop[value];
+	        if ((cacheProps[p] == null) || value !== cacheProps[p]) {
+	          _results.push(cacheProps[p] = props[p] = value);
+	        } else {
+	          _results.push(void 0);
+	        }
+	      }
+	      return _results;
+	    }
+	  } else {
+	    if ((cacheProps[prop] == null) || value !== cacheProps[prop]) {
+	      return cacheProps[prop] = this.node[prop] = value;
+	    }
+	  }
+	};
+
+	module.exports = DomNode = (function() {
+	  function DomNode(node) {
+	    var n;
+	    this.node = node;
+	    if (node instanceof Node) {
+	      this.cacheProps = {};
+	      this.cacheStyle = {};
+	    } else {
+	      this.cacheProps = (function() {
+	        var _i, _len, _ref1, _results;
+	        _ref1 = this.node;
+	        _results = [];
+	        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+	          n = _ref1[_i];
+	          _results.push({});
+	        }
+	        return _results;
+	      }).call(this);
+	      this.cacheStyle = (function() {
+	        var _i, _len, _ref1, _results;
+	        _ref1 = this.node;
+	        _results = [];
+	        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+	          n = _ref1[_i];
+	          _results.push({});
+	        }
+	        return _results;
+	      }).call(this);
+	    }
+	  }
+
+	  DomNode.prototype.prop = function(prop, value) {
+	    var i, n, node, _i, _len;
+	    node = this.node;
+	    if (node instanceof Node) {
+	      processProp(node, this.cacheProps, prop, value);
+	    } else {
+	      for (i = _i = 0, _len = node.length; _i < _len; i = ++_i) {
+	        n = node[i];
+	        processProp(n, this.cacheProps[i], prop, value);
+	      }
+	    }
+	    return this;
+	  };
+
+	  DomNode.prototype.css = function(prop, value) {
+	    var i, n, node, _i, _len;
+	    node = this.node;
+	    if (node instanceof Node) {
+	      processProp(node.style, this.cacheStyle, prop, value);
+	    } else {
+	      for (i = _i = 0, _len = node.length; _i < _len; i = ++_i) {
+	        n = node[i];
+	        processProp(n.style, this.cacheStyle[i], prop, value);
+	      }
+	    }
+	    return this;
+	  };
+
+	  DomNode.prototype.bind = function(eventNames, handler) {
+	    var n, name, names, node, _i, _j, _len, _len1;
+	    names = eventNames.split(/\s+/);
+	    node = this.node;
+	    for (_i = 0, _len = names.length; _i < _len; _i++) {
+	      name = names[_i];
+	      if (name.slice(0, 2) === 'on') {
+	        name = name.slice(2);
+	      }
+	      if (node instanceof Node) {
+	        addEventListener(node, name, handler);
+	      } else {
+	        for (_j = 0, _len1 = node.length; _j < _len1; _j++) {
+	          n = node[_j];
+	          addEventListener(n, name, handler);
+	        }
+	      }
+	    }
+	  };
+
+	  DomNode.prototype.unbind = function(eventNames, handler) {
+	    var n, name, names, node, _i, _j, _len, _len1;
+	    names = eventNames.split(/\s+/);
+	    node = this.node;
+	    for (_i = 0, _len = names.length; _i < _len; _i++) {
+	      name = names[_i];
+	      if (name.slice(0, 2) === 'on') {
+	        name = name.slice(2);
+	      }
+	      if (node instanceof Node) {
+	        removeEventListener(node, name, handler);
+	      } else {
+	        for (_j = 0, _len1 = node.length; _j < _len1; _j++) {
+	          n = node[_j];
+	          removeEventListener(n, name, handler);
+	        }
+	      }
+	    }
+	  };
+
+	  DomNode.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 0;
+	    }
+	    return newLine('', indent, addNewLine) + '<DomNode>' + newLine(this.node.toString(), indent + 2, true) + newLine('</DomNode>', indent, true);
+	  };
+
+	  return DomNode;
+
+	})();
+
+
+/***/ },
+/* 3 */
+/*!***************************!*\
+  !*** ../dc-util/index.js ***!
+  \***************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var dupStr, globalDcid,
+	  __slice = [].slice;
+
+	exports.isArray = function(item) {
+	  return Object.prototype.toString.call(item) === '[object Array]';
+	};
+
+	exports.cloneObject = function(obj) {
+	  var key, result;
+	  result = {};
+	  for (key in obj) {
+	    result[key] = obj[key];
+	  }
+	  return result;
+	};
+
+	exports.pairListDict = function() {
+	  var i, keyValuePairs, len, result;
+	  keyValuePairs = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	  if (keyValuePairs.length === 1) {
+	    keyValuePairs = keyValuePairs[0];
+	  }
+	  len = keyValuePairs.length;
+	  i = 0;
+	  result = {};
+	  while (i < len) {
+	    result[keyValuePairs[i]] = keyValuePairs[i + 1];
+	    i += 2;
+	  }
+	  return result;
+	};
+
+	dupStr = function(str, n) {
+	  var i, s;
+	  s = '';
+	  i = 0;
+	  while (i++ < n) {
+	    s += str;
+	  }
+	  return s;
+	};
+
+	exports.newLine = function(str, indent, addNewLine) {
+	  if (addNewLine) {
+	    return '\n' + dupStr(' ', indent) + str;
+	  } else {
+	    return str;
+	  }
+	};
+
+	exports.funcString = function(fn) {
+	  var e, s;
+	  if (typeof fn !== 'function') {
+	    if (fn == null) {
+	      return 'null';
+	    }
+	    if (fn.getBaseComponent) {
+	      return fn.toString();
+	    } else {
+	      try {
+	        return JSON.stringify(fn);
+	      } catch (_error) {
+	        e = _error;
+	        return fn.toString();
+	      }
+	    }
+	  }
+	  s = fn.toString();
+	  if (fn.invalidate) {
+	    return s;
+	  }
+	  if (s.slice(0, 12) === "function (){") {
+	    s = s.slice(12, s.length - 1);
+	  } else if (s.slice(0, 13) === "function () {") {
+	    s = s.slice(13, s.length - 1);
+	  } else {
+	    s = s.slice(9);
+	  }
+	  s = s.trim();
+	  if (s.slice(0, 7) === 'return ') {
+	    s = s.slice(7);
+	  }
+	  if (s[s.length - 1] === ';') {
+	    s = s.slice(0, s.length - 1);
+	  }
+	  return 'fn:' + s;
+	};
+
+	globalDcid = 1;
+
+	exports.newDcid = function() {
+	  return globalDcid++;
+	};
+
+	exports.isEven = function(n) {
+	  if (n < 0) {
+	    n = -n;
+	  }
+	  while (n > 0) {
+	    n -= 2;
+	  }
+	  return n === 0;
+	};
+
+	exports.matchCurvedString = function(str, i) {
+	  var ch, level;
+	  if (str[i] !== '(') {
+	    return;
+	  }
+	  level = 0;
+	  while (ch = str[++i]) {
+	    if (ch === '\\') {
+	      if (!(ch = str[++i])) {
+	        return;
+	      }
+	    } else if (ch === '(') {
+	      level++;
+	    } else if (ch === ')') {
+	      if (level === 0) {
+	        return ++i;
+	      } else {
+	        level--;
+	      }
+	    }
+	  }
+	};
+
+	exports.intersect = function(maps) {
+	  var isMember, key, m, m2, result, _i, _len, _ref;
+	  result = {};
+	  m = maps[0];
+	  for (key in m) {
+	    isMember = true;
+	    _ref = maps.slice(1);
+	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	      m2 = _ref[_i];
+	      if (!m2[key]) {
+	        isMember = false;
+	        break;
+	      }
+	    }
+	    isMember && (result[key] = m[key]);
+	  }
+	  return result;
+	};
+
+	exports.substractSet = function(whole, part) {
+	  var key;
+	  for (key in part) {
+	    delete whole[key];
+	  }
+	  return whole;
+	};
+
+	exports.binarySearch = function(item, items) {
+	  var end, index, length, start;
+	  length = items.length;
+	  if (!length) {
+	    return 0;
+	  }
+	  if (length === 1) {
+	    if (items[0] >= item) {
+	      return 0;
+	    } else {
+	      return 1;
+	    }
+	  }
+	  start = 0;
+	  end = length - 1;
+	  while (1) {
+	    index = start + Math.floor((end - start) / 2);
+	    if (start === end) {
+	      if (items[index] >= item) {
+	        return index;
+	      } else {
+	        return index + 1;
+	      }
+	    } else if (item === items[index]) {
+	      return index;
+	    }
+	    if (item === items[index + 1]) {
+	      return index + 1;
+	    } else if (item < items[index]) {
+	      end = index;
+	    } else if (item > items[index + 1]) {
+	      start = index + 1;
+	    } else {
+	      return index + 1;
+	    }
+	  }
+	};
+
+	exports.binaryInsert = function(item, items) {
+	  var end, index, length, start;
+	  length = items.length;
+	  if (!length) {
+	    items[0] = item;
+	    return 0;
+	  }
+	  if (length === 1) {
+	    if (items[0] === item) {
+	      return 0;
+	    } else if (items[0] > item) {
+	      items[1] = items[0];
+	      items[0] = item;
+	      return 0;
+	    } else {
+	      items[1] = item;
+	      return 1;
+	    }
+	  }
+	  start = 0;
+	  end = length - 1;
+	  while (1) {
+	    index = start + Math.floor((end - start) / 2);
+	    if (start === end) {
+	      if (items[index] === item) {
+	        return index;
+	      } else if (items[index] > item) {
+	        items.splice(index, 0, item);
+	        return index;
+	      } else {
+	        items.splice(index + 1, 0, item);
+	        return index + 1;
+	      }
+	    } else if (item === items[index]) {
+	      return index;
+	    }
+	    if (item === items[index + 1]) {
+	      return index + 1;
+	    } else if (item < items[index]) {
+	      end = index;
+	    } else if (item > items[index + 1]) {
+	      start = index + 1;
+	    } else {
+	      items.splice(index + 1, 0, item);
+	      return index + 1;
+	    }
+	  }
+	};
+
+	exports.numbers = function(n) {
+	  var flow, i, result;
+	  flow = __webpack_require__(/*! lazy-flow */ 4);
+	  if (typeof n === 'function') {
+	    return flow(n, function() {
+	      var i, length, result;
+	      i = 0;
+	      result = [];
+	      length = n();
+	      while (i < length) {
+	        result.push(i);
+	        i++;
+	      }
+	      return result;
+	    });
+	  } else {
+	    i = 0;
+	    result = [];
+	    while (i < n) {
+	      result.push(i);
+	      i++;
+	    }
+	    return result;
+	  }
+	};
+
+
+/***/ },
+/* 4 */
 /*!*****************************!*\
   !*** ../lazy-flow/index.js ***!
   \*****************************/
@@ -758,688 +1180,7 @@
 
 
 /***/ },
-/* 3 */
-/*!***************************!*\
-  !*** ../dc-util/index.js ***!
-  \***************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var dupStr, globalDcid,
-	  __slice = [].slice;
-
-	exports.isArray = function(item) {
-	  return Object.prototype.toString.call(item) === '[object Array]';
-	};
-
-	exports.cloneObject = function(obj) {
-	  var key, result;
-	  result = {};
-	  for (key in obj) {
-	    result[key] = obj[key];
-	  }
-	  return result;
-	};
-
-	exports.pairListDict = function() {
-	  var i, keyValuePairs, len, result;
-	  keyValuePairs = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	  if (keyValuePairs.length === 1) {
-	    keyValuePairs = keyValuePairs[0];
-	  }
-	  len = keyValuePairs.length;
-	  i = 0;
-	  result = {};
-	  while (i < len) {
-	    result[keyValuePairs[i]] = keyValuePairs[i + 1];
-	    i += 2;
-	  }
-	  return result;
-	};
-
-	dupStr = function(str, n) {
-	  var i, s;
-	  s = '';
-	  i = 0;
-	  while (i++ < n) {
-	    s += str;
-	  }
-	  return s;
-	};
-
-	exports.newLine = function(str, indent, addNewLine) {
-	  if (addNewLine) {
-	    return '\n' + dupStr(' ', indent) + str;
-	  } else {
-	    return str;
-	  }
-	};
-
-	exports.funcString = function(fn) {
-	  var e, s;
-	  if (typeof fn !== 'function') {
-	    if (fn == null) {
-	      return 'null';
-	    }
-	    if (fn.getBaseComponent) {
-	      return fn.toString();
-	    } else {
-	      try {
-	        return JSON.stringify(fn);
-	      } catch (_error) {
-	        e = _error;
-	        return fn.toString();
-	      }
-	    }
-	  }
-	  s = fn.toString();
-	  if (fn.invalidate) {
-	    return s;
-	  }
-	  if (s.slice(0, 12) === "function (){") {
-	    s = s.slice(12, s.length - 1);
-	  } else if (s.slice(0, 13) === "function () {") {
-	    s = s.slice(13, s.length - 1);
-	  } else {
-	    s = s.slice(9);
-	  }
-	  s = s.trim();
-	  if (s.slice(0, 7) === 'return ') {
-	    s = s.slice(7);
-	  }
-	  if (s[s.length - 1] === ';') {
-	    s = s.slice(0, s.length - 1);
-	  }
-	  return 'fn:' + s;
-	};
-
-	globalDcid = 1;
-
-	exports.newDcid = function() {
-	  return globalDcid++;
-	};
-
-	exports.isEven = function(n) {
-	  if (n < 0) {
-	    n = -n;
-	  }
-	  while (n > 0) {
-	    n -= 2;
-	  }
-	  return n === 0;
-	};
-
-	exports.matchCurvedString = function(str, i) {
-	  var ch, level;
-	  if (str[i] !== '(') {
-	    return;
-	  }
-	  level = 0;
-	  while (ch = str[++i]) {
-	    if (ch === '\\') {
-	      if (!(ch = str[++i])) {
-	        return;
-	      }
-	    } else if (ch === '(') {
-	      level++;
-	    } else if (ch === ')') {
-	      if (level === 0) {
-	        return ++i;
-	      } else {
-	        level--;
-	      }
-	    }
-	  }
-	};
-
-	exports.intersect = function(maps) {
-	  var isMember, key, m, m2, result, _i, _len, _ref;
-	  result = {};
-	  m = maps[0];
-	  for (key in m) {
-	    isMember = true;
-	    _ref = maps.slice(1);
-	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	      m2 = _ref[_i];
-	      if (!m2[key]) {
-	        isMember = false;
-	        break;
-	      }
-	    }
-	    isMember && (result[key] = m[key]);
-	  }
-	  return result;
-	};
-
-	exports.substractSet = function(whole, part) {
-	  var key;
-	  for (key in part) {
-	    delete whole[key];
-	  }
-	  return whole;
-	};
-
-	exports.binarySearch = function(item, items) {
-	  var end, index, length, start;
-	  length = items.length;
-	  if (!length) {
-	    return 0;
-	  }
-	  if (length === 1) {
-	    if (items[0] >= item) {
-	      return 0;
-	    } else {
-	      return 1;
-	    }
-	  }
-	  start = 0;
-	  end = length - 1;
-	  while (1) {
-	    index = start + Math.floor((end - start) / 2);
-	    if (start === end) {
-	      if (items[index] >= item) {
-	        return index;
-	      } else {
-	        return index + 1;
-	      }
-	    } else if (item === items[index]) {
-	      return index;
-	    }
-	    if (item === items[index + 1]) {
-	      return index + 1;
-	    } else if (item < items[index]) {
-	      end = index;
-	    } else if (item > items[index + 1]) {
-	      start = index + 1;
-	    } else {
-	      return index + 1;
-	    }
-	  }
-	};
-
-	exports.binaryInsert = function(item, items) {
-	  var end, index, length, start;
-	  length = items.length;
-	  if (!length) {
-	    items[0] = item;
-	    return 0;
-	  }
-	  if (length === 1) {
-	    if (items[0] === item) {
-	      return 0;
-	    } else if (items[0] > item) {
-	      items[1] = items[0];
-	      items[0] = item;
-	      return 0;
-	    } else {
-	      items[1] = item;
-	      return 1;
-	    }
-	  }
-	  start = 0;
-	  end = length - 1;
-	  while (1) {
-	    index = start + Math.floor((end - start) / 2);
-	    if (start === end) {
-	      if (items[index] === item) {
-	        return index;
-	      } else if (items[index] > item) {
-	        items.splice(index, 0, item);
-	        return index;
-	      } else {
-	        items.splice(index + 1, 0, item);
-	        return index + 1;
-	      }
-	    } else if (item === items[index]) {
-	      return index;
-	    }
-	    if (item === items[index + 1]) {
-	      return index + 1;
-	    } else if (item < items[index]) {
-	      end = index;
-	    } else if (item > items[index + 1]) {
-	      start = index + 1;
-	    } else {
-	      items.splice(index + 1, 0, item);
-	      return index + 1;
-	    }
-	  }
-	};
-
-	exports.numbers = function(n) {
-	  var flow, i, result;
-	  flow = __webpack_require__(/*! lazy-flow */ 2);
-	  if (typeof n === 'function') {
-	    return flow(n, function() {
-	      var i, length, result;
-	      i = 0;
-	      result = [];
-	      length = n();
-	      while (i < length) {
-	        result.push(i);
-	        i++;
-	      }
-	      return result;
-	    });
-	  } else {
-	    i = 0;
-	    result = [];
-	    while (i < n) {
-	      result.push(i);
-	      i++;
-	    }
-	    return result;
-	  }
-	};
-
-
-/***/ },
-/* 4 */
-/*!***********************!*\
-  !*** ./src/dc.coffee ***!
-  \***********************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var DomNode, addRenderUpdate, addSetIntervalUpdate, dc, dcid, directiveRegistry, domNodeCache, isComponent, isElement, isEven, newDcid, querySelector, raf, readyFnList, render, renderCallbackList, renderLoop, requestAnimationFrame, _ref, _ref1, _ref2, _renderComponentWhenBy;
-
-	DomNode = __webpack_require__(/*! ./DomNode */ 5);
-
-	_ref = __webpack_require__(/*! ./dom-util */ 6), requestAnimationFrame = _ref.requestAnimationFrame, raf = _ref.raf, isElement = _ref.isElement;
-
-	_ref1 = __webpack_require__(/*! dc-util */ 3), newDcid = _ref1.newDcid, isEven = _ref1.isEven;
-
-	_ref2 = __webpack_require__(/*! ./config */ 7), domNodeCache = _ref2.domNodeCache, readyFnList = _ref2.readyFnList, directiveRegistry = _ref2.directiveRegistry, renderCallbackList = _ref2.renderCallbackList;
-
-	isComponent = __webpack_require__(/*! ./core/base/isComponent */ 8);
-
-
-	/** @api dc(element) - dc component constructor
-	 *
-	 * @param element
-	 */
-
-	module.exports = dc = function(element, options) {
-	  if (options == null) {
-	    options = {};
-	  }
-	  if (typeof element === 'string') {
-	    if (options.noCache) {
-	      return querySelector(element, options.all);
-	    } else {
-	      return domNodeCache[element] || (domNodeCache[element] = querySelector(element, options.all));
-	    }
-	  } else if (element instanceof Node || element instanceof NodeList || element instanceof Array) {
-	    if (options.noCache) {
-	      return new DomNode(element);
-	    } else {
-	      if (element.dcid) {
-	        return domNodeCache[element.dcid];
-	      } else {
-	        element.dcid = newDcid();
-	        return domNodeCache[element.dcid] = new DomNode(element);
-	      }
-	    }
-	  } else {
-	    throw new Error('error type for dc');
-	  }
-	};
-
-	querySelector = function(selector, all) {
-	  if (all) {
-	    return new DomNode(document.querySelectorAll(selector));
-	  } else {
-	    return new DomNode(document.querySelector(selector));
-	  }
-	};
-
-	if (typeof window !== 'undefined') {
-	  window.dcid = newDcid();
-	  dcid = document.dcid = newDcid();
-	  window.$document = dc.$document = domNodeCache[dcid] = new DomNode(document);
-	  dcid = document.body.dcid = newDcid();
-	  window.$body = dc.$body = domNodeCache[dcid] = new DomNode(document.body);
-	}
-
-	dc.onReady = function(callback) {
-	  return readyFnList.push(callback);
-	};
-
-	dc.offReady = function(callback) {
-	  return readyFnList.indexOf(callback) >= 0 && readyFnList.splice(index, 1);
-	};
-
-	dc.ready = function() {
-	  var callback, _i, _len;
-	  for (_i = 0, _len = readyFnList.length; _i < _len; _i++) {
-	    callback = readyFnList[_i];
-	    callback();
-	  }
-	};
-
-	if (typeof window !== 'undefined') {
-	  document.addEventListener('DOMContentLoaded', dc.ready, false);
-	}
-
-	dc.render = render = function() {
-	  var callback, _i, _len, _results;
-	  _results = [];
-	  for (_i = 0, _len = renderCallbackList.length; _i < _len; _i++) {
-	    callback = renderCallbackList[_i];
-	    _results.push(callback());
-	  }
-	  return _results;
-	};
-
-	dc.onRender = function(callback) {
-	  return renderCallbackList.push(callback);
-	};
-
-	dc.offRender = function(callback) {
-	  return renderCallbackList.indexOf(callback) >= 0 && renderCallbackList.splice(index, 1);
-	};
-
-	dc.renderLoop = renderLoop = function() {
-	  requestAnimFrame(renderLoop);
-	  render();
-	};
-
-	dc.updateWhen = function(components, events, updateList, options) {
-	  return dc._renderWhenBy('update', components, events, updateList, options);
-	};
-
-	dc.renderWhen = function(components, events, updateList, options) {
-	  return dc._renderWhenBy('render', components, events, updateList, options);
-	};
-
-	dc._renderWhenBy = function(method, components, events, updateList, options) {
-	  var component, event, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n;
-	  if (components instanceof Array) {
-	    if (!(updateList instanceof Array)) {
-	      updateList = [updateList];
-	    }
-	    if (events instanceof Array) {
-	      for (_i = 0, _len = components.length; _i < _len; _i++) {
-	        component = components[_i];
-	        for (_j = 0, _len1 = events.length; _j < _len1; _j++) {
-	          event = events[_j];
-	          _renderComponentWhenBy(method, component, event, updateList);
-	        }
-	      }
-	    } else {
-	      for (_k = 0, _len2 = components.length; _k < _len2; _k++) {
-	        component = components[_k];
-	        _renderComponentWhenBy(method, component, events, updateList);
-	      }
-	    }
-	  } else if (components === setInterval) {
-	    if (isComponent(events)) {
-	      addSetIntervalUpdate(method, events, updateList);
-	    } else if (events instanceof Array) {
-	      for (_l = 0, _len3 = events.length; _l < _len3; _l++) {
-	        component = events[_l];
-	        addSetIntervalUpdate(method, events, updateList);
-	      }
-	    } else if (typeof events === 'number') {
-	      options = options || {};
-	      options.interval = events;
-	      addSetIntervalUpdate(method, updateList, options);
-	    }
-	  } else if (components === render) {
-	    if (isComponent(events)) {
-	      addRafUpdate(method, events, updateList);
-	    } else if (events instanceof Array) {
-	      for (_m = 0, _len4 = events.length; _m < _len4; _m++) {
-	        component = events[_m];
-	        addRafUpdate(method, events, updateList);
-	      }
-	    }
-	  } else if (events instanceof Array) {
-	    if (!(updateList instanceof Array)) {
-	      updateList = [updateList];
-	    }
-	    for (_n = 0, _len5 = events.length; _n < _len5; _n++) {
-	      event = events[_n];
-	      _renderComponentWhenBy(method, components, event, updateList);
-	    }
-	  } else {
-	    if (!(updateList instanceof Array)) {
-	      updateList = [updateList];
-	    }
-	    _renderComponentWhenBy(method, components, events, updateList);
-	  }
-	};
-
-	_renderComponentWhenBy = function(method, component, event, updateList, options) {
-	  var comp, i, item, _i, _len;
-	  if (event.slice(0, 2) !== 'on') {
-	    event = 'on' + event;
-	  }
-	  if (options) {
-	    options.method = method;
-	    component.eventUpdateConfig[event] = (function() {
-	      var _i, _len, _results;
-	      _results = [];
-	      for (_i = 0, _len = updateList.length; _i < _len; _i++) {
-	        comp = updateList[_i];
-	        _results.push([comp, options]);
-	      }
-	      return _results;
-	    })();
-	  } else {
-	    for (i = _i = 0, _len = updateList.length; _i < _len; i = ++_i) {
-	      item = updateList[i];
-	      updateList[i] = isComponent(item) ? [
-	        item, {
-	          method: method
-	        }
-	      ] : item;
-	    }
-	    component.eventUpdateConfig[event] = updateList;
-	  }
-	};
-
-	addSetIntervalUpdate = function(method, component, options) {
-	  var callback, clear, handler, interval, test;
-	  handler = null;
-	  test = options.test, interval = options.interval, clear = options.clear;
-	  callback = function() {
-	    if (!test || test()) {
-	      component[method]();
-	    }
-	    if (clear && clear()) {
-	      return clearInterval(handler);
-	    }
-	  };
-	  return handler = setInterval(callback, interval || 16);
-	};
-
-	addRenderUpdate = function(method, component, options) {
-	  var callback, clear, test;
-	  test = options.test, clear = options.clear;
-	  callback = function() {
-	    if (!test || test()) {
-	      component[method]();
-	    }
-	    if (clear && clear()) {
-	      return dc.offRender(callback);
-	    }
-	  };
-	  return dc.onRender(callback);
-	};
-
-	dc.directives = function(directiveName, directiveHandlerGenerator) {
-	  var generator, name, _results;
-	  if (arguments.length === 1) {
-	    _results = [];
-	    for (name in directiveName) {
-	      generator = directiveName[name];
-	      if (name[0] !== '$') {
-	        name = '$' + name;
-	      }
-	      _results.push(directiveRegistry[name] = generator);
-	    }
-	    return _results;
-	  } else {
-	    if (directiveName[0] !== '$') {
-	      directiveName = '$' + directiveName;
-	    }
-	    return directiveRegistry[directiveName] = directiveHandlerGenerator;
-	  }
-	};
-
-
-/***/ },
 /* 5 */
-/*!****************************!*\
-  !*** ./src/DomNode.coffee ***!
-  \****************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var DomNode, addEventListener, newLine, processProp, removeEventListener, _ref;
-
-	newLine = __webpack_require__(/*! dc-util */ 3).newLine;
-
-	_ref = __webpack_require__(/*! ./dom-util */ 6), addEventListener = _ref.addEventListener, removeEventListener = _ref.removeEventListener;
-
-	processProp = function(props, cache, prop, value) {
-	  var p, _i, _len, _results;
-	  if (prop == null) {
-	    return props;
-	  }
-	  if (value == null) {
-	    if (typeof prop === 'string') {
-	      return props[prop];
-	    } else {
-	      _results = [];
-	      for (value = _i = 0, _len = prop.length; _i < _len; value = ++_i) {
-	        p = prop[value];
-	        if ((cacheProps[p] == null) || value !== cacheProps[p]) {
-	          _results.push(cacheProps[p] = props[p] = value);
-	        } else {
-	          _results.push(void 0);
-	        }
-	      }
-	      return _results;
-	    }
-	  } else {
-	    if ((cacheProps[prop] == null) || value !== cacheProps[prop]) {
-	      return cacheProps[prop] = this.node[prop] = value;
-	    }
-	  }
-	};
-
-	module.exports = DomNode = (function() {
-	  function DomNode(node) {
-	    var n;
-	    this.node = node;
-	    if (node instanceof Node) {
-	      this.cacheProps = {};
-	      this.cacheStyle = {};
-	    } else {
-	      this.cacheProps = (function() {
-	        var _i, _len, _ref1, _results;
-	        _ref1 = this.node;
-	        _results = [];
-	        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	          n = _ref1[_i];
-	          _results.push({});
-	        }
-	        return _results;
-	      }).call(this);
-	      this.cacheStyle = (function() {
-	        var _i, _len, _ref1, _results;
-	        _ref1 = this.node;
-	        _results = [];
-	        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	          n = _ref1[_i];
-	          _results.push({});
-	        }
-	        return _results;
-	      }).call(this);
-	    }
-	  }
-
-	  DomNode.prototype.prop = function(prop, value) {
-	    var i, n, node, _i, _len;
-	    node = this.node;
-	    if (node instanceof Node) {
-	      processProp(node, this.cacheProps, prop, value);
-	    } else {
-	      for (i = _i = 0, _len = node.length; _i < _len; i = ++_i) {
-	        n = node[i];
-	        processProp(n, this.cacheProps[i], prop, value);
-	      }
-	    }
-	    return this;
-	  };
-
-	  DomNode.prototype.css = function(prop, value) {
-	    var i, n, node, _i, _len;
-	    node = this.node;
-	    if (node instanceof Node) {
-	      processProp(node.style, this.cacheStyle, prop, value);
-	    } else {
-	      for (i = _i = 0, _len = node.length; _i < _len; i = ++_i) {
-	        n = node[i];
-	        processProp(n.style, this.cacheStyle[i], prop, value);
-	      }
-	    }
-	    return this;
-	  };
-
-	  DomNode.prototype.bind = function(eventNames, handler) {
-	    var n, name, names, node, _i, _j, _len, _len1;
-	    names = eventNames.split(/\s+/);
-	    node = this.node;
-	    for (_i = 0, _len = names.length; _i < _len; _i++) {
-	      name = names[_i];
-	      if (name.slice(0, 2) === 'on') {
-	        name = name.slice(2);
-	      }
-	      if (node instanceof Node) {
-	        addEventListener(node, name, handler);
-	      } else {
-	        for (_j = 0, _len1 = node.length; _j < _len1; _j++) {
-	          n = node[_j];
-	          addEventListener(n, name, handler);
-	        }
-	      }
-	    }
-	  };
-
-	  DomNode.prototype.unbind = function(eventNames, handler) {
-	    var n, name, names, node, _i, _j, _len, _len1;
-	    names = eventNames.split(/\s+/);
-	    node = this.node;
-	    for (_i = 0, _len = names.length; _i < _len; _i++) {
-	      name = names[_i];
-	      if (name.slice(0, 2) === 'on') {
-	        name = name.slice(2);
-	      }
-	      if (node instanceof Node) {
-	        removeEventListener(node, name, handler);
-	      } else {
-	        for (_j = 0, _len1 = node.length; _j < _len1; _j++) {
-	          n = node[_j];
-	          removeEventListener(n, name, handler);
-	        }
-	      }
-	    }
-	  };
-
-	  DomNode.prototype.toString = function(indent, addNewLine) {
-	    if (indent == null) {
-	      indent = 0;
-	    }
-	    return newLine('', indent, addNewLine) + '<DomNode>' + newLine(this.node.toString(), indent + 2, true) + newLine('</DomNode>', indent, true);
-	  };
-
-	  return DomNode;
-
-	})();
-
-
-/***/ },
-/* 6 */
 /*!*****************************!*\
   !*** ./src/dom-util.coffee ***!
   \*****************************/
@@ -1499,7 +1240,7 @@
 	  };
 	}
 
-	renew = __webpack_require__(/*! lazy-flow */ 2).renew;
+	renew = __webpack_require__(/*! lazy-flow */ 4).renew;
 
 	exports.domField = function(value) {
 	  var fn;
@@ -1561,7 +1302,7 @@
 
 
 /***/ },
-/* 7 */
+/* 6 */
 /*!***************************!*\
   !*** ./src/config.coffee ***!
   \***************************/
@@ -1577,7 +1318,7 @@
 
 
 /***/ },
-/* 8 */
+/* 7 */
 /*!******************************************!*\
   !*** ./src/core/base/isComponent.coffee ***!
   \******************************************/
@@ -1589,7 +1330,7 @@
 
 
 /***/ },
-/* 9 */
+/* 8 */
 /*!***************************!*\
   !*** ./~/extend/index.js ***!
   \***************************/
@@ -1687,6 +1428,273 @@
 
 
 /***/ },
+/* 9 */
+/*!*********************************!*\
+  !*** ../dc-watch-list/index.js ***!
+  \*********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var flow, react, slice,
+	  __slice = [].slice;
+
+	react = (flow = __webpack_require__(/*! lazy-flow */ 4)).react;
+
+	module.exports = flow;
+
+	slice = Array.prototype.slice;
+
+	flow.watchEachList = function(listItems, component) {
+	  var pop, push, reverse, shift, sort, splice, unshift, watchingComponents;
+	  watchingComponents = listItems.watchingComponents || (listItems.watchingComponents = {});
+	  watchingComponents[component.dcid] = component;
+	  if (listItems.$dcWatching) {
+	    return;
+	  }
+	  listItems.$dcWatching = true;
+	  shift = listItems.shift;
+	  pop = listItems.pop;
+	  push = listItems.push;
+	  reverse = listItems.reverse;
+	  sort = listItems.sort;
+	  splice = listItems.splice;
+	  unshift = listItems.unshift;
+	  listItems.setItem = function() {
+	    var dcid, i, j, listLength, startIndex, values, valuesLength;
+	    startIndex = arguments[0], values = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+	    startIndex = startIndex >>> 0;
+	    if (startIndex < 0) {
+	      throw new Error('array index is negative');
+	    }
+	    listLength = listItems.length;
+	    i = startIndex;
+	    j = 0;
+	    valuesLength = values.length;
+	    while (j < valuesLength) {
+	      listItems[i] = values[j];
+	      i++;
+	      j++;
+	    }
+	    if (startIndex < listLength) {
+	      for (dcid in watchingComponents) {
+	        component = watchingComponents[dcid];
+	        component.invalidateChildren(startIndex, i);
+	      }
+	    } else {
+	      for (dcid in watchingComponents) {
+	        component = watchingComponents[dcid];
+	        component.invalidateChildren(listLength, i);
+	      }
+	    }
+	  };
+	  listItems.pop = function() {
+	    var dcid, listLength, result;
+	    listLength = listItems.length;
+	    if (!listLength) {
+	      return;
+	    }
+	    result = pop.call(this);
+	    for (dcid in watchingComponents) {
+	      component = watchingComponents[dcid];
+	      component.invalidateChildren(listLength - 1, listLength);
+	    }
+	    return result;
+	  };
+	  listItems.push = function() {
+	    var dcid, listLength, oldLength, result;
+	    oldLength = listItems.length;
+	    result = push.apply(listItems, arguments);
+	    listLength = listItems.length;
+	    for (dcid in watchingComponents) {
+	      component = watchingComponents[dcid];
+	      component.invalidateChildren(oldLength, listLength);
+	    }
+	    return result;
+	  };
+	  listItems.shift = function() {
+	    var dcid, listLength, result;
+	    if (!listItems.length) {
+	      return;
+	    }
+	    result = shift.call(this);
+	    listLength = listItems.length;
+	    for (dcid in watchingComponents) {
+	      component = watchingComponents[dcid];
+	      component.invalidateChildren(0, listLength);
+	    }
+	    return result;
+	  };
+	  listItems.unshift = function() {
+	    var dcid, listLength, result;
+	    result = unshift.apply(listItems, arguments);
+	    listLength = listItems.length;
+	    for (dcid in watchingComponents) {
+	      component = watchingComponents[dcid];
+	      component.invalidateChildren(0, listLength);
+	    }
+	    return result;
+	  };
+	  listItems.reverse = function() {
+	    var dcid, listLength;
+	    listLength = listItems.length;
+	    if (listLength <= 1) {
+	      return listItems;
+	    }
+	    reverse.call(listItems);
+	    for (dcid in watchingComponents) {
+	      component = watchingComponents[dcid];
+	      component.invalidateChildren(0, listLength);
+	    }
+	    return listItems;
+	  };
+	  listItems.sort = function() {
+	    var dcid, listLength;
+	    listLength = listItems.length;
+	    if (listLength <= 1) {
+	      return listItems;
+	    }
+	    sort.call(listItems);
+	    for (dcid in watchingComponents) {
+	      component = watchingComponents[dcid];
+	      component.invalidateChildren(0, listLength);
+	    }
+	    return listItems;
+	  };
+	  listItems.splice = function(start, deleteCount) {
+	    var dcid, inserted, len, listLength, oldListLength, result;
+	    len = arguments.length;
+	    oldListLength = listItems.length;
+	    start = start >>> 0;
+	    if (start < 0) {
+	      start = 0;
+	    }
+	    if (start > oldListLength) {
+	      start = oldListLength;
+	    }
+	    inserted = slice.call(arguments, 2);
+	    result = splice.apply(this, [start, deleteCount].concat(inserted));
+	    listLength = listItems.length;
+	    for (dcid in watchingComponents) {
+	      component = watchingComponents[dcid];
+	      if (oldListLength === listLength) {
+	        component.invalidateChildren(start, start + deleteCount);
+	      } else {
+	        component.invalidateChildren(start, Math.max(oldListLength, listLength));
+	      }
+	    }
+	    return result;
+	  };
+	  return listItems.setLength = function(length) {
+	    var dcid, oldListLength;
+	    oldListLength = listItems.length;
+	    if (length === oldListLength) {
+	      return;
+	    }
+	    listItems.length = length;
+	    for (dcid in watchingComponents) {
+	      component = watchingComponents[dcid];
+	      if (length > oldListLength) {
+	        component.invalidateChildren(oldListLength, length);
+	      } else {
+	        component._setLength(length);
+	      }
+	    }
+	  };
+	};
+
+	flow.watchEachObject = function(objectItems, component) {
+	  var watchingComponents;
+	  watchingComponents = objectItems.watchingComponents || (objectItems.watchingComponents = {});
+	  watchingComponents[component.dcid] = component;
+	  if (objectItems.$dcWatching) {
+	    return;
+	  }
+	  objectItems.$dcWatching = true;
+	  objectItems.deleteItem = function() {
+	    var dcid, index, items, key, key1, keys, min, oldItemsLength, _, _i, _j, _len, _len1, _ref, _ref1, _results;
+	    keys = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    items = component._items;
+	    oldItemsLength = items.length;
+	    _results = [];
+	    for (_i = 0, _len = keys.length; _i < _len; _i++) {
+	      key = keys[_i];
+	      if (!objectItems.hasOwnProperty(key)) {
+	        continue;
+	      }
+	      delete objectItems[key];
+	      for (dcid in watchingComponents) {
+	        component = watchingComponents[dcid];
+	        min = oldItemsLength;
+	        _ref = component.items;
+	        for (index = _j = 0, _len1 = _ref.length; _j < _len1; index = ++_j) {
+	          _ref1 = _ref[index], key1 = _ref1[0], _ = _ref1[1];
+	          if (key1==key) {
+	            items.splice(index, 1);
+	            if (index < min) {
+	              min = index;
+	            }
+	            component.invalidateChildren(min, oldItemsLength);
+	            break;
+	          }
+	        }
+	      }
+	      _results.push(oldItemsLength--);
+	    }
+	    return _results;
+	  };
+	  objectItems.setItem = function(key, value) {
+	    var dcid, index, items, key1, length, _, _results, _results1;
+	    items = component._items;
+	    if (objectItems.hasOwnProperty(key)) {
+	      if (objectItems[key] !== value) {
+	        _results = [];
+	        for (dcid in watchingComponents) {
+	          component = watchingComponents[dcid];
+	          _results.push((function() {
+	            var _i, _len, _ref, _results1;
+	            _results1 = [];
+	            for (index = _i = 0, _len = items.length; _i < _len; index = ++_i) {
+	              _ref = items[index], key1 = _ref[0], _ = _ref[1];
+	              if (key1==key) {
+	                component.invalidateChildren(index, index + 1);
+	                break;
+	              } else {
+	                _results1.push(void 0);
+	              }
+	            }
+	            return _results1;
+	          })());
+	        }
+	        return _results;
+	      }
+	    } else {
+	      length = _items.length;
+	      _results1 = [];
+	      for (dcid in watchingComponents) {
+	        component = watchingComponents[dcid];
+	        _items.push([key, value]);
+	        _results1.push(component.invalidateChildren(length, length + 1));
+	      }
+	      return _results1;
+	    }
+	  };
+	  return objectItems.extend = function(obj) {
+	    var key, value, _results;
+	    _results = [];
+	    for (key in obj) {
+	      value = obj[key];
+	      _results.push(objectItems.setItem(key, value));
+	    }
+	    return _results;
+	  };
+	};
+
+	flow.pour = function(itemFn) {
+	  itemFn.pouring = true;
+	  return itemFn;
+	};
+
+
+/***/ },
 /* 10 */
 /*!*******************************!*\
   !*** ./src/core/index.coffee ***!
@@ -1695,7 +1703,7 @@
 
 	var exports, extend;
 
-	extend = __webpack_require__(/*! extend */ 9);
+	extend = __webpack_require__(/*! extend */ 8);
 
 	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 11), __webpack_require__(/*! ./instantiate */ 32), __webpack_require__(/*! ./tag */ 34), __webpack_require__(/*! ./property */ 24));
 
@@ -1712,7 +1720,7 @@
 	route = __webpack_require__(/*! ./route */ 16);
 
 	module.exports = {
-	  isComponent: __webpack_require__(/*! ./isComponent */ 8),
+	  isComponent: __webpack_require__(/*! ./isComponent */ 7),
 	  toComponent: __webpack_require__(/*! ./toComponent */ 18),
 	  toComponentList: __webpack_require__(/*! ./toComponentList */ 21),
 	  Component: __webpack_require__(/*! ./component */ 14),
@@ -1753,7 +1761,7 @@
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	domValue = __webpack_require__(/*! ../../dom-util */ 6).domValue;
+	domValue = __webpack_require__(/*! ../../dom-util */ 5).domValue;
 
 	module.exports = Cdata = (function(_super) {
 	  __extends(Cdata, _super);
@@ -1902,15 +1910,15 @@
 	var Component, componentId, dc, extend, isComponent, mountList, newDcid, normalizeDomElement,
 	  __slice = [].slice;
 
-	extend = __webpack_require__(/*! extend */ 9);
+	extend = __webpack_require__(/*! extend */ 8);
 
-	normalizeDomElement = __webpack_require__(/*! ../../dom-util */ 6).normalizeDomElement;
+	normalizeDomElement = __webpack_require__(/*! ../../dom-util */ 5).normalizeDomElement;
 
 	newDcid = __webpack_require__(/*! dc-util */ 3).newDcid;
 
-	isComponent = __webpack_require__(/*! ./isComponent */ 8);
+	isComponent = __webpack_require__(/*! ./isComponent */ 7);
 
-	dc = __webpack_require__(/*! ../../dc */ 4);
+	dc = __webpack_require__(/*! ../../dc */ 1);
 
 	componentId = 1;
 
@@ -1926,17 +1934,61 @@
 	  }
 
 	  Component.prototype.on = function(event, callback) {
-	    var callbacks;
-	    callbacks = this.listeners[event] || (this.listeners[event] = []);
-	    callbacks.push(callback);
+	    var callbacks, eventName, listeners, _i, _len, _ref;
+	    if (!arguments.length) {
+	      dc.error('missing arguments for Component.on(event, callback)');
+	    }
+	    if (arguments.length === 1) {
+	      if (!event || typeof event !== 'object') {
+	        dc.error('wrong arguments for Component.on(event, callback)');
+	      } else {
+	        for (eventName in event) {
+	          callback = event[eventName];
+	          this.on(eventName, callback);
+	        }
+	      }
+	    } else {
+	      listeners = this.listeners;
+	      _ref = event.split(/\s*,\s*|\s+/);
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        event = _ref[_i];
+	        if (callbacks = listeners[event]) {
+	          if (callbacks.indexOf(callback) >= 0) {
+	            callbacks.push(callback);
+	          }
+	        } else {
+	          listeners[event] = [callback];
+	        }
+	      }
+	    }
 	    return this;
 	  };
 
 	  Component.prototype.off = function(event, callback) {
-	    var callbacks;
-	    callbacks = this.listeners[event] || (this.listeners[event] = []);
-	    callbacks.indexOf(callback) >= 0 && callbacks.splice(index, 1);
-	    !callbacks.length && (this.listeners[event] = null);
+	    var callbacks, listeners, _i, _j, _len, _len1, _ref, _ref1;
+	    if (this.argmuents.length) {
+	      dc.error('missing arguments for Component.off(event, callback)');
+	    } else if (arguments.length === 1) {
+	      listeners = this.listeners;
+	      _ref = event.split(/\s*,\s*|\s+/);
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        event = _ref[_i];
+	        listeners[event] = null;
+	      }
+	    } else {
+	      listeners = this.listeners;
+	      _ref1 = event.split(/\s*,\s*|\s+/);
+	      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+	        event = _ref1[_j];
+	        callbacks = listeners[event];
+	        if (callbacks && callbacks.indexOf(callback) >= 0) {
+	          callbacks.splice(index, 1);
+	          if (!callbacks.length) {
+	            listeners[event] = null;
+	          }
+	        }
+	      }
+	    }
 	    return this;
 	  };
 
@@ -2131,7 +2183,7 @@
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
 
-	_ref1 = __webpack_require__(/*! ../../dom-util */ 6), domField = _ref1.domField, domValue = _ref1.domValue;
+	_ref1 = __webpack_require__(/*! ../../dom-util */ 5), domField = _ref1.domField, domValue = _ref1.domValue;
 
 	exports = module.exports = Text = (function(_super) {
 	  __extends(Text, _super);
@@ -2240,7 +2292,7 @@
 
 	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 17);
 
-	isComponent = __webpack_require__(/*! ./isComponent */ 8);
+	isComponent = __webpack_require__(/*! ./isComponent */ 7);
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 18);
 
@@ -2772,13 +2824,13 @@
 
 	var Nothing, Text, isComponent, react, toComponent;
 
-	isComponent = __webpack_require__(/*! ./isComponent */ 8);
+	isComponent = __webpack_require__(/*! ./isComponent */ 7);
 
 	Nothing = __webpack_require__(/*! ./Nothing */ 19);
 
 	Text = __webpack_require__(/*! ./Text */ 15);
 
-	react = __webpack_require__(/*! lazy-flow */ 2).react;
+	react = __webpack_require__(/*! lazy-flow */ 4).react;
 
 	module.exports = toComponent = function(item) {
 	  var Func, List, component, e;
@@ -2899,7 +2951,7 @@
 
 	_ref = __webpack_require__(/*! dc-util */ 3), checkContainer = _ref.checkContainer, newLine = _ref.newLine, binarySearch = _ref.binarySearch, binaryInsert = _ref.binaryInsert, substractSet = _ref.substractSet;
 
-	checkConflictOffspring = __webpack_require__(/*! ../../dom-util */ 6).checkConflictOffspring;
+	checkConflictOffspring = __webpack_require__(/*! ../../dom-util */ 5).checkConflictOffspring;
 
 	module.exports = exports = List = (function(_super) {
 	  __extends(List, _super);
@@ -2951,7 +3003,7 @@
 	  };
 
 	  List.prototype.createChildrenDom = function() {
-	    var child, children, firstNode, index, node;
+	    var child, children, e, firstNode, index, node;
 	    node = this.childNodes;
 	    this.invalidIndexes = [];
 	    this.removedChildren = {};
@@ -2964,7 +3016,12 @@
 	        child.invalidate();
 	        child.holder = this;
 	      }
-	      child.renderDom();
+	      try {
+	        child.renderDom();
+	      } catch (_error) {
+	        e = _error;
+	        dc.onerror(e);
+	      }
 	      node.unshift(child.node);
 	      firstNode = child.firstNode || firstNode;
 	      index && (children[index - 1].nextNode = firstNode || child.nextNode);
@@ -2988,7 +3045,7 @@
 	  };
 
 	  List.prototype.updateChildrenDom = function() {
-	    var child, childFirstNode, childNodes, children, i, invalidIndexes, listIndex, nextNode, _, _ref1;
+	    var child, childFirstNode, childNodes, children, e, i, invalidIndexes, listIndex, nextNode, _, _ref1;
 	    invalidIndexes = this.invalidIndexes;
 	    if (invalidIndexes.length) {
 	      children = this.children;
@@ -3004,7 +3061,12 @@
 	          child.invalidate();
 	          child.holder = this;
 	        }
-	        child.renderDom();
+	        try {
+	          child.renderDom();
+	        } catch (_error) {
+	          e = _error;
+	          dc.onerror(e);
+	        }
 	        childNodes[listIndex] = child.node;
 	        childFirstNode = child.firstNode || nextNode;
 	        if (listIndex) {
@@ -3332,7 +3394,7 @@
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	renew = __webpack_require__(/*! lazy-flow */ 2).renew;
+	renew = __webpack_require__(/*! lazy-flow */ 4).renew;
 
 	module.exports = Func = (function(_super) {
 	  __extends(Func, _super);
@@ -3382,9 +3444,9 @@
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
 
-	extend = __webpack_require__(/*! extend */ 9);
+	extend = __webpack_require__(/*! extend */ 8);
 
-	dc = __webpack_require__(/*! ../../dc */ 4);
+	dc = __webpack_require__(/*! ../../dc */ 1);
 
 	_ref = __webpack_require__(/*! ../property */ 24), classFn = _ref.classFn, styleFrom = _ref.styleFrom, eventHandlerFromArray = _ref.eventHandlerFromArray, attrToPropName = _ref.attrToPropName, updating = _ref.updating;
 
@@ -3396,11 +3458,11 @@
 
 	_ref1 = __webpack_require__(/*! dc-util */ 3), funcString = _ref1.funcString, newLine = _ref1.newLine, cloneObject = _ref1.cloneObject;
 
-	directiveRegistry = __webpack_require__(/*! ../../config */ 7).directiveRegistry;
+	directiveRegistry = __webpack_require__(/*! ../../config */ 6).directiveRegistry;
 
-	flow = __webpack_require__(/*! lazy-flow */ 2).flow;
+	flow = __webpack_require__(/*! lazy-flow */ 4).flow;
 
-	domField = __webpack_require__(/*! ../../dom-util */ 6).domField;
+	domField = __webpack_require__(/*! ../../dom-util */ 5).domField;
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 18);
 
@@ -3948,13 +4010,13 @@
 
 	_ref = __webpack_require__(/*! dc-util */ 3), isArray = _ref.isArray, cloneObject = _ref.cloneObject;
 
-	domField = __webpack_require__(/*! ../dom-util */ 6).domField;
+	domField = __webpack_require__(/*! ../dom-util */ 5).domField;
 
-	react = __webpack_require__(/*! lazy-flow */ 2).react;
+	react = __webpack_require__(/*! lazy-flow */ 4).react;
 
-	extend = __webpack_require__(/*! extend */ 9);
+	extend = __webpack_require__(/*! extend */ 8);
 
-	isComponent = __webpack_require__(/*! ./base/isComponent */ 8).isComponent;
+	isComponent = __webpack_require__(/*! ./base/isComponent */ 7).isComponent;
 
 	exports.extendEventValue = extendEventValue = function(props, prop, value, before) {
 	  var oldValue;
@@ -4191,7 +4253,7 @@
 	  }
 	};
 
-	config = __webpack_require__(/*! ../config */ 7);
+	config = __webpack_require__(/*! ../config */ 6);
 
 	exports.eventHandlerFromArray = function(callbackList, eventName, component) {
 	  return function(event) {
@@ -4258,7 +4320,7 @@
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	domValue = __webpack_require__(/*! ../../dom-util */ 6).domValue;
+	domValue = __webpack_require__(/*! ../../dom-util */ 5).domValue;
 
 	module.exports = Comment = (function(_super) {
 	  __extends(Comment, _super);
@@ -4328,7 +4390,7 @@
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	domValue = __webpack_require__(/*! ../../dom-util */ 6).domValue;
+	domValue = __webpack_require__(/*! ../../dom-util */ 5).domValue;
 
 	module.exports = Html = (function(_super) {
 	  __extends(Html, _super);
@@ -4446,7 +4508,7 @@
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
-	renew = __webpack_require__(/*! lazy-flow */ 2).renew;
+	renew = __webpack_require__(/*! lazy-flow */ 4).renew;
 
 	module.exports = If = (function(_super) {
 	  __extends(If, _super);
@@ -4523,7 +4585,7 @@
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
-	renew = __webpack_require__(/*! lazy-flow */ 2).renew;
+	renew = __webpack_require__(/*! lazy-flow */ 4).renew;
 
 	module.exports = Case = (function(_super) {
 	  __extends(Case, _super);
@@ -4616,7 +4678,7 @@
 
 	newLine = __webpack_require__(/*! dc-util */ 3).newLine;
 
-	extend = __webpack_require__(/*! extend */ 9);
+	extend = __webpack_require__(/*! extend */ 8);
 
 	module.exports = Pick = (function(_super) {
 	  __extends(Pick, _super);
@@ -4714,9 +4776,9 @@
 
 	_ref = __webpack_require__(/*! dc-util */ 3), isArray = _ref.isArray, funcString = _ref.funcString, newLine = _ref.newLine;
 
-	_ref1 = __webpack_require__(/*! lazy-flow */ 2), react = _ref1.react, renew = _ref1.renew, flow = _ref1.flow;
+	_ref1 = __webpack_require__(/*! lazy-flow */ 4), react = _ref1.react, renew = _ref1.renew, flow = _ref1.flow;
 
-	_ref2 = __webpack_require__(/*! dc-watch-list */ 1), watchEachList = _ref2.watchEachList, watchEachObject = _ref2.watchEachObject;
+	_ref2 = __webpack_require__(/*! dc-watch-list */ 9), watchEachList = _ref2.watchEachList, watchEachObject = _ref2.watchEachObject;
 
 	module.exports = Each = (function(_super) {
 	  __extends(Each, _super);
@@ -4927,11 +4989,11 @@
 
 	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 17);
 
-	extend = __webpack_require__(/*! extend */ 9);
+	extend = __webpack_require__(/*! extend */ 8);
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
-	renew = __webpack_require__(/*! lazy-flow */ 2).renew;
+	renew = __webpack_require__(/*! lazy-flow */ 4).renew;
 
 	INIT = 0;
 
@@ -5321,11 +5383,11 @@
 	var extend, getBindProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,
 	  __slice = [].slice;
 
-	extend = __webpack_require__(/*! extend */ 9);
+	extend = __webpack_require__(/*! extend */ 8);
 
 	tag = __webpack_require__(/*! ./instantiate */ 32).tag;
 
-	getBindProp = __webpack_require__(/*! ../dom-util */ 6).getBindProp;
+	getBindProp = __webpack_require__(/*! ../dom-util */ 5).getBindProp;
 
 	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section" + " svg iframe";
 
@@ -5422,6 +5484,59 @@
 	    }
 	  }
 	  return component;
+	};
+
+
+/***/ },
+/* 35 */
+/*!*****************************!*\
+  !*** ./src/dc-error.coffee ***!
+  \*****************************/
+/***/ function(module, exports) {
+
+	var DomcomError,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	DomcomError = (function(_super) {
+	  __extends(DomcomError, _super);
+
+	  function DomcomError(message, component) {
+	    this.message = message;
+	    this.component = component;
+	  }
+
+	  DomcomError.prototype.toString = function() {
+	    if (this.component) {
+	      return this.component.toString() + '\n' + this.message;
+	    } else {
+	      return this.message;
+	    }
+	  };
+
+	  return DomcomError;
+
+	})(Error);
+
+	exports.error = function(message, component) {
+	  throw new DomcomError(message, component);
+	};
+
+	exports.onerror = function(message, component) {
+	  if (message instanceof DomcomError) {
+	    console.log(message);
+	    throw new Error(message.message);
+	  } else if (message instanceof Error) {
+	    throw message;
+	  } else {
+	    if (comopenent) {
+	      console.log(component);
+	      console.log(message);
+	    } else {
+	      console.log(message);
+	    }
+	    throw new Error(message);
+	  }
 	};
 
 

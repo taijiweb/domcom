@@ -16,4 +16,6 @@ extend dc,
   require('dc-util'),
 
   # component
-  require('./core/index')
+  require('./core/index'),
+
+  require('./dc-error')

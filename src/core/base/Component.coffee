@@ -17,14 +17,41 @@ module.exports = class Component
     @dcid = newDcid()
 
   on: (event, callback) ->
-    callbacks = @listeners[event] or @listeners[event] = []
-    callbacks.push(callback)
+    if !arguments.length
+      dc.error('missing arguments for Component.on(event, callback)')
+    if arguments.length == 1
+      if !event or typeof event != 'object'
+        dc.error('wrong arguments for Component.on(event, callback)')
+      else
+        for eventName, callback of event
+          @on(eventName, callback)
+    else
+      {listeners} = @
+      for event in event.split(/\s*,\s*|\s+/)
+        if callbacks = listeners[event]
+          if callbacks.indexOf(callback) >= 0
+            callbacks.push(callback)
+          # else null # do not repeat to add callback
+        else
+          listeners[event] = [callback]
     @
 
   off: (event, callback) ->
-    callbacks = @listeners[event] or @listeners[event] = []
-    callbacks.indexOf(callback)>=0 and  callbacks.splice(index, 1)
-    !callbacks.length and @listeners[event] = null
+    if @argmuents.length
+      dc.error('missing arguments for Component.off(event, callback)')
+    else if arguments.length==1
+      {listeners} = @
+      for event in event.split(/\s*,\s*|\s+/)
+        listeners[event] = null
+    else
+      {listeners} = @
+      for event in event.split(/\s*,\s*|\s+/)
+        callbacks = listeners[event]
+        if callbacks and callbacks.indexOf(callback) >= 0
+          callbacks.splice(index, 1)
+          if !callbacks.length
+            listeners[event] = null
+        # else null # do nothing
     @
 
   emit:(event, args...) ->

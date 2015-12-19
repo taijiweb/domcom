@@ -42,7 +42,11 @@ dc.offReady = (callback) ->
   readyFnList.indexOf(callback)>=0 and  readyFnList.splice(index, 1)
 
 dc.ready = ->
-  for callback in readyFnList then callback()
+  for callback in readyFnList
+    try
+      callback()
+    catch e
+      dc.onerror(e)
   return
 
 if typeof window != 'undefined'
@@ -50,7 +54,11 @@ if typeof window != 'undefined'
 
 dc.render = render = ->
   for callback in renderCallbackList
-    callback()
+    try
+      callback()
+    catch e
+      dc.onerror(e)
+  return
 
 dc.onRender = (callback) ->
   renderCallbackList.push callback

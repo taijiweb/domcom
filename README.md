@@ -28,7 +28,7 @@
 
 * never pollute the dom because of the framework itself
 
-* good browser compatiblity, even wieh IE 6, 7, 8
+* good browser compatiblity, even with IE 6, 7, 8
 
 * no dependencies, no polyfill, no immutable data, no companion libraries is necessary
 
