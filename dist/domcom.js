@@ -51,7 +51,7 @@
 
 	dc = __webpack_require__(/*! ./domcom-basic */ 1);
 
-	__webpack_require__(/*! ./domcom-addon */ 37);
+	__webpack_require__(/*! ./domcom-addon */ 38);
 
 	module.exports = dc;
 
@@ -73,7 +73,7 @@
 
 	dc.extend = extend = __webpack_require__(/*! extend */ 9);
 
-	extend(dc, __webpack_require__(/*! ./config */ 7), __webpack_require__(/*! lazy-flow */ 5), __webpack_require__(/*! dc-watch-list */ 10), __webpack_require__(/*! ./dom-util */ 6), __webpack_require__(/*! dc-util */ 4), __webpack_require__(/*! ./core/index */ 11), __webpack_require__(/*! ./dc-error */ 36));
+	extend(dc, __webpack_require__(/*! ./config */ 7), __webpack_require__(/*! lazy-flow */ 5), __webpack_require__(/*! dc-watch-list */ 10), __webpack_require__(/*! ./dom-util */ 6), __webpack_require__(/*! dc-util */ 4), __webpack_require__(/*! ./core/index */ 11), __webpack_require__(/*! ./dc-error */ 37));
 
 
 /***/ },
@@ -1721,7 +1721,7 @@
 
 	extend = __webpack_require__(/*! extend */ 9);
 
-	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 12), __webpack_require__(/*! ./instantiate */ 33), __webpack_require__(/*! ./tag */ 35), __webpack_require__(/*! ./property */ 25));
+	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 12), __webpack_require__(/*! ./instantiate */ 34), __webpack_require__(/*! ./tag */ 36), __webpack_require__(/*! ./property */ 26));
 
 
 /***/ },
@@ -1744,17 +1744,17 @@
 	  List: __webpack_require__(/*! ./List */ 21),
 	  Tag: __webpack_require__(/*! ./Tag */ 24),
 	  Text: __webpack_require__(/*! ./Text */ 16),
-	  Comment: __webpack_require__(/*! ./Comment */ 26),
+	  Comment: __webpack_require__(/*! ./Comment */ 27),
 	  Cdata: __webpack_require__(/*! ./Cdata */ 13),
-	  Html: __webpack_require__(/*! ./Html */ 27),
+	  Html: __webpack_require__(/*! ./Html */ 28),
 	  Nothing: __webpack_require__(/*! ./Nothing */ 20),
 	  TransformComponent: __webpack_require__(/*! ./TransformComponent */ 18),
-	  If: __webpack_require__(/*! ./If */ 28),
-	  Case: __webpack_require__(/*! ./Case */ 29),
+	  If: __webpack_require__(/*! ./If */ 29),
+	  Case: __webpack_require__(/*! ./Case */ 30),
 	  Func: __webpack_require__(/*! ./Func */ 23),
-	  Pick: __webpack_require__(/*! ./Pick */ 30),
-	  Each: __webpack_require__(/*! ./Each */ 31),
-	  Defer: __webpack_require__(/*! ./Defer */ 32),
+	  Pick: __webpack_require__(/*! ./Pick */ 31),
+	  Each: __webpack_require__(/*! ./Each */ 32),
+	  Defer: __webpack_require__(/*! ./Defer */ 33),
 	  Route: route.Route,
 	  route: route
 	};
@@ -3455,7 +3455,7 @@
   \**********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, eventHandlerFromArray, extend, flow, funcString, newLine, styleFrom, toComponent, updating, _ref, _ref1,
+	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, domValue, eventHandlerFromArray, extend, flow, funcString, newLine, styleFrom, toComponent, updating, _ref, _ref1, _ref2,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
@@ -3464,7 +3464,9 @@
 
 	dc = __webpack_require__(/*! ../../dc */ 2);
 
-	_ref = __webpack_require__(/*! ../property */ 25), classFn = _ref.classFn, styleFrom = _ref.styleFrom, eventHandlerFromArray = _ref.eventHandlerFromArray, attrToPropName = _ref.attrToPropName, updating = _ref.updating;
+	_ref = __webpack_require__(/*! domcom/lib/dom-util */ 25), domField = _ref.domField, domValue = _ref.domValue;
+
+	_ref1 = __webpack_require__(/*! ../property */ 26), classFn = _ref1.classFn, styleFrom = _ref1.styleFrom, eventHandlerFromArray = _ref1.eventHandlerFromArray, attrToPropName = _ref1.attrToPropName, updating = _ref1.updating;
 
 	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
 
@@ -3472,13 +3474,11 @@
 
 	List = __webpack_require__(/*! ./List */ 21);
 
-	_ref1 = __webpack_require__(/*! dc-util */ 4), funcString = _ref1.funcString, newLine = _ref1.newLine, cloneObject = _ref1.cloneObject;
+	_ref2 = __webpack_require__(/*! dc-util */ 4), funcString = _ref2.funcString, newLine = _ref2.newLine, cloneObject = _ref2.cloneObject;
 
 	directiveRegistry = __webpack_require__(/*! ../../config */ 7).directiveRegistry;
 
 	flow = __webpack_require__(/*! lazy-flow */ 5).flow;
-
-	domField = __webpack_require__(/*! ../../dom-util */ 6).domField;
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 19);
 
@@ -3504,7 +3504,7 @@
 	  }
 
 	  Tag.prototype.initAttrs = function() {
-	    var className, events, me, props, style;
+	    var className, events, me, props;
 	    me = this;
 	    this.hasActiveProperties = false;
 	    this.cacheClassName = "";
@@ -3518,10 +3518,12 @@
 	    this.hasActiveProps = false;
 	    this.cacheProps = {};
 	    this.props = props = {};
+	    this.boundProps = {};
 	    this['invalidateProps'] = {};
 	    this.hasActiveStyle = false;
 	    this.cacheStyle = {};
-	    this.style = style = {};
+	    this.style = {};
+	    this.boundStyle = {};
 	    this['invalidateStyle'] = {};
 	    this.hasActiveEvents = false;
 	    this.events = events = {};
@@ -3529,7 +3531,7 @@
 	  };
 
 	  Tag.prototype.extendAttrs = function(attrs) {
-	    var className, generator, handler, key, props, style, styles, v, v0, value, _i, _j, _len, _len1, _ref2;
+	    var className, generator, handler, key, props, style, styles, v, v0, value, _i, _j, _len, _len1, _ref3;
 	    className = this.className, style = this.style, props = this.props;
 	    for (key in attrs) {
 	      value = attrs[key];
@@ -3549,9 +3551,9 @@
 	        } else {
 	          v0 = value[0];
 	          if (v0 === 'before' || v0 === 'after') {
-	            _ref2 = value.slice(1);
-	            for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-	              v = _ref2[_i];
+	            _ref3 = value.slice(1);
+	            for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
+	              v = _ref3[_i];
 	              this.bindOne(key, v, v0 === 'before');
 	            }
 	          } else {
@@ -3582,31 +3584,56 @@
 	    return this._prop(args, this.props, 'Props');
 	  };
 
+	  Tag.prototype.propBind = function(prop) {
+	    return this._propBind([prop], this.props, 'Props');
+	  };
+
 	  Tag.prototype.css = function() {
 	    var args;
 	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	    return this._prop(args, this.style, 'Style');
 	  };
 
+	  Tag.prototype.cssBind = function(prop) {
+	    return this._propBind([prop], this.style, 'Style');
+	  };
+
+	  Tag.prototype._propBind = function(prop, props, type) {
+	    var bound, boundProps, me;
+	    boundProps = this['bound' + type];
+	    if (bound = boundProps[prop]) {
+	      return bound;
+	    } else {
+	      me = this;
+	      return boundProps[prop] = function() {
+	        return me._prop(prop, props, type);
+	      };
+	    }
+	  };
+
 	  Tag.prototype._prop = function(args, props, type) {
-	    var cache, key, prop, v, value;
+	    var key, prop, v, value;
 	    if (args.length === 0) {
 	      return props;
 	    }
 	    if (args.length === 1) {
 	      prop = args[0];
 	      if (typeof prop === 'string') {
-	        cache = this['cache' + type];
-	        value = cache[prop];
+	        value = props[prop];
 	        if (value != null) {
-	          return value;
+	          if (typeof value === 'function') {
+	            return domValue(value());
+	          } else {
+	            return domValue(value);
+	          }
 	        } else {
-	          return props[prop];
+	          return domValue(this['cache' + type][prop]);
 	        }
-	      }
-	      for (key in prop) {
-	        v = prop[key];
-	        this.setProp(key, v, props, type);
+	      } else {
+	        for (key in prop) {
+	          v = prop[key];
+	          this.setProp(key, v, props, type);
+	        }
 	      }
 	    } else if (args.length === 2) {
 	      this.setProp(args[0], args[1], props, type);
@@ -3615,7 +3642,7 @@
 	  };
 
 	  Tag.prototype.setProp = function(prop, value, props, type) {
-	    var fn, me, oldValue;
+	    var bound, fn, me, oldValue;
 	    prop = attrToPropName(prop);
 	    value = domField(value);
 	    oldValue = props[prop];
@@ -3625,7 +3652,11 @@
 	      if (typeof value === 'function') {
 	        me = this;
 	        this['invalidate' + type][prop] = fn = function() {
+	          var bound;
 	          me.addActivity(props, prop, type, true);
+	          if (bound = me['bound' + type][prop]) {
+	            bound.invalidate();
+	          }
 	          return props[prop] = value;
 	        };
 	        value.onInvalidate(fn);
@@ -3633,6 +3664,9 @@
 	        props[prop] = value;
 	      } else if (value !== this['cache' + type][prop]) {
 	        this.addActivity(props, prop, type);
+	        if (bound = this['bound' + type][prop]) {
+	          bound.invalidate();
+	        }
 	        props[prop] = value;
 	      }
 	    } else {
@@ -3643,9 +3677,15 @@
 	        me = this;
 	        this['invalidate' + type][prop] = fn = function() {
 	          me.addActivity(props, prop, type, true);
+	          if (bound = me['bound' + type][prop]) {
+	            bound.invalidate();
+	          }
 	          return props[prop] = value;
 	        };
 	        value.onInvalidate(fn);
+	      }
+	      if (bound = this['bound' + type][prop]) {
+	        bound.invalidate();
 	      }
 	      props[prop] = value;
 	    }
@@ -3737,9 +3777,9 @@
 	  };
 
 	  Tag.prototype.removeClass = function() {
-	    var items, _ref2;
+	    var items, _ref3;
 	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    (_ref2 = this.className).removeClass.apply(_ref2, items);
+	    (_ref3 = this.className).removeClass.apply(_ref3, items);
 	    if (this.node && !this.className.valid) {
 	      this.hasActiveProperties = true;
 	      this.invalidate();
@@ -3955,32 +3995,32 @@
 	  };
 
 	  Tag.prototype.clone = function() {
-	    var child, children, _i, _len, _ref2;
+	    var child, children, _i, _len, _ref3;
 	    children = [];
-	    _ref2 = this.children;
-	    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-	      child = _ref2[_i];
+	    _ref3 = this.children;
+	    for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
+	      child = _ref3[_i];
 	      children.push(child.clone());
 	    }
 	    return new Tag(this.tagName, this.attrs, children).copyEventListeners(this);
 	  };
 
 	  Tag.prototype.toString = function(indent, addNewLine) {
-	    var child, children, key, s, v, value, _i, _len, _ref2, _ref3, _ref4;
+	    var child, children, key, s, v, value, _i, _len, _ref3, _ref4, _ref5;
 	    if (indent == null) {
 	      indent = 0;
 	    }
 	    s = newLine("<" + this.tagName, indent, addNewLine);
-	    _ref2 = this.props;
-	    for (key in _ref2) {
-	      value = _ref2[key];
+	    _ref3 = this.props;
+	    for (key in _ref3) {
+	      value = _ref3[key];
 	      s += ' ' + key + '=' + funcString(value);
 	    }
 	    if (this.hasActiveStyle) {
 	      s += ' style={';
-	      _ref3 = this.style;
-	      for (key in _ref3) {
-	        value = _ref3[key];
+	      _ref4 = this.style;
+	      for (key in _ref4) {
+	        value = _ref4[key];
 	        if (typeof value === 'string') {
 	          s += value;
 	        } else {
@@ -3995,9 +4035,9 @@
 	    s += '>';
 	    children = this.children;
 	    if (children.length > 1) {
-	      _ref4 = this.children;
-	      for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
-	        child = _ref4[_i];
+	      _ref5 = this.children;
+	      for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
+	        child = _ref5[_i];
 	        s += child.toString(indent + 2, true);
 	      }
 	      return s += newLine("</" + this.tagName + ">", indent + 2, true);
@@ -4016,6 +4056,128 @@
 
 /***/ },
 /* 25 */
+/*!*************************!*\
+  !*** ./lib/dom-util.js ***!
+  \*************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var renew, _raf;
+
+	if (typeof window !== 'undefined') {
+	  _raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
+	  exports.requestAnimationFrame = exports.raf = _raf || function(callback) {
+	    window.setInterval(callback, 1000 / 60);
+	  };
+	  exports.normalizeDomElement = function(domElement) {
+	    if (typeof domElement === 'string') {
+	      domElement = document.querySelector(domElement);
+	    }
+	    return domElement;
+	  };
+	}
+
+	exports.getBindProp = function(component) {
+	  var tagName;
+	  tagName = component.tagName;
+	  if (!tagName) {
+	    throw new Error('trying to bind a Component which is not a Tag');
+	  } else if (tagName === 'textarea' || tagName === 'select') {
+	    return 'value';
+	  } else if (component.props.type === 'checkbox') {
+	    return 'checked';
+	  } else {
+	    return 'value';
+	  }
+	};
+
+	if (typeof window !== 'undefined') {
+	  if (document.body.addEventListener) {
+	    exports.addEventListener = function(node, name, handler) {
+	      node.addEventListener(name, handler, false);
+	    };
+	    exports.removeEventListener = function(node, name, handler) {
+	      node.removeEventListener(name, handler);
+	    };
+	  } else {
+	    exports.addEventListener = function(node, name, handler) {
+	      node.attachEvent(name, setCheckedValues);
+	    };
+	    exports.removeEventListener = function(node, name, handler) {
+	      node.detachEvent(name, handler);
+	    };
+	  }
+	  exports.isElement = function(item) {
+	    if (typeof HTMLElement === "object") {
+	      return item instanceof HTMLElement;
+	    } else {
+	      return item && typeof item === "object" && item !== null && item.nodeType === 1 && typeof item.nodeName === "string";
+	    }
+	  };
+	}
+
+	renew = __webpack_require__(/*! lazy-flow */ 5).renew;
+
+	exports.domField = function(value) {
+	  var fn;
+	  if (value == null) {
+	    return '';
+	  }
+	  if (typeof value !== 'function') {
+	    if (value.then && value["catch"]) {
+	      fn = react(function() {
+	        return fn.promiseResult;
+	      });
+	      value.then(function(result) {
+	        fn.promiseResult = result;
+	        return fn.invalidate();
+	      })["catch"](function(error) {
+	        fn.promiseResult = error;
+	        return fn.invalidate();
+	      });
+	      return fn;
+	    } else {
+	      return value;
+	    }
+	  }
+	  if (!value.invalidate) {
+	    return renew(value);
+	  }
+	  return value;
+	};
+
+	exports.domValue = function(value) {
+	  if (value == null) {
+	    return '';
+	  } else if (typeof value !== 'function') {
+	    return value;
+	  } else {
+	    value = value();
+	    if (value == null) {
+	      return '';
+	    } else {
+	      return value;
+	    }
+	  }
+	};
+
+	if (typeof window !== 'undefined') {
+	  exports.checkConflictOffspring = function(family, child) {
+	    var childDcid, dcid;
+	    childDcid = child.dcid;
+	    for (dcid in child.family) {
+	      if (family[dcid]) {
+	        throw new Error('do not allow to have the same component to be referenced in different location of one List');
+	      }
+	      family[dcid] = true;
+	    }
+	  };
+	} else {
+	  exports.checkConflictOffspring = function(family, child) {};
+	}
+
+
+/***/ },
+/* 26 */
 /*!**********************************!*\
   !*** ./src/core/property.coffee ***!
   \**********************************/
@@ -4320,7 +4482,7 @@
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /*!**************************************!*\
   !*** ./src/core/base/Comment.coffee ***!
   \**************************************/
@@ -4390,7 +4552,7 @@
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /*!***********************************!*\
   !*** ./src/core/base/Html.coffee ***!
   \***********************************/
@@ -4508,7 +4670,7 @@
 
 
 /***/ },
-/* 28 */
+/* 29 */
 /*!*********************************!*\
   !*** ./src/core/base/If.coffee ***!
   \*********************************/
@@ -4585,7 +4747,7 @@
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /*!***********************************!*\
   !*** ./src/core/base/Case.coffee ***!
   \***********************************/
@@ -4678,7 +4840,7 @@
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /*!***********************************!*\
   !*** ./src/core/base/Pick.coffee ***!
   \***********************************/
@@ -4768,7 +4930,7 @@
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /*!***********************************!*\
   !*** ./src/core/base/Each.coffee ***!
   \***********************************/
@@ -4991,7 +5153,7 @@
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /*!************************************!*\
   !*** ./src/core/base/Defer.coffee ***!
   \************************************/
@@ -5083,7 +5245,7 @@
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /*!*************************************!*\
   !*** ./src/core/instantiate.coffee ***!
   \*************************************/
@@ -5096,7 +5258,7 @@
 
 	_ref1 = __webpack_require__(/*! dc-util */ 4), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
-	isAttrs = __webpack_require__(/*! ./util */ 34).isAttrs;
+	isAttrs = __webpack_require__(/*! ./util */ 35).isAttrs;
 
 	attrsChildren = function(args) {
 	  var attrs;
@@ -5324,7 +5486,7 @@
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /*!******************************!*\
   !*** ./src/core/util.coffee ***!
   \******************************/
@@ -5338,9 +5500,9 @@
 
 	Text = __webpack_require__(/*! ./base/Text */ 16);
 
-	Html = __webpack_require__(/*! ./base/Html */ 27);
+	Html = __webpack_require__(/*! ./base/Html */ 28);
 
-	Comment = __webpack_require__(/*! ./base/Comment */ 26);
+	Comment = __webpack_require__(/*! ./base/Comment */ 27);
 
 	exports.isAttrs = function(item) {
 	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
@@ -5390,7 +5552,7 @@
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /*!*****************************!*\
   !*** ./src/core/tag.coffee ***!
   \*****************************/
@@ -5401,7 +5563,7 @@
 
 	extend = __webpack_require__(/*! extend */ 9);
 
-	tag = __webpack_require__(/*! ./instantiate */ 33).tag;
+	tag = __webpack_require__(/*! ./instantiate */ 34).tag;
 
 	getBindProp = __webpack_require__(/*! ../dom-util */ 6).getBindProp;
 
@@ -5504,7 +5666,7 @@
 
 
 /***/ },
-/* 36 */
+/* 37 */
 /*!*****************************!*\
   !*** ./src/dc-error.coffee ***!
   \*****************************/
@@ -5557,7 +5719,7 @@
 
 
 /***/ },
-/* 37 */
+/* 38 */
 /*!*********************************!*\
   !*** ./src/domcom-addon.coffee ***!
   \*********************************/
@@ -5567,13 +5729,13 @@
 
 	extend = (dc = __webpack_require__(/*! ./domcom-basic */ 1)).extend;
 
-	dc.builtinDirectives = __webpack_require__(/*! ./directives/index */ 39);
+	dc.builtinDirectives = __webpack_require__(/*! ./directives/index */ 40);
 
-	extend(dc, dc.builtinDirectives, __webpack_require__(/*! ./builtins/index */ 47), __webpack_require__(/*! ./core/prop-util */ 38));
+	extend(dc, dc.builtinDirectives, __webpack_require__(/*! ./builtins/index */ 48), __webpack_require__(/*! ./core/prop-util */ 39));
 
 	flow = dc.flow;
 
-	extend(flow, __webpack_require__(/*! lazy-flow/addon */ 53), __webpack_require__(/*! dc-watch-list */ 10));
+	extend(flow, __webpack_require__(/*! lazy-flow/addon */ 54), __webpack_require__(/*! dc-watch-list */ 10));
 
 	dc.bindings = flow.bindings;
 
@@ -5581,7 +5743,7 @@
 
 
 /***/ },
-/* 38 */
+/* 39 */
 /*!***********************************!*\
   !*** ./src/core/prop-util.coffee ***!
   \***********************************/
@@ -5647,7 +5809,7 @@
 
 
 /***/ },
-/* 39 */
+/* 40 */
 /*!*************************************!*\
   !*** ./src/directives/index.coffee ***!
   \*************************************/
@@ -5655,25 +5817,25 @@
 
 	var $hide, $show, _ref;
 
-	exports.$model = __webpack_require__(/*! ./model */ 41);
+	exports.$model = __webpack_require__(/*! ./model */ 42);
 
-	exports.$bind = __webpack_require__(/*! ./bind */ 42);
+	exports.$bind = __webpack_require__(/*! ./bind */ 43);
 
-	_ref = __webpack_require__(/*! ./show-hide */ 43), $show = _ref.$show, $hide = _ref.$hide;
+	_ref = __webpack_require__(/*! ./show-hide */ 44), $show = _ref.$show, $hide = _ref.$hide;
 
 	exports.$show = $show;
 
 	exports.$hide = $hide;
 
-	exports.$blink = __webpack_require__(/*! ./blink */ 40);
+	exports.$blink = __webpack_require__(/*! ./blink */ 41);
 
-	exports.$splitter = __webpack_require__(/*! ./splitter */ 44);
+	exports.$splitter = __webpack_require__(/*! ./splitter */ 45);
 
-	exports.$options = __webpack_require__(/*! ./options */ 46);
+	exports.$options = __webpack_require__(/*! ./options */ 47);
 
 
 /***/ },
-/* 40 */
+/* 41 */
 /*!*************************************!*\
   !*** ./src/directives/blink.coffee ***!
   \*************************************/
@@ -5717,7 +5879,7 @@
 
 
 /***/ },
-/* 41 */
+/* 42 */
 /*!*************************************!*\
   !*** ./src/directives/model.coffee ***!
   \*************************************/
@@ -5742,7 +5904,7 @@
 
 
 /***/ },
-/* 42 */
+/* 43 */
 /*!************************************!*\
   !*** ./src/directives/bind.coffee ***!
   \************************************/
@@ -5761,7 +5923,7 @@
 
 
 /***/ },
-/* 43 */
+/* 44 */
 /*!*****************************************!*\
   !*** ./src/directives/show-hide.coffee ***!
   \*****************************************/
@@ -5787,7 +5949,7 @@
 
 
 /***/ },
-/* 44 */
+/* 45 */
 /*!****************************************!*\
   !*** ./src/directives/splitter.coffee ***!
   \****************************************/
@@ -5797,11 +5959,11 @@
 
 	pairListDict = __webpack_require__(/*! dc-util */ 4).pairListDict;
 
-	classFn = __webpack_require__(/*! ../core/property */ 25).classFn;
+	classFn = __webpack_require__(/*! ../core/property */ 26).classFn;
 
-	_ref = __webpack_require__(/*! ../core/tag */ 35), div = _ref.div, span = _ref.span, option = _ref.option;
+	_ref = __webpack_require__(/*! ../core/tag */ 36), div = _ref.div, span = _ref.span, option = _ref.option;
 
-	Component = __webpack_require__(/*! ../core/base/Component */ 45);
+	Component = __webpack_require__(/*! ../core/base/Component */ 46);
 
 	module.exports = function(direction) {
 	  return function(comp) {
@@ -5963,7 +6125,7 @@
 
 
 /***/ },
-/* 45 */
+/* 46 */
 /*!****************************************!*\
   !*** ./src/core/base/Component.coffee ***!
   \****************************************/
@@ -6231,7 +6393,7 @@
 
 
 /***/ },
-/* 46 */
+/* 47 */
 /*!***************************************!*\
   !*** ./src/directives/options.coffee ***!
   \***************************************/
@@ -6239,9 +6401,9 @@
 
 	var Tag, every, option, txt, _ref;
 
-	_ref = __webpack_require__(/*! ../core/instantiate */ 33), every = _ref.every, txt = _ref.txt;
+	_ref = __webpack_require__(/*! ../core/instantiate */ 34), every = _ref.every, txt = _ref.txt;
 
-	option = __webpack_require__(/*! ../core/tag */ 35).option;
+	option = __webpack_require__(/*! ../core/tag */ 36).option;
 
 	Tag = __webpack_require__(/*! ../core/base/Tag */ 24);
 
@@ -6259,7 +6421,7 @@
 
 
 /***/ },
-/* 47 */
+/* 48 */
 /*!***********************************!*\
   !*** ./src/builtins/index.coffee ***!
   \***********************************/
@@ -6269,19 +6431,19 @@
 
 	extend = __webpack_require__(/*! extend */ 9);
 
-	extend(exports, __webpack_require__(/*! ./accordion */ 49));
+	extend(exports, __webpack_require__(/*! ./accordion */ 50));
 
-	exports.triangle = __webpack_require__(/*! ./triangle */ 50);
+	exports.triangle = __webpack_require__(/*! ./triangle */ 51);
 
-	exports.dialog = __webpack_require__(/*! ./dialog */ 48);
+	exports.dialog = __webpack_require__(/*! ./dialog */ 49);
 
-	extend(exports, __webpack_require__(/*! ./combo */ 51));
+	extend(exports, __webpack_require__(/*! ./combo */ 52));
 
-	extend(exports, __webpack_require__(/*! ./autoWidthEdit */ 52));
+	extend(exports, __webpack_require__(/*! ./autoWidthEdit */ 53));
 
 
 /***/ },
-/* 48 */
+/* 49 */
 /*!************************************!*\
   !*** ./src/builtins/dialog.coffee ***!
   \************************************/
@@ -6291,11 +6453,11 @@
 
 	see = __webpack_require__(/*! lazy-flow */ 5).see;
 
-	_ref = __webpack_require__(/*! ../core/instantiate */ 33), list = _ref.list, if_ = _ref.if_;
+	_ref = __webpack_require__(/*! ../core/instantiate */ 34), list = _ref.list, if_ = _ref.if_;
 
-	div = __webpack_require__(/*! ../core/tag */ 35).div;
+	div = __webpack_require__(/*! ../core/tag */ 36).div;
 
-	Component = __webpack_require__(/*! ../core/base/Component */ 45).Component;
+	Component = __webpack_require__(/*! ../core/base/Component */ 46).Component;
 
 	globalID = 0;
 
@@ -6380,7 +6542,7 @@
 
 
 /***/ },
-/* 49 */
+/* 50 */
 /*!***************************************!*\
   !*** ./src/builtins/accordion.coffee ***!
   \***************************************/
@@ -6394,13 +6556,13 @@
 
 	extend = __webpack_require__(/*! extend */ 9).extend;
 
-	each = __webpack_require__(/*! ../core/instantiate */ 33).each;
+	each = __webpack_require__(/*! ../core/instantiate */ 34).each;
 
-	_ref = __webpack_require__(/*! ../core/tag */ 35), div = _ref.div, h4 = _ref.h4, a = _ref.a, span = _ref.span, img = _ref.img;
+	_ref = __webpack_require__(/*! ../core/tag */ 36), div = _ref.div, h4 = _ref.h4, a = _ref.a, span = _ref.span, img = _ref.img;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 25).extendAttrs;
+	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
 
-	Component = __webpack_require__(/*! ../core/base/Component */ 45).Component;
+	Component = __webpack_require__(/*! ../core/base/Component */ 46).Component;
 
 	module.exports = exports = accordion = function(attrs, accordionGroupList, options) {
 	  var accordionOptions, comp;
@@ -6469,7 +6631,7 @@
 
 
 /***/ },
-/* 50 */
+/* 51 */
 /*!**************************************!*\
   !*** ./src/builtins/triangle.coffee ***!
   \**************************************/
@@ -6477,9 +6639,9 @@
 
 	var arrowStyle, div, extendAttrs, reverseSide;
 
-	div = __webpack_require__(/*! ../core/tag */ 35).div;
+	div = __webpack_require__(/*! ../core/tag */ 36).div;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 25).extendAttrs;
+	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
 
 	reverseSide = {
 	  left: 'right',
@@ -6513,7 +6675,7 @@
 
 
 /***/ },
-/* 51 */
+/* 52 */
 /*!***********************************!*\
   !*** ./src/builtins/combo.coffee ***!
   \***********************************/
@@ -6523,9 +6685,9 @@
 
 	see = __webpack_require__(/*! lazy-flow */ 5).see;
 
-	_ref = __webpack_require__(/*! ../core/tag */ 35), list = _ref.list, input = _ref.input, span = _ref.span, div = _ref.div;
+	_ref = __webpack_require__(/*! ../core/tag */ 36), list = _ref.list, input = _ref.input, span = _ref.span, div = _ref.div;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 25).extendAttrs;
+	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
 
 	exports.combobox = combobox = function(attrs, modelValue, valueList, direction) {
 	  var comp, disp, item, opts, showingItems;
@@ -6588,7 +6750,7 @@
 
 
 /***/ },
-/* 52 */
+/* 53 */
 /*!*******************************************!*\
   !*** ./src/builtins/autoWidthEdit.coffee ***!
   \*******************************************/
@@ -6600,9 +6762,9 @@
 
 	extend = __webpack_require__(/*! extend */ 9).extend;
 
-	_ref1 = __webpack_require__(/*! ../core/tag */ 35), text = _ref1.text, div = _ref1.div;
+	_ref1 = __webpack_require__(/*! ../core/tag */ 36), text = _ref1.text, div = _ref1.div;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 25).extendAttrs;
+	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
 
 	exports.setAutoWidth = setAutoWidth = function(container, options) {
 	  var initialWidth, inputAttrs, inputComponent, inputEventHandler, inputEvents, inputText$, inputTextWidth$, spaceWidth, testSubject, testSubjectStyle;
@@ -6671,7 +6833,7 @@
 
 
 /***/ },
-/* 53 */
+/* 54 */
 /*!*********************************!*\
   !*** ../lazy-flow/addon.coffee ***!
   \*********************************/
@@ -6679,7 +6841,7 @@
 
 	var binary, bind, duplex, flow, see, unary, _ref;
 
-	_ref = __webpack_require__(/*! ./index */ 54), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
+	_ref = __webpack_require__(/*! ./index */ 55), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
 
 	module.exports = flow;
 
@@ -6902,7 +7064,7 @@
 
 
 /***/ },
-/* 54 */
+/* 55 */
 /*!*********************************!*\
   !*** ../lazy-flow/index.coffee ***!
   \*********************************/

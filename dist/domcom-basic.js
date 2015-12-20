@@ -57,7 +57,7 @@
 
 	dc.extend = extend = __webpack_require__(/*! extend */ 8);
 
-	extend(dc, __webpack_require__(/*! ./config */ 6), __webpack_require__(/*! lazy-flow */ 4), __webpack_require__(/*! dc-watch-list */ 9), __webpack_require__(/*! ./dom-util */ 5), __webpack_require__(/*! dc-util */ 3), __webpack_require__(/*! ./core/index */ 10), __webpack_require__(/*! ./dc-error */ 35));
+	extend(dc, __webpack_require__(/*! ./config */ 6), __webpack_require__(/*! lazy-flow */ 4), __webpack_require__(/*! dc-watch-list */ 9), __webpack_require__(/*! ./dom-util */ 5), __webpack_require__(/*! dc-util */ 3), __webpack_require__(/*! ./core/index */ 10), __webpack_require__(/*! ./dc-error */ 36));
 
 
 /***/ },
@@ -1705,7 +1705,7 @@
 
 	extend = __webpack_require__(/*! extend */ 8);
 
-	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 11), __webpack_require__(/*! ./instantiate */ 32), __webpack_require__(/*! ./tag */ 34), __webpack_require__(/*! ./property */ 24));
+	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 11), __webpack_require__(/*! ./instantiate */ 33), __webpack_require__(/*! ./tag */ 35), __webpack_require__(/*! ./property */ 25));
 
 
 /***/ },
@@ -1728,17 +1728,17 @@
 	  List: __webpack_require__(/*! ./List */ 20),
 	  Tag: __webpack_require__(/*! ./Tag */ 23),
 	  Text: __webpack_require__(/*! ./Text */ 15),
-	  Comment: __webpack_require__(/*! ./Comment */ 25),
+	  Comment: __webpack_require__(/*! ./Comment */ 26),
 	  Cdata: __webpack_require__(/*! ./Cdata */ 12),
-	  Html: __webpack_require__(/*! ./Html */ 26),
+	  Html: __webpack_require__(/*! ./Html */ 27),
 	  Nothing: __webpack_require__(/*! ./Nothing */ 19),
 	  TransformComponent: __webpack_require__(/*! ./TransformComponent */ 17),
-	  If: __webpack_require__(/*! ./If */ 27),
-	  Case: __webpack_require__(/*! ./Case */ 28),
+	  If: __webpack_require__(/*! ./If */ 28),
+	  Case: __webpack_require__(/*! ./Case */ 29),
 	  Func: __webpack_require__(/*! ./Func */ 22),
-	  Pick: __webpack_require__(/*! ./Pick */ 29),
-	  Each: __webpack_require__(/*! ./Each */ 30),
-	  Defer: __webpack_require__(/*! ./Defer */ 31),
+	  Pick: __webpack_require__(/*! ./Pick */ 30),
+	  Each: __webpack_require__(/*! ./Each */ 31),
+	  Defer: __webpack_require__(/*! ./Defer */ 32),
 	  Route: route.Route,
 	  route: route
 	};
@@ -3439,7 +3439,7 @@
   \**********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, eventHandlerFromArray, extend, flow, funcString, newLine, styleFrom, toComponent, updating, _ref, _ref1,
+	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, domValue, eventHandlerFromArray, extend, flow, funcString, newLine, styleFrom, toComponent, updating, _ref, _ref1, _ref2,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
@@ -3448,7 +3448,9 @@
 
 	dc = __webpack_require__(/*! ../../dc */ 1);
 
-	_ref = __webpack_require__(/*! ../property */ 24), classFn = _ref.classFn, styleFrom = _ref.styleFrom, eventHandlerFromArray = _ref.eventHandlerFromArray, attrToPropName = _ref.attrToPropName, updating = _ref.updating;
+	_ref = __webpack_require__(/*! domcom/lib/dom-util */ 24), domField = _ref.domField, domValue = _ref.domValue;
+
+	_ref1 = __webpack_require__(/*! ../property */ 25), classFn = _ref1.classFn, styleFrom = _ref1.styleFrom, eventHandlerFromArray = _ref1.eventHandlerFromArray, attrToPropName = _ref1.attrToPropName, updating = _ref1.updating;
 
 	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 13);
 
@@ -3456,13 +3458,11 @@
 
 	List = __webpack_require__(/*! ./List */ 20);
 
-	_ref1 = __webpack_require__(/*! dc-util */ 3), funcString = _ref1.funcString, newLine = _ref1.newLine, cloneObject = _ref1.cloneObject;
+	_ref2 = __webpack_require__(/*! dc-util */ 3), funcString = _ref2.funcString, newLine = _ref2.newLine, cloneObject = _ref2.cloneObject;
 
 	directiveRegistry = __webpack_require__(/*! ../../config */ 6).directiveRegistry;
 
 	flow = __webpack_require__(/*! lazy-flow */ 4).flow;
-
-	domField = __webpack_require__(/*! ../../dom-util */ 5).domField;
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 18);
 
@@ -3488,7 +3488,7 @@
 	  }
 
 	  Tag.prototype.initAttrs = function() {
-	    var className, events, me, props, style;
+	    var className, events, me, props;
 	    me = this;
 	    this.hasActiveProperties = false;
 	    this.cacheClassName = "";
@@ -3502,10 +3502,12 @@
 	    this.hasActiveProps = false;
 	    this.cacheProps = {};
 	    this.props = props = {};
+	    this.boundProps = {};
 	    this['invalidateProps'] = {};
 	    this.hasActiveStyle = false;
 	    this.cacheStyle = {};
-	    this.style = style = {};
+	    this.style = {};
+	    this.boundStyle = {};
 	    this['invalidateStyle'] = {};
 	    this.hasActiveEvents = false;
 	    this.events = events = {};
@@ -3513,7 +3515,7 @@
 	  };
 
 	  Tag.prototype.extendAttrs = function(attrs) {
-	    var className, generator, handler, key, props, style, styles, v, v0, value, _i, _j, _len, _len1, _ref2;
+	    var className, generator, handler, key, props, style, styles, v, v0, value, _i, _j, _len, _len1, _ref3;
 	    className = this.className, style = this.style, props = this.props;
 	    for (key in attrs) {
 	      value = attrs[key];
@@ -3533,9 +3535,9 @@
 	        } else {
 	          v0 = value[0];
 	          if (v0 === 'before' || v0 === 'after') {
-	            _ref2 = value.slice(1);
-	            for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-	              v = _ref2[_i];
+	            _ref3 = value.slice(1);
+	            for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
+	              v = _ref3[_i];
 	              this.bindOne(key, v, v0 === 'before');
 	            }
 	          } else {
@@ -3566,31 +3568,56 @@
 	    return this._prop(args, this.props, 'Props');
 	  };
 
+	  Tag.prototype.propBind = function(prop) {
+	    return this._propBind([prop], this.props, 'Props');
+	  };
+
 	  Tag.prototype.css = function() {
 	    var args;
 	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	    return this._prop(args, this.style, 'Style');
 	  };
 
+	  Tag.prototype.cssBind = function(prop) {
+	    return this._propBind([prop], this.style, 'Style');
+	  };
+
+	  Tag.prototype._propBind = function(prop, props, type) {
+	    var bound, boundProps, me;
+	    boundProps = this['bound' + type];
+	    if (bound = boundProps[prop]) {
+	      return bound;
+	    } else {
+	      me = this;
+	      return boundProps[prop] = function() {
+	        return me._prop(prop, props, type);
+	      };
+	    }
+	  };
+
 	  Tag.prototype._prop = function(args, props, type) {
-	    var cache, key, prop, v, value;
+	    var key, prop, v, value;
 	    if (args.length === 0) {
 	      return props;
 	    }
 	    if (args.length === 1) {
 	      prop = args[0];
 	      if (typeof prop === 'string') {
-	        cache = this['cache' + type];
-	        value = cache[prop];
+	        value = props[prop];
 	        if (value != null) {
-	          return value;
+	          if (typeof value === 'function') {
+	            return domValue(value());
+	          } else {
+	            return domValue(value);
+	          }
 	        } else {
-	          return props[prop];
+	          return domValue(this['cache' + type][prop]);
 	        }
-	      }
-	      for (key in prop) {
-	        v = prop[key];
-	        this.setProp(key, v, props, type);
+	      } else {
+	        for (key in prop) {
+	          v = prop[key];
+	          this.setProp(key, v, props, type);
+	        }
 	      }
 	    } else if (args.length === 2) {
 	      this.setProp(args[0], args[1], props, type);
@@ -3599,7 +3626,7 @@
 	  };
 
 	  Tag.prototype.setProp = function(prop, value, props, type) {
-	    var fn, me, oldValue;
+	    var bound, fn, me, oldValue;
 	    prop = attrToPropName(prop);
 	    value = domField(value);
 	    oldValue = props[prop];
@@ -3609,7 +3636,11 @@
 	      if (typeof value === 'function') {
 	        me = this;
 	        this['invalidate' + type][prop] = fn = function() {
+	          var bound;
 	          me.addActivity(props, prop, type, true);
+	          if (bound = me['bound' + type][prop]) {
+	            bound.invalidate();
+	          }
 	          return props[prop] = value;
 	        };
 	        value.onInvalidate(fn);
@@ -3617,6 +3648,9 @@
 	        props[prop] = value;
 	      } else if (value !== this['cache' + type][prop]) {
 	        this.addActivity(props, prop, type);
+	        if (bound = this['bound' + type][prop]) {
+	          bound.invalidate();
+	        }
 	        props[prop] = value;
 	      }
 	    } else {
@@ -3627,9 +3661,15 @@
 	        me = this;
 	        this['invalidate' + type][prop] = fn = function() {
 	          me.addActivity(props, prop, type, true);
+	          if (bound = me['bound' + type][prop]) {
+	            bound.invalidate();
+	          }
 	          return props[prop] = value;
 	        };
 	        value.onInvalidate(fn);
+	      }
+	      if (bound = this['bound' + type][prop]) {
+	        bound.invalidate();
 	      }
 	      props[prop] = value;
 	    }
@@ -3721,9 +3761,9 @@
 	  };
 
 	  Tag.prototype.removeClass = function() {
-	    var items, _ref2;
+	    var items, _ref3;
 	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    (_ref2 = this.className).removeClass.apply(_ref2, items);
+	    (_ref3 = this.className).removeClass.apply(_ref3, items);
 	    if (this.node && !this.className.valid) {
 	      this.hasActiveProperties = true;
 	      this.invalidate();
@@ -3939,32 +3979,32 @@
 	  };
 
 	  Tag.prototype.clone = function() {
-	    var child, children, _i, _len, _ref2;
+	    var child, children, _i, _len, _ref3;
 	    children = [];
-	    _ref2 = this.children;
-	    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-	      child = _ref2[_i];
+	    _ref3 = this.children;
+	    for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
+	      child = _ref3[_i];
 	      children.push(child.clone());
 	    }
 	    return new Tag(this.tagName, this.attrs, children).copyEventListeners(this);
 	  };
 
 	  Tag.prototype.toString = function(indent, addNewLine) {
-	    var child, children, key, s, v, value, _i, _len, _ref2, _ref3, _ref4;
+	    var child, children, key, s, v, value, _i, _len, _ref3, _ref4, _ref5;
 	    if (indent == null) {
 	      indent = 0;
 	    }
 	    s = newLine("<" + this.tagName, indent, addNewLine);
-	    _ref2 = this.props;
-	    for (key in _ref2) {
-	      value = _ref2[key];
+	    _ref3 = this.props;
+	    for (key in _ref3) {
+	      value = _ref3[key];
 	      s += ' ' + key + '=' + funcString(value);
 	    }
 	    if (this.hasActiveStyle) {
 	      s += ' style={';
-	      _ref3 = this.style;
-	      for (key in _ref3) {
-	        value = _ref3[key];
+	      _ref4 = this.style;
+	      for (key in _ref4) {
+	        value = _ref4[key];
 	        if (typeof value === 'string') {
 	          s += value;
 	        } else {
@@ -3979,9 +4019,9 @@
 	    s += '>';
 	    children = this.children;
 	    if (children.length > 1) {
-	      _ref4 = this.children;
-	      for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
-	        child = _ref4[_i];
+	      _ref5 = this.children;
+	      for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
+	        child = _ref5[_i];
 	        s += child.toString(indent + 2, true);
 	      }
 	      return s += newLine("</" + this.tagName + ">", indent + 2, true);
@@ -4000,6 +4040,128 @@
 
 /***/ },
 /* 24 */
+/*!*************************!*\
+  !*** ./lib/dom-util.js ***!
+  \*************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var renew, _raf;
+
+	if (typeof window !== 'undefined') {
+	  _raf = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
+	  exports.requestAnimationFrame = exports.raf = _raf || function(callback) {
+	    window.setInterval(callback, 1000 / 60);
+	  };
+	  exports.normalizeDomElement = function(domElement) {
+	    if (typeof domElement === 'string') {
+	      domElement = document.querySelector(domElement);
+	    }
+	    return domElement;
+	  };
+	}
+
+	exports.getBindProp = function(component) {
+	  var tagName;
+	  tagName = component.tagName;
+	  if (!tagName) {
+	    throw new Error('trying to bind a Component which is not a Tag');
+	  } else if (tagName === 'textarea' || tagName === 'select') {
+	    return 'value';
+	  } else if (component.props.type === 'checkbox') {
+	    return 'checked';
+	  } else {
+	    return 'value';
+	  }
+	};
+
+	if (typeof window !== 'undefined') {
+	  if (document.body.addEventListener) {
+	    exports.addEventListener = function(node, name, handler) {
+	      node.addEventListener(name, handler, false);
+	    };
+	    exports.removeEventListener = function(node, name, handler) {
+	      node.removeEventListener(name, handler);
+	    };
+	  } else {
+	    exports.addEventListener = function(node, name, handler) {
+	      node.attachEvent(name, setCheckedValues);
+	    };
+	    exports.removeEventListener = function(node, name, handler) {
+	      node.detachEvent(name, handler);
+	    };
+	  }
+	  exports.isElement = function(item) {
+	    if (typeof HTMLElement === "object") {
+	      return item instanceof HTMLElement;
+	    } else {
+	      return item && typeof item === "object" && item !== null && item.nodeType === 1 && typeof item.nodeName === "string";
+	    }
+	  };
+	}
+
+	renew = __webpack_require__(/*! lazy-flow */ 4).renew;
+
+	exports.domField = function(value) {
+	  var fn;
+	  if (value == null) {
+	    return '';
+	  }
+	  if (typeof value !== 'function') {
+	    if (value.then && value["catch"]) {
+	      fn = react(function() {
+	        return fn.promiseResult;
+	      });
+	      value.then(function(result) {
+	        fn.promiseResult = result;
+	        return fn.invalidate();
+	      })["catch"](function(error) {
+	        fn.promiseResult = error;
+	        return fn.invalidate();
+	      });
+	      return fn;
+	    } else {
+	      return value;
+	    }
+	  }
+	  if (!value.invalidate) {
+	    return renew(value);
+	  }
+	  return value;
+	};
+
+	exports.domValue = function(value) {
+	  if (value == null) {
+	    return '';
+	  } else if (typeof value !== 'function') {
+	    return value;
+	  } else {
+	    value = value();
+	    if (value == null) {
+	      return '';
+	    } else {
+	      return value;
+	    }
+	  }
+	};
+
+	if (typeof window !== 'undefined') {
+	  exports.checkConflictOffspring = function(family, child) {
+	    var childDcid, dcid;
+	    childDcid = child.dcid;
+	    for (dcid in child.family) {
+	      if (family[dcid]) {
+	        throw new Error('do not allow to have the same component to be referenced in different location of one List');
+	      }
+	      family[dcid] = true;
+	    }
+	  };
+	} else {
+	  exports.checkConflictOffspring = function(family, child) {};
+	}
+
+
+/***/ },
+/* 25 */
 /*!**********************************!*\
   !*** ./src/core/property.coffee ***!
   \**********************************/
@@ -4304,7 +4466,7 @@
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /*!**************************************!*\
   !*** ./src/core/base/Comment.coffee ***!
   \**************************************/
@@ -4374,7 +4536,7 @@
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /*!***********************************!*\
   !*** ./src/core/base/Html.coffee ***!
   \***********************************/
@@ -4492,7 +4654,7 @@
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /*!*********************************!*\
   !*** ./src/core/base/If.coffee ***!
   \*********************************/
@@ -4569,7 +4731,7 @@
 
 
 /***/ },
-/* 28 */
+/* 29 */
 /*!***********************************!*\
   !*** ./src/core/base/Case.coffee ***!
   \***********************************/
@@ -4662,7 +4824,7 @@
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /*!***********************************!*\
   !*** ./src/core/base/Pick.coffee ***!
   \***********************************/
@@ -4752,7 +4914,7 @@
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /*!***********************************!*\
   !*** ./src/core/base/Each.coffee ***!
   \***********************************/
@@ -4975,7 +5137,7 @@
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /*!************************************!*\
   !*** ./src/core/base/Defer.coffee ***!
   \************************************/
@@ -5067,7 +5229,7 @@
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /*!*************************************!*\
   !*** ./src/core/instantiate.coffee ***!
   \*************************************/
@@ -5080,7 +5242,7 @@
 
 	_ref1 = __webpack_require__(/*! dc-util */ 3), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
-	isAttrs = __webpack_require__(/*! ./util */ 33).isAttrs;
+	isAttrs = __webpack_require__(/*! ./util */ 34).isAttrs;
 
 	attrsChildren = function(args) {
 	  var attrs;
@@ -5308,7 +5470,7 @@
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /*!******************************!*\
   !*** ./src/core/util.coffee ***!
   \******************************/
@@ -5322,9 +5484,9 @@
 
 	Text = __webpack_require__(/*! ./base/Text */ 15);
 
-	Html = __webpack_require__(/*! ./base/Html */ 26);
+	Html = __webpack_require__(/*! ./base/Html */ 27);
 
-	Comment = __webpack_require__(/*! ./base/Comment */ 25);
+	Comment = __webpack_require__(/*! ./base/Comment */ 26);
 
 	exports.isAttrs = function(item) {
 	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
@@ -5374,7 +5536,7 @@
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /*!*****************************!*\
   !*** ./src/core/tag.coffee ***!
   \*****************************/
@@ -5385,7 +5547,7 @@
 
 	extend = __webpack_require__(/*! extend */ 8);
 
-	tag = __webpack_require__(/*! ./instantiate */ 32).tag;
+	tag = __webpack_require__(/*! ./instantiate */ 33).tag;
 
 	getBindProp = __webpack_require__(/*! ../dom-util */ 5).getBindProp;
 
@@ -5488,7 +5650,7 @@
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /*!*****************************!*\
   !*** ./src/dc-error.coffee ***!
   \*****************************/

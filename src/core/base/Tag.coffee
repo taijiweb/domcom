@@ -1,5 +1,6 @@
 extend = require 'extend'
 dc = require '../../dc'
+{domField, domValue} = require('domcom/lib/dom-util')
 {classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require '../property'
 BaseComponent = require './BaseComponent'
 Text = require './Text'
@@ -7,7 +8,6 @@ List = require './List'
 {funcString, newLine, cloneObject} = require 'dc-util'
 {directiveRegistry} = require '../../config'
 {flow} = require 'lazy-flow'
-{domField} = require '../../dom-util'
 toComponent = require './toComponent'
 
 module.exports = class Tag extends List
@@ -32,21 +32,28 @@ module.exports = class Tag extends List
 
   initAttrs: ->
     me = @
+
     @hasActiveProperties = false
+
     @cacheClassName = ""
     @className = className = classFn()
     @className.onInvalidate ->
       if className.valid
         me.hasActiveProperties = true
         me.invalidate()
+
     @hasActiveProps = false
     @cacheProps = {}
     @props = props = {}
+    @boundProps = {}
     @['invalidateProps'] = {}
+
     @hasActiveStyle = false
     @cacheStyle = {}
-    @style = style = {}
+    @style = {}
+    @boundStyle = {}
     @['invalidateStyle'] = {}
+
     @hasActiveEvents = false
     @events = events = {}
     @eventUpdateConfig = {}
@@ -94,7 +101,20 @@ module.exports = class Tag extends List
 
   prop: (args...) -> @_prop(args, @props, 'Props')
 
+  propBind: (prop) ->  @_propBind([prop], @props, 'Props')
+
   css: (args...) -> @_prop(args, @style, 'Style')
+
+  cssBind: (prop) ->  @_propBind([prop], @style, 'Style')
+
+  _propBind: (prop, props, type) ->
+    boundProps = this['bound'+type]
+    if bound = boundProps[prop]
+      bound
+    else
+      me = this
+      boundProps[prop] = ->
+        me._prop(prop, props, type)
 
   _prop: (args, props, type) ->
     if args.length==0
@@ -102,17 +122,18 @@ module.exports = class Tag extends List
 
     if args.length==1
       prop = args[0]
-
       if typeof prop == 'string'
-        cache =  @['cache'+type]
-        value = cache[prop]
+        # should return dom value
+        value = props[prop]
         if value?
-          return value
+          if typeof value == 'function'
+            return domValue(value())
+          else return domValue(value)
         else
-          return props[prop]
-
-      for key, v of prop
-        @setProp(key, v, props, type)
+          return domValue(@['cache'+type][prop])
+      else
+        for key, v of prop
+          @setProp(key, v, props, type)
 
     else if args.length==2
       @setProp(args[0], args[1], props, type)
@@ -126,36 +147,48 @@ module.exports = class Tag extends List
 
     if value==oldValue
       return @
+
     else if !oldValue?
       if typeof value == 'function'
         me = @
         @['invalidate'+type][prop] = fn = ->
           me.addActivity(props, prop, type, true)
+          if bound = me['bound'+type][prop]
+            bound.invalidate()
           props[prop] = value
         value.onInvalidate(fn)
         @addActivity(props, prop, type)
         props[prop] = value
-      else if value!=@['cache'+type][prop]
-          @addActivity(props, prop, type)
-          props[prop] = value
+
+      else if value != this['cache'+type][prop]
+        @addActivity(props, prop, type)
+        if bound = this['bound'+type][prop]
+          bound.invalidate()
+        props[prop] = value
       # else null # do nothing
+
     else
       # do not need to check cache
       # do not need check typeof value == 'function'
       if typeof oldValue =='function'
-        oldValue.offInvalidate(@['invalidate'+type][prop])
+        oldValue.offInvalidate(this['invalidate'+type][prop])
       # else null # do not need to offInvalidate old callback
 
       if typeof value == 'function'
-        me = @
-        @['invalidate'+type][prop] = fn = ->
+        me = this
+        this['invalidate'+type][prop] = fn = ->
           me.addActivity(props, prop, type, true)
+          if bound = me['bound'+type][prop]
+            bound.invalidate()
           props[prop] = value
+        # value will always be a reactive function after executing "value = domField(value)"
         value.onInvalidate(fn)
       # else null # do not need  value.onInvalidate
+      if bound = this['bound'+type][prop]
+        bound.invalidate()
       props[prop] = value
 
-    @
+    this
 
   addActivity: (props, prop, type) ->
     @['hasActive'+type] = true
