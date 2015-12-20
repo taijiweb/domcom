@@ -29,7 +29,7 @@ module.exports = class Component
       {listeners} = @
       for event in event.split(/\s*,\s*|\s+/)
         if callbacks = listeners[event]
-          if callbacks.indexOf(callback) >= 0
+          if callbacks.indexOf(callback) < 0
             callbacks.push(callback)
           # else null # do not repeat to add callback
         else
@@ -80,21 +80,31 @@ module.exports = class Component
 
   unmount: ->
     @emit('beforeUnmount')
+
     if !@node or !@node.parentNode
       @emit('afterUnmount')
       return @
-    child = @
+
+    component = @
     holder = @holder
     while holder and !holder.isBaseComponent
-      child = holder
+      component = holder
       holder = holder.holder
+
     if holder and (holder.isList or holder.isTag)
-      holder.removeChild(holder.dcidIndexMap[child.dcid])
-    child.parentNode = null
-    if holder and (holder.isList or holder.isTag) then holder.renderDom()
-    else child.renderDom()
+      holder.removeChild(holder.dcidIndexMap[component.dcid])
+
+    this.parentNode = null
+    this.nextNode = null
+    this.setParentAndNextNode()
+
+    if holder and (holder.isList or holder.isTag)
+      holder.renderDom()
+    else component.renderDom()
+
     @emit('afterUnmount')
-    child
+
+    component
 
   remount: (parentNode) ->
     @emit('beforeMount')
@@ -141,6 +151,10 @@ module.exports = class Component
         return
     return
 
+  # set parentNode and nextNode field for transformComponent and its offspring, till baseComponent
+  # this should be overloaded
+  setParentAndNextNode: ->
+
   setFirstNode: (node) ->
     holder = @
     while 1
@@ -151,6 +165,8 @@ module.exports = class Component
     return
 
   # navigate up till meeting Tag Component
+  # if the component itself is a tag
+  # start navigating from its holder
   reachTag: ->
     {holder} = @
     while !holder.isTag and holder.holder

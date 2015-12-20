@@ -7,7 +7,7 @@ Text = require './Text'
 List = require './List'
 {funcString, newLine, cloneObject} = require 'dc-util'
 {directiveRegistry} = require '../../config'
-{flow} = require 'lazy-flow'
+{flow, react} = require 'lazy-flow'
 toComponent = require './toComponent'
 
 module.exports = class Tag extends List
@@ -113,7 +113,7 @@ module.exports = class Tag extends List
       bound
     else
       me = this
-      boundProps[prop] = ->
+      boundProps[prop] = react ->
         me._prop(prop, props, type)
 
   _prop: (args, props, type) ->

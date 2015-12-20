@@ -81,7 +81,7 @@ module.exports = class TransformComponent extends Component
         oldBaseComponent.markRemovingDom(parentNode)
       #else null # have no oldBaseComponent, do nothing
 
-      @setParentAndNextNode(baseComponent)
+      @setParentAndNextNode()
       baseComponent.renderDom()
 
       if @node != baseComponent.node
@@ -106,12 +106,27 @@ module.exports = class TransformComponent extends Component
     @
 
   # set parentNode and nextNode field for transformComponent and its offspring, till baseComponent
-  setParentAndNextNode: (baseComponent) ->
+  setParentAndNextNode: ->
     {content, parentNode, nextNode} = @
-    loop
+    while content
       content.parentNode = parentNode
       content.nextNode = nextNode
-      if content == baseComponent then break
+      if content.isBaseComponent
+        if content.isList
+          {children} = content
+          i = 0
+          len = children.length
+          if len
+            while i < len-1
+              child = children[i]
+              child.parentNode = parentNode
+              child.setParentAndNextNode()
+              i++
+            child = children[i]
+            child.parentNode = parentNode
+            child.nextNode = nextNode
+            child.setParentAndNextNode()
+        break
       else content = content.content
     return
 

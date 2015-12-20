@@ -263,10 +263,13 @@ module.exports = exports = class List extends BaseComponent
     @invalidate()
     {children, family, node, dcidIndexMap} = @
 
-    if startIndex>oldChildrenLength=children.length
+    oldChildrenLength = children.length
+    if startIndex > oldChildrenLength
       i = oldChildrenLength
-      while i<startIndex
-        newChildren.unshift new Nothing()
+      while i < startIndex
+        child = new Nothing()
+        child.holder = this
+        newChildren.unshift child
         i++
       startIndex = oldChildrenLength
 
@@ -279,6 +282,7 @@ module.exports = exports = class List extends BaseComponent
     i = 0
     while startIndex<stopIndex
       child = toComponent newChildren[i]
+      child.holder = this
 
       oldChild = children[startIndex]
 

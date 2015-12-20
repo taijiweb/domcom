@@ -78,3 +78,24 @@ module.exports = class BaseComponent extends Component
     node.nextNode = nextNode
 
     node
+
+  # set parentNode and nextNode field for transformComponent and its offspring, till baseComponent
+  setParentAndNextNode: ->
+
+    if this.isList
+      {children} = this
+      i = 0
+      len = children.length
+      if !len
+        return
+      {parentNode, nextNode} = @
+      while i < len-1
+        child = children[i]
+        child.parentNode = parentNode
+        child.setParentAndNextNode()
+        i++
+
+      child = children[i]
+      child.parentNode = parentNode
+      child.nextNode = nextNode
+      child.setParentAndNextNode()

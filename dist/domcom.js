@@ -1911,6 +1911,29 @@
 	    return node;
 	  };
 
+	  BaseComponent.prototype.setParentAndNextNode = function() {
+	    var child, children, i, len, nextNode, parentNode;
+	    if (this.isList) {
+	      children = this.children;
+	      i = 0;
+	      len = children.length;
+	      if (!len) {
+	        return;
+	      }
+	      parentNode = this.parentNode, nextNode = this.nextNode;
+	      while (i < len - 1) {
+	        child = children[i];
+	        child.parentNode = parentNode;
+	        child.setParentAndNextNode();
+	        i++;
+	      }
+	      child = children[i];
+	      child.parentNode = parentNode;
+	      child.nextNode = nextNode;
+	      return child.setParentAndNextNode();
+	    }
+	  };
+
 	  return BaseComponent;
 
 	})(Component);
@@ -1969,7 +1992,7 @@
 	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
 	        event = _ref[_i];
 	        if (callbacks = listeners[event]) {
-	          if (callbacks.indexOf(callback) >= 0) {
+	          if (callbacks.indexOf(callback) < 0) {
 	            callbacks.push(callback);
 	          }
 	        } else {
@@ -2049,29 +2072,31 @@
 	  };
 
 	  Component.prototype.unmount = function() {
-	    var child, holder;
+	    var component, holder;
 	    this.emit('beforeUnmount');
 	    if (!this.node || !this.node.parentNode) {
 	      this.emit('afterUnmount');
 	      return this;
 	    }
-	    child = this;
+	    component = this;
 	    holder = this.holder;
 	    while (holder && !holder.isBaseComponent) {
-	      child = holder;
+	      component = holder;
 	      holder = holder.holder;
 	    }
 	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.removeChild(holder.dcidIndexMap[child.dcid]);
+	      holder.removeChild(holder.dcidIndexMap[component.dcid]);
 	    }
-	    child.parentNode = null;
+	    this.parentNode = null;
+	    this.nextNode = null;
+	    this.setParentAndNextNode();
 	    if (holder && (holder.isList || holder.isTag)) {
 	      holder.renderDom();
 	    } else {
-	      child.renderDom();
+	      component.renderDom();
 	    }
 	    this.emit('afterUnmount');
-	    return child;
+	    return component;
 	  };
 
 	  Component.prototype.remount = function(parentNode) {
@@ -2143,6 +2168,8 @@
 	      }
 	    }
 	  };
+
+	  Component.prototype.setParentAndNextNode = function() {};
 
 	  Component.prototype.setFirstNode = function(node) {
 	    var holder;
@@ -2770,7 +2797,7 @@
 	      if (oldBaseComponent) {
 	        oldBaseComponent.markRemovingDom(parentNode);
 	      }
-	      this.setParentAndNextNode(baseComponent);
+	      this.setParentAndNextNode();
 	      baseComponent.renderDom();
 	      if (this.node !== baseComponent.node) {
 	        this.setNode(baseComponent.node);
@@ -2787,13 +2814,30 @@
 	    return this;
 	  };
 
-	  TransformComponent.prototype.setParentAndNextNode = function(baseComponent) {
-	    var content, nextNode, parentNode;
+	  TransformComponent.prototype.setParentAndNextNode = function() {
+	    var child, children, content, i, len, nextNode, parentNode;
 	    content = this.content, parentNode = this.parentNode, nextNode = this.nextNode;
-	    while (true) {
+	    while (content) {
 	      content.parentNode = parentNode;
 	      content.nextNode = nextNode;
-	      if (content === baseComponent) {
+	      if (content.isBaseComponent) {
+	        if (content.isList) {
+	          children = content.children;
+	          i = 0;
+	          len = children.length;
+	          if (len) {
+	            while (i < len - 1) {
+	              child = children[i];
+	              child.parentNode = parentNode;
+	              child.setParentAndNextNode();
+	              i++;
+	            }
+	            child = children[i];
+	            child.parentNode = parentNode;
+	            child.nextNode = nextNode;
+	            child.setParentAndNextNode();
+	          }
+	        }
 	        break;
 	      } else {
 	        content = content.content;
@@ -3232,10 +3276,13 @@
 	    startIndex = arguments[0], newChildren = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
 	    this.invalidate();
 	    children = this.children, family = this.family, node = this.node, dcidIndexMap = this.dcidIndexMap;
-	    if (startIndex > (oldChildrenLength = children.length)) {
+	    oldChildrenLength = children.length;
+	    if (startIndex > oldChildrenLength) {
 	      i = oldChildrenLength;
 	      while (i < startIndex) {
-	        newChildren.unshift(new Nothing());
+	        child = new Nothing();
+	        child.holder = this;
+	        newChildren.unshift(child);
 	        i++;
 	      }
 	      startIndex = oldChildrenLength;
@@ -3248,6 +3295,7 @@
 	    i = 0;
 	    while (startIndex < stopIndex) {
 	      child = toComponent(newChildren[i]);
+	      child.holder = this;
 	      oldChild = children[startIndex];
 	      if (oldChild == null) {
 	        children[startIndex] = new Nothing();
@@ -3455,7 +3503,7 @@
   \**********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, domValue, eventHandlerFromArray, extend, flow, funcString, newLine, styleFrom, toComponent, updating, _ref, _ref1, _ref2,
+	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, domValue, eventHandlerFromArray, extend, flow, funcString, newLine, react, styleFrom, toComponent, updating, _ref, _ref1, _ref2, _ref3,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
@@ -3478,7 +3526,7 @@
 
 	directiveRegistry = __webpack_require__(/*! ../../config */ 7).directiveRegistry;
 
-	flow = __webpack_require__(/*! lazy-flow */ 5).flow;
+	_ref3 = __webpack_require__(/*! lazy-flow */ 5), flow = _ref3.flow, react = _ref3.react;
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 19);
 
@@ -3531,7 +3579,7 @@
 	  };
 
 	  Tag.prototype.extendAttrs = function(attrs) {
-	    var className, generator, handler, key, props, style, styles, v, v0, value, _i, _j, _len, _len1, _ref3;
+	    var className, generator, handler, key, props, style, styles, v, v0, value, _i, _j, _len, _len1, _ref4;
 	    className = this.className, style = this.style, props = this.props;
 	    for (key in attrs) {
 	      value = attrs[key];
@@ -3551,9 +3599,9 @@
 	        } else {
 	          v0 = value[0];
 	          if (v0 === 'before' || v0 === 'after') {
-	            _ref3 = value.slice(1);
-	            for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-	              v = _ref3[_i];
+	            _ref4 = value.slice(1);
+	            for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
+	              v = _ref4[_i];
 	              this.bindOne(key, v, v0 === 'before');
 	            }
 	          } else {
@@ -3605,9 +3653,9 @@
 	      return bound;
 	    } else {
 	      me = this;
-	      return boundProps[prop] = function() {
+	      return boundProps[prop] = react(function() {
 	        return me._prop(prop, props, type);
-	      };
+	      });
 	    }
 	  };
 
@@ -3777,9 +3825,9 @@
 	  };
 
 	  Tag.prototype.removeClass = function() {
-	    var items, _ref3;
+	    var items, _ref4;
 	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    (_ref3 = this.className).removeClass.apply(_ref3, items);
+	    (_ref4 = this.className).removeClass.apply(_ref4, items);
 	    if (this.node && !this.className.valid) {
 	      this.hasActiveProperties = true;
 	      this.invalidate();
@@ -3995,32 +4043,32 @@
 	  };
 
 	  Tag.prototype.clone = function() {
-	    var child, children, _i, _len, _ref3;
+	    var child, children, _i, _len, _ref4;
 	    children = [];
-	    _ref3 = this.children;
-	    for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-	      child = _ref3[_i];
+	    _ref4 = this.children;
+	    for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
+	      child = _ref4[_i];
 	      children.push(child.clone());
 	    }
 	    return new Tag(this.tagName, this.attrs, children).copyEventListeners(this);
 	  };
 
 	  Tag.prototype.toString = function(indent, addNewLine) {
-	    var child, children, key, s, v, value, _i, _len, _ref3, _ref4, _ref5;
+	    var child, children, key, s, v, value, _i, _len, _ref4, _ref5, _ref6;
 	    if (indent == null) {
 	      indent = 0;
 	    }
 	    s = newLine("<" + this.tagName, indent, addNewLine);
-	    _ref3 = this.props;
-	    for (key in _ref3) {
-	      value = _ref3[key];
+	    _ref4 = this.props;
+	    for (key in _ref4) {
+	      value = _ref4[key];
 	      s += ' ' + key + '=' + funcString(value);
 	    }
 	    if (this.hasActiveStyle) {
 	      s += ' style={';
-	      _ref4 = this.style;
-	      for (key in _ref4) {
-	        value = _ref4[key];
+	      _ref5 = this.style;
+	      for (key in _ref5) {
+	        value = _ref5[key];
 	        if (typeof value === 'string') {
 	          s += value;
 	        } else {
@@ -4035,9 +4083,9 @@
 	    s += '>';
 	    children = this.children;
 	    if (children.length > 1) {
-	      _ref5 = this.children;
-	      for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
-	        child = _ref5[_i];
+	      _ref6 = this.children;
+	      for (_i = 0, _len = _ref6.length; _i < _len; _i++) {
+	        child = _ref6[_i];
 	        s += child.toString(indent + 2, true);
 	      }
 	      return s += newLine("</" + this.tagName + ">", indent + 2, true);
@@ -6177,7 +6225,7 @@
 	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
 	        event = _ref[_i];
 	        if (callbacks = listeners[event]) {
-	          if (callbacks.indexOf(callback) >= 0) {
+	          if (callbacks.indexOf(callback) < 0) {
 	            callbacks.push(callback);
 	          }
 	        } else {
@@ -6257,29 +6305,31 @@
 	  };
 
 	  Component.prototype.unmount = function() {
-	    var child, holder;
+	    var component, holder;
 	    this.emit('beforeUnmount');
 	    if (!this.node || !this.node.parentNode) {
 	      this.emit('afterUnmount');
 	      return this;
 	    }
-	    child = this;
+	    component = this;
 	    holder = this.holder;
 	    while (holder && !holder.isBaseComponent) {
-	      child = holder;
+	      component = holder;
 	      holder = holder.holder;
 	    }
 	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.removeChild(holder.dcidIndexMap[child.dcid]);
+	      holder.removeChild(holder.dcidIndexMap[component.dcid]);
 	    }
-	    child.parentNode = null;
+	    this.parentNode = null;
+	    this.nextNode = null;
+	    this.setParentAndNextNode();
 	    if (holder && (holder.isList || holder.isTag)) {
 	      holder.renderDom();
 	    } else {
-	      child.renderDom();
+	      component.renderDom();
 	    }
 	    this.emit('afterUnmount');
-	    return child;
+	    return component;
 	  };
 
 	  Component.prototype.remount = function(parentNode) {
@@ -6351,6 +6401,8 @@
 	      }
 	    }
 	  };
+
+	  Component.prototype.setParentAndNextNode = function() {};
 
 	  Component.prototype.setFirstNode = function(node) {
 	    var holder;
