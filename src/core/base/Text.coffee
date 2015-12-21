@@ -15,7 +15,27 @@ exports = module.exports = class Text extends BaseComponent
     @setFirstNode(node)
     @cacheText = text
     node
+  ###
+  https://github.com/ajaxorg/ace/blob/master/lib/ace/lib/dom.js
+  if ("textContent" in document.documentElement) {
+      exports.setInnerText = function(el, innerText) {
+          el.textContent = innerText;
+      };
 
+      exports.getInnerText = function(el) {
+          return el.textContent;
+      };
+  }
+  else {
+      exports.setInnerText = function(el, innerText) {
+          el.innerText = innerText;
+      };
+
+      exports.getInnerText = function(el) {
+          return el.innerText;
+      };
+  }
+  ###
   updateDom: ->
     if @textValid
       return @node

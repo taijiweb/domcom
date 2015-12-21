@@ -3,7 +3,6 @@ TransformComponent = require './TransformComponent'
 List = require './List'
 Func = require './Func'
 Text = require './Text'
-Nothing = require './Nothing'
 {isArray, funcString, newLine} = require 'dc-util'
 {react, renew, flow} = require 'lazy-flow'
 {watchEachList, watchEachObject} = require 'dc-watch-list'
@@ -53,10 +52,10 @@ module.exports = class Each extends TransformComponent
   getContentComponent: ->
     {listComponent, items, isFunction, needSort} = @
 
-    if !items then return @emptyPlaceHolder or @emptyPlaceHolder = new Nothing()
+    if !items then return @emptyPlaceHolder or @emptyPlaceHolder = new Text('')
     if isFunction
       items = items()
-      if !items then return @emptyPlaceHolder or @emptyPlaceHolder = new Nothing()
+      if !items then return @emptyPlaceHolder or @emptyPlaceHolder = new Text('')
       if typeof(items)!='object' then throw new Error 'Each Component need an array or object'
 
     if !(@isArrayItems = items instanceof Array)

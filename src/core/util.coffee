@@ -18,8 +18,6 @@ exports._maybeIf = (test, then_, else_) ->
 
   if then_==else_ then return then_
 
-  if then_ instanceof Nothing and else_ instanceof Nothing then return then_
-
   if typeof test == 'function'
 
     if then_.isTag and else_.isTag and then_.tagName==else_.tagName and then_.namespace==else_.namespace

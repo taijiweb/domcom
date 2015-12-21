@@ -7,7 +7,8 @@ binarySearch = dc.binarySearch, binaryInsert = dc.binaryInsert;
 describe('util', function() {
   describe('binarySearch', function() {
     it('should binarySearch(0, [])', function() {
-      return expect(binarySearch(0, [])).to.deep.equal(0);
+      expect(binarySearch(0, [])).to.deep.equal(0);
+      return expect(1).to.equal(0);
     });
     it('should binarySearch(0, [0])', function() {
       return expect(binarySearch(0, [0])).to.deep.equal(0);

@@ -11,7 +11,6 @@ module.exports =
   Comment: require './Comment'
   Cdata: require './Cdata'
   Html: require './Html'
-  Nothing: require './Nothing'
   TransformComponent: require './TransformComponent'
   If: require './If'
   Case: require './Case'

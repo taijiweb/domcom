@@ -1,6 +1,6 @@
 extend = require 'extend'
 dc = require '../../dc'
-{domField, domValue} = require('domcom/lib/dom-util')
+{domField, domValue} = require('../../dom-util')
 {classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require '../property'
 BaseComponent = require './BaseComponent'
 Text = require './Text'
@@ -346,7 +346,7 @@ module.exports = class Tag extends List
     else
       parentNode.insertBefore(node, nextNode)
       # since dom have no nextNode field, so let domcom save it
-      node.nextNode = @nextNode
+      node.nextNode = nextNode
       node
 
   removeDom: ->

@@ -3,7 +3,6 @@ toComponentList = require './toComponentList'
 
 BaseComponent = require './BaseComponent'
 
-Nothing = require './Nothing'
 {checkContainer, newLine, binarySearch, binaryInsert, substractSet} = require 'dc-util'
 {checkConflictOffspring} = require '../../dom-util'
 
@@ -25,6 +24,11 @@ module.exports = exports = class List extends BaseComponent
     @children = children
 
     @isList = true
+
+    # if children.length == 0,
+    # emptyTextNode should be used as a placeholder
+    @emptyTextNode = null
+
     return
 
   invalidateContent: (child) ->
@@ -34,26 +38,35 @@ module.exports = exports = class List extends BaseComponent
     @holder and @holder.invalidateContent(@)
 
   createDom: ->
-    if length=@children.length
+    {children} = @
+    {length} = children
+
+    if !length
+      @emptyTextNode = node = document.createTextNode('')
+      @node = node
+      @firstNode = node
+      return node
+
+    else
       {parentNode, children} = @
       children[length-1].nextNode = @nextNode
       for child, i in children
         child.parentNode = parentNode
 
-    node = []
-    @setNode(node)
+      node = []
+      @setNode(node)
 
-    @childNodes = node
+      @childNodes = node
 
-    node.parentNode = @parentNode
+      node.parentNode = @parentNode
 
-    @createChildrenDom()
+      @createChildrenDom()
 
-    @setFirstNode @childFirstNode
+      @setFirstNode @childFirstNode
 
-    @childrenNextNode = @nextNode
+      @childrenNextNode = @nextNode
 
-    @node
+      @node
 
   createChildrenDom: ->
     node = @childNodes
@@ -267,7 +280,7 @@ module.exports = exports = class List extends BaseComponent
     if startIndex > oldChildrenLength
       i = oldChildrenLength
       while i < startIndex
-        child = new Nothing()
+        child = new Text('')
         child.holder = this
         newChildren.unshift child
         i++
@@ -288,7 +301,7 @@ module.exports = exports = class List extends BaseComponent
 
       # maybe stopIndex has exceeded the old length of the children
       if !oldChild?
-        children[startIndex] = new Nothing()
+        children[startIndex] = new Text('')
 
       if oldChild==child
         if node

@@ -4,7 +4,7 @@ rePatternTotal = /^((:([$_\w]+)(\([^\(\)]+\))?)|(\([^\(\)]+\))|([^:\(]*))+$/
 rePattern = /^((:([$_\w]+)(\([^\(\)]+\))?)|(\([^\(\)]+\))|([^:\(]+))/
 slashs = /(?:\\\/)|(?:\\\()|(?:\\\))/
 
-{isComponent, route, txt, Nothing} = dc
+{isComponent, route, txt, Text} = dc
 
 describe 'route', ->
   describe 'route regexp', ->
@@ -78,15 +78,15 @@ describe 'route', ->
     it "should route 'a/b' on path 'a'", ->
       comp = route 'a/b', -> 1
       comp.getPath = -> 'a'
-      expect((content = comp.getContentComponent()) instanceof Nothing).to.equal true
+      expect((content = comp.getContentComponent()) instanceof Text).to.equal true
     it "should not route 'a/' on path 'a'", ->
       comp = route 'a/', -> 1
       comp.getPath = -> 'a'
-      expect((content = comp.getContentComponent()) instanceof Nothing).to.equal true
+      expect((content = comp.getContentComponent()) instanceof Text).to.equal true
     it "should not route 'a' on path 'a/'", ->
       comp = route 'a', -> 1
       comp.getPath = -> 'a/'
-      expect((content = comp.getContentComponent())  instanceof Nothing).to.equal true
+      expect((content = comp.getContentComponent())  instanceof Text).to.equal true
     it "should route '*' on path 'a'", ->
       comp = route '*', (match) -> match.segments[0]
       comp.getPath = -> 'a'
@@ -100,11 +100,11 @@ describe 'route', ->
     it "should not route '*' on path 'a/'", ->
       comp = route '*', (match) -> 1
       comp.getPath = -> 'a/'
-      expect((content = comp.getContentComponent()) instanceof Nothing).to.equal true
+      expect((content = comp.getContentComponent()) instanceof Text).to.equal true
     it "should not route '*/' on path 'a'", ->
       comp = route '*/', -> 1
       comp.getPath = -> 'a'
-      expect((content = comp.getContentComponent())  instanceof Nothing).to.equal true
+      expect((content = comp.getContentComponent())  instanceof Text).to.equal true
     it "should route 'a/b'", ->
       comp = route 'a/b', -> 1
       comp.getPath = -> 'a/b'
@@ -136,7 +136,7 @@ describe 'route', ->
     it "should route 'a/*/*/**' on path a/b", ->
       comp = route 'a/*/*/**', -> 1
       comp.getPath = -> 'a/b'
-      expect((content = comp.getContentComponent())  instanceof Nothing).to.equal true
+      expect((content = comp.getContentComponent())  instanceof Text).to.equal true
     it "should route embedding route", ->
       comp = route 'a/**', (match, route2) ->
         route2 'b', -> 2
