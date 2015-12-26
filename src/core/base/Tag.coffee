@@ -3,22 +3,19 @@ dc = require '../../dc'
 {domField, domValue} = require('domcom/lib/dom-util')
 {classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require '../property'
 BaseComponent = require './BaseComponent'
-Text = require './Text'
-List = require './List'
 {funcString, newLine, cloneObject} = require 'dc-util'
 {directiveRegistry} = require '../../config'
 {flow, react} = require 'lazy-flow'
-toComponent = require './toComponent'
 
-module.exports = class Tag extends List
+module.exports = class Tag extends BaseComponent
   constructor: (tagName, attrs={}, children) ->
 
     if this not instanceof Tag
       throw 'should use new SubclassComponent(...) with the subclass of Tag'
 
-    super(children)
+    super()
+    @initChildren(children)
 
-    delete @isList
     @isTag = true
 
     tagName = tagName or 'div'
@@ -440,3 +437,6 @@ module.exports = class Tag extends List
       if children.length==1
         s += children[0].toString(indent+2)
       s += newLine("</#{@tagName}>", indent+2)
+
+ListMixin = require('./ListMixin')
+extend(Tag.prototype, ListMixin)
