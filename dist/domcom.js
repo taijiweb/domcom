@@ -51,7 +51,7 @@
 
 	dc = __webpack_require__(/*! ./domcom-basic */ 1);
 
-	__webpack_require__(/*! ./domcom-addon */ 38);
+	__webpack_require__(/*! ./domcom-addon */ 39);
 
 	module.exports = dc;
 
@@ -73,7 +73,7 @@
 
 	dc.extend = extend = __webpack_require__(/*! extend */ 9);
 
-	extend(dc, __webpack_require__(/*! ./config */ 7), __webpack_require__(/*! lazy-flow */ 5), __webpack_require__(/*! dc-watch-list */ 10), __webpack_require__(/*! ./dom-util */ 6), __webpack_require__(/*! dc-util */ 4), __webpack_require__(/*! ./core/index */ 11), __webpack_require__(/*! ./dc-error */ 37));
+	extend(dc, __webpack_require__(/*! ./config */ 7), __webpack_require__(/*! lazy-flow */ 5), __webpack_require__(/*! dc-watch-list */ 10), __webpack_require__(/*! ./dom-util */ 6), __webpack_require__(/*! dc-util */ 4), __webpack_require__(/*! ./core/index */ 11), __webpack_require__(/*! ./dc-error */ 38));
 
 
 /***/ },
@@ -1723,7 +1723,7 @@
 
 	extend = __webpack_require__(/*! extend */ 9);
 
-	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 12), __webpack_require__(/*! ./instantiate */ 34), __webpack_require__(/*! ./tag */ 36), __webpack_require__(/*! ./property */ 26));
+	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 12), __webpack_require__(/*! ./instantiate */ 35), __webpack_require__(/*! ./tag */ 37), __webpack_require__(/*! ./property */ 27));
 
 
 /***/ },
@@ -1740,23 +1740,23 @@
 	module.exports = {
 	  isComponent: __webpack_require__(/*! ./isComponent */ 8),
 	  toComponent: __webpack_require__(/*! ./toComponent */ 19),
-	  toComponentList: __webpack_require__(/*! ./toComponentList */ 22),
+	  toComponentList: __webpack_require__(/*! ./toComponentList */ 23),
 	  Component: __webpack_require__(/*! ./component */ 15),
 	  BaseComponent: __webpack_require__(/*! ./BaseComponent */ 14),
 	  List: __webpack_require__(/*! ./List */ 21),
-	  Tag: __webpack_require__(/*! ./Tag */ 24),
+	  Tag: __webpack_require__(/*! ./Tag */ 25),
 	  Text: __webpack_require__(/*! ./Text */ 16),
-	  Comment: __webpack_require__(/*! ./Comment */ 27),
+	  Comment: __webpack_require__(/*! ./Comment */ 28),
 	  Cdata: __webpack_require__(/*! ./Cdata */ 13),
-	  Html: __webpack_require__(/*! ./Html */ 28),
+	  Html: __webpack_require__(/*! ./Html */ 29),
 	  Nothing: __webpack_require__(/*! ./Nothing */ 20),
 	  TransformComponent: __webpack_require__(/*! ./TransformComponent */ 18),
-	  If: __webpack_require__(/*! ./If */ 29),
-	  Case: __webpack_require__(/*! ./Case */ 30),
-	  Func: __webpack_require__(/*! ./Func */ 23),
-	  Pick: __webpack_require__(/*! ./Pick */ 31),
-	  Each: __webpack_require__(/*! ./Each */ 32),
-	  Defer: __webpack_require__(/*! ./Defer */ 33),
+	  If: __webpack_require__(/*! ./If */ 30),
+	  Case: __webpack_require__(/*! ./Case */ 31),
+	  Func: __webpack_require__(/*! ./Func */ 24),
+	  Pick: __webpack_require__(/*! ./Pick */ 32),
+	  Each: __webpack_require__(/*! ./Each */ 33),
+	  Defer: __webpack_require__(/*! ./Defer */ 34),
 	  Route: route.Route,
 	  route: route
 	};
@@ -2922,7 +2922,7 @@
 	  } else if (item == null) {
 	    return new Nothing();
 	  } else if (item.then && item["catch"]) {
-	    Func = __webpack_require__(/*! ./Func */ 23);
+	    Func = __webpack_require__(/*! ./Func */ 24);
 	    component = new Func(react(function() {
 	      return component.promiseResult;
 	    }));
@@ -3006,51 +3006,23 @@
   \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, List, Nothing, binaryInsert, binarySearch, checkConflictOffspring, checkContainer, exports, newLine, substractSet, toComponent, toComponentList, _ref,
+	var BaseComponent, List, ListMixin, exports, extend, newLine,
 	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-	  __slice = [].slice;
-
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
-
-	toComponentList = __webpack_require__(/*! ./toComponentList */ 22);
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
 
-	Nothing = __webpack_require__(/*! ./Nothing */ 20);
-
-	_ref = __webpack_require__(/*! dc-util */ 4), checkContainer = _ref.checkContainer, newLine = _ref.newLine, binarySearch = _ref.binarySearch, binaryInsert = _ref.binaryInsert, substractSet = _ref.substractSet;
-
-	checkConflictOffspring = __webpack_require__(/*! ../../dom-util */ 6).checkConflictOffspring;
+	newLine = __webpack_require__(/*! dc-util */ 4).newLine;
 
 	module.exports = exports = List = (function(_super) {
 	  __extends(List, _super);
 
 	  function List(children) {
-	    var child, dcidIndexMap, family, i, _i, _len;
 	    List.__super__.constructor.call(this);
-	    children = toComponentList(children);
-	    this.family = family = {};
-	    family[this.dcid] = true;
-	    this.dcidIndexMap = dcidIndexMap = {};
-	    for (i = _i = 0, _len = children.length; _i < _len; i = ++_i) {
-	      child = children[i];
-	      child = children[i];
-	      checkConflictOffspring(family, child);
-	      child.holder = this;
-	      dcidIndexMap[child.dcid] = i;
-	    }
-	    this.children = children;
+	    this.initChildren(children);
 	    this.isList = true;
 	    return;
 	  }
-
-	  List.prototype.invalidateContent = function(child) {
-	    this.valid = false;
-	    this.contentValid = false;
-	    this.node && binaryInsert(this.dcidIndexMap[child.dcid], this.invalidIndexes);
-	    return this.holder && this.holder.invalidateContent(this);
-	  };
 
 	  List.prototype.createDom = function() {
 	    var child, children, i, length, node, parentNode, _i, _len;
@@ -3072,7 +3044,167 @@
 	    return this.node;
 	  };
 
-	  List.prototype.createChildrenDom = function() {
+	  List.prototype.updateDom = function() {
+	    var children, index, invalidIndexes, parentNode, _i, _len;
+	    children = this.children, parentNode = this.parentNode, invalidIndexes = this.invalidIndexes;
+	    for (_i = 0, _len = invalidIndexes.length; _i < _len; _i++) {
+	      index = invalidIndexes[_i];
+	      children[index].parentNode = parentNode;
+	    }
+	    this.childrenNextNode = this.nextNode;
+	    this.updateChildrenDom();
+	    this.setFirstNode(this.childFirstNode);
+	    return this.node;
+	  };
+
+	  List.prototype.removeDom = function() {
+	    var child, _i, _len, _ref;
+	    if (this.parentNode || !this.node || !this.node.parentNode) {
+	      return this;
+	    } else {
+	      this.emit('removeDom');
+	      this.node.parentNode = null;
+	      this.node.nextNode = null;
+	      _ref = this.children;
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        child = _ref[_i];
+	        child.removeDom();
+	      }
+	      return this;
+	    }
+	  };
+
+	  List.prototype.markRemovingDom = function(parentNode) {
+	    var child, _i, _len, _ref;
+	    if (this.parentNode !== parentNode) {
+
+	    } else {
+	      this.parentNode = null;
+	      _ref = this.children;
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        child = _ref[_i];
+	        child.markRemovingDom(parentNode);
+	      }
+	    }
+	  };
+
+	  List.prototype.removeNode = function() {
+	    var child, _i, _len, _ref;
+	    this.node.parentNode = null;
+	    _ref = this.children;
+	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	      child = _ref[_i];
+	      child.baseComponent.removeNode();
+	    }
+	  };
+
+	  List.prototype.attachNode = function() {
+	    var baseComponent, child, children, index, nextNode, node, parentNode;
+	    children = this.children, parentNode = this.parentNode, nextNode = this.nextNode, node = this.node;
+	    if (parentNode !== this.node.parentNode || nextNode !== node.nextNode) {
+	      node.parentNode = parentNode;
+	      node.nextNode = nextNode;
+	      if (children.length) {
+	        nextNode = this.nextNode;
+	        index = children.length - 1;
+	        children[index].nextNode = nextNode;
+	        while (index >= 0) {
+	          child = children[index];
+	          child.parentNode = parentNode;
+	          baseComponent = child.baseComponent;
+	          baseComponent.parentNode = parentNode;
+	          baseComponent.nextNode = child.nextNode;
+	          baseComponent.attachNode();
+	          if (index) {
+	            children[index - 1].nextNode = child.firstNode || child.nextNode;
+	          }
+	          index--;
+	        }
+	      }
+	    }
+	    return this.node;
+	  };
+
+	  List.prototype.clone = function() {
+	    var child;
+	    return (new List((function() {
+	      var _i, _len, _ref, _results;
+	      _ref = this.children;
+	      _results = [];
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        child = _ref[_i];
+	        _results.push(child.clone());
+	      }
+	      return _results;
+	    }).call(this))).copyEventListeners(this);
+	  };
+
+	  List.prototype.toString = function(indent, addNewLine) {
+	    var child, s, _i, _len, _ref;
+	    if (indent == null) {
+	      indent = 0;
+	    }
+	    if (!this.children.length) {
+	      return newLine("<List/>", indent, addNewLine);
+	    } else {
+	      s = newLine("<List>", indent, addNewLine);
+	      _ref = this.children;
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        child = _ref[_i];
+	        s += child.toString(indent + 2, true);
+	      }
+	      return s += newLine('</List>', indent, true);
+	    }
+	  };
+
+	  return List;
+
+	})(BaseComponent);
+
+	extend = __webpack_require__(/*! extend */ 9);
+
+	ListMixin = __webpack_require__(/*! ./ListMixin */ 22);
+
+	extend(List.prototype, ListMixin);
+
+
+/***/ },
+/* 22 */
+/*!****************************************!*\
+  !*** ./src/core/base/ListMixin.coffee ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Nothing, binaryInsert, binarySearch, checkConflictOffspring, substractSet, toComponent, toComponentList, _ref,
+	  __slice = [].slice;
+
+	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+
+	toComponentList = __webpack_require__(/*! ./toComponentList */ 23);
+
+	Nothing = __webpack_require__(/*! ./Nothing */ 20);
+
+	_ref = __webpack_require__(/*! dc-util */ 4), binarySearch = _ref.binarySearch, binaryInsert = _ref.binaryInsert, substractSet = _ref.substractSet;
+
+	checkConflictOffspring = __webpack_require__(/*! ../../dom-util */ 6).checkConflictOffspring;
+
+	module.exports = {
+	  initChildren: function(children) {
+	    var child, dcidIndexMap, family, i, _i, _len;
+	    children = toComponentList(children);
+	    this.family = family = {};
+	    family[this.dcid] = true;
+	    this.dcidIndexMap = dcidIndexMap = {};
+	    for (i = _i = 0, _len = children.length; _i < _len; i = ++_i) {
+	      child = children[i];
+	      child = children[i];
+	      checkConflictOffspring(family, child);
+	      child.holder = this;
+	      dcidIndexMap[child.dcid] = i;
+	    }
+	    return this.children = children;
+	  },
+	  createChildrenDom: function() {
 	    var child, children, e, firstNode, index, node;
 	    node = this.childNodes;
 	    this.invalidIndexes = [];
@@ -3099,22 +3231,8 @@
 	    }
 	    this.childFirstNode = firstNode;
 	    return node;
-	  };
-
-	  List.prototype.updateDom = function() {
-	    var children, index, invalidIndexes, parentNode, _i, _len;
-	    children = this.children, parentNode = this.parentNode, invalidIndexes = this.invalidIndexes;
-	    for (_i = 0, _len = invalidIndexes.length; _i < _len; _i++) {
-	      index = invalidIndexes[_i];
-	      children[index].parentNode = parentNode;
-	    }
-	    this.childrenNextNode = this.nextNode;
-	    this.updateChildrenDom();
-	    this.setFirstNode(this.childFirstNode);
-	    return this.node;
-	  };
-
-	  List.prototype.updateChildrenDom = function() {
+	  },
+	  updateChildrenDom: function() {
 	    var child, childFirstNode, childNodes, children, e, i, invalidIndexes, listIndex, nextNode, _, _ref1;
 	    invalidIndexes = this.invalidIndexes;
 	    if (invalidIndexes.length) {
@@ -3159,58 +3277,20 @@
 	    }
 	    this.removedChildren = {};
 	    return childNodes;
-	  };
-
-	  List.prototype.removeDom = function() {
-	    var child, _i, _len, _ref1;
-	    if (this.parentNode || !this.node || !this.node.parentNode) {
-	      return this;
-	    } else {
-	      this.emit('removeDom');
-	      this.node.parentNode = null;
-	      this.node.nextNode = null;
-	      _ref1 = this.children;
-	      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	        child = _ref1[_i];
-	        child.removeDom();
-	      }
-	      return this;
-	    }
-	  };
-
-	  List.prototype.markRemovingDom = function(parentNode) {
-	    var child, _i, _len, _ref1;
-	    if (this.parentNode !== parentNode) {
-
-	    } else {
-	      this.parentNode = null;
-	      _ref1 = this.children;
-	      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	        child = _ref1[_i];
-	        child.markRemovingDom(parentNode);
-	      }
-	    }
-	  };
-
-	  List.prototype.removeNode = function() {
-	    var child, _i, _len, _ref1;
-	    this.node.parentNode = null;
-	    _ref1 = this.children;
-	    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	      child = _ref1[_i];
-	      child.baseComponent.removeNode();
-	    }
-	  };
-
-	  List.prototype.pushChild = function(child) {
+	  },
+	  invalidateContent: function(child) {
+	    this.valid = false;
+	    this.contentValid = false;
+	    this.node && binaryInsert(this.dcidIndexMap[child.dcid], this.invalidIndexes);
+	    return this.holder && this.holder.invalidateContent(this);
+	  },
+	  pushChild: function(child) {
 	    return this.setChildren(this.children.length, child);
-	  };
-
-	  List.prototype.unshiftChild = function(child) {
+	  },
+	  unshiftChild: function(child) {
 	    return this.insertChild(0, child);
-	  };
-
-	  List.prototype.insertChild = function(index, child) {
+	  },
+	  insertChild: function(index, child) {
 	    var children, insertLocation, invalidIndexes, length;
 	    children = this.children;
 	    if (index >= children.length) {
@@ -3231,9 +3311,8 @@
 	      }
 	    }
 	    return this;
-	  };
-
-	  List.prototype.removeChild = function(index) {
+	  },
+	  removeChild: function(index) {
 	    var child, children, invalidIndex, invalidIndexes, prevIndex;
 	    children = this.children;
 	    if (index > children.length) {
@@ -3258,9 +3337,8 @@
 	      this.removedChildren[child.dcid] = child;
 	    }
 	    return this;
-	  };
-
-	  List.prototype.invalidChildren = function(startIndex, stopIndex) {
+	  },
+	  invalidChildren: function(startIndex, stopIndex) {
 	    var insertLocation, invalidIndex, invalidIndexes;
 	    if (stopIndex == null) {
 	      stopIndex = startIndex + 1;
@@ -3280,9 +3358,8 @@
 	      startIndex++;
 	    }
 	    return this;
-	  };
-
-	  List.prototype.setChildren = function() {
+	  },
+	  setChildren: function() {
 	    var child, children, dcidIndexMap, family, i, insertLocation, invalidIndex, invalidIndexes, newChildren, node, oldChild, oldChildrenLength, startIndex, stopIndex;
 	    startIndex = arguments[0], newChildren = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
 	    this.invalidate();
@@ -3340,9 +3417,8 @@
 	      i++;
 	    }
 	    return this;
-	  };
-
-	  List.prototype.setLength = function(newLength) {
+	  },
+	  setLength: function(newLength) {
 	    var children, insertLocation, last;
 	    children = this.children;
 	    if (newLength >= children.length) {
@@ -3358,74 +3434,12 @@
 	      last--;
 	    }
 	    return this;
-	  };
-
-	  List.prototype.attachNode = function() {
-	    var baseComponent, child, children, index, nextNode, node, parentNode;
-	    children = this.children, parentNode = this.parentNode, nextNode = this.nextNode, node = this.node;
-	    if (parentNode !== this.node.parentNode || nextNode !== node.nextNode) {
-	      node.parentNode = parentNode;
-	      node.nextNode = nextNode;
-	      if (children.length) {
-	        nextNode = this.nextNode;
-	        index = children.length - 1;
-	        children[index].nextNode = nextNode;
-	        while (index >= 0) {
-	          child = children[index];
-	          child.parentNode = parentNode;
-	          baseComponent = child.baseComponent;
-	          baseComponent.parentNode = parentNode;
-	          baseComponent.nextNode = child.nextNode;
-	          baseComponent.attachNode();
-	          if (index) {
-	            children[index - 1].nextNode = child.firstNode || child.nextNode;
-	          }
-	          index--;
-	        }
-	      }
-	    }
-	    return this.node;
-	  };
-
-	  List.prototype.clone = function() {
-	    var child;
-	    return (new List((function() {
-	      var _i, _len, _ref1, _results;
-	      _ref1 = this.children;
-	      _results = [];
-	      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	        child = _ref1[_i];
-	        _results.push(child.clone());
-	      }
-	      return _results;
-	    }).call(this))).copyEventListeners(this);
-	  };
-
-	  List.prototype.toString = function(indent, addNewLine) {
-	    var child, s, _i, _len, _ref1;
-	    if (indent == null) {
-	      indent = 0;
-	    }
-	    if (!this.children.length) {
-	      return newLine("<List/>", indent, addNewLine);
-	    } else {
-	      s = newLine("<List>", indent, addNewLine);
-	      _ref1 = this.children;
-	      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	        child = _ref1[_i];
-	        s += child.toString(indent + 2, true);
-	      }
-	      return s += newLine('</List>', indent, true);
-	    }
-	  };
-
-	  return List;
-
-	})(BaseComponent);
+	  }
+	};
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /*!**********************************************!*\
   !*** ./src/core/base/toComponentList.coffee ***!
   \**********************************************/
@@ -3453,7 +3467,7 @@
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /*!***********************************!*\
   !*** ./src/core/base/Func.coffee ***!
   \***********************************/
@@ -3508,13 +3522,13 @@
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /*!**********************************!*\
   !*** ./src/core/base/Tag.coffee ***!
   \**********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, List, Tag, Text, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, domValue, eventHandlerFromArray, extend, flow, funcString, newLine, react, styleFrom, toComponent, updating, _ref, _ref1, _ref2, _ref3,
+	var BaseComponent, ListMixin, Tag, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, domValue, eventHandlerFromArray, extend, flow, funcString, newLine, react, styleFrom, updating, _ref, _ref1, _ref2, _ref3,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
@@ -3523,23 +3537,17 @@
 
 	dc = __webpack_require__(/*! ../../dc */ 2);
 
-	_ref = __webpack_require__(/*! domcom/lib/dom-util */ 25), domField = _ref.domField, domValue = _ref.domValue;
+	_ref = __webpack_require__(/*! domcom/lib/dom-util */ 26), domField = _ref.domField, domValue = _ref.domValue;
 
-	_ref1 = __webpack_require__(/*! ../property */ 26), classFn = _ref1.classFn, styleFrom = _ref1.styleFrom, eventHandlerFromArray = _ref1.eventHandlerFromArray, attrToPropName = _ref1.attrToPropName, updating = _ref1.updating;
+	_ref1 = __webpack_require__(/*! ../property */ 27), classFn = _ref1.classFn, styleFrom = _ref1.styleFrom, eventHandlerFromArray = _ref1.eventHandlerFromArray, attrToPropName = _ref1.attrToPropName, updating = _ref1.updating;
 
 	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
-
-	Text = __webpack_require__(/*! ./Text */ 16);
-
-	List = __webpack_require__(/*! ./List */ 21);
 
 	_ref2 = __webpack_require__(/*! dc-util */ 4), funcString = _ref2.funcString, newLine = _ref2.newLine, cloneObject = _ref2.cloneObject;
 
 	directiveRegistry = __webpack_require__(/*! ../../config */ 7).directiveRegistry;
 
 	_ref3 = __webpack_require__(/*! lazy-flow */ 5), flow = _ref3.flow, react = _ref3.react;
-
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
 
 	module.exports = Tag = (function(_super) {
 	  __extends(Tag, _super);
@@ -3551,8 +3559,8 @@
 	    if (!(this instanceof Tag)) {
 	      throw 'should use new SubclassComponent(...) with the subclass of Tag';
 	    }
-	    Tag.__super__.constructor.call(this, children);
-	    delete this.isList;
+	    Tag.__super__.constructor.call(this);
+	    this.initChildren(children);
 	    this.isTag = true;
 	    tagName = tagName || 'div';
 	    this.tagName = tagName.toLowerCase();
@@ -3968,45 +3976,6 @@
 	    return node;
 	  };
 
-	  Tag.prototype.attachNode = function() {
-	    var e, nextNode, node, parentNode;
-	    node = this.node, parentNode = this.parentNode, nextNode = this.nextNode;
-	    if (parentNode === node.parentNode && nextNode === node.nextNode) {
-	      return node;
-	    } else {
-	      try {
-	        parentNode.insertBefore(node, nextNode);
-	      } catch (_error) {
-	        e = _error;
-	        dc.error(e);
-	      }
-	      node.nextNode = this.nextNode;
-	      return node;
-	    }
-	  };
-
-	  Tag.prototype.removeDom = function() {
-	    if (this.parentNode || !this.node || !this.node.parentNode) {
-	      return this;
-	    } else {
-	      this.emit('removeDom');
-	      this.removeNode();
-	      return this;
-	    }
-	  };
-
-	  Tag.prototype.markRemovingDom = function(parentNode) {
-	    if (this.parentNode !== parentNode) {
-
-	    } else {
-	      this.parentNode = null;
-	    }
-	  };
-
-	  Tag.prototype.removeNode = function() {
-	    return this.node.parentNode.removeChild(this.node);
-	  };
-
 	  Tag.prototype.updateProperties = function() {
 	    var cacheProps, cacheStyle, callbackList, className, classValue, elementStyle, eventName, events, node, prop, props, style, value;
 	    this.hasActiveProperties = false;
@@ -4115,11 +4084,15 @@
 
 	  return Tag;
 
-	})(List);
+	})(BaseComponent);
+
+	ListMixin = __webpack_require__(/*! ./ListMixin */ 22);
+
+	extend(Tag.prototype, ListMixin);
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /*!*************************!*\
   !*** ./lib/dom-util.js ***!
   \*************************/
@@ -4241,7 +4214,7 @@
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /*!**********************************!*\
   !*** ./src/core/property.coffee ***!
   \**********************************/
@@ -4546,7 +4519,7 @@
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /*!**************************************!*\
   !*** ./src/core/base/Comment.coffee ***!
   \**************************************/
@@ -4615,7 +4588,7 @@
 
 
 /***/ },
-/* 28 */
+/* 29 */
 /*!***********************************!*\
   !*** ./src/core/base/Html.coffee ***!
   \***********************************/
@@ -4737,7 +4710,7 @@
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /*!*********************************!*\
   !*** ./src/core/base/If.coffee ***!
   \*********************************/
@@ -4814,7 +4787,7 @@
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /*!***********************************!*\
   !*** ./src/core/base/Case.coffee ***!
   \***********************************/
@@ -4907,7 +4880,7 @@
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /*!***********************************!*\
   !*** ./src/core/base/Pick.coffee ***!
   \***********************************/
@@ -4997,7 +4970,7 @@
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /*!***********************************!*\
   !*** ./src/core/base/Each.coffee ***!
   \***********************************/
@@ -5013,7 +4986,7 @@
 
 	List = __webpack_require__(/*! ./List */ 21);
 
-	Func = __webpack_require__(/*! ./Func */ 23);
+	Func = __webpack_require__(/*! ./Func */ 24);
 
 	Text = __webpack_require__(/*! ./Text */ 16);
 
@@ -5220,7 +5193,7 @@
 
 
 /***/ },
-/* 33 */
+/* 34 */
 /*!************************************!*\
   !*** ./src/core/base/Defer.coffee ***!
   \************************************/
@@ -5312,7 +5285,7 @@
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /*!*************************************!*\
   !*** ./src/core/instantiate.coffee ***!
   \*************************************/
@@ -5325,7 +5298,7 @@
 
 	_ref1 = __webpack_require__(/*! dc-util */ 4), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
-	isAttrs = __webpack_require__(/*! ./util */ 35).isAttrs;
+	isAttrs = __webpack_require__(/*! ./util */ 36).isAttrs;
 
 	attrsChildren = function(args) {
 	  var attrs;
@@ -5553,7 +5526,7 @@
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /*!******************************!*\
   !*** ./src/core/util.coffee ***!
   \******************************/
@@ -5563,13 +5536,13 @@
 
 	_ref = __webpack_require__(/*! ./base */ 12), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
 
-	Func = __webpack_require__(/*! ./base/Func */ 23);
+	Func = __webpack_require__(/*! ./base/Func */ 24);
 
 	Text = __webpack_require__(/*! ./base/Text */ 16);
 
-	Html = __webpack_require__(/*! ./base/Html */ 28);
+	Html = __webpack_require__(/*! ./base/Html */ 29);
 
-	Comment = __webpack_require__(/*! ./base/Comment */ 27);
+	Comment = __webpack_require__(/*! ./base/Comment */ 28);
 
 	exports.isAttrs = function(item) {
 	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
@@ -5619,7 +5592,7 @@
 
 
 /***/ },
-/* 36 */
+/* 37 */
 /*!*****************************!*\
   !*** ./src/core/tag.coffee ***!
   \*****************************/
@@ -5630,7 +5603,7 @@
 
 	extend = __webpack_require__(/*! extend */ 9);
 
-	tag = __webpack_require__(/*! ./instantiate */ 34).tag;
+	tag = __webpack_require__(/*! ./instantiate */ 35).tag;
 
 	getBindProp = __webpack_require__(/*! ../dom-util */ 6).getBindProp;
 
@@ -5733,7 +5706,7 @@
 
 
 /***/ },
-/* 37 */
+/* 38 */
 /*!*****************************!*\
   !*** ./src/dc-error.coffee ***!
   \*****************************/
@@ -5786,7 +5759,7 @@
 
 
 /***/ },
-/* 38 */
+/* 39 */
 /*!*********************************!*\
   !*** ./src/domcom-addon.coffee ***!
   \*********************************/
@@ -5796,13 +5769,13 @@
 
 	extend = (dc = __webpack_require__(/*! ./domcom-basic */ 1)).extend;
 
-	dc.builtinDirectives = __webpack_require__(/*! ./directives/index */ 40);
+	dc.builtinDirectives = __webpack_require__(/*! ./directives/index */ 41);
 
-	extend(dc, dc.builtinDirectives, __webpack_require__(/*! ./builtins/index */ 48), __webpack_require__(/*! ./core/prop-util */ 39));
+	extend(dc, dc.builtinDirectives, __webpack_require__(/*! ./builtins/index */ 49), __webpack_require__(/*! ./core/prop-util */ 40));
 
 	flow = dc.flow;
 
-	extend(flow, __webpack_require__(/*! lazy-flow/addon */ 54), __webpack_require__(/*! dc-watch-list */ 10));
+	extend(flow, __webpack_require__(/*! lazy-flow/addon */ 55), __webpack_require__(/*! dc-watch-list */ 10));
 
 	dc.bindings = flow.bindings;
 
@@ -5810,7 +5783,7 @@
 
 
 /***/ },
-/* 39 */
+/* 40 */
 /*!***********************************!*\
   !*** ./src/core/prop-util.coffee ***!
   \***********************************/
@@ -5876,7 +5849,7 @@
 
 
 /***/ },
-/* 40 */
+/* 41 */
 /*!*************************************!*\
   !*** ./src/directives/index.coffee ***!
   \*************************************/
@@ -5884,25 +5857,25 @@
 
 	var $hide, $show, _ref;
 
-	exports.$model = __webpack_require__(/*! ./model */ 42);
+	exports.$model = __webpack_require__(/*! ./model */ 43);
 
-	exports.$bind = __webpack_require__(/*! ./bind */ 43);
+	exports.$bind = __webpack_require__(/*! ./bind */ 44);
 
-	_ref = __webpack_require__(/*! ./show-hide */ 44), $show = _ref.$show, $hide = _ref.$hide;
+	_ref = __webpack_require__(/*! ./show-hide */ 45), $show = _ref.$show, $hide = _ref.$hide;
 
 	exports.$show = $show;
 
 	exports.$hide = $hide;
 
-	exports.$blink = __webpack_require__(/*! ./blink */ 41);
+	exports.$blink = __webpack_require__(/*! ./blink */ 42);
 
-	exports.$splitter = __webpack_require__(/*! ./splitter */ 45);
+	exports.$splitter = __webpack_require__(/*! ./splitter */ 46);
 
-	exports.$options = __webpack_require__(/*! ./options */ 47);
+	exports.$options = __webpack_require__(/*! ./options */ 48);
 
 
 /***/ },
-/* 41 */
+/* 42 */
 /*!*************************************!*\
   !*** ./src/directives/blink.coffee ***!
   \*************************************/
@@ -5946,7 +5919,7 @@
 
 
 /***/ },
-/* 42 */
+/* 43 */
 /*!*************************************!*\
   !*** ./src/directives/model.coffee ***!
   \*************************************/
@@ -5971,7 +5944,7 @@
 
 
 /***/ },
-/* 43 */
+/* 44 */
 /*!************************************!*\
   !*** ./src/directives/bind.coffee ***!
   \************************************/
@@ -5990,7 +5963,7 @@
 
 
 /***/ },
-/* 44 */
+/* 45 */
 /*!*****************************************!*\
   !*** ./src/directives/show-hide.coffee ***!
   \*****************************************/
@@ -6016,7 +5989,7 @@
 
 
 /***/ },
-/* 45 */
+/* 46 */
 /*!****************************************!*\
   !*** ./src/directives/splitter.coffee ***!
   \****************************************/
@@ -6026,11 +5999,11 @@
 
 	pairListDict = __webpack_require__(/*! dc-util */ 4).pairListDict;
 
-	classFn = __webpack_require__(/*! ../core/property */ 26).classFn;
+	classFn = __webpack_require__(/*! ../core/property */ 27).classFn;
 
-	_ref = __webpack_require__(/*! ../core/tag */ 36), div = _ref.div, span = _ref.span, option = _ref.option;
+	_ref = __webpack_require__(/*! ../core/tag */ 37), div = _ref.div, span = _ref.span, option = _ref.option;
 
-	Component = __webpack_require__(/*! ../core/base/Component */ 46);
+	Component = __webpack_require__(/*! ../core/base/Component */ 47);
 
 	module.exports = function(direction) {
 	  return function(comp) {
@@ -6192,7 +6165,7 @@
 
 
 /***/ },
-/* 46 */
+/* 47 */
 /*!****************************************!*\
   !*** ./src/core/base/Component.coffee ***!
   \****************************************/
@@ -6464,7 +6437,7 @@
 
 
 /***/ },
-/* 47 */
+/* 48 */
 /*!***************************************!*\
   !*** ./src/directives/options.coffee ***!
   \***************************************/
@@ -6472,11 +6445,11 @@
 
 	var Tag, every, option, txt, _ref;
 
-	_ref = __webpack_require__(/*! ../core/instantiate */ 34), every = _ref.every, txt = _ref.txt;
+	_ref = __webpack_require__(/*! ../core/instantiate */ 35), every = _ref.every, txt = _ref.txt;
 
-	option = __webpack_require__(/*! ../core/tag */ 36).option;
+	option = __webpack_require__(/*! ../core/tag */ 37).option;
 
-	Tag = __webpack_require__(/*! ../core/base/Tag */ 24);
+	Tag = __webpack_require__(/*! ../core/base/Tag */ 25);
 
 	module.exports = function(items, attrs) {
 	  return function(comp) {
@@ -6492,7 +6465,7 @@
 
 
 /***/ },
-/* 48 */
+/* 49 */
 /*!***********************************!*\
   !*** ./src/builtins/index.coffee ***!
   \***********************************/
@@ -6502,19 +6475,19 @@
 
 	extend = __webpack_require__(/*! extend */ 9);
 
-	extend(exports, __webpack_require__(/*! ./accordion */ 50));
+	extend(exports, __webpack_require__(/*! ./accordion */ 51));
 
-	exports.triangle = __webpack_require__(/*! ./triangle */ 51);
+	exports.triangle = __webpack_require__(/*! ./triangle */ 52);
 
-	exports.dialog = __webpack_require__(/*! ./dialog */ 49);
+	exports.dialog = __webpack_require__(/*! ./dialog */ 50);
 
-	extend(exports, __webpack_require__(/*! ./combo */ 52));
+	extend(exports, __webpack_require__(/*! ./combo */ 53));
 
-	extend(exports, __webpack_require__(/*! ./autoWidthEdit */ 53));
+	extend(exports, __webpack_require__(/*! ./autoWidthEdit */ 54));
 
 
 /***/ },
-/* 49 */
+/* 50 */
 /*!************************************!*\
   !*** ./src/builtins/dialog.coffee ***!
   \************************************/
@@ -6524,11 +6497,11 @@
 
 	see = __webpack_require__(/*! lazy-flow */ 5).see;
 
-	_ref = __webpack_require__(/*! ../core/instantiate */ 34), list = _ref.list, if_ = _ref.if_;
+	_ref = __webpack_require__(/*! ../core/instantiate */ 35), list = _ref.list, if_ = _ref.if_;
 
-	div = __webpack_require__(/*! ../core/tag */ 36).div;
+	div = __webpack_require__(/*! ../core/tag */ 37).div;
 
-	Component = __webpack_require__(/*! ../core/base/Component */ 46).Component;
+	Component = __webpack_require__(/*! ../core/base/Component */ 47).Component;
 
 	globalID = 0;
 
@@ -6613,7 +6586,7 @@
 
 
 /***/ },
-/* 50 */
+/* 51 */
 /*!***************************************!*\
   !*** ./src/builtins/accordion.coffee ***!
   \***************************************/
@@ -6627,13 +6600,13 @@
 
 	extend = __webpack_require__(/*! extend */ 9).extend;
 
-	each = __webpack_require__(/*! ../core/instantiate */ 34).each;
+	each = __webpack_require__(/*! ../core/instantiate */ 35).each;
 
-	_ref = __webpack_require__(/*! ../core/tag */ 36), div = _ref.div, h4 = _ref.h4, a = _ref.a, span = _ref.span, img = _ref.img;
+	_ref = __webpack_require__(/*! ../core/tag */ 37), div = _ref.div, h4 = _ref.h4, a = _ref.a, span = _ref.span, img = _ref.img;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
+	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
 
-	Component = __webpack_require__(/*! ../core/base/Component */ 46).Component;
+	Component = __webpack_require__(/*! ../core/base/Component */ 47).Component;
 
 	module.exports = exports = accordion = function(attrs, accordionGroupList, options) {
 	  var accordionOptions, comp;
@@ -6702,7 +6675,7 @@
 
 
 /***/ },
-/* 51 */
+/* 52 */
 /*!**************************************!*\
   !*** ./src/builtins/triangle.coffee ***!
   \**************************************/
@@ -6710,9 +6683,9 @@
 
 	var arrowStyle, div, extendAttrs, reverseSide;
 
-	div = __webpack_require__(/*! ../core/tag */ 36).div;
+	div = __webpack_require__(/*! ../core/tag */ 37).div;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
+	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
 
 	reverseSide = {
 	  left: 'right',
@@ -6746,7 +6719,7 @@
 
 
 /***/ },
-/* 52 */
+/* 53 */
 /*!***********************************!*\
   !*** ./src/builtins/combo.coffee ***!
   \***********************************/
@@ -6756,9 +6729,9 @@
 
 	see = __webpack_require__(/*! lazy-flow */ 5).see;
 
-	_ref = __webpack_require__(/*! ../core/tag */ 36), list = _ref.list, input = _ref.input, span = _ref.span, div = _ref.div;
+	_ref = __webpack_require__(/*! ../core/tag */ 37), list = _ref.list, input = _ref.input, span = _ref.span, div = _ref.div;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
+	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
 
 	exports.combobox = combobox = function(attrs, modelValue, valueList, direction) {
 	  var comp, disp, item, opts, showingItems;
@@ -6821,7 +6794,7 @@
 
 
 /***/ },
-/* 53 */
+/* 54 */
 /*!*******************************************!*\
   !*** ./src/builtins/autoWidthEdit.coffee ***!
   \*******************************************/
@@ -6833,9 +6806,9 @@
 
 	extend = __webpack_require__(/*! extend */ 9).extend;
 
-	_ref1 = __webpack_require__(/*! ../core/tag */ 36), text = _ref1.text, div = _ref1.div;
+	_ref1 = __webpack_require__(/*! ../core/tag */ 37), text = _ref1.text, div = _ref1.div;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
+	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
 
 	exports.setAutoWidth = setAutoWidth = function(container, options) {
 	  var initialWidth, inputAttrs, inputComponent, inputEventHandler, inputEvents, inputText$, inputTextWidth$, spaceWidth, testSubject, testSubjectStyle;
@@ -6904,7 +6877,7 @@
 
 
 /***/ },
-/* 54 */
+/* 55 */
 /*!*********************************!*\
   !*** ../lazy-flow/addon.coffee ***!
   \*********************************/
@@ -6912,7 +6885,7 @@
 
 	var binary, bind, duplex, flow, see, unary, _ref;
 
-	_ref = __webpack_require__(/*! ./index */ 55), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
+	_ref = __webpack_require__(/*! ./index */ 56), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
 
 	module.exports = flow;
 
@@ -7135,7 +7108,7 @@
 
 
 /***/ },
-/* 55 */
+/* 56 */
 /*!*********************************!*\
   !*** ../lazy-flow/index.coffee ***!
   \*********************************/

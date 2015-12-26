@@ -335,45 +335,6 @@ module.exports = class Tag extends BaseComponent
 
     node
 
-  attachNode: ->
-    {node, parentNode, nextNode} = @
-
-    if parentNode == node.parentNode and  nextNode == node.nextNode
-      node
-    else
-      try
-        parentNode.insertBefore(node, nextNode)
-      catch e
-        dc.error(e)
-      # since dom have no nextNode field, so let domcom save it
-      node.nextNode = @nextNode
-      node
-
-  removeDom: ->
-    if @parentNode or !@node or !@node.parentNode
-      @
-    else
-      @emit('removeDom')
-      @removeNode()
-      @
-
-  # while TransformComponent.renderDom(),
-  # if oldBaseComponent is not the same as the new baseComponent
-  # oldBaseComponent should be removed from dom
-  # if and only if it's and its offspring's parentNode is equal to
-  # the transformComponent's parentNode
-  markRemovingDom: (parentNode) ->
-    # if the parentNode of this component has changed to other parentNode
-    # it should have bene moved to other places, or have been removed before
-    if @parentNode != parentNode
-      return
-    else
-      @parentNode = null
-      return
-
-  removeNode: ->
-    @node.parentNode.removeChild(@node)
-
   updateProperties: ->
     @hasActiveProperties = false
 
