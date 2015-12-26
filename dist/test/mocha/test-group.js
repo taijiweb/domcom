@@ -13,15 +13,6 @@ describe('group component: List, Each', function() {
       comp = list([1, 2]);
       return expect(!!isComponent(comp.children[0])).to.equal(true);
     });
-    it('empty list', function() {
-      var comp;
-      comp = list([]);
-      expect(comp.children.length).to.equal(0);
-      comp.mount();
-      expect(comp.node instanceof window.Text).to.be["true"];
-      expect(comp.node.textContent).to.equal('');
-      return expect(comp.node.length).to.equal(0);
-    });
     it('should create list component', function() {
       var comp;
       comp = list([span(['adf'])]);
@@ -140,17 +131,6 @@ describe('group component: List, Each', function() {
       comp.update();
       return expect(comp.node.length).to.equal(2);
     });
-    it('every with empty list ', function() {
-      var comp, demoNode;
-      comp = every([], function(item) {
-        return item;
-      });
-      comp.mount(demoNode = newDemoNode('list'));
-      comp.update();
-      expect(comp.node.length).to.equal(0);
-      expect(comp.node.textContent).to.equal("");
-      return expect(comp.node instanceof window.Text).to.be["true"];
-    });
     it('all ', function() {
       var comp, demoNode;
       comp = all({
@@ -163,7 +143,7 @@ describe('group component: List, Each', function() {
       comp.update();
       return expect(comp.node.length).to.equal(2);
     });
-    it('nItems ', function() {
+    return it('nItems ', function() {
       var comp, demoNode;
       comp = nItems(2, function(index) {
         return index;
@@ -171,17 +151,6 @@ describe('group component: List, Each', function() {
       comp.mount(demoNode = newDemoNode('list'));
       comp.update();
       return expect(comp.node.length).to.equal(2);
-    });
-    return it('nItems with count is 0', function() {
-      var comp, demoNode;
-      comp = nItems(0, function(index) {
-        return index;
-      });
-      comp.mount(demoNode = newDemoNode('list'));
-      comp.update();
-      expect(comp.node.length).to.equal(0);
-      expect(comp.node.textContent).to.equal("");
-      return expect(comp.node instanceof window.Text).to.be["true"];
     });
   });
   return describe('Each', function() {
@@ -191,7 +160,7 @@ describe('group component: List, Each', function() {
         return p(item);
       });
       comp.mount();
-      expect(comp.node).to.not.be["instanceof"](Array);
+      expect(comp.node).to.be["instanceof"](Array);
       expect(comp.node.length).to.equal(0);
       comp.update();
       return expect(comp.node.length).to.equal(0);
@@ -519,7 +488,7 @@ describe('group component: List, Each', function() {
       expect(comp.node.parentNode).to.equal(document.body);
       showingEach$(false);
       comp.render();
-      return expect(comp.node.parentNode).to.equal(document.body);
+      return expect(comp.node.parentNode).not.to.equal(document.body);
     });
   });
 });

@@ -1,6 +1,6 @@
 extend = require 'extend'
 dc = require '../../dc'
-{domField, domValue} = require('../../dom-util')
+{domField, domValue} = require('domcom/lib/dom-util')
 {classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require '../property'
 BaseComponent = require './BaseComponent'
 Text = require './Text'
@@ -344,9 +344,12 @@ module.exports = class Tag extends List
     if parentNode == node.parentNode and  nextNode == node.nextNode
       node
     else
-      parentNode.insertBefore(node, nextNode)
+      try
+        parentNode.insertBefore(node, nextNode)
+      catch e
+        dc.error(e)
       # since dom have no nextNode field, so let domcom save it
-      node.nextNode = nextNode
+      node.nextNode = @nextNode
       node
 
   removeDom: ->

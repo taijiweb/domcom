@@ -19,7 +19,7 @@ exports.getBindProp = (component)  ->
 
 if typeof window != 'undefined'
   # add browser compatability for addEventListener and removeEventListener in ie 6, 7, 8
-  if document.body.addEventListener
+  if document.addEventListener
     exports.addEventListener = (node, name, handler) ->
       node.addEventListener(name, handler, false)
       return
@@ -29,7 +29,7 @@ if typeof window != 'undefined'
 
   else
     exports.addEventListener = (node, name, handler) ->
-      node.attachEvent(name, setCheckedValues)
+      node.attachEvent(name, handler)
       return
     exports.removeEventListener = (node, name, handler) ->
       node.detachEvent(name, handler)

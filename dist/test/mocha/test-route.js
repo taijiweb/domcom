@@ -1,4 +1,4 @@
-var Text, expect, idescribe, iit, isComponent, ndescribe, nit, rePattern, rePatternTotal, route, slashs, txt, _ref;
+var Nothing, expect, idescribe, iit, isComponent, ndescribe, nit, rePattern, rePatternTotal, route, slashs, txt, _ref;
 
 _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
 
@@ -8,7 +8,7 @@ rePattern = /^((:([$_\w]+)(\([^\(\)]+\))?)|(\([^\(\)]+\))|([^:\(]+))/;
 
 slashs = /(?:\\\/)|(?:\\\()|(?:\\\))/;
 
-isComponent = dc.isComponent, route = dc.route, txt = dc.txt, Text = dc.Text;
+isComponent = dc.isComponent, route = dc.route, txt = dc.txt, Nothing = dc.Nothing;
 
 describe('route', function() {
   describe('route regexp', function() {
@@ -145,7 +145,7 @@ describe('route', function() {
       comp.getPath = function() {
         return 'a';
       };
-      return expect((content = comp.getContentComponent()) instanceof Text).to.equal(true);
+      return expect((content = comp.getContentComponent()) instanceof Nothing).to.equal(true);
     });
     it("should not route 'a/' on path 'a'", function() {
       var comp, content;
@@ -155,7 +155,7 @@ describe('route', function() {
       comp.getPath = function() {
         return 'a';
       };
-      return expect((content = comp.getContentComponent()) instanceof Text).to.equal(true);
+      return expect((content = comp.getContentComponent()) instanceof Nothing).to.equal(true);
     });
     it("should not route 'a' on path 'a/'", function() {
       var comp, content;
@@ -165,7 +165,7 @@ describe('route', function() {
       comp.getPath = function() {
         return 'a/';
       };
-      return expect((content = comp.getContentComponent()) instanceof Text).to.equal(true);
+      return expect((content = comp.getContentComponent()) instanceof Nothing).to.equal(true);
     });
     it("should route '*' on path 'a'", function() {
       var comp, content;
@@ -197,7 +197,7 @@ describe('route', function() {
       comp.getPath = function() {
         return 'a/';
       };
-      return expect((content = comp.getContentComponent()) instanceof Text).to.equal(true);
+      return expect((content = comp.getContentComponent()) instanceof Nothing).to.equal(true);
     });
     it("should not route '*/' on path 'a'", function() {
       var comp, content;
@@ -207,7 +207,7 @@ describe('route', function() {
       comp.getPath = function() {
         return 'a';
       };
-      return expect((content = comp.getContentComponent()) instanceof Text).to.equal(true);
+      return expect((content = comp.getContentComponent()) instanceof Nothing).to.equal(true);
     });
     it("should route 'a/b'", function() {
       var comp, content;
@@ -276,7 +276,7 @@ describe('route', function() {
       comp.getPath = function() {
         return 'a/b';
       };
-      return expect((content = comp.getContentComponent()) instanceof Text).to.equal(true);
+      return expect((content = comp.getContentComponent()) instanceof Nothing).to.equal(true);
     });
     return it("should route embedding route", function() {
       var comp, comp2, content;

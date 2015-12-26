@@ -15,7 +15,7 @@ module.exports = class Defer extends TransformComponent
 
     @fulfill = fulfill or (result) -> result
     @reject = reject or (error) -> error
-    @init = init and init(promise, @) or new Text('')
+    @init = init and init(promise, @) or new Nothing()
 
     @family = family = intersect([fullfill.family, reject.family, init.family])
     family[@dcid] = true

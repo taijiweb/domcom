@@ -73,7 +73,10 @@ module.exports = class BaseComponent extends Component
     if parentNode == node.parentNode and nextNode == node.nextNode
       return node
 
-    parentNode.insertBefore(node, nextNode)
+    try
+      parentNode.insertBefore(node, nextNode)
+    catch e
+      dc.error(e)
     # since dom have no nextNode field, so let domcom save it
     node.nextNode = nextNode
 

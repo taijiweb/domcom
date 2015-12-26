@@ -1,4 +1,5 @@
 isComponent = require './isComponent'
+Nothing = require './Nothing'
 Text = require './Text'
 {react} = require 'lazy-flow'
 
@@ -11,7 +12,7 @@ module.exports = toComponent = (item) ->
     List = require './List' # avoid loop require
     new List(for e in item then toComponent(e))
 
-  else if !item? then new Text('')
+  else if !item? then new Nothing()
 
   else if item.then and item.catch
     Func = require './Func' # avoid loop require

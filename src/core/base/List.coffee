@@ -3,6 +3,7 @@ toComponentList = require './toComponentList'
 
 BaseComponent = require './BaseComponent'
 
+Nothing = require './Nothing'
 {checkContainer, newLine, binarySearch, binaryInsert, substractSet} = require 'dc-util'
 {checkConflictOffspring} = require '../../dom-util'
 
@@ -24,11 +25,6 @@ module.exports = exports = class List extends BaseComponent
     @children = children
 
     @isList = true
-
-    # if children.length == 0,
-    # emptyTextNode should be used as a placeholder
-    @emptyTextNode = null
-
     return
 
   invalidateContent: (child) ->
@@ -38,35 +34,26 @@ module.exports = exports = class List extends BaseComponent
     @holder and @holder.invalidateContent(@)
 
   createDom: ->
-    {children} = @
-    {length} = children
-
-    if !length
-      @emptyTextNode = node = document.createTextNode('')
-      @node = node
-      @firstNode = node
-      return node
-
-    else
+    if length=@children.length
       {parentNode, children} = @
       children[length-1].nextNode = @nextNode
       for child, i in children
         child.parentNode = parentNode
 
-      node = []
-      @setNode(node)
+    node = []
+    @setNode(node)
 
-      @childNodes = node
+    @childNodes = node
 
-      node.parentNode = @parentNode
+    node.parentNode = @parentNode
 
-      @createChildrenDom()
+    @createChildrenDom()
 
-      @setFirstNode @childFirstNode
+    @setFirstNode @childFirstNode
 
-      @childrenNextNode = @nextNode
+    @childrenNextNode = @nextNode
 
-      @node
+    @node
 
   createChildrenDom: ->
     node = @childNodes
@@ -125,10 +112,11 @@ module.exports = exports = class List extends BaseComponent
 
       {children} = @
       @invalidIndexes = []
-      {nextNode, childNodes} = @
-      i = invalidIndexes.length-1
-      children[children.length-1].nextNode = @childrenNextNode
+      {childNodes} = @
+      nextNode = @childrenNextNode
+      children[children.length-1].nextNode = nextNode
       childFirstNode = null
+      i = invalidIndexes.length - 1
       while i>=0
         listIndex = invalidIndexes[i]
         child = children[listIndex]
@@ -143,9 +131,9 @@ module.exports = exports = class List extends BaseComponent
           dc.onerror(e)
 
         childNodes[listIndex] = child.node
-        childFirstNode = child.firstNode or nextNode
+        nextNode = child.firstNode or nextNode
         if listIndex
-          children[listIndex-1].nextNode = childFirstNode
+          children[listIndex-1].nextNode = nextNode
         i--
 
       while listIndex >= 0
@@ -280,7 +268,7 @@ module.exports = exports = class List extends BaseComponent
     if startIndex > oldChildrenLength
       i = oldChildrenLength
       while i < startIndex
-        child = new Text('')
+        child = new Nothing()
         child.holder = this
         newChildren.unshift child
         i++
@@ -301,7 +289,7 @@ module.exports = exports = class List extends BaseComponent
 
       # maybe stopIndex has exceeded the old length of the children
       if !oldChild?
-        children[startIndex] = new Text('')
+        children[startIndex] = new Nothing()
 
       if oldChild==child
         if node

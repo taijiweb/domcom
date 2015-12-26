@@ -15,14 +15,6 @@ describe 'group component: List, Each', ->
       comp = list([1, 2])
       expect(!!isComponent(comp.children[0])).to.equal(true)
 
-    it 'empty list', ->
-      comp = list([])
-      expect(comp.children.length).to.equal(0)
-      comp.mount()
-      expect(comp.node instanceof window.Text).to.be.true
-      expect(comp.node.textContent).to.equal('')
-      expect(comp.node.length).to.equal(0)
-
     it 'should create list component', ->
       comp =  list([span(['adf'])])
       comp.mount()
@@ -109,14 +101,6 @@ describe 'group component: List, Each', ->
       comp.update()
       expect(comp.node.length).to.equal 2
 
-    it 'every with empty list ', ->
-      comp = every([], (item) -> item)
-      comp.mount(demoNode=newDemoNode('list'))
-      comp.update()
-      expect(comp.node.length).to.equal 0
-      expect(comp.node.textContent).to.equal ""
-      expect(comp.node instanceof window.Text).to.be.true
-
     it 'all ', ->
       comp = all({a:1, b:2}, (key, value) -> list(key, value))
       comp.mount(demoNode=newDemoNode('list'))
@@ -129,19 +113,11 @@ describe 'group component: List, Each', ->
       comp.update()
       expect(comp.node.length).to.equal 2
 
-    it 'nItems with count is 0', ->
-      comp = nItems(0, (index) -> index)
-      comp.mount(demoNode=newDemoNode('list'))
-      comp.update()
-      expect(comp.node.length).to.equal 0
-      expect(comp.node.textContent).to.equal ""
-      expect(comp.node instanceof window.Text).to.be.true
-
   describe 'Each', ->
     it  'should create empty each component', ->
       comp = each(lst = [], (item, i) -> p(item))
       comp.mount()
-      expect(comp.node).to.not.be.instanceof Array
+      expect(comp.node).to.be.instanceof Array
       expect(comp.node.length).to.equal 0
       comp.update()
       expect(comp.node.length).to.equal 0
@@ -372,4 +348,4 @@ describe 'group component: List, Each', ->
       expect(comp.node.parentNode).to.equal document.body
       showingEach$ false
       comp.render()
-      expect(comp.node.parentNode).to.equal document.body
+      expect(comp.node.parentNode).not.to.equal document.body

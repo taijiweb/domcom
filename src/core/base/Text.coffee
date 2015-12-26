@@ -2,6 +2,11 @@ BaseComponent = require './BaseComponent'
 {funcString, newLine, value, dynamic} = require 'dc-util'
 {domField, domValue} = require '../../dom-util'
 
+if 'textContent' of document.documentElement
+  hasTextContent = true
+else
+  hasTextContent = false
+
 exports = module.exports = class Text extends BaseComponent
   constructor: (text) ->
     super()
@@ -15,43 +20,21 @@ exports = module.exports = class Text extends BaseComponent
     @setFirstNode(node)
     @cacheText = text
     node
-  ###
-  https://github.com/ajaxorg/ace/blob/master/lib/ace/lib/dom.js
-  if ("textContent" in document.documentElement) {
-      exports.setInnerText = function(el, innerText) {
-          el.textContent = innerText;
-      };
 
-      exports.getInnerText = function(el) {
-          return el.textContent;
-      };
-  }
-  else {
-      exports.setInnerText = function(el, innerText) {
-          el.innerText = innerText;
-      };
-
-      exports.getInnerText = function(el) {
-          return el.innerText;
-      };
-  }
-  ###
   updateDom: ->
+    {node} = @
     if @textValid
-      return @node
-
-    @textValid = true
-    text = domValue(@text)
-    if text!=@cacheText
-      node = @node
-      parentNode = node.parentNode
-      if parentNode
-        parentNode.removeChild(node)
-      node = document.createTextNode(text)
-      @setNode(node)
-      @setFirstNode(node)
-      @cacheText = text
-    @node
+      return node
+    else
+      @textValid = true
+      text = domValue(@text)
+      if text!=@cacheText
+        if hasTextContent
+          node.textContent = text
+        else
+          node.innerText = text
+        @cacheText = text
+      node
 
   clone: -> (new @constructor(@text)).copyEventListeners(@)
 

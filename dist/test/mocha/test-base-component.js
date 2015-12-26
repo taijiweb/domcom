@@ -1,10 +1,10 @@
-var Html, List, Tag, Text, a_, bindings, classFn, div, expect, html, idescribe, iit, list, ndescribe, newDemoNode, nit, p, see, styleFrom, txt, _ref;
+var Html, List, Nothing, Tag, Text, a_, bindings, classFn, div, expect, html, idescribe, iit, list, ndescribe, newDemoNode, nit, p, see, styleFrom, txt, _ref;
 
 _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
 newDemoNode = require('./helper').newDemoNode;
 
-bindings = dc.bindings, see = dc.see, Tag = dc.Tag, Text = dc.Text, List = dc.List, txt = dc.txt, list = dc.list, p = dc.p, div = dc.div, Html = dc.Html, html = dc.html, classFn = dc.classFn, styleFrom = dc.styleFrom;
+bindings = dc.bindings, see = dc.see, Tag = dc.Tag, Text = dc.Text, List = dc.List, txt = dc.txt, list = dc.list, p = dc.p, div = dc.div, Html = dc.Html, html = dc.html, classFn = dc.classFn, styleFrom = dc.styleFrom, Nothing = dc.Nothing;
 
 a_ = bindings({
   a: 1,
@@ -100,12 +100,12 @@ describe("test base component", function() {
       comp.mount();
       return expect(comp.node.childNodes.length).to.equal(3);
     });
-    it('tag shoud mount with empty text child', function() {
+    it('tag shoud mount with Nothing child', function() {
       var comp, t1, t2, t3, t4;
-      comp = new Tag('p', {}, [t1 = new Text(1), t2 = new Text(2), t3 = new Text(3), t4 = new Text('')]);
+      comp = new Tag('p', {}, [t1 = new Text(1), t2 = new Text(2), t3 = new Text(3), t4 = new Nothing()]);
       expect(comp.children.length).to.equal(4);
       comp.mount();
-      return expect(comp.node.childNodes.length).to.equal(4);
+      return expect(comp.node.childNodes.length).to.equal(3);
     });
     it('should create tag with children', function() {
       var comp;

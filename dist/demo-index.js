@@ -1,0 +1,58 @@
+!function(e){function t(o){if(n[o])return n[o].exports;var c=n[o]={exports:{},id:o,loaded:!1};return e[o].call(c.exports,c,c.exports,t),c.loaded=!0,c.exports}var n={};return t.m=e,t.c=n,t.p="/assets/",t(0)}([/*!***************************!*\
+  !*** ./demo/index.coffee ***!
+  \***************************/
+function(e,t,n){var o,c,r;r=n(/*! ./util */1),c=r.runDemo,o=r.demoMap,window.onload=function(){return c(o,"choose web framework")}},/*!**************************!*\
+  !*** ./demo/util.coffee ***!
+  \**************************/
+function(e,t,n){var o,c,r,u,i,d,a,l,s,f,p,h,m,v,g,x,b,k,w,y,$,I,D,N,C;$=dc.select,y=dc.see,x=dc.if_,c=dc.case_,b=dc.list,g=dc.func,f=dc.each,s=dc.div,w=dc.p,dc.directives({$options:dc.$options,$model:dc.$model}),D=n(/*! ./demo-each */2),p=D.eachDemo1,h=D.eachDemo2,m=D.eachDemo3,v=D.eachDemo4,N=n(/*! ./demo-builtins */3),l=N.demoTriangle,u=N.demoCombo,a=N.demoModelOnMultipleInput,I=n(/*! ./demo-splitter */4),o=n(/*! ./demo-accordion */5),r=n(/*! ./demo-choose-web-framework */6),C=n(/*! ./demo-debug */7),i=C.demoEachPush,d=C.demoIfEach,a=C.demoModelOnMultipleInput,t.demoMap={"choose web framework":r(),accordion:o(),triangle:l(),combo:u(),"show hide":n(/*! ./demo-show-hide */8)(),counter:n(/*! ./demo-counter */9)(),dialog:n(/*! ./demo-dialog */10)(),event:n(/*! ./demo-event */11)(),controls:n(/*! ./demo-controls */12)(),"if":n(/*! ./demo-if-component */13)(),each1:p(),each2:h(),each3:m(),each4:v(),"switch 1 2 3 4":n(/*! ./demo-switch-1-2-3-4 */14)(),splitter:I(),sum:n(/*! ./demo-sum */15)(),"text model":n(/*! ./demo-text-model */16)(),"auto width edit":n(/*! ./demo-auto-width-edit */17)(),"mount/unmount":n(/*! ./demo-mount-unmount */18)()},t.makeDemoComponent=k=function(e,t){var n,o,r;return n=y(t),b(o=$({$options:[Object.keys(e)],$model:n}),s(c(n,e,r=e[t]).updateWhen(o,"change")))},t.runDemo=function(e,t,n){var o;return o=k(e,t),o.mount(n)}},/*!*******************************!*\
+  !*** ./demo/demo-each.coffee ***!
+  \*******************************/
+function(e,t){var n,o,c,r;o=dc.list,n=dc.each,c=dc.p,r=dc.txt,t.eachDemo1=function(){var e,t;return t=[1,2],e=o(t)},t.eachDemo2=function(){var e,t;return t=[1,2],e=n(t,function(e){return c(e)})},t.eachDemo3=function(){var e,t;return t=[1,2,3,4,5,6],e=n(t,function(e){return c(e)}),e.on("beforeAttach",function(){return setTimeout(function(){return t.push(7),e.update()},1e3),setTimeout(function(){return t.setLength(4),e.update()},2e3)}),e},t.eachDemo4=function(){var e,t;return t=[1,2,3,4,5,6],e=n(t,function(e){return r(e)}),e.on("beforeAttach",function(){return setTimeout(function(){return t.push(7),e.update()},1e3),setTimeout(function(){return t.setLength(4),e.update()},2e3)}),e}},/*!***********************************!*\
+  !*** ./demo/demo-builtins.coffee ***!
+  \***********************************/
+function(e,t){var n,o,c,r,u,i;o=dc.duplex,n=dc.div,u=dc.triangle,r=dc.list,c=dc.hcombo,i=dc.vcombo,t.demoTriangle=function(){return n({},u({},"top",10,"blue"),u({},"bottom",10,"black"),u({},"left",10,"red"),u({},"right",10,"green"))},t.demoCombo=function(){var e,t,n,u,d;return e={},t=o(e,"x"),n=c({style:{display:"inline-block"}},t,"a b".split(" ")),u=i({style:{display:"inline-block"}},t,"a b".split(" ")),d=r(u,n),n.on("update",function(){return d.update()}),u.on("update",function(){return d.update()}),d}},/*!***********************************!*\
+  !*** ./demo/demo-splitter.coffee ***!
+  \***********************************/
+function(e,t){var n;n=dc.div,e.exports=function(){var e;return dc.directives({$splitter:dc.$splitter}),e=n({$splitter:"vertical",style:{height:"100%",width:"100%"}},n({style:{"background-color":"blue",height:"50%",width:"100%"}},1),n({$splitter:"horizontal",style:{"background-color":"grey",height:"50%",width:"100%"}},n({style:{"background-color":"red",display:"inline-block",height:"100%",width:"40%"}},2),n({style:{"background-color":"green",display:"inline-block",height:"100%",width:"40%"}},3)))}},/*!************************************!*\
+  !*** ./demo/demo-accordion.coffee ***!
+  \************************************/
+function(e,t){var n,o,c,r,u;c=dc.duplex,n=dc.accordion,r=dc.each,o=dc.div,u=dc.span,e.exports=function(){var e,t,o,c,i,d,a;return a=[{heading:"group1",items:"a b c".split(" ")},{heading:"group2",items:"d e f".split(" ")},{heading:"group3",items:"x y z".split(" ")}],e=function(){var e,t,n;for(n=[],e=0,t=a.length;t>e;e++)c=a[e],d={opened:c.opened,disable:c.disable},i={},o=r(c.items,function(e){return u({style:{margin:"5px"},onclick:function(){}},e)}),n.push([i,c.heading,o,d]);return n}(),t=n({},e,{closeOthers:!0})}},/*!***********************************************!*\
+  !*** ./demo/demo-choose-web-framework.coffee ***!
+  \***********************************************/
+function(e,t){var n,o,c,r,u,i,d,a,l,s;u=dc.flow,l=dc.see,n=dc.case_,c=dc.each,r=dc.every,i=dc.func,a=dc.list,o=dc.div,d=dc.label,s=dc.text,e.exports=function(){var e,t,c,u,i,f,p,h,m,v,g;for(u=l("d",function(e){return e.toLowerCase()}),c=null,m=d("Please choose: "),h=s({onchange:function(){return c.update()}},u),i=["Domcom","jQuery","Angular","React","Backbone","Ember"],p=r(i,function(e){return o(""+e[0]+". "+e)}),e={},v=0,g=i.length;g>v;v++)f=i[v],e[f[0]]=f;return t=n(u,e,"some other things"),c=a(m,h,p,o("You perfer ",t,"."))},e.exports=function(){var e,t,n,r,f,p,h,m,v;return r=l("d",function(e){return e.toLowerCase()}),n=null,m=d("Please choose: "),h=s({onchange:function(){return n.update()}},r),f=["Domcom","jQuery","Angular","React","Backbone","Ember"],p=c(f,function(e){return o(""+e[0]+". "+e)}),v=d("add some others: "),e=s({onchange:function(){var e;return e=this.value,f.push(e),r(e[0]),n.update()}}),t=i(u(r,function(){var e,t,n,o;for(e=r(),n=0,o=f.length;o>n;n++)if(t=f[n],t[0].toLowerCase()===e)return t;return"some other things"})),n=a(m,h,v,e,p,o("You perfer ",t,"."))}},/*!********************************!*\
+  !*** ./demo/demo-debug.coffee ***!
+  \********************************/
+function(e,t){var n,o,c,r,u,i,d,a;d=dc.see,r=dc.if_,u=dc.list,c=dc.each,n=dc.div,i=dc.p,a=dc.text,o=dc.duplex,t.demoEachPush=function(){var e,t;return t=[1,2],e=u(c(t,function(e){return i(e)}),"some other thing"),e.mount(),t.push(3),e.render()},t.demoIfEach=function(){var e,t,o;return o=d(!0),t=[1,2],e=r(o,c(t,function(e){return n(e)})),e.mount(),o(!1),e.render(),o(!0),e.render()},t.demoModelOnMultipleInput=function(){var e,t,n;return e={},t=a({$model:o(e,"x")}),n=a({$model:o(e,"x")}),u(t,n).updateWhen([t,n],"change").mount()}},/*!************************************!*\
+  !*** ./demo/demo-show-hide.coffee ***!
+  \************************************/
+function(e,t){var n,o,c,r,u,i,d;c=dc.list,i=dc.text,n=dc.div,r=dc.p,u=dc.see,o=dc.flow,d=o.toggle,e.exports=function(){var e,t;return t=u(!0),e=c(n({onclick:function(){return d(t),e.update()}},"show/hide by changing style.display"),r({"class":{},style:{display:function(){return t()?"block":"none"}}},"asdfdfs"))}},/*!**********************************!*\
+  !*** ./demo/demo-counter.coffee ***!
+  \**********************************/
+function(e,t){var n,o,c;c=dc.txt,n=dc.p,o=dc.see,e.exports=function(){var e,t,r,u;return r=o(t=0),e=n(u=c(r)),e.on("beforeAttach",function(){var e,n;return e=function(){return r(t++),1e3===t?clearInterval(n):void 0},n=setInterval(e,1)}),dc.updateWhen(setInterval,u,{interval:16,clear:function(){return t>=1e3}}),e}},/*!*********************************!*\
+  !*** ./demo/demo-dialog.coffee ***!
+  \*********************************/
+function(e,t){var n,o,c;n=dc.dialog,c=dc.list,o=dc.div,e.exports=function(){var e;return e=n({overlay:!0,showClose:!0},o({"class":"message"},"click to close me",o({onclick:function(){return e.close()}},"OK")))}},/*!********************************!*\
+  !*** ./demo/demo-event.coffee ***!
+  \********************************/
+function(e,t){var n,o,c,r,u;c=dc.list,n=dc.a,o=dc.checkbox,u=dc.text,r=dc.p,e.exports=function(){var e,t;return t=n({onclick:function(){return alert("parent")}},r({onclick:function(e){return alert("child"),e.continuePropagation=!0}},"propagation")),e=n({onclick:function(){return alert("parent")}},r({onclick:function(e){return alert("child")}},"do not propagation")),c(t,e)}},/*!***********************************!*\
+  !*** ./demo/demo-controls.coffee ***!
+  \***********************************/
+function(e,t){var n,o,c,r,u,i;r=dc.list,n=dc.a,c=dc.checkbox,i=dc.text,u=dc.p,o=dc.bindings,e.exports=function(){var e,t,n,u,d,a,l,s;return e=o({a:1}).a$,u=r(t=c(e),n=c(e)),s=r(a=i(e),l=i(e)),e(6),d=r(u,s),dc.updateWhen([t,n,a,l],"change",d),d}},/*!***************************************!*\
+  !*** ./demo/demo-if-component.coffee ***!
+  \***************************************/
+function(e,t){var n,o,c,r,u;c=dc.list,o=dc.if_,u=dc.text,n=dc.div,r=dc.see,e.exports=function(){var e,t;return t=r(0,parseNumber),e=c(u({onchange:function(){return t=parseInt(this.value),e.update()}},t),o(t,n(1),n(2)))},e.exports=function(){var e,t;return t=r(0,parseFloat),e=c(u({onchange:function(){return e.update()}},t),o(t,n("It is not 0."),n("It is 0 or NaN.")))}},/*!*****************************************!*\
+  !*** ./demo/demo-switch-1-2-3-4.coffee ***!
+  \*****************************************/
+function(e,t){var n,o,c,r,u,i,d;r=dc.func,d=dc.see,c=dc.flow,o=dc.each,u=dc.list,n=dc.div,i=dc.number,e.exports=function(){var e,t,c,r;return r=0,e=null,t=i({onchange:function(){return r=parseInt(this.value),e.update()}}),c=o([0,1,2,3],function(e){return n({style:{display:function(){return e===r?"block":"none"}}},e)}),e=u(t,c)},e.exports=function(){var e,t,o;return o=0,e=null,t=i({onchange:function(){return o=parseInt(this.value),e.update()}}),e=u(t,r(function(){return o>=0&&3>=o?n(o):void 0}))},e.exports=function(){var e,t;return t=d(0),u(e=i(t),r(c(t,function(){var e;return e=t(),e>=0&&3>=e?n(e):void 0})).updateWhen(e,"change"))}},/*!******************************!*\
+  !*** ./demo/demo-sum.coffee ***!
+  \******************************/
+function(e,t){var n,o,c,r,u,i;u=dc.see,o=dc.flow,c=dc.list,i=dc.text,r=dc.p,e.exports=n=function(){var e,t,n,d,a,l;return e=u(1,parseFloat),t=u(2,parseFloat),n=c(a=i({value:e,onchange:function(){return e(this.value)}}),l=i({value:t,onchange:function(){return t(this.value)}}),d=r(o.add(e,t))),dc.updateWhen([a,l],"change",d)},e.exports=n=function(){var e,t,n,d,a,l;return e=u(1),t=u(2),n=c(a=i({value:e,onchange:function(){return e(1*this.value)}}),l=i({value:t,onchange:function(){return t(1*this.value)}}),d=r(o.add(e,t))),n.updateWhen([a,l],"change")}},/*!*************************************!*\
+  !*** ./demo/demo-text-model.coffee ***!
+  \*************************************/
+function(e,t){var n,o,c,r,u;r=dc.list,o=dc.bindings,n=dc.a,c=dc.checkbox,u=dc.text,e.exports=function(){var e,t,c;return e=o({a:1}).a$,t={onchange:function(){return c.update()}},c=r(n=u(t,e),u(t,e))}},/*!******************************************!*\
+  !*** ./demo/demo-auto-width-edit.coffee ***!
+  \******************************************/
+function(e,t){var n;n=dc.autoWidthEdit,e.exports=function(){return n()}},/*!****************************************!*\
+  !*** ./demo/demo-mount-unmount.coffee ***!
+  \****************************************/
+function(e,t){var n,o,c,r;c=dc.list,n=dc.div,r=dc.see,o=dc.if_,e.exports=function(){var e,t,u;return e=r(!0),t=c(n({onclick:function(){return e(!0),t.update()}},"mount"),n({onclick:function(){return e(!1),t.update()}},"unmount"),u=o(e,n("toggle me")))}}]);

@@ -1,5 +1,5 @@
 DomNode = require './DomNode'
-{requestAnimationFrame, raf, isElement} = require  './dom-util'
+{requestAnimationFrame, raf, isElement, addEventListener} = require  './dom-util'
 {newDcid, isEven} = require 'dc-util'
 {domNodeCache, readyFnList, directiveRegistry, renderCallbackList} = require './config'
 isComponent = require './core/base/isComponent'
@@ -33,8 +33,6 @@ if typeof window != 'undefined'
   # why so strange? browser can predict the document.dcid=1, document.body.dcid=2 and assigns it in advance !!!!!!!
   dcid = document.dcid = newDcid()
   window.$document = dc.$document = domNodeCache[dcid] = new DomNode(document)
-  dcid = document.body.dcid = newDcid()
-  window.$body = dc.$body = domNodeCache[dcid] = new DomNode(document.body)
 
 dc.onReady = (callback) -> readyFnList.push callback
 
@@ -51,6 +49,10 @@ dc.ready = ->
 
 if typeof window != 'undefined'
   document.addEventListener 'DOMContentLoaded', dc.ready, false
+  addEventListener document, 'DOMContentLoaded', ->
+    dcid = document.body.dcid = newDcid()
+    window.$body = dc.$body = domNodeCache[dcid] = new DomNode(document.body)
+
 
 dc.render = render = ->
   for callback in renderCallbackList

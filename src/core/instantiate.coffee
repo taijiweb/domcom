@@ -2,7 +2,7 @@
 Tag, Text, Comment, Html
 If, Case, Func, List, Each,
 Pick
-Defer} = require './base'
+Nothing, Defer} = require './base'
 {isEven, numbers} = require 'dc-util'
 
 {isAttrs} = require './util'
@@ -96,7 +96,7 @@ exports.each = (attrs, list, itemFn) ->
 exports.every = every = (attrs, list, itemFn) ->
   if isAttrs(attrs)
 
-    if !list then return new Text('')
+    if !list then return new Nothing()
 
     children = []
     for item, i in list
@@ -104,7 +104,7 @@ exports.every = every = (attrs, list, itemFn) ->
     new Tag('div', attrs, [new List(children)])
   else
 
-    if !attrs then return new Text('')
+    if !attrs then return new Nothing()
 
     # attrs become list, list become itemFn
     children = []
@@ -114,7 +114,7 @@ exports.every = every = (attrs, list, itemFn) ->
 
 # all can not use attrs directly
 exports.all = (hash, itemFn) ->
-    if !hash then return new Text('')
+    if !hash then return new Nothing()
 
     children = []
     i = 0

@@ -6,7 +6,6 @@ describe 'util', ->
   describe 'binarySearch', ->
     it 'should binarySearch(0, [])', ->
       expect(binarySearch(0, [])).to.deep.equal 0
-      expect(1).to.equal(0)
     it 'should binarySearch(0, [0])', ->
       expect(binarySearch(0, [0])).to.deep.equal 0
     it 'should binarySearch(0, [1])', ->

@@ -43,6 +43,8 @@ module.exports = class TransformComponent extends Component
 
       if content!=oldContent
         @emit('contentChanged', oldContent, content)
+        if oldContent and oldContent.holder == this
+          oldContent.holder = null
         @content = content
       #else null # do nothing
 

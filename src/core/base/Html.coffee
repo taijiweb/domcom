@@ -12,21 +12,6 @@ BaseComponent = require './BaseComponent'
 # this is for Html Component, which take some text as innerHTML
 # for <html> ... </html>, please use tagHtml instead
 
-###
-  https://github.com/ajaxorg/ace/blob/master/lib/ace/lib/dom.js
-  /*
- * Optimized set innerHTML. This is faster than plain innerHTML if the element
- * already contains a lot of child elements.
- *
- * See http://blog.stevenlevithan.com/archives/faster-than-innerhtml for details
- *-/
-exports.setInnerHtml = function(el, innerHtml) {
-    var element = el.cloneNode(false);//document.createElement("div");
-    element.innerHTML = innerHtml;
-    el.parentNode.replaceChild(element, el);
-    return element;
-};
-###
 module.exports = class Html extends BaseComponent
   constructor: (text, @transform) ->
     super()
@@ -78,7 +63,10 @@ module.exports = class Html extends BaseComponent
       node.nextNode = nextNode
 
       for childNode in node
-        parentNode.insertBefore(childNode, @nextNode)
+        try
+          parentNode.insertBefore(childNode, @nextNode)
+        catch e
+          dc.error(e)
         # do not need set nextNode for every childNode
         # domcom do not care about them
 

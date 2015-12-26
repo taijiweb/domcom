@@ -7,6 +7,7 @@ bindings, see
 Tag, Text, List, txt, list
 p, div, Html, html
 classFn, styleFrom,
+Nothing
 
 } = dc
 
@@ -80,14 +81,11 @@ describe "test base component", ->
       comp.mount() 
       expect(comp.node.childNodes.length).to.equal 3
 
-    it 'tag shoud mount with empty text child', ->
-      # this was used to test Nothing component
-      # but Nothing component was deprecated
-      # just use new Text('') instead
-      comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t3=new Text(3), t4=new Text('')]) #
+    it 'tag shoud mount with Nothing child', ->
+      comp = new Tag('p', {}, [t1=new Text(1), t2=new Text(2), t3=new Text(3), t4=new Nothing()]) #
       expect(comp.children.length).to.equal 4
       comp.mount() 
-      expect(comp.node.childNodes.length).to.equal 4
+      expect(comp.node.childNodes.length).to.equal 3
 
     it 'should create tag with children', ->
       comp =  new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [new Tag('span', {}, [new Text('adf')])])
