@@ -10,7 +10,17 @@ else
 exports = module.exports = class Text extends BaseComponent
   constructor: (text) ->
     super()
-    constructTextLikeComponent.call(this, text)
+    @text = text = domField(text)
+
+    me = @
+    if typeof text == 'function'
+      text.onInvalidate ->
+        me.textValid = false
+        me.invalidate()
+
+    @family = {}
+    @family[@dcid] = true
+    @
 
   createDom: ->
     @textValid = true
@@ -39,17 +49,3 @@ exports = module.exports = class Text extends BaseComponent
   clone: -> (new @constructor(@text)).copyEventListeners(@)
 
   toString: (indent=2, addNewLine) -> newLine(funcString(@text), indent, addNewLine)
-
-exports.constructTextLikeComponent = constructTextLikeComponent = (text) ->
-  me = @
-  @text = text = domField(text)
-
-  if typeof text == 'function'
-    text.onInvalidate ->
-      me.textValid = false
-      me.invalidate()
-
-  @family = {}
-  @family[@dcid] = true
-  @
-

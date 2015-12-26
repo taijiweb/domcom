@@ -1753,13 +1753,13 @@
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, Cdata, constructTextLikeComponent, domValue, funcString, newLine, _ref,
+	var BaseComponent, Cdata, Text, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 13);
 
-	constructTextLikeComponent = __webpack_require__(/*! ./Text */ 15).constructTextLikeComponent;
+	Text = __webpack_require__(/*! ./Text */ 15);
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -1769,8 +1769,7 @@
 	  __extends(Cdata, _super);
 
 	  function Cdata(text) {
-	    Cdata.__super__.constructor.call(this);
-	    constructTextLikeComponent.call(this, text);
+	    Cdata.__super__.constructor.call(this, text);
 	  }
 
 
@@ -1797,7 +1796,7 @@
 
 	  return Cdata;
 
-	})(BaseComponent);
+	})(Text);
 
 
 /***/ },
@@ -2209,7 +2208,7 @@
   \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, Text, constructTextLikeComponent, domField, domValue, dynamic, exports, funcString, hasTextContent, newLine, value, _ref, _ref1,
+	var BaseComponent, Text, domField, domValue, dynamic, exports, funcString, hasTextContent, newLine, value, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -2229,8 +2228,19 @@
 	  __extends(Text, _super);
 
 	  function Text(text) {
+	    var me;
 	    Text.__super__.constructor.call(this);
-	    constructTextLikeComponent.call(this, text);
+	    this.text = text = domField(text);
+	    me = this;
+	    if (typeof text === 'function') {
+	      text.onInvalidate(function() {
+	        me.textValid = false;
+	        return me.invalidate();
+	      });
+	    }
+	    this.family = {};
+	    this.family[this.dcid] = true;
+	    this;
 	  }
 
 	  Text.prototype.createDom = function() {
@@ -2278,21 +2288,6 @@
 	  return Text;
 
 	})(BaseComponent);
-
-	exports.constructTextLikeComponent = constructTextLikeComponent = function(text) {
-	  var me;
-	  me = this;
-	  this.text = text = domField(text);
-	  if (typeof text === 'function') {
-	    text.onInvalidate(function() {
-	      me.textValid = false;
-	      return me.invalidate();
-	    });
-	  }
-	  this.family = {};
-	  this.family[this.dcid] = true;
-	  return this;
-	};
 
 
 /***/ },
@@ -4541,13 +4536,13 @@
   \**************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, Comment, constructTextLikeComponent, domValue, funcString, newLine, _ref,
+	var BaseComponent, Comment, Text, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 13);
 
-	constructTextLikeComponent = __webpack_require__(/*! ./Text */ 15).constructTextLikeComponent;
+	Text = __webpack_require__(/*! ./Text */ 15);
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -4557,8 +4552,7 @@
 	  __extends(Comment, _super);
 
 	  function Comment(text) {
-	    Comment.__super__.constructor.call(this);
-	    constructTextLikeComponent.call(this, text);
+	    Comment.__super__.constructor.call(this, text);
 	  }
 
 	  Comment.prototype.createDom = function() {
@@ -4601,7 +4595,7 @@
 
 	  return Comment;
 
-	})(BaseComponent);
+	})(Text);
 
 
 /***/ },
@@ -4611,13 +4605,13 @@
   \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, Html, constructTextLikeComponent, domValue, funcString, newLine, _ref,
+	var BaseComponent, Html, Text, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 13);
 
-	constructTextLikeComponent = __webpack_require__(/*! ./Text */ 15).constructTextLikeComponent;
+	Text = __webpack_require__(/*! ./Text */ 15);
 
 	_ref = __webpack_require__(/*! dc-util */ 3), funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -4628,8 +4622,7 @@
 
 	  function Html(text, transform) {
 	    this.transform = transform;
-	    Html.__super__.constructor.call(this);
-	    constructTextLikeComponent.call(this, text);
+	    Html.__super__.constructor.call(this, text);
 	  }
 
 	  Html.prototype.createDom = function() {
@@ -4724,7 +4717,7 @@
 
 	  return Html;
 
-	})(BaseComponent);
+	})(Text);
 
 
 /***/ },

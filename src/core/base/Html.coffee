@@ -1,5 +1,5 @@
 BaseComponent = require './BaseComponent'
-{constructTextLikeComponent} = require './Text'
+Text = require './Text'
 {funcString, newLine} = require 'dc-util'
 {domValue} = require '../../dom-util'
 
@@ -12,10 +12,9 @@ BaseComponent = require './BaseComponent'
 # this is for Html Component, which take some text as innerHTML
 # for <html> ... </html>, please use tagHtml instead
 
-module.exports = class Html extends BaseComponent
+module.exports = class Html extends Text
   constructor: (text, @transform) ->
-    super()
-    constructTextLikeComponent.call(this, text)
+    super(text)
 
   createDom: ->
     @textValid = true

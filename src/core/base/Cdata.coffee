@@ -1,14 +1,13 @@
 BaseComponent = require './BaseComponent'
-{constructTextLikeComponent} = require './Text'
+Text = require './Text'
 
 {funcString, newLine} = require 'dc-util'
 
 {domValue} = require '../../dom-util'
 
-module.exports = class Cdata extends BaseComponent
+module.exports = class Cdata extends Text
   constructor: (text) ->
-    super()
-    constructTextLikeComponent.call(this, text)
+    super(text)
 
   ###
     this operation is not supported in html document

@@ -1,14 +1,13 @@
 BaseComponent = require './BaseComponent'
-{constructTextLikeComponent} = require './Text'
+Text = require './Text'
 
 {funcString, newLine} = require 'dc-util'
 
 {domValue} = require '../../dom-util'
 
-module.exports = class Comment extends BaseComponent
+module.exports = class Comment extends Text
   constructor: (text) ->
-    super()
-    constructTextLikeComponent.call(this, text)
+    super(text)
 
   createDom: ->
     @textValid = true
