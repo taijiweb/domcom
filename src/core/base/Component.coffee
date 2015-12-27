@@ -143,24 +143,6 @@ module.exports = class Component
     else dc._renderWhenBy(method, args[0], args[1], [@])
     @
 
-  setNode: (node) ->
-    holder = @
-    while 1
-      holder.node = node
-      holder = holder.holder
-      if !holder or holder.isBaseComponent
-        return
-    return
-
-  setFirstNode: (firstNode) ->
-    holder = @
-    while 1
-      holder.firstNode = firstNode
-      holder = holder.holder
-      if !holder or holder.isBaseComponent
-        break
-    return
-
   # navigate up till meeting Tag Component
   # if the component itself is a tag
   # start navigating from its holder

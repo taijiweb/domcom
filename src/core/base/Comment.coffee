@@ -13,8 +13,7 @@ module.exports = class Comment extends Text
     @textValid = true
     text = domValue(@text)
     node = document.createComment(text)
-    @setNode(node)
-    @setFirstNode(node)
+    @node = @firstNode = node
     @cacheText = text
     @node
 
@@ -29,8 +28,7 @@ module.exports = class Comment extends Text
       if parentNode
         parentNode.removeChild(node)
       node = document.createComment(text)
-      @setNode(node)
-      @setFirstNode(node)
+      @node = @firstNode = node
       @cacheText = text
     @node
 

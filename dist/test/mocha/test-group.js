@@ -410,11 +410,11 @@ describe('group component: List, Each', function() {
       comp.mount();
       expect(each1.listComponent.parentNode).to.equal(comp.node);
       expect(each1.node[0][0].textContent).to.equal('1');
-      expect(each2.node[0].textContent).to.equal('1');
+      expect(each2.getNode()[0].textContent).to.equal('1');
       x = 2;
       comp.render();
       expect(each1.listComponent.parentNode).to.equal(comp.node);
-      expect(each2.node[0].textContent).to.equal('2');
+      expect(each2.getNode()[0].textContent).to.equal('2');
       return expect(comp.node.innerHTML).to.equal('2', 'after x = 2');
     });
     it('should mount and update each', function() {

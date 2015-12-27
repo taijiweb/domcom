@@ -1914,6 +1914,10 @@
 	    this.nextNode = nextNode;
 	  };
 
+	  BaseComponent.prototype.getNode = function() {
+	    return this.node;
+	  };
+
 	  return BaseComponent;
 
 	})(Component);
@@ -2139,30 +2143,6 @@
 	    return this;
 	  };
 
-	  Component.prototype.setNode = function(node) {
-	    var holder;
-	    holder = this;
-	    while (1) {
-	      holder.node = node;
-	      holder = holder.holder;
-	      if (!holder || holder.isBaseComponent) {
-	        return;
-	      }
-	    }
-	  };
-
-	  Component.prototype.setFirstNode = function(firstNode) {
-	    var holder;
-	    holder = this;
-	    while (1) {
-	      holder.firstNode = firstNode;
-	      holder = holder.holder;
-	      if (!holder || holder.isBaseComponent) {
-	        break;
-	      }
-	    }
-	  };
-
 	  Component.prototype.reachTag = function() {
 	    var holder;
 	    holder = this.holder;
@@ -2239,8 +2219,8 @@
 	    this.textValid = true;
 	    text = domValue(this.text);
 	    node = document.createTextNode(text);
-	    this.setNode(node);
-	    this.setFirstNode(node);
+	    this.node = node;
+	    this.firstNode = node;
 	    this.cacheText = text;
 	    return node;
 	  };
@@ -2781,12 +2761,8 @@
 	      baseComponent.setParentNode(parentNode);
 	      baseComponent.setNextNode(this.nextNode);
 	      baseComponent.renderDom();
-	      if (this.node !== baseComponent.node) {
-	        this.setNode(baseComponent.node);
-	      }
-	      if (this.firstNode !== baseComponent.firstNode) {
-	        this.setFirstNode(baseComponent.firstNode);
-	      }
+	      this.node = baseComponent.node;
+	      this.firstNode = baseComponent.firstNode;
 	      if (oldBaseComponent) {
 	        oldBaseComponent.removeDom();
 	      }
@@ -2806,6 +2782,10 @@
 	  TransformComponent.prototype.setNextNode = function(nextNode) {
 	    this.nextNode = nextNode;
 	    this.content && this.content.setNextNode(nextNode);
+	  };
+
+	  TransformComponent.prototype.getNode = function() {
+	    return this.content && this.content.getNode();
 	  };
 
 	  TransformComponent.prototype.markRemovingDom = function(removing) {
@@ -2973,11 +2953,11 @@
 	      }
 	    }
 	    node = [];
-	    this.setNode(node);
+	    this.node = node;
 	    this.childNodes = node;
 	    node.parentNode = this.parentNode;
 	    this.createChildrenDom();
-	    this.setFirstNode(this.childFirstNode);
+	    this.firstNode = this.childFirstNode;
 	    this.childrenNextNode = this.nextNode;
 	    return this.node;
 	  };
@@ -2991,7 +2971,7 @@
 	    }
 	    this.childrenNextNode = this.nextNode;
 	    this.updateChildrenDom();
-	    this.setFirstNode(this.childFirstNode);
+	    this.firstNode = this.childFirstNode;
 	    return this.node;
 	  };
 
@@ -3912,8 +3892,8 @@
 	  Tag.prototype.createDom = function() {
 	    var child, children, length, node, _i, _len;
 	    node = this.namespace ? document.createElementNS(this.namespace, this.tagName) : document.createElement(this.tagName);
-	    this.setNode(node);
-	    this.setFirstNode(node);
+	    this.node = node;
+	    this.firstNode = node;
 	    this.hasActiveProperties && this.updateProperties();
 	    children = this.children;
 	    for (_i = 0, _len = children.length; _i < _len; _i++) {
@@ -4513,8 +4493,7 @@
 	    this.textValid = true;
 	    text = domValue(this.text);
 	    node = document.createComment(text);
-	    this.setNode(node);
-	    this.setFirstNode(node);
+	    this.node = this.firstNode = node;
 	    this.cacheText = text;
 	    return this.node;
 	  };
@@ -4532,8 +4511,7 @@
 	        parentNode.removeChild(node);
 	      }
 	      node = document.createComment(text);
-	      this.setNode(node);
-	      this.setFirstNode(node);
+	      this.node = this.firstNode = node;
 	      this.cacheText = text;
 	    }
 	    return this.node;
@@ -4620,7 +4598,7 @@
 	        n = childNodes[i];
 	        myNode[i] = n;
 	      }
-	      this.setFirstNode(node[0]);
+	      this.firstNode = node[0];
 	      this.cacheText = text;
 	    }
 	    return this;
@@ -7180,30 +7158,6 @@
 	      dc._renderWhenBy(method, args[0], args[1], [this]);
 	    }
 	    return this;
-	  };
-
-	  Component.prototype.setNode = function(node) {
-	    var holder;
-	    holder = this;
-	    while (1) {
-	      holder.node = node;
-	      holder = holder.holder;
-	      if (!holder || holder.isBaseComponent) {
-	        return;
-	      }
-	    }
-	  };
-
-	  Component.prototype.setFirstNode = function(firstNode) {
-	    var holder;
-	    holder = this;
-	    while (1) {
-	      holder.firstNode = firstNode;
-	      holder = holder.holder;
-	      if (!holder || holder.isBaseComponent) {
-	        break;
-	      }
-	    }
 	  };
 
 	  Component.prototype.reachTag = function() {

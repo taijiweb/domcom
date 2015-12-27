@@ -307,8 +307,8 @@ module.exports = class Tag extends BaseComponent
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
 
-    @setNode(node)
-    @setFirstNode node
+    @node = node
+    @firstNode = node
 
     @hasActiveProperties and @updateProperties()
 
@@ -337,7 +337,7 @@ module.exports = class Tag extends BaseComponent
     @updateChildrenDom()
 
     # @node does not change
-    # so here do not need to call setNode and setFirstNode for holder
+    # so here do not need to call set node and firstNode for holder
 
     node
 

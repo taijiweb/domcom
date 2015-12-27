@@ -51,7 +51,7 @@ module.exports = class Html extends Text
       myNode.length = childNodes.length
       for n,i in childNodes
         myNode[i] = n
-      @setFirstNode node[0]
+      @firstNode = node[0]
       @cacheText = text
     # else null # text do not change, do nothing
 

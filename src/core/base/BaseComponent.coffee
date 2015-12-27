@@ -75,3 +75,5 @@ module.exports = class BaseComponent extends Component
   setNextNode: (nextNode) ->
     @nextNode = nextNode
     return
+
+  getNode: -> @node

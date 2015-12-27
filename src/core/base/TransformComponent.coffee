@@ -85,10 +85,8 @@ module.exports = class TransformComponent extends Component
 
       baseComponent.renderDom()
 
-      if @node != baseComponent.node
-        @setNode baseComponent.node
-      if @firstNode != baseComponent.firstNode
-        @setFirstNode baseComponent.firstNode
+      @node = baseComponent.node
+      @firstNode = baseComponent.firstNode
 
       # really removeDom()
       # if it has not been recalled, it will be removed from dom
@@ -112,6 +110,8 @@ module.exports = class TransformComponent extends Component
     @nextNode = nextNode
     @content and @content.setNextNode(nextNode)
     return
+
+  getNode: -> @content and @content.getNode()
 
   markRemovingDom: (removing) ->
     @baseComponent and @baseComponent.markRemovingDom(removing)

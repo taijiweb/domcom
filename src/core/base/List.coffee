@@ -17,7 +17,7 @@ module.exports = exports = class List extends BaseComponent
         child.parentNode = parentNode
 
     node = []
-    @setNode(node)
+    @node = node
 
     @childNodes = node
 
@@ -25,7 +25,7 @@ module.exports = exports = class List extends BaseComponent
 
     @createChildrenDom()
 
-    @setFirstNode @childFirstNode
+    @firstNode = @childFirstNode
 
     @childrenNextNode = @nextNode
 
@@ -43,7 +43,7 @@ module.exports = exports = class List extends BaseComponent
     # do not worry about Tag component
     # 1. it does not call List.updateDom
     # 2. setFirstNode will affect BaseComponent holder (including Tag)
-    @setFirstNode @childFirstNode
+    @firstNode = @childFirstNode
 
     @node
 

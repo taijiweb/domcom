@@ -28,8 +28,8 @@ exports = module.exports = class Text extends BaseComponent
     @textValid = true
     text = domValue(@text)
     node = document.createTextNode(text)
-    @setNode(node)
-    @setFirstNode(node)
+    @node = node
+    @firstNode = node
     @cacheText = text
     node
 
