@@ -47,38 +47,45 @@ module.exports = exports = class List extends BaseComponent
 
     @node
 
+  # set parentNode and nextNode field for transformComponent and its offspring, till baseComponent
+  setParentNode: (parentNode) ->
+    if @parentNode != parentNode
+      @parentNode = parentNode
+      for child in @children
+        child.setParentNode(parentNode)
+    return
+
+  setNextNode: (nextNode) ->
+    @nextNode = nextNode
+
+    {children} = @
+    childrenLength = children.length
+    if childrenLength
+       children[childrenLength-1].setNextNode(nextNode)
+
+    return
+
   removeDom: ->
-    if @parentNode or !@node or !@node.parentNode
-      @
-    else
-      @emit('removeDom')
+    if @removing
+      @removing = false
+      @holder = null
       @node.parentNode = null
-      @node.nextNode = null
+      @emit('removeDom')
       for child in @children
         child.removeDom()
-      @
+    @
 
   # while TransformComponent.renderDom(),
   # if oldBaseComponent is not the same as the new baseComponent
   # oldBaseComponent should be removed from dom
   # if and only if it's and its offspring's parentNode is equal to
   # the transformComponent's parentNode
-  markRemovingDom: (parentNode) ->
-    # if the parentNode of this component has changed to other parentNode
-    # it should have bene moved to other places, or have been removed before
-    if @parentNode != parentNode
-      return
-
-    else
-      # todo: do not set @parentNode to null
-      # use Component.removing to mark it instead
-      # so when the component was remount to dom
-      # it need not set @parentNode and children's parentNode again
-      @removing = false
-      @parentNode = null
+  markRemovingDom: (removing) ->
+    if !removing || (@node and @node.parentNode)
+      @removing = removing
       for child in @children
-        child.markRemovingDom(parentNode)
-      return
+        child.markRemovingDom(removing)
+    return
 
   removeNode: ->
     @node.parentNode = null

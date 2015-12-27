@@ -385,7 +385,10 @@ module.exports = class Tag extends BaseComponent
 
   toString: (indent=0, addNewLine) ->
     s = newLine("<#{@tagName}", indent, addNewLine)
-    for key, value of @props then s += ' '+key+'='+funcString(value)
+
+    for key, value of @props
+      s += ' '+key+'='+funcString(value)
+
     if @hasActiveStyle
       s += ' style={'
       for key, value of @style
@@ -394,8 +397,10 @@ module.exports = class Tag extends BaseComponent
         else for key, v of  value
           s += ' '+key+'='+funcString(v)
       s += '}'
+
     s += '>'
     children = @children
+
     if children.length>1
       for child in @children
         s += child.toString(indent+2, true)

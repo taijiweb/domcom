@@ -149,7 +149,7 @@ module.exports =
     child = children[index]
 
     # to tell child will be removed from DOM while child.renderDom()
-    child.markRemovingDom(@parentNode)
+    child.markRemovingDom(true)
 
     substractSet(@family, child.family)
     children.splice(index, 1)

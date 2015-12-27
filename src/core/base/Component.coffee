@@ -14,7 +14,6 @@ module.exports = class Component
     @baseComponent = null
     @parentNode = null
     @node = null
-    @removing = false
     @dcid = newDcid()
 
   on: (event, callback) ->
@@ -85,27 +84,22 @@ module.exports = class Component
     if !@node or !@node.parentNode
       @emit('afterUnmount')
       return @
+    else
+      component = @
+      holder = @holder
+      while holder and !holder.isBaseComponent
+        component = holder
+        holder = holder.holder
 
-    component = @
-    holder = @holder
-    while holder and !holder.isBaseComponent
-      component = holder
-      holder = holder.holder
+      if holder and (holder.isList or holder.isTag)
+        holder.removeChild(holder.dcidIndexMap[component.dcid])
 
-    if holder and (holder.isList or holder.isTag)
-      holder.removeChild(holder.dcidIndexMap[component.dcid])
+      component.markRemovingDom(true)
+      component.removeDom()
 
-    this.parentNode = null
-    this.nextNode = null
-    this.setParentAndNextNode()
+      @emit('afterUnmount')
 
-    if holder and (holder.isList or holder.isTag)
-      holder.renderDom()
-    else component.renderDom()
-
-    @emit('afterUnmount')
-
-    component
+      @
 
   remount: (parentNode) ->
     @emit('beforeMount')
@@ -114,7 +108,7 @@ module.exports = class Component
     while holder and !holder.isBaseComponent
       child = holder
       holder = holder.holder
-    if (holder.isList or holder.isTag) and index = holder.dcidIndexMap[child.dcid]
+    if (holder and (holder.isList or holder.isTag)) and index = holder.dcidIndexMap[child.dcid]
       index = if index? then index else holder.children.length
       holder.insertChild(index, child)
     child.parentNode =
@@ -158,14 +152,10 @@ module.exports = class Component
         return
     return
 
-  # set parentNode and nextNode field for transformComponent and its offspring, till baseComponent
-  # this should be overloaded
-  setParentAndNextNode: ->
-
-  setFirstNode: (node) ->
+  setFirstNode: (firstNode) ->
     holder = @
     while 1
-      holder.firstNode = node
+      holder.firstNode = firstNode
       holder = holder.holder
       if !holder or holder.isBaseComponent
         break

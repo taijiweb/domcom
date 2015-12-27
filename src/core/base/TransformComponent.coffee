@@ -54,20 +54,17 @@ module.exports = class TransformComponent extends Component
 
   renderDom: ->
     {parentNode, node} = @
-    if !parentNode
-      @holder = null
-      return @removeDom()
 
     if @valid
       if parentNode and !node.parentNode
         {baseComponent} = @
+        baseComponent.markRemovingDom(false)
         baseComponent.parentNode = parentNode
         baseComponent.nextNode = @nextNode
         baseComponent.attachNode()
       return @
-    else
-      @valid = true
 
+    @valid = true
     oldBaseComponent = @baseComponent
     baseComponent = @getBaseComponent()
 
@@ -80,10 +77,12 @@ module.exports = class TransformComponent extends Component
       # and tnen oldBaseComponent.removeDom()
       # to avoid unnecessary remove and insert
       if oldBaseComponent
-        oldBaseComponent.markRemovingDom(parentNode)
+        oldBaseComponent.markRemovingDom(true)
       #else null # have no oldBaseComponent, do nothing
 
-      @setParentAndNextNode()
+      baseComponent.setParentNode(parentNode)
+      baseComponent.setNextNode(@nextNode)
+
       baseComponent.renderDom()
 
       if @node != baseComponent.node
@@ -99,68 +98,25 @@ module.exports = class TransformComponent extends Component
       #else null # have no oldBaseComponent, do nothing
 
     else
-      # since baseComponent do not change,
-      # so it is probably not necessary to do the thing below
-      # @setParentAndNextNode(baseComponent)
-
       baseComponent.renderDom()
 
     @
 
-  # set parentNode and nextNode field for transformComponent and its offspring, till baseComponent
-  setParentAndNextNode: ->
-    {content, parentNode, nextNode} = @
-    while content
-      content.parentNode = parentNode
-      content.nextNode = nextNode
-      if content.isBaseComponent
-        if content.isList
-          {children} = content
-          i = 0
-          len = children.length
-          if len
-            while i < len-1
-              child = children[i]
-              child.parentNode = parentNode
-              child.setParentAndNextNode()
-              i++
-            child = children[i]
-            child.parentNode = parentNode
-            child.nextNode = nextNode
-            child.setParentAndNextNode()
-        break
-      else content = content.content
+  setParentNode: (parentNode) ->
+    if @parentNode!=parentNode
+      @parentNode = parentNode
+      @content and @content.setParentNode(parentNode)
     return
 
-  # while TransformComponent.renderDom(),
-  # if oldBaseComponent is not the same as the new baseComponent
-  # oldBaseComponent should be removed from dom
-  # if and only if it's and its offspring's parentNode is equal to
-  # the transformComponent's parentNode
-  markRemovingDom: (parentNode) ->
-    # if the parentNode of this component has changed to other parentNode
-    # it should have bene moved to other places, or have been removed before
-    if @parentNode != parentNode
-      return
-    else
-      # todo: do not set @parentNode to null
-      # use Component.removing to mark it instead
-      # so when the component was remount to dom
-      # it need not set @parentNode and children's parentNode again
-      @removing = false
-      @parentNode = null
-      # todo fix: do not need loop, recursive is enough
-      while content = @content
-        content.markRemovingDom(parentNode)
-        if content.isBaseComponent
-          break
-      return
+  setNextNode: (nextNode) ->
+    @nextNode = nextNode
+    @content and @content.setNextNode(nextNode)
+    return
+
+  markRemovingDom: (removing) ->
+    @baseComponent and @baseComponent.markRemovingDom(removing)
 
   removeDom: ->
-    if @parentNode or !@node or !@node.parentNode
-      @
-    else
-      @emit('removeDom')
-      @baseComponent.removeDom()
-      @
+    @baseComponent.removeDom()
+    @
 

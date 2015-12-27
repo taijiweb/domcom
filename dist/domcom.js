@@ -1844,17 +1844,16 @@
 	  };
 
 	  BaseComponent.prototype.renderDom = function() {
-	    if (!this.parentNode) {
-	      this.valid = true;
-	      return this.removeDom();
-	    }
 	    if (!this.node) {
 	      this.valid = true;
 	      this.emit('beforeAttach');
 	      this.createDom();
-	    } else if (!this.valid) {
-	      this.valid = true;
-	      this.updateDom();
+	    } else {
+	      this.removing = false;
+	      if (!this.valid) {
+	        this.valid = true;
+	        this.updateDom();
+	      }
 	    }
 	    this.attachNode(this.parentNode, this.nextNode);
 	    return this;
@@ -1868,31 +1867,20 @@
 	    return this.holder && this.holder.invalidateContent(this);
 	  };
 
-	  BaseComponent.prototype.removeReplacedDom = function(parentNode) {
-	    if (this.parentNode !== parentNode) {
-
-	    } else {
-	      this.parentNode = null;
-	      this.removeNode();
-	    }
-	  };
-
-	  BaseComponent.prototype.markRemovingDom = function(parentNode) {
-	    if (this.parentNode !== parentNode) {
-
-	    } else {
-	      this.parentNode = null;
+	  BaseComponent.prototype.markRemovingDom = function(removing) {
+	    if (!removing || (this.node && this.node.parentNode)) {
+	      this.removing = removing;
 	    }
 	  };
 
 	  BaseComponent.prototype.removeDom = function() {
-	    if (this.parentNode || !this.node || !this.node.parentNode) {
-	      return this;
-	    } else {
+	    if (this.removing) {
+	      this.removing = false;
+	      this.holder = null;
 	      this.emit('removeDom');
 	      this.removeNode();
-	      return this;
 	    }
+	    return this;
 	  };
 
 	  BaseComponent.prototype.removeNode = function() {
@@ -1904,6 +1892,7 @@
 	  BaseComponent.prototype.attachNode = function() {
 	    var e, nextNode, node, parentNode;
 	    node = this.node, parentNode = this.parentNode, nextNode = this.nextNode;
+	    this.removing = false;
 	    if (parentNode === node.parentNode && nextNode === node.nextNode) {
 	      return node;
 	    }
@@ -1917,27 +1906,12 @@
 	    return node;
 	  };
 
-	  BaseComponent.prototype.setParentAndNextNode = function() {
-	    var child, children, i, len, nextNode, parentNode;
-	    if (this.isList) {
-	      children = this.children;
-	      i = 0;
-	      len = children.length;
-	      if (!len) {
-	        return;
-	      }
-	      parentNode = this.parentNode, nextNode = this.nextNode;
-	      while (i < len - 1) {
-	        child = children[i];
-	        child.parentNode = parentNode;
-	        child.setParentAndNextNode();
-	        i++;
-	      }
-	      child = children[i];
-	      child.parentNode = parentNode;
-	      child.nextNode = nextNode;
-	      return child.setParentAndNextNode();
-	    }
+	  BaseComponent.prototype.setParentNode = function(parentNode) {
+	    this.parentNode = parentNode;
+	  };
+
+	  BaseComponent.prototype.setNextNode = function(nextNode) {
+	    this.nextNode = nextNode;
 	  };
 
 	  return BaseComponent;
@@ -1975,7 +1949,6 @@
 	    this.baseComponent = null;
 	    this.parentNode = null;
 	    this.node = null;
-	    this.removing = false;
 	    this.dcid = newDcid();
 	  }
 
@@ -2084,26 +2057,21 @@
 	    if (!this.node || !this.node.parentNode) {
 	      this.emit('afterUnmount');
 	      return this;
-	    }
-	    component = this;
-	    holder = this.holder;
-	    while (holder && !holder.isBaseComponent) {
-	      component = holder;
-	      holder = holder.holder;
-	    }
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.removeChild(holder.dcidIndexMap[component.dcid]);
-	    }
-	    this.parentNode = null;
-	    this.nextNode = null;
-	    this.setParentAndNextNode();
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.renderDom();
 	    } else {
-	      component.renderDom();
+	      component = this;
+	      holder = this.holder;
+	      while (holder && !holder.isBaseComponent) {
+	        component = holder;
+	        holder = holder.holder;
+	      }
+	      if (holder && (holder.isList || holder.isTag)) {
+	        holder.removeChild(holder.dcidIndexMap[component.dcid]);
+	      }
+	      component.markRemovingDom(true);
+	      component.removeDom();
+	      this.emit('afterUnmount');
+	      return this;
 	    }
-	    this.emit('afterUnmount');
-	    return component;
 	  };
 
 	  Component.prototype.remount = function(parentNode) {
@@ -2115,7 +2083,7 @@
 	      child = holder;
 	      holder = holder.holder;
 	    }
-	    if ((holder.isList || holder.isTag) && (index = holder.dcidIndexMap[child.dcid])) {
+	    if ((holder && (holder.isList || holder.isTag)) && (index = holder.dcidIndexMap[child.dcid])) {
 	      index = index != null ? index : holder.children.length;
 	      holder.insertChild(index, child);
 	    }
@@ -2183,13 +2151,11 @@
 	    }
 	  };
 
-	  Component.prototype.setParentAndNextNode = function() {};
-
-	  Component.prototype.setFirstNode = function(node) {
+	  Component.prototype.setFirstNode = function(firstNode) {
 	    var holder;
 	    holder = this;
 	    while (1) {
-	      holder.firstNode = node;
+	      holder.firstNode = firstNode;
 	      holder = holder.holder;
 	      if (!holder || holder.isBaseComponent) {
 	        break;
@@ -2795,28 +2761,25 @@
 	  TransformComponent.prototype.renderDom = function() {
 	    var baseComponent, node, oldBaseComponent, parentNode;
 	    parentNode = this.parentNode, node = this.node;
-	    if (!parentNode) {
-	      this.holder = null;
-	      return this.removeDom();
-	    }
 	    if (this.valid) {
 	      if (parentNode && !node.parentNode) {
 	        baseComponent = this.baseComponent;
+	        baseComponent.markRemovingDom(false);
 	        baseComponent.parentNode = parentNode;
 	        baseComponent.nextNode = this.nextNode;
 	        baseComponent.attachNode();
 	      }
 	      return this;
-	    } else {
-	      this.valid = true;
 	    }
+	    this.valid = true;
 	    oldBaseComponent = this.baseComponent;
 	    baseComponent = this.getBaseComponent();
 	    if (baseComponent !== oldBaseComponent) {
 	      if (oldBaseComponent) {
-	        oldBaseComponent.markRemovingDom(parentNode);
+	        oldBaseComponent.markRemovingDom(true);
 	      }
-	      this.setParentAndNextNode();
+	      baseComponent.setParentNode(parentNode);
+	      baseComponent.setNextNode(this.nextNode);
 	      baseComponent.renderDom();
 	      if (this.node !== baseComponent.node) {
 	        this.setNode(baseComponent.node);
@@ -2833,61 +2796,25 @@
 	    return this;
 	  };
 
-	  TransformComponent.prototype.setParentAndNextNode = function() {
-	    var child, children, content, i, len, nextNode, parentNode;
-	    content = this.content, parentNode = this.parentNode, nextNode = this.nextNode;
-	    while (content) {
-	      content.parentNode = parentNode;
-	      content.nextNode = nextNode;
-	      if (content.isBaseComponent) {
-	        if (content.isList) {
-	          children = content.children;
-	          i = 0;
-	          len = children.length;
-	          if (len) {
-	            while (i < len - 1) {
-	              child = children[i];
-	              child.parentNode = parentNode;
-	              child.setParentAndNextNode();
-	              i++;
-	            }
-	            child = children[i];
-	            child.parentNode = parentNode;
-	            child.nextNode = nextNode;
-	            child.setParentAndNextNode();
-	          }
-	        }
-	        break;
-	      } else {
-	        content = content.content;
-	      }
+	  TransformComponent.prototype.setParentNode = function(parentNode) {
+	    if (this.parentNode !== parentNode) {
+	      this.parentNode = parentNode;
+	      this.content && this.content.setParentNode(parentNode);
 	    }
 	  };
 
-	  TransformComponent.prototype.markRemovingDom = function(parentNode) {
-	    var content;
-	    if (this.parentNode !== parentNode) {
+	  TransformComponent.prototype.setNextNode = function(nextNode) {
+	    this.nextNode = nextNode;
+	    this.content && this.content.setNextNode(nextNode);
+	  };
 
-	    } else {
-	      this.removing = false;
-	      this.parentNode = null;
-	      while (content = this.content) {
-	        content.markRemovingDom(parentNode);
-	        if (content.isBaseComponent) {
-	          break;
-	        }
-	      }
-	    }
+	  TransformComponent.prototype.markRemovingDom = function(removing) {
+	    return this.baseComponent && this.baseComponent.markRemovingDom(removing);
 	  };
 
 	  TransformComponent.prototype.removeDom = function() {
-	    if (this.parentNode || !this.node || !this.node.parentNode) {
-	      return this;
-	    } else {
-	      this.emit('removeDom');
-	      this.baseComponent.removeDom();
-	      return this;
-	    }
+	    this.baseComponent.removeDom();
+	    return this;
 	  };
 
 	  return TransformComponent;
@@ -2988,7 +2915,7 @@
 	    return this.node;
 	  };
 
-	  Nothing.prototype.markRemovingDom = function(parentNode) {};
+	  Nothing.prototype.markRemovingDom = function(removing) {};
 
 	  Nothing.prototype.removeDom = function() {
 	    return this;
@@ -3068,34 +2995,52 @@
 	    return this.node;
 	  };
 
+	  List.prototype.setParentNode = function(parentNode) {
+	    var child, _i, _len, _ref;
+	    if (this.parentNode !== parentNode) {
+	      this.parentNode = parentNode;
+	      _ref = this.children;
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        child = _ref[_i];
+	        child.setParentNode(parentNode);
+	      }
+	    }
+	  };
+
+	  List.prototype.setNextNode = function(nextNode) {
+	    var children, childrenLength;
+	    this.nextNode = nextNode;
+	    children = this.children;
+	    childrenLength = children.length;
+	    if (childrenLength) {
+	      children[childrenLength - 1].setNextNode(nextNode);
+	    }
+	  };
+
 	  List.prototype.removeDom = function() {
 	    var child, _i, _len, _ref;
-	    if (this.parentNode || !this.node || !this.node.parentNode) {
-	      return this;
-	    } else {
-	      this.emit('removeDom');
+	    if (this.removing) {
+	      this.removing = false;
+	      this.holder = null;
 	      this.node.parentNode = null;
-	      this.node.nextNode = null;
+	      this.emit('removeDom');
 	      _ref = this.children;
 	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
 	        child = _ref[_i];
 	        child.removeDom();
 	      }
-	      return this;
 	    }
+	    return this;
 	  };
 
-	  List.prototype.markRemovingDom = function(parentNode) {
+	  List.prototype.markRemovingDom = function(removing) {
 	    var child, _i, _len, _ref;
-	    if (this.parentNode !== parentNode) {
-
-	    } else {
-	      this.removing = false;
-	      this.parentNode = null;
+	    if (!removing || (this.node && this.node.parentNode)) {
+	      this.removing = removing;
 	      _ref = this.children;
 	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
 	        child = _ref[_i];
-	        child.markRemovingDom(parentNode);
+	        child.markRemovingDom(removing);
 	      }
 	    }
 	  };
@@ -3332,7 +3277,7 @@
 	    }
 	    this.invalidate();
 	    child = children[index];
-	    child.markRemovingDom(this.parentNode);
+	    child.markRemovingDom(true);
 	    substractSet(this.family, child.family);
 	    children.splice(index, 1);
 	    if (this.node) {
@@ -4656,7 +4601,7 @@
 	  };
 
 	  Html.prototype.updateDom = function() {
-	    var n, node, text;
+	    var childNodes, i, myNode, n, node, text, _i, _len;
 	    if (this.textValid) {
 	      return this;
 	    }
@@ -4668,18 +4613,14 @@
 	      }
 	      node = document.createElement('DIV');
 	      node.innerHTML = text;
-	      node = (function() {
-	        var _i, _len, _ref1, _results;
-	        _ref1 = node.childNodes;
-	        _results = [];
-	        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	          n = _ref1[_i];
-	          _results.push(n);
-	        }
-	        return _results;
-	      })();
-	      this.setNode(node);
-	      this.setFirstNode = node[0];
+	      myNode = this.node;
+	      childNodes = node.childNodes;
+	      myNode.length = childNodes.length;
+	      for (i = _i = 0, _len = childNodes.length; _i < _len; i = ++_i) {
+	        n = childNodes[i];
+	        myNode[i] = n;
+	      }
+	      this.setFirstNode(node[0]);
 	      this.cacheText = text;
 	    }
 	    return this;
@@ -7051,7 +6992,6 @@
 	    this.baseComponent = null;
 	    this.parentNode = null;
 	    this.node = null;
-	    this.removing = false;
 	    this.dcid = newDcid();
 	  }
 
@@ -7160,26 +7100,21 @@
 	    if (!this.node || !this.node.parentNode) {
 	      this.emit('afterUnmount');
 	      return this;
-	    }
-	    component = this;
-	    holder = this.holder;
-	    while (holder && !holder.isBaseComponent) {
-	      component = holder;
-	      holder = holder.holder;
-	    }
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.removeChild(holder.dcidIndexMap[component.dcid]);
-	    }
-	    this.parentNode = null;
-	    this.nextNode = null;
-	    this.setParentAndNextNode();
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.renderDom();
 	    } else {
-	      component.renderDom();
+	      component = this;
+	      holder = this.holder;
+	      while (holder && !holder.isBaseComponent) {
+	        component = holder;
+	        holder = holder.holder;
+	      }
+	      if (holder && (holder.isList || holder.isTag)) {
+	        holder.removeChild(holder.dcidIndexMap[component.dcid]);
+	      }
+	      component.markRemovingDom(true);
+	      component.removeDom();
+	      this.emit('afterUnmount');
+	      return this;
 	    }
-	    this.emit('afterUnmount');
-	    return component;
 	  };
 
 	  Component.prototype.remount = function(parentNode) {
@@ -7191,7 +7126,7 @@
 	      child = holder;
 	      holder = holder.holder;
 	    }
-	    if ((holder.isList || holder.isTag) && (index = holder.dcidIndexMap[child.dcid])) {
+	    if ((holder && (holder.isList || holder.isTag)) && (index = holder.dcidIndexMap[child.dcid])) {
 	      index = index != null ? index : holder.children.length;
 	      holder.insertChild(index, child);
 	    }
@@ -7259,13 +7194,11 @@
 	    }
 	  };
 
-	  Component.prototype.setParentAndNextNode = function() {};
-
-	  Component.prototype.setFirstNode = function(node) {
+	  Component.prototype.setFirstNode = function(firstNode) {
 	    var holder;
 	    holder = this;
 	    while (1) {
-	      holder.firstNode = node;
+	      holder.firstNode = firstNode;
 	      holder = holder.holder;
 	      if (!holder || holder.isBaseComponent) {
 	        break;

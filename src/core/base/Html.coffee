@@ -39,15 +39,19 @@ module.exports = class Html extends Text
     text = @transform and @transform(domValue(@text)) or domValue(@text)
 
     if text!=@cacheText
-      if @node.parentNode then @removeNode()
+      if @node.parentNode
+        @removeNode()
       node = document.createElement('DIV')
       node.innerHTML =  text
       # when the node in createElement('div').childNodes is inserted to dom,
       # it is removed from the active childNodes
       # so they should be keep in an array
-      node = for n in node.childNodes then n
-      @setNode(node)
-      @setFirstNode = node[0]
+      myNode = @node
+      childNodes =  node.childNodes
+      myNode.length = childNodes.length
+      for n,i in childNodes
+        myNode[i] = n
+      @setFirstNode node[0]
       @cacheText = text
     # else null # text do not change, do nothing
 
