@@ -2,16 +2,23 @@ toComponent = require './toComponent'
 TransformComponent = require './TransformComponent'
 {funcString, newLine, intersect} = require 'dc-util'
 {renew} = require 'lazy-flow'
+mergeIf = require('../mergeIf')
 
 module.exports = class If extends TransformComponent
-  constructor: (test, then_, else_) ->
+  constructor: (test, then_, else_, merge, recursive) ->
     if then_==else_ then return toComponent then_
 
     then_ = toComponent(then_)
     else_ = toComponent(else_)
 
     if typeof test != 'function'
-      return if test then then_ else else_
+      if test
+        return then_
+      else
+        return else_
+
+    if merge
+      return mergeIf(test, then_, else_, recursive)
 
     super()
 
@@ -21,7 +28,8 @@ module.exports = class If extends TransformComponent
     @family = family = intersect([then_.family, else_.family])
     family[@dcid] = true
 
-    if !test.invalidate then @test = renew(test)
+    if !test.invalidate
+      @test = renew(test)
     else @test = test
 
     @test.onInvalidate(@invalidateTransform.bind(@))

@@ -143,7 +143,13 @@ module.exports = class TransformComponent extends Component
     if @parentNode != parentNode
       return
     else
+      # todo: do not set @parentNode to null
+      # use Component.removing to mark it instead
+      # so when the component was remount to dom
+      # it need not set @parentNode and children's parentNode again
+      @removing = false
       @parentNode = null
+      # todo fix: do not need loop, recursive is enough
       while content = @content
         content.markRemovingDom(parentNode)
         if content.isBaseComponent

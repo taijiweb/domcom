@@ -113,7 +113,7 @@ describe("domcom/properties/classFn", function() {
     expect(x.valid).to.equal(false);
     return expect(x()).to.equal('a');
   });
-  return iit('should get class property in component', function() {
+  return it('should get class property in component', function() {
     var active, comp;
     active = see(true);
     comp = div({

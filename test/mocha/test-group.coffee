@@ -13,7 +13,7 @@ describe 'group component: List, Each', ->
   describe 'List', ->
     it 'all of item in list should be  component', ->
       comp = list([1, 2])
-      expect(!!isComponent(comp.children[0])).to.equal(true)
+      expect(isComponent(comp.children[0])).to.equal(true)
 
     it 'should create list component', ->
       comp =  list([span(['adf'])])

@@ -7,6 +7,9 @@ module.exports = class Nothing extends BaseComponent
 
     @firstNode = null
     @family = {}
+
+    @isNothing = true
+
     @baseComponent = @
 
   createDom: -> @node = []

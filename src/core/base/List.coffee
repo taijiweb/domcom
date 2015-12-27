@@ -70,6 +70,11 @@ module.exports = exports = class List extends BaseComponent
       return
 
     else
+      # todo: do not set @parentNode to null
+      # use Component.removing to mark it instead
+      # so when the component was remount to dom
+      # it need not set @parentNode and children's parentNode again
+      @removing = false
       @parentNode = null
       for child in @children
         child.markRemovingDom(parentNode)

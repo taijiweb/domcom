@@ -18,6 +18,8 @@ exports = module.exports = class Text extends BaseComponent
         me.textValid = false
         me.invalidate()
 
+    @isText = true
+
     @family = {}
     @family[@dcid] = true
     @

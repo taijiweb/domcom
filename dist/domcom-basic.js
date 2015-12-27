@@ -57,7 +57,7 @@
 
 	dc.extend = extend = __webpack_require__(/*! extend */ 8);
 
-	extend(dc, __webpack_require__(/*! ./config */ 6), __webpack_require__(/*! lazy-flow */ 4), __webpack_require__(/*! dc-watch-list */ 9), __webpack_require__(/*! ./dom-util */ 5), __webpack_require__(/*! dc-util */ 3), __webpack_require__(/*! ./core/index */ 10), __webpack_require__(/*! ./dc-error */ 37));
+	extend(dc, __webpack_require__(/*! ./config */ 6), __webpack_require__(/*! lazy-flow */ 4), __webpack_require__(/*! dc-watch-list */ 9), __webpack_require__(/*! ./dom-util */ 5), __webpack_require__(/*! dc-util */ 3), __webpack_require__(/*! ./core/index */ 10), __webpack_require__(/*! ./dc-error */ 40));
 
 
 /***/ },
@@ -1327,7 +1327,7 @@
 /***/ function(module, exports) {
 
 	module.exports = function(item) {
-	  return item && item.renderDom;
+	  return item && (item.renderDom != null);
 	};
 
 
@@ -1707,7 +1707,7 @@
 
 	extend = __webpack_require__(/*! extend */ 8);
 
-	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 11), __webpack_require__(/*! ./instantiate */ 34), __webpack_require__(/*! ./tag */ 36), __webpack_require__(/*! ./property */ 26));
+	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 11), __webpack_require__(/*! ./instantiate */ 37), __webpack_require__(/*! ./tag */ 39), __webpack_require__(/*! ./property */ 26));
 
 
 /***/ },
@@ -1736,11 +1736,11 @@
 	  Nothing: __webpack_require__(/*! ./Nothing */ 19),
 	  TransformComponent: __webpack_require__(/*! ./TransformComponent */ 17),
 	  If: __webpack_require__(/*! ./If */ 29),
-	  Case: __webpack_require__(/*! ./Case */ 30),
+	  Case: __webpack_require__(/*! ./Case */ 33),
 	  Func: __webpack_require__(/*! ./Func */ 23),
-	  Pick: __webpack_require__(/*! ./Pick */ 31),
-	  Each: __webpack_require__(/*! ./Each */ 32),
-	  Defer: __webpack_require__(/*! ./Defer */ 33),
+	  Pick: __webpack_require__(/*! ./Pick */ 34),
+	  Each: __webpack_require__(/*! ./Each */ 35),
+	  Defer: __webpack_require__(/*! ./Defer */ 36),
 	  Route: route.Route,
 	  route: route
 	};
@@ -1959,6 +1959,7 @@
 	    this.baseComponent = null;
 	    this.parentNode = null;
 	    this.node = null;
+	    this.removing = false;
 	    this.dcid = newDcid();
 	  }
 
@@ -2113,6 +2114,13 @@
 	    return child;
 	  };
 
+	  Component.prototype.destroy = function() {
+	    this.listeners = null;
+	    this.node = null;
+	    this.baseComponent = null;
+	    return this.parentNode = null;
+	  };
+
 
 	  /*
 	  component.updateWhen components, events
@@ -2238,6 +2246,7 @@
 	        return me.invalidate();
 	      });
 	    }
+	    this.isText = true;
 	    this.family = {};
 	    this.family[this.dcid] = true;
 	    this;
@@ -2844,6 +2853,7 @@
 	    if (this.parentNode !== parentNode) {
 
 	    } else {
+	      this.removing = false;
 	      this.parentNode = null;
 	      while (content = this.content) {
 	        content.markRemovingDom(parentNode);
@@ -2946,6 +2956,7 @@
 	    Nothing.__super__.constructor.apply(this, arguments);
 	    this.firstNode = null;
 	    this.family = {};
+	    this.isNothing = true;
 	    this.baseComponent = this;
 	  }
 
@@ -3063,6 +3074,7 @@
 	    if (this.parentNode !== parentNode) {
 
 	    } else {
+	      this.removing = false;
 	      this.parentNode = null;
 	      _ref = this.children;
 	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3555,7 +3567,7 @@
 	  }
 
 	  Tag.prototype.initAttrs = function() {
-	    var className, events, me, props;
+	    var className, events, me;
 	    me = this;
 	    this.hasActiveProperties = false;
 	    this.cacheClassName = "";
@@ -3568,7 +3580,7 @@
 	    });
 	    this.hasActiveProps = false;
 	    this.cacheProps = {};
-	    this.props = props = {};
+	    this.props = {};
 	    this.boundProps = {};
 	    this['invalidateProps'] = {};
 	    this.hasActiveStyle = false;
@@ -3754,10 +3766,17 @@
 
 	  Tag.prototype.bind = function(eventNames, handler, before) {
 	    var eventName, _i, _len;
-	    eventNames = eventNames.split('\s+');
-	    for (_i = 0, _len = eventNames.length; _i < _len; _i++) {
-	      eventName = eventNames[_i];
-	      this.bindOne(eventName, handler, before);
+	    if (arguments.length === 1) {
+	      for (eventName in eventNames) {
+	        handler = eventNames[eventName];
+	        this.bindOne(eventName, handler);
+	      }
+	    } else {
+	      eventNames = eventNames.split('\s+');
+	      for (_i = 0, _len = eventNames.length; _i < _len; _i++) {
+	        eventName = eventNames[_i];
+	        this.bindOne(eventName, handler, before);
+	      }
 	    }
 	    return this;
 	  };
@@ -3772,7 +3791,7 @@
 	    if (!eventHandlers) {
 	      events[eventName] = [handler];
 	      if (this.node) {
-	        this.node[eventName] = eventHandlerFromArray(events[eventName], eventName, this);
+	        this.node[eventName] = eventHandlerFromArray(events[eventName], eventName);
 	      } else {
 	        this.hasActiveEvents = true;
 	        this.hasActiveProperties = true;
@@ -4595,6 +4614,7 @@
 
 	  function Html(text, transform) {
 	    this.transform = transform;
+	    this.isHtml = true;
 	    Html.__super__.constructor.call(this, text);
 	  }
 
@@ -4700,7 +4720,7 @@
   \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var If, TransformComponent, funcString, intersect, newLine, renew, toComponent, _ref,
+	var If, TransformComponent, funcString, intersect, mergeIf, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -4712,10 +4732,12 @@
 
 	renew = __webpack_require__(/*! lazy-flow */ 4).renew;
 
+	mergeIf = __webpack_require__(/*! ../mergeIf */ 30);
+
 	module.exports = If = (function(_super) {
 	  __extends(If, _super);
 
-	  function If(test, then_, else_) {
+	  function If(test, then_, else_, merge, recursive) {
 	    var family;
 	    if (then_ === else_) {
 	      return toComponent(then_);
@@ -4728,6 +4750,9 @@
 	      } else {
 	        return else_;
 	      }
+	    }
+	    if (merge) {
+	      return mergeIf(test, then_, else_, recursive);
 	    }
 	    If.__super__.constructor.call(this);
 	    this.then_ = then_;
@@ -4772,6 +4797,822 @@
 
 /***/ },
 /* 30 */
+/*!*********************************!*\
+  !*** ./src/core/mergeIf.coffee ***!
+  \*********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var List, Nothing, Tag, emptyEventCallback, eventHandlerFromArray, exports, extend, flow, flowIf, mergeIf, mergeIfChild, mergeIfChildren, mergeIfClassFn, mergeIfEvents, mergeIfProps, toComponent;
+
+	extend = __webpack_require__(/*! extend */ 8);
+
+	toComponent = __webpack_require__(/*! ./base/toComponent */ 18);
+
+	Tag = __webpack_require__(/*! ./base/Tag */ 24);
+
+	List = __webpack_require__(/*! ./base/List */ 20);
+
+	Nothing = __webpack_require__(/*! ./base/Nothing */ 19);
+
+	eventHandlerFromArray = __webpack_require__(/*! ./property */ 26).eventHandlerFromArray;
+
+	flow = __webpack_require__(/*! lazy-flow/addon */ 31);
+
+	flowIf = flow.if_;
+
+	exports = module.exports = mergeIf = function(test, then_, else_, recursive) {
+	  var If, children, className, component, elseTransform, events, props, style, thenTransform, transform;
+	  If = __webpack_require__(/*! ./base/If */ 29);
+	  if (then_ === else_) {
+	    return toComponent(then_);
+	  }
+	  then_ = toComponent(then_);
+	  else_ = toComponent(else_);
+	  if (typeof test !== 'function') {
+	    if (test) {
+	      return then_;
+	    } else {
+	      return else_;
+	    }
+	  }
+	  if (then_.constructor === Tag && else_.constructor === Tag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
+	    children = mergeIfChildren(test, then_, else_, recursive);
+	    component = new Tag(then_.tagName, {}, children);
+	    className = mergeIfClassFn(test, then_.className, else_.className);
+	    props = mergeIfProps(test, then_.props, else_.props);
+	    style = mergeIfProps(test, then_.style, else_.style);
+	    events = mergeIfEvents(test, then_.events, else_.events, component);
+	    return component.addClass(className).prop(props).css(style).bind(events);
+	  } else if (then_.isHtml && else_.isHtml) {
+	    thenTransform = then_.transform;
+	    elseTransform = else_.transform;
+	    transform = function(text) {
+	      if (test()) {
+	        return thenTransform && thenTransform(text) || text;
+	      } else {
+	        return elseTransform && elseTransform(text) || text;
+	      }
+	    };
+	    return new then_.constructor(flowIf(test, then_.text, else_.text), transform);
+	  } else if (then_.isText && else_.isText && then_.constructor === else_.constructor) {
+	    return new then_.constructor(flowIf(test, then_.text, else_.text));
+	  } else if (then_.isNothing && else_.isNothing) {
+	    return then_;
+	  } else if (then_.isList && else_.isList) {
+	    return new List(mergeIfChildren(test, then_, else_, recursive));
+	  } else {
+	    return new If(test, then_, else_);
+	  }
+	};
+
+	mergeIfChild = function(test, then_, else_, recursive) {
+	  if (!recursive && (then_.isList || else_.isList)) {
+	    return if_(test, then_, else_);
+	  } else {
+	    return mergeIf(test, then_, else_, recursive);
+	  }
+	};
+
+	exports.mergeIfChildren = mergeIfChildren = function(test, then_, else_, recursive) {
+	  var children, elseChildren, elseChildrenLength, elseItem, i, thenChildren, thenChildrenLength, thenItem, _i, _j, _k, _len, _len1, _len2;
+	  thenChildren = then_.children;
+	  elseChildren = else_.children;
+	  thenChildrenLength = thenChildren.length;
+	  elseChildrenLength = elseChildren.length;
+	  if (thenChildrenLength === elseChildrenLength) {
+	    children = new Array(thenChildrenLength);
+	    for (i = _i = 0, _len = thenChildren.length; _i < _len; i = ++_i) {
+	      thenItem = thenChildren[i];
+	      children[i] = mergeIfChild(test, thenItem, elseChildren[i], recursive);
+	    }
+	  } else if (thenChildrenLength < elseChildrenLength) {
+	    children = new Array(elseChildrenLength);
+	    for (i = _j = 0, _len1 = thenChildren.length; _j < _len1; i = ++_j) {
+	      thenItem = thenChildren[i];
+	      children[i] = mergeIfChild(test, thenItem, elseChildren[i], recursive);
+	    }
+	    while (i < elseChildrenLength) {
+	      children[i] = mergeIf(test, new Nothing(), elseChildren[i]);
+	      i++;
+	    }
+	  } else {
+	    children = new Array(thenChildrenLength);
+	    for (i = _k = 0, _len2 = elseChildren.length; _k < _len2; i = ++_k) {
+	      elseItem = elseChildren[i];
+	      children[i] = mergeIfChild(test, thenChildren[i], elseItem, recursive);
+	    }
+	    while (i < thenChildrenLength) {
+	      children[i] = mergeIf(test, thenChildren[i], new Nothing());
+	      i++;
+	    }
+	  }
+	  return children;
+	};
+
+	exports.mergeIfClassFn = mergeIfClassFn = function(test, thenClassName, elseClassName) {
+	  return mergeIfProps(test, thenClassName.classMap, elseClassName.classMap);
+	};
+
+	exports.mergeIfProps = mergeIfProps = function(test, thenProps, elseProps) {
+	  var prop, unified;
+	  unified = extend({}, thenProps, elseProps);
+	  for (prop in unified) {
+	    unified[prop] = flowIf(test, thenProps[prop], elseProps[prop]);
+	  }
+	  return unified;
+	};
+
+	emptyEventCallback = function() {};
+
+	exports.mergeIfEvents = mergeIfEvents = function(test, thenEvents, elseEvents, component) {
+	  var elseCallbackList, elseHandler, eventName, thenCallbackList, thenHandler, unified;
+	  unified = extend({}, thenEvents, elseEvents);
+	  for (eventName in unified) {
+	    if (thenCallbackList = thenEvents[eventName]) {
+	      thenHandler = eventHandlerFromArray(thenCallbackList.slice(0), eventName, component);
+	    } else {
+	      thenHandler = emptyEventCallback;
+	    }
+	    if (elseCallbackList = elseEvents[eventName]) {
+	      elseHandler = eventHandlerFromArray(elseCallbackList.slice(0), eventName, component);
+	    } else {
+	      elseHandler = emptyEventCallback;
+	    }
+	    unified[eventName] = function(event) {
+	      if (test()) {
+	        return thenHandler.call(component.node, event, component);
+	      } else {
+	        return elseHandler.call(component.node, event, component);
+	      }
+	    };
+	  }
+	  return unified;
+	};
+
+
+/***/ },
+/* 31 */
+/*!*********************************!*\
+  !*** ../lazy-flow/addon.coffee ***!
+  \*********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var binary, bind, duplex, flow, see, unary, _ref;
+
+	_ref = __webpack_require__(/*! ./index */ 32), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
+
+	module.exports = flow;
+
+	flow.bindings = function(model, name) {
+	  var key, result;
+	  result = {};
+	  for (key in model) {
+	    result[key + '$'] = duplex(model, key, name);
+	    result[key + '_'] = bind(model, key, name);
+	  }
+	  return result;
+	};
+
+	flow.seeAttrs = function(target, from) {
+	  var attr, key, value;
+	  for (key in from) {
+	    value = from[key];
+	    attr = target[key];
+	    if (typeof attr === 'function') {
+	      attr(value);
+	    } else {
+	      target[key] = see(value);
+	    }
+	  }
+	  return target;
+	};
+
+	flow.neg = function(x) {
+	  return unary(x, function(x) {
+	    return -x;
+	  });
+	};
+
+	flow.no = function(x) {
+	  return unary(x, function(x) {
+	    return !x;
+	  });
+	};
+
+	flow.bitnot = function(x) {
+	  return unary(x, function(x) {
+	    return ~x;
+	  });
+	};
+
+	flow.reciprocal = function(x) {
+	  return unary(x, function(x) {
+	    return 1 / x;
+	  });
+	};
+
+	flow.abs = function(x) {
+	  return unary(x, Math.abs);
+	};
+
+	flow.floor = function(x) {
+	  return unary(x, Math.floor);
+	};
+
+	flow.ceil = function(x) {
+	  return unary(x, Math.ceil);
+	};
+
+	flow.round = function(x) {
+	  return unary(x, Math.round);
+	};
+
+	flow.add = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x + y;
+	  });
+	};
+
+	flow.sub = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x - y;
+	  });
+	};
+
+	flow.mul = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x * y;
+	  });
+	};
+
+	flow.div = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x / y;
+	  });
+	};
+
+	flow.min = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return Math.min(x, y);
+	  });
+	};
+
+	flow.funcAttr = function(obj, attr) {
+	  return flow(obj, attr, function(value) {
+	    var objValue;
+	    objValue = obj();
+	    if (objValue == null) {
+	      return objValue;
+	    }
+	    if (!arguments.length) {
+	      return objValue[attr];
+	    } else {
+	      return objValue[attr] = value;
+	    }
+	  });
+	};
+
+	flow.toggle = function(x) {
+	  return x(!x());
+	};
+
+	flow.if_ = function(test, then_, else_) {
+	  if (typeof test !== 'function') {
+	    if (test) {
+	      return then_;
+	    } else {
+	      return else_;
+	    }
+	  } else if (!test.invalidate) {
+	    if (typeof then_ === 'function' && typeof else_ === 'function') {
+	      return function() {
+	        if (test()) {
+	          return then_();
+	        } else {
+	          return else_();
+	        }
+	      };
+	    } else if (then_ === 'function') {
+	      return function() {
+	        if (test()) {
+	          return then_();
+	        } else {
+	          return else_;
+	        }
+	      };
+	    } else if (else_ === 'function') {
+	      return function() {
+	        if (test()) {
+	          return then_;
+	        } else {
+	          return else_();
+	        }
+	      };
+	    } else if (test()) {
+	      return then_;
+	    } else {
+	      return else_;
+	    }
+	  } else {
+	    if (typeof then_ === 'function' && typeof else_ === 'function') {
+	      if (then_.invalidate && else_.invalidate) {
+	        return flow(test, then_, else_, function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_();
+	          }
+	        });
+	      } else {
+	        return function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_();
+	          }
+	        };
+	      }
+	    } else if (typeof then_ === 'function') {
+	      if (then_.invalidate) {
+	        return flow(test, then_, (function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_;
+	          }
+	        }));
+	      } else {
+	        return function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_;
+	          }
+	        };
+	      }
+	    } else if (typeof else_ === 'function') {
+	      if (else_.invalidate) {
+	        return flow(else_, (function() {
+	          if (test()) {
+	            return then_;
+	          } else {
+	            return else_();
+	          }
+	        }));
+	      } else {
+	        return function() {
+	          if (test()) {
+	            return then_;
+	          } else {
+	            return else_();
+	          }
+	        };
+	      }
+	    } else {
+	      return flow(test, function() {
+	        if (test()) {
+	          return then_;
+	        } else {
+	          return else_;
+	        }
+	      });
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 32 */
+/*!*********************************!*\
+  !*** ../lazy-flow/index.coffee ***!
+  \*********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var dependent, flow, funcString, newLine, react, renew, see, _ref,
+	  __slice = [].slice;
+
+	_ref = __webpack_require__(/*! dc-util */ 3), newLine = _ref.newLine, funcString = _ref.funcString;
+
+	react = function(method) {
+	  if (method.invalidate) {
+	    return method;
+	  }
+	  method.valid = false;
+	  method.invalidateCallbacks = [];
+	  method.onInvalidate = function(callback) {
+	    var invalidateCallbacks;
+	    if (typeof callback !== 'function') {
+	      throw new Error("call back should be a function");
+	    }
+	    invalidateCallbacks = method.invalidateCallbacks || (method.invalidateCallbacks = []);
+	    return invalidateCallbacks.push(callback);
+	  };
+	  method.offInvalidate = function(callback) {
+	    var index, invalidateCallbacks;
+	    invalidateCallbacks = method.invalidateCallbacks;
+	    if (!invalidateCallbacks) {
+	      return;
+	    }
+	    index = invalidateCallbacks.indexOf(callback);
+	    if (index < 0) {
+	      return;
+	    }
+	    invalidateCallbacks.splice(index, 1);
+	    if (!invalidateCallbacks.length) {
+	      return method.invalidateCallbacks = null;
+	    }
+	  };
+	  method.invalidate = function() {
+	    var callback, _i, _len, _ref1;
+	    if (!method.valid) {
+	      return;
+	    }
+	    if (!method.invalidateCallbacks) {
+	      return;
+	    }
+	    _ref1 = method.invalidateCallbacks;
+	    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+	      callback = _ref1[_i];
+	      callback();
+	    }
+	    method.valid = false;
+	  };
+	  return method;
+	};
+
+	renew = function(computation) {
+	  var method;
+	  method = function() {
+	    var value;
+	    if (!arguments.length) {
+	      value = computation();
+	      method.valid = true;
+	      method.invalidate();
+	      return value;
+	    } else {
+	      throw new Error('flow.renew is not allowed to accept arguments');
+	    }
+	  };
+	  method.toString = function() {
+	    return "renew: " + (funcString(computation));
+	  };
+	  return react(method);
+	};
+
+	dependent = function(computation) {
+	  var cacheValue, method;
+	  cacheValue = null;
+	  method = function() {
+	    if (!arguments.length) {
+	      if (!method.valid) {
+	        method.valid = true;
+	        return cacheValue = computation();
+	      } else {
+	        return cacheValue;
+	      }
+	    } else {
+	      throw new Error('flow.dependent is not allowed to accept arguments');
+	    }
+	  };
+	  method.toString = function() {
+	    return "dependent: " + (funcString(computation));
+	  };
+	  return react(method);
+	};
+
+	module.exports = flow = function() {
+	  var cacheValue, computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
+	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
+	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
+	    dep = deps[_j];
+	    if (typeof dep === 'function' && !dep.invalidate) {
+	      reactive = react(function() {
+	        reactive.invalidate();
+	        return computation();
+	      });
+	      return reactive;
+	    }
+	  }
+	  cacheValue = null;
+	  reactive = react(function(value) {
+	    if (!arguments.length) {
+	      if (!reactive.valid) {
+	        reactive.valid = true;
+	        return cacheValue = computation();
+	      } else {
+	        return cacheValue;
+	      }
+	    } else {
+	      if (value === cacheValue) {
+	        return value;
+	      }
+	      cacheValue = value;
+	      computation(value);
+	      reactive.invalidate();
+	      return cacheValue;
+	    }
+	  });
+	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	    dep = deps[_k];
+	    if (dep && dep.onInvalidate) {
+	      dep.onInvalidate(reactive.invalidate);
+	    }
+	  }
+	  reactive.toString = function() {
+	    return "flow: [" + (((function() {
+	      var _l, _len2, _results;
+	      _results = [];
+	      for (_l = 0, _len2 = deps.length; _l < _len2; _l++) {
+	        dep = deps[_l];
+	        _results.push(dep.toString());
+	      }
+	      return _results;
+	    })()).join(',')) + "] --> " + (funcString(computation));
+	  };
+	  return reactive;
+	};
+
+	flow.pipe = function() {
+	  var computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
+	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
+	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
+	    dep = deps[_j];
+	    if (typeof dep === 'function' && !dep.invalidate) {
+	      reactive = react(function() {
+	        var args, _k, _len1;
+	        if (argumnets.length) {
+	          throw new Error("flow.pipe is not allow to have arguments");
+	        }
+	        reactive.invalidate();
+	        args = [];
+	        for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	          dep = deps[_k];
+	          if (typeof dep === 'function') {
+	            args.push(dep());
+	          } else {
+	            args.push(dep);
+	          }
+	        }
+	        return computation.apply(null, args);
+	      });
+	      return reactive;
+	    }
+	  }
+	  reactive = react(function() {
+	    var args, _k, _len1;
+	    args = [];
+	    for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	      dep = deps[_k];
+	      if (typeof dep === 'function') {
+	        args.push(dep());
+	      } else {
+	        args.push(dep);
+	      }
+	    }
+	    return computation.apply(null, args);
+	  });
+	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	    dep = deps[_k];
+	    if (dep && dep.onInvalidate) {
+	      dep.onInvalidate(reactive.invalidate);
+	    }
+	  }
+	  return reactive;
+	};
+
+	flow.react = react;
+
+	flow.renew = renew;
+
+	flow.dependent = dependent;
+
+	flow.flow = flow;
+
+	flow.see = see = function(value, transform) {
+	  var cacheValue, method;
+	  cacheValue = value;
+	  method = function(value) {
+	    if (!arguments.length) {
+	      method.valid = true;
+	      return cacheValue;
+	    } else {
+	      value = transform ? transform(value) : value;
+	      if (value !== cacheValue) {
+	        cacheValue = value;
+	        method.invalidate();
+	      }
+	      return value;
+	    }
+	  };
+	  method.isDuplex = true;
+	  method.toString = function() {
+	    return "see: " + value;
+	  };
+	  return react(method);
+	};
+
+	flow.seeN = function() {
+	  var computation, computations, _i, _len, _results;
+	  computations = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	  _results = [];
+	  for (_i = 0, _len = computations.length; _i < _len; _i++) {
+	    computation = computations[_i];
+	    _results.push(see(computation));
+	  }
+	  return _results;
+	};
+
+	if (Object.defineProperty) {
+	  flow.bind = function(obj, attr, debugName) {
+	    var d, getter, set, setter;
+	    d = Object.getOwnPropertyDescriptor(obj, attr);
+	    if (d) {
+	      getter = d.get;
+	      set = d.set;
+	    }
+	    if (!getter || !getter.invalidate) {
+	      getter = function() {
+	        if (arguments.length) {
+	          throw new Error('should not set value on flow.bind');
+	        }
+	        getter.valid = true;
+	        return getter.cacheValue;
+	      };
+	      getter.cacheValue = obj[attr];
+	      setter = function(value) {
+	        if (value !== obj[attr]) {
+	          if (set) {
+	            set(value);
+	          }
+	          getter.invalidate();
+	          return getter.cacheValue = value;
+	        }
+	      };
+	      react(getter);
+	      getter.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
+	      Object.defineProperty(obj, attr, {
+	        get: getter,
+	        set: setter
+	      });
+	    }
+	    return getter;
+	  };
+	  flow.duplex = function(obj, attr, debugName) {
+	    var d, get, method, set;
+	    d = Object.getOwnPropertyDescriptor(obj, attr);
+	    if (d) {
+	      get = d.get, set = d.set;
+	    }
+	    if (!set || !set.invalidate) {
+	      method = function(value) {
+	        if (!arguments.length) {
+	          method.valid = true;
+	          return method.cacheValue;
+	        }
+	        if (value !== obj[attr]) {
+	          if (set) {
+	            set(value);
+	          }
+	          get && get.invalidate && get.invalidate();
+	          method.invalidate();
+	          return method.cacheValue = value;
+	        }
+	      };
+	      method.cacheValue = obj[attr];
+	      react(method);
+	      method.isDuplex = true;
+	      method.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
+	      Object.defineProperty(obj, attr, {
+	        get: method,
+	        set: method
+	      });
+	      return method;
+	    } else {
+	      return set;
+	    }
+	  };
+	} else {
+	  flow.bind = function(obj, attr, debugName) {
+	    var method, _dcBindMethodMap;
+	    _dcBindMethodMap = obj._dcBindMethodMap;
+	    if (!_dcBindMethodMap) {
+	      _dcBindMethodMap = obj._dcBindMethodMap = {};
+	    }
+	    if (!obj.dcSet$) {
+	      obj.dcSet$ = function(attr, value) {
+	        var _dcDuplexMethodMap;
+	        if (value !== obj[attr]) {
+	          _dcBindMethodMap && _dcBindMethodMap[attr] && _dcBindMethodMap[attr].invalidate();
+	          return (_dcDuplexMethodMap = this._dcDuplexMethodMap) && _dcDuplexMethodMap[attr] && _dcDuplexMethodMap[attr].invalidate();
+	        }
+	      };
+	    }
+	    method = _dcBindMethodMap[attr];
+	    if (!method) {
+	      method = _dcBindMethodMap[attr] = function() {
+	        method.valid = true;
+	        return obj[attr];
+	      };
+	      method.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
+	      react(method);
+	    }
+	    return method;
+	  };
+	  flow.duplex = function(obj, attr, debugName) {
+	    var method, _dcDuplexMethodMap;
+	    _dcDuplexMethodMap = obj._dcDuplexMethodMap;
+	    if (!_dcDuplexMethodMap) {
+	      _dcDuplexMethodMap = obj._dcDuplexMethodMap = {};
+	    }
+	    if (!obj.dcSet$) {
+	      obj.dcSet$ = function(attr, value) {
+	        var _dcBindMethodMap;
+	        if (value !== obj[attr]) {
+	          (_dcBindMethodMap = this._dcBindMethodMap) && _dcBindMethodMap[attr] && _dcBindMethodMap[attr].invalidate();
+	          _dcDuplexMethodMap && _dcDuplexMethodMap[attr] && _dcDuplexMethodMap[attr].invalidate();
+	        }
+	        return value;
+	      };
+	    }
+	    method = _dcDuplexMethodMap[attr];
+	    if (!method) {
+	      method = _dcDuplexMethodMap[attr] = function(value) {
+	        if (!arguments.length) {
+	          method.valid = true;
+	          return obj[attr];
+	        } else {
+	          return obj.dcSet$(attr, value);
+	        }
+	      };
+	      method.isDuplex = true;
+	      method.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
+	      react(method);
+	    }
+	    return method;
+	  };
+	}
+
+	flow.unary = function(x, unaryFn) {
+	  if (typeof x !== 'function') {
+	    return unaryFn(x);
+	  } else if (x.invalidate) {
+	    return flow(x, function() {
+	      return unaryFn(x());
+	    });
+	  } else {
+	    return function() {
+	      return unaryFn(x());
+	    };
+	  }
+	};
+
+	flow.binary = function(x, y, binaryFn) {
+	  if (typeof x === 'function' && typeof y === 'function') {
+	    if (x.invalidate && y.invalidate) {
+	      return flow(x, y, function() {
+	        return binaryFn(x(), y());
+	      });
+	    } else {
+	      return function() {
+	        return binaryFn(x(), y());
+	      };
+	    }
+	  } else if (typeof x === 'function') {
+	    if (x.invalidate) {
+	      return flow(x, function() {
+	        return binaryFn(x(), y);
+	      });
+	    } else {
+	      return function() {
+	        return binaryFn(x(), y);
+	      };
+	    }
+	  } else if (typeof y === 'function') {
+	    if (y.invalidate) {
+	      return flow(y, function() {
+	        return binaryFn(x, y());
+	      });
+	    } else {
+	      return function() {
+	        return binaryFn(x, y());
+	      };
+	    }
+	  } else {
+	    return binaryFn(x, y);
+	  }
+	};
+
+
+/***/ },
+/* 33 */
 /*!***********************************!*\
   !*** ./src/core/base/Case.coffee ***!
   \***********************************/
@@ -4864,7 +5705,7 @@
 
 
 /***/ },
-/* 31 */
+/* 34 */
 /*!***********************************!*\
   !*** ./src/core/base/Pick.coffee ***!
   \***********************************/
@@ -4954,7 +5795,7 @@
 
 
 /***/ },
-/* 32 */
+/* 35 */
 /*!***********************************!*\
   !*** ./src/core/base/Each.coffee ***!
   \***********************************/
@@ -5177,7 +6018,7 @@
 
 
 /***/ },
-/* 33 */
+/* 36 */
 /*!************************************!*\
   !*** ./src/core/base/Defer.coffee ***!
   \************************************/
@@ -5269,7 +6110,7 @@
 
 
 /***/ },
-/* 34 */
+/* 37 */
 /*!*************************************!*\
   !*** ./src/core/instantiate.coffee ***!
   \*************************************/
@@ -5282,7 +6123,7 @@
 
 	_ref1 = __webpack_require__(/*! dc-util */ 3), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
-	isAttrs = __webpack_require__(/*! ./util */ 35).isAttrs;
+	isAttrs = __webpack_require__(/*! ./util */ 38).isAttrs;
 
 	attrsChildren = function(args) {
 	  var attrs;
@@ -5356,11 +6197,27 @@
 	  }
 	};
 
-	exports.if_ = function(attrs, test, then_, else_) {
+	exports.if_ = function(attrs, test, then_, else_, merge, recursive) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new If(test, then_, else_)]);
+	    return new Tag('div', attrs, [new If(test, then_, else_, merge, recursive)]);
 	  } else {
-	    return new If(attrs, test, then_, else_);
+	    return new If(attrs, test, then_, merge, recursive);
+	  }
+	};
+
+	exports.mergeIf = function(attrs, test, then_, else_, recursive) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new If(test, then_, else_, true, recursive)]);
+	  } else {
+	    return new If(attrs, test, then_, true, recursive);
+	  }
+	};
+
+	exports.recursiveIf = function(attrs, test, then_, else_) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new If(test, then_, else_, true, true)]);
+	  } else {
+	    return new If(attrs, test, then_, true, true);
 	  }
 	};
 
@@ -5510,7 +6367,7 @@
 
 
 /***/ },
-/* 35 */
+/* 38 */
 /*!******************************!*\
   !*** ./src/core/util.coffee ***!
   \******************************/
@@ -5576,7 +6433,7 @@
 
 
 /***/ },
-/* 36 */
+/* 39 */
 /*!*****************************!*\
   !*** ./src/core/tag.coffee ***!
   \*****************************/
@@ -5587,7 +6444,7 @@
 
 	extend = __webpack_require__(/*! extend */ 8);
 
-	tag = __webpack_require__(/*! ./instantiate */ 34).tag;
+	tag = __webpack_require__(/*! ./instantiate */ 37).tag;
 
 	getBindProp = __webpack_require__(/*! ../dom-util */ 5).getBindProp;
 
@@ -5690,7 +6547,7 @@
 
 
 /***/ },
-/* 37 */
+/* 40 */
 /*!*****************************!*\
   !*** ./src/dc-error.coffee ***!
   \*****************************/

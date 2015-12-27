@@ -46,9 +46,17 @@ exports.html = (attrs, text, transform) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Html(text, transform)])
   else new Html(attrs, text)
 
-exports.if_ = (attrs, test, then_, else_) ->
-  if isAttrs(attrs) then new Tag('div', attrs, [new If(test, then_, else_)])
-  else new If(attrs, test, then_, else_)
+exports.if_ = (attrs, test, then_, else_, merge, recursive) ->
+  if isAttrs(attrs) then new Tag('div', attrs, [new If(test, then_, else_, merge, recursive)])
+  else new If(attrs, test, then_, merge, recursive)
+
+exports.mergeIf = (attrs, test, then_, else_, recursive) ->
+  if isAttrs(attrs) then new Tag('div', attrs, [new If(test, then_, else_, true, recursive)])
+  else new If(attrs, test, then_, true, recursive)
+
+exports.recursiveIf = (attrs, test, then_, else_) ->
+  if isAttrs(attrs) then new Tag('div', attrs, [new If(test, then_, else_, true, true)])
+  else new If(attrs, test, then_, true, true)
 
 exports.case_ = (attrs, test, map, else_) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new Case(test, map, else_)])

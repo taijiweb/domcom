@@ -14,6 +14,7 @@ module.exports = class Component
     @baseComponent = null
     @parentNode = null
     @node = null
+    @removing = false
     @dcid = newDcid()
 
   on: (event, callback) ->
@@ -125,6 +126,12 @@ module.exports = class Component
     else child.renderDom()
     @emit('afterMount')
     child
+
+  destroy: ->
+    this.listeners = null
+    this.node = null
+    this.baseComponent = null
+    this.parentNode = null
 
   ###
   component.updateWhen components, events

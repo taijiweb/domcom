@@ -41,7 +41,7 @@ module.exports = class Tag extends BaseComponent
 
     @hasActiveProps = false
     @cacheProps = {}
-    @props = props = {}
+    @props = {}
     @boundProps = {}
     @['invalidateProps'] = {}
 
@@ -62,6 +62,7 @@ module.exports = class Tag extends BaseComponent
     for key, value of attrs
 
       if key=='style'
+        # style is this.style
         styles = styleFrom(value)
         for key, value of styles
           @setProp(key, value, style, 'Style')
@@ -194,9 +195,14 @@ module.exports = class Tag extends BaseComponent
     @invalidate()
 
   bind: (eventNames, handler, before) ->
-    eventNames = eventNames.split('\s+')
-    for eventName in eventNames
-      @bindOne(eventName, handler, before)
+    if arguments.length == 1
+      for eventName, handler of eventNames
+        @bindOne(eventName, handler)
+    else
+      eventNames = eventNames.split('\s+')
+      for eventName in eventNames
+        @bindOne(eventName, handler, before)
+
     @
 
   bindOne: (eventName, handler, before) ->
@@ -206,7 +212,7 @@ module.exports = class Tag extends BaseComponent
     if !eventHandlers
       events[eventName] = [handler]
       if @node
-        @node[eventName] = eventHandlerFromArray(events[eventName], eventName, @)
+        @node[eventName] = eventHandlerFromArray(events[eventName], eventName)
       else
         @hasActiveEvents = true
         @hasActiveProperties = true

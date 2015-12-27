@@ -5,6 +5,8 @@ Nothing = require './Nothing'
 {binarySearch, binaryInsert, substractSet} = require 'dc-util'
 {checkConflictOffspring} = require '../../dom-util'
 
+# todo: to simplify, use sort to replace binaryInsert and binarySearch
+
 module.exports =
 
   initChildren: (children) ->

@@ -51,7 +51,7 @@
 
 	dc = __webpack_require__(/*! ./domcom-basic */ 1);
 
-	__webpack_require__(/*! ./domcom-addon */ 39);
+	__webpack_require__(/*! ./domcom-addon */ 42);
 
 	module.exports = dc;
 
@@ -73,7 +73,7 @@
 
 	dc.extend = extend = __webpack_require__(/*! extend */ 9);
 
-	extend(dc, __webpack_require__(/*! ./config */ 7), __webpack_require__(/*! lazy-flow */ 5), __webpack_require__(/*! dc-watch-list */ 10), __webpack_require__(/*! ./dom-util */ 6), __webpack_require__(/*! dc-util */ 4), __webpack_require__(/*! ./core/index */ 11), __webpack_require__(/*! ./dc-error */ 38));
+	extend(dc, __webpack_require__(/*! ./config */ 7), __webpack_require__(/*! lazy-flow */ 5), __webpack_require__(/*! dc-watch-list */ 10), __webpack_require__(/*! ./dom-util */ 6), __webpack_require__(/*! dc-util */ 4), __webpack_require__(/*! ./core/index */ 11), __webpack_require__(/*! ./dc-error */ 41));
 
 
 /***/ },
@@ -1343,7 +1343,7 @@
 /***/ function(module, exports) {
 
 	module.exports = function(item) {
-	  return item && item.renderDom;
+	  return item && (item.renderDom != null);
 	};
 
 
@@ -1723,7 +1723,7 @@
 
 	extend = __webpack_require__(/*! extend */ 9);
 
-	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 12), __webpack_require__(/*! ./instantiate */ 35), __webpack_require__(/*! ./tag */ 37), __webpack_require__(/*! ./property */ 27));
+	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 12), __webpack_require__(/*! ./instantiate */ 38), __webpack_require__(/*! ./tag */ 40), __webpack_require__(/*! ./property */ 27));
 
 
 /***/ },
@@ -1752,11 +1752,11 @@
 	  Nothing: __webpack_require__(/*! ./Nothing */ 20),
 	  TransformComponent: __webpack_require__(/*! ./TransformComponent */ 18),
 	  If: __webpack_require__(/*! ./If */ 30),
-	  Case: __webpack_require__(/*! ./Case */ 31),
+	  Case: __webpack_require__(/*! ./Case */ 34),
 	  Func: __webpack_require__(/*! ./Func */ 24),
-	  Pick: __webpack_require__(/*! ./Pick */ 32),
-	  Each: __webpack_require__(/*! ./Each */ 33),
-	  Defer: __webpack_require__(/*! ./Defer */ 34),
+	  Pick: __webpack_require__(/*! ./Pick */ 35),
+	  Each: __webpack_require__(/*! ./Each */ 36),
+	  Defer: __webpack_require__(/*! ./Defer */ 37),
 	  Route: route.Route,
 	  route: route
 	};
@@ -1975,6 +1975,7 @@
 	    this.baseComponent = null;
 	    this.parentNode = null;
 	    this.node = null;
+	    this.removing = false;
 	    this.dcid = newDcid();
 	  }
 
@@ -2129,6 +2130,13 @@
 	    return child;
 	  };
 
+	  Component.prototype.destroy = function() {
+	    this.listeners = null;
+	    this.node = null;
+	    this.baseComponent = null;
+	    return this.parentNode = null;
+	  };
+
 
 	  /*
 	  component.updateWhen components, events
@@ -2254,6 +2262,7 @@
 	        return me.invalidate();
 	      });
 	    }
+	    this.isText = true;
 	    this.family = {};
 	    this.family[this.dcid] = true;
 	    this;
@@ -2860,6 +2869,7 @@
 	    if (this.parentNode !== parentNode) {
 
 	    } else {
+	      this.removing = false;
 	      this.parentNode = null;
 	      while (content = this.content) {
 	        content.markRemovingDom(parentNode);
@@ -2962,6 +2972,7 @@
 	    Nothing.__super__.constructor.apply(this, arguments);
 	    this.firstNode = null;
 	    this.family = {};
+	    this.isNothing = true;
 	    this.baseComponent = this;
 	  }
 
@@ -3079,6 +3090,7 @@
 	    if (this.parentNode !== parentNode) {
 
 	    } else {
+	      this.removing = false;
 	      this.parentNode = null;
 	      _ref = this.children;
 	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3571,7 +3583,7 @@
 	  }
 
 	  Tag.prototype.initAttrs = function() {
-	    var className, events, me, props;
+	    var className, events, me;
 	    me = this;
 	    this.hasActiveProperties = false;
 	    this.cacheClassName = "";
@@ -3584,7 +3596,7 @@
 	    });
 	    this.hasActiveProps = false;
 	    this.cacheProps = {};
-	    this.props = props = {};
+	    this.props = {};
 	    this.boundProps = {};
 	    this['invalidateProps'] = {};
 	    this.hasActiveStyle = false;
@@ -3770,10 +3782,17 @@
 
 	  Tag.prototype.bind = function(eventNames, handler, before) {
 	    var eventName, _i, _len;
-	    eventNames = eventNames.split('\s+');
-	    for (_i = 0, _len = eventNames.length; _i < _len; _i++) {
-	      eventName = eventNames[_i];
-	      this.bindOne(eventName, handler, before);
+	    if (arguments.length === 1) {
+	      for (eventName in eventNames) {
+	        handler = eventNames[eventName];
+	        this.bindOne(eventName, handler);
+	      }
+	    } else {
+	      eventNames = eventNames.split('\s+');
+	      for (_i = 0, _len = eventNames.length; _i < _len; _i++) {
+	        eventName = eventNames[_i];
+	        this.bindOne(eventName, handler, before);
+	      }
 	    }
 	    return this;
 	  };
@@ -3788,7 +3807,7 @@
 	    if (!eventHandlers) {
 	      events[eventName] = [handler];
 	      if (this.node) {
-	        this.node[eventName] = eventHandlerFromArray(events[eventName], eventName, this);
+	        this.node[eventName] = eventHandlerFromArray(events[eventName], eventName);
 	      } else {
 	        this.hasActiveEvents = true;
 	        this.hasActiveProperties = true;
@@ -4611,6 +4630,7 @@
 
 	  function Html(text, transform) {
 	    this.transform = transform;
+	    this.isHtml = true;
 	    Html.__super__.constructor.call(this, text);
 	  }
 
@@ -4716,7 +4736,7 @@
   \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var If, TransformComponent, funcString, intersect, newLine, renew, toComponent, _ref,
+	var If, TransformComponent, funcString, intersect, mergeIf, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -4728,10 +4748,12 @@
 
 	renew = __webpack_require__(/*! lazy-flow */ 5).renew;
 
+	mergeIf = __webpack_require__(/*! ../mergeIf */ 31);
+
 	module.exports = If = (function(_super) {
 	  __extends(If, _super);
 
-	  function If(test, then_, else_) {
+	  function If(test, then_, else_, merge, recursive) {
 	    var family;
 	    if (then_ === else_) {
 	      return toComponent(then_);
@@ -4744,6 +4766,9 @@
 	      } else {
 	        return else_;
 	      }
+	    }
+	    if (merge) {
+	      return mergeIf(test, then_, else_, recursive);
 	    }
 	    If.__super__.constructor.call(this);
 	    this.then_ = then_;
@@ -4788,2096 +4813,161 @@
 
 /***/ },
 /* 31 */
-/*!***********************************!*\
-  !*** ./src/core/base/Case.coffee ***!
-  \***********************************/
+/*!*********************************!*\
+  !*** ./src/core/mergeIf.coffee ***!
+  \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Case, TransformComponent, funcString, intersect, newLine, renew, toComponent, _ref,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+	var List, Nothing, Tag, emptyEventCallback, eventHandlerFromArray, exports, extend, flow, flowIf, mergeIf, mergeIfChild, mergeIfChildren, mergeIfClassFn, mergeIfEvents, mergeIfProps, toComponent;
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+	extend = __webpack_require__(/*! extend */ 9);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+	toComponent = __webpack_require__(/*! ./base/toComponent */ 19);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
+	Tag = __webpack_require__(/*! ./base/Tag */ 25);
 
-	renew = __webpack_require__(/*! lazy-flow */ 5).renew;
+	List = __webpack_require__(/*! ./base/List */ 21);
 
-	module.exports = Case = (function(_super) {
-	  __extends(Case, _super);
+	Nothing = __webpack_require__(/*! ./base/Nothing */ 20);
 
-	  function Case(test, map, else_) {
-	    var families, family, key, value, _;
-	    this.map = map;
-	    if (typeof test !== 'function') {
-	      if (map.hasOwnPoperty(test)) {
-	        return toComponent(map[key]);
-	      } else {
-	        return toComponent(else_);
-	      }
-	    }
-	    Case.__super__.constructor.call(this);
-	    if (!test.invalidate) {
-	      this.test = renew(test);
-	    } else {
-	      this.test = test;
-	    }
-	    this.test.onInvalidate(this.invalidateTransform.bind(this));
-	    for (key in map) {
-	      value = map[key];
-	      map[key] = toComponent(value);
-	    }
-	    this.else_ = toComponent(else_);
-	    families = (function() {
-	      var _ref1, _results;
-	      _ref1 = this.map;
-	      _results = [];
-	      for (_ in _ref1) {
-	        value = _ref1[_];
-	        _results.push(value.family);
-	      }
-	      return _results;
-	    }).call(this);
-	    families.push(this.else_.family);
-	    this.family = family = intersect(families);
-	    family[this.dcid] = true;
+	eventHandlerFromArray = __webpack_require__(/*! ./property */ 27).eventHandlerFromArray;
+
+	flow = __webpack_require__(/*! lazy-flow/addon */ 32);
+
+	flowIf = flow.if_;
+
+	exports = module.exports = mergeIf = function(test, then_, else_, recursive) {
+	  var If, children, className, component, elseTransform, events, props, style, thenTransform, transform;
+	  If = __webpack_require__(/*! ./base/If */ 30);
+	  if (then_ === else_) {
+	    return toComponent(then_);
 	  }
-
-	  Case.prototype.getContentComponent = function() {
-	    return this.map[this.test()] || this.else_;
-	  };
-
-	  Case.prototype.clone = function() {
-	    var cloneMap, key, value, _ref1;
-	    cloneMap = {};
-	    _ref1 = this.map;
-	    for (key in _ref1) {
-	      value = _ref1[key];
-	      cloneMap[key] = value.clone();
+	  then_ = toComponent(then_);
+	  else_ = toComponent(else_);
+	  if (typeof test !== 'function') {
+	    if (test) {
+	      return then_;
+	    } else {
+	      return else_;
 	    }
-	    return (new Case(this.test, cloneMap, this["else"].clone())).copyEventListeners(this);
-	  };
+	  }
+	  if (then_.constructor === Tag && else_.constructor === Tag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
+	    children = mergeIfChildren(test, then_, else_, recursive);
+	    component = new Tag(then_.tagName, {}, children);
+	    className = mergeIfClassFn(test, then_.className, else_.className);
+	    props = mergeIfProps(test, then_.props, else_.props);
+	    style = mergeIfProps(test, then_.style, else_.style);
+	    events = mergeIfEvents(test, then_.events, else_.events, component);
+	    return component.addClass(className).prop(props).css(style).bind(events);
+	  } else if (then_.isHtml && else_.isHtml) {
+	    thenTransform = then_.transform;
+	    elseTransform = else_.transform;
+	    transform = function(text) {
+	      if (test()) {
+	        return thenTransform && thenTransform(text) || text;
+	      } else {
+	        return elseTransform && elseTransform(text) || text;
+	      }
+	    };
+	    return new then_.constructor(flowIf(test, then_.text, else_.text), transform);
+	  } else if (then_.isText && else_.isText && then_.constructor === else_.constructor) {
+	    return new then_.constructor(flowIf(test, then_.text, else_.text));
+	  } else if (then_.isNothing && else_.isNothing) {
+	    return then_;
+	  } else if (then_.isList && else_.isList) {
+	    return new List(mergeIfChildren(test, then_, else_, recursive));
+	  } else {
+	    return new If(test, then_, else_);
+	  }
+	};
 
-	  Case.prototype.toString = function(indent, addNewLine) {
-	    var comp, key, s, _ref1;
-	    if (indent == null) {
-	      indent = 0;
+	mergeIfChild = function(test, then_, else_, recursive) {
+	  if (!recursive && (then_.isList || else_.isList)) {
+	    return if_(test, then_, else_);
+	  } else {
+	    return mergeIf(test, then_, else_, recursive);
+	  }
+	};
+
+	exports.mergeIfChildren = mergeIfChildren = function(test, then_, else_, recursive) {
+	  var children, elseChildren, elseChildrenLength, elseItem, i, thenChildren, thenChildrenLength, thenItem, _i, _j, _k, _len, _len1, _len2;
+	  thenChildren = then_.children;
+	  elseChildren = else_.children;
+	  thenChildrenLength = thenChildren.length;
+	  elseChildrenLength = elseChildren.length;
+	  if (thenChildrenLength === elseChildrenLength) {
+	    children = new Array(thenChildrenLength);
+	    for (i = _i = 0, _len = thenChildren.length; _i < _len; i = ++_i) {
+	      thenItem = thenChildren[i];
+	      children[i] = mergeIfChild(test, thenItem, elseChildren[i], recursive);
 	    }
-	    s = newLine('', indent, addNewLine) + '<Case ' + funcString(this.test) + '>';
-	    _ref1 = this.map;
-	    for (key in _ref1) {
-	      comp = _ref1[key];
-	      s += newLine(key + ': ' + comp.toString(indent + 2, false), indent + 2, true);
+	  } else if (thenChildrenLength < elseChildrenLength) {
+	    children = new Array(elseChildrenLength);
+	    for (i = _j = 0, _len1 = thenChildren.length; _j < _len1; i = ++_j) {
+	      thenItem = thenChildren[i];
+	      children[i] = mergeIfChild(test, thenItem, elseChildren[i], recursive);
 	    }
-	    return s += this.else_.toString(indent + 2, true) + newLine('</Case>', indent, true);
-	  };
+	    while (i < elseChildrenLength) {
+	      children[i] = mergeIf(test, new Nothing(), elseChildren[i]);
+	      i++;
+	    }
+	  } else {
+	    children = new Array(thenChildrenLength);
+	    for (i = _k = 0, _len2 = elseChildren.length; _k < _len2; i = ++_k) {
+	      elseItem = elseChildren[i];
+	      children[i] = mergeIfChild(test, thenChildren[i], elseItem, recursive);
+	    }
+	    while (i < thenChildrenLength) {
+	      children[i] = mergeIf(test, thenChildren[i], new Nothing());
+	      i++;
+	    }
+	  }
+	  return children;
+	};
 
-	  return Case;
+	exports.mergeIfClassFn = mergeIfClassFn = function(test, thenClassName, elseClassName) {
+	  return mergeIfProps(test, thenClassName.classMap, elseClassName.classMap);
+	};
 
-	})(TransformComponent);
+	exports.mergeIfProps = mergeIfProps = function(test, thenProps, elseProps) {
+	  var prop, unified;
+	  unified = extend({}, thenProps, elseProps);
+	  for (prop in unified) {
+	    unified[prop] = flowIf(test, thenProps[prop], elseProps[prop]);
+	  }
+	  return unified;
+	};
+
+	emptyEventCallback = function() {};
+
+	exports.mergeIfEvents = mergeIfEvents = function(test, thenEvents, elseEvents, component) {
+	  var elseCallbackList, elseHandler, eventName, thenCallbackList, thenHandler, unified;
+	  unified = extend({}, thenEvents, elseEvents);
+	  for (eventName in unified) {
+	    if (thenCallbackList = thenEvents[eventName]) {
+	      thenHandler = eventHandlerFromArray(thenCallbackList.slice(0), eventName, component);
+	    } else {
+	      thenHandler = emptyEventCallback;
+	    }
+	    if (elseCallbackList = elseEvents[eventName]) {
+	      elseHandler = eventHandlerFromArray(elseCallbackList.slice(0), eventName, component);
+	    } else {
+	      elseHandler = emptyEventCallback;
+	    }
+	    unified[eventName] = function(event) {
+	      if (test()) {
+	        return thenHandler.call(component.node, event, component);
+	      } else {
+	        return elseHandler.call(component.node, event, component);
+	      }
+	    };
+	  }
+	  return unified;
+	};
 
 
 /***/ },
 /* 32 */
-/*!***********************************!*\
-  !*** ./src/core/base/Pick.coffee ***!
-  \***********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var Pick, TransformComponent, extend, newLine, toComponent,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
-
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
-
-	newLine = __webpack_require__(/*! dc-util */ 4).newLine;
-
-	extend = __webpack_require__(/*! extend */ 9);
-
-	module.exports = Pick = (function(_super) {
-	  __extends(Pick, _super);
-
-	  function Pick(host, field, initialContent) {
-	    var family, get, me, set;
-	    this.host = host;
-	    Pick.__super__.constructor.call(this);
-	    me = this;
-	    if (field == null) {
-	      this.field = field = 'content';
-	    } else {
-	      this.field = field;
-	    }
-	    if (initialContent) {
-	      this._content = host[field] = toComponent(initialContent);
-	    } else {
-	      this._content = host[field] = toComponent(host[field]);
-	    }
-	    this.family = family = extend({}, this._content.family);
-	    family[this.dcid] = true;
-	    if (Object.defineProperty) {
-	      get = function() {
-	        return me._content;
-	      };
-	      set = function(content) {
-	        return me.setContent(content);
-	      };
-	      Object.defineProperty(host, field, {
-	        get: get,
-	        set: set
-	      });
-	    }
-	  }
-
-	  Pick.prototype.setContent = function(content) {
-	    var oldContent;
-	    oldContent = this._content;
-	    if (content === oldContent) {
-	      return content;
-	    } else {
-	      this.invalidateTransform();
-	      this.onSetContent(content, oldContent);
-	      return this._content = toComponent(content);
-	    }
-	  };
-
-	  Pick.prototype.onSetContent = function(content, oldContent) {};
-
-	  Pick.prototype.getContentComponent = function() {
-	    return this._content;
-	  };
-
-	  Pick.prototype.clone = function() {
-	    return (new this.constructor(this.host, this.field)).copyEventListeners(this);
-	  };
-
-	  Pick.prototype.toString = function(indent, addNewLine) {
-	    if (indent == null) {
-	      indent = 0;
-	    }
-	    if (addNewLine == null) {
-	      addNewLine = '';
-	    }
-	    return newLine('', indent, addNewLine) + '<Pick:' + this.field + ': ' + this._content.toString(indent + 2, true) + '>';
-	  };
-
-	  return Pick;
-
-	})(TransformComponent);
-
-
-/***/ },
-/* 33 */
-/*!***********************************!*\
-  !*** ./src/core/base/Each.coffee ***!
-  \***********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var Each, Func, List, Nothing, Text, TransformComponent, flow, funcString, isArray, newLine, react, renew, toComponent, watchEachList, watchEachObject, _ref, _ref1, _ref2,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
-
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
-
-	List = __webpack_require__(/*! ./List */ 21);
-
-	Func = __webpack_require__(/*! ./Func */ 24);
-
-	Text = __webpack_require__(/*! ./Text */ 16);
-
-	Nothing = __webpack_require__(/*! ./Nothing */ 20);
-
-	_ref = __webpack_require__(/*! dc-util */ 4), isArray = _ref.isArray, funcString = _ref.funcString, newLine = _ref.newLine;
-
-	_ref1 = __webpack_require__(/*! lazy-flow */ 5), react = _ref1.react, renew = _ref1.renew, flow = _ref1.flow;
-
-	_ref2 = __webpack_require__(/*! dc-watch-list */ 10), watchEachList = _ref2.watchEachList, watchEachObject = _ref2.watchEachObject;
-
-	module.exports = Each = (function(_super) {
-	  __extends(Each, _super);
-
-	  function Each(items, itemFn, options) {
-	    var key, me;
-	    this.itemFn = itemFn;
-	    if (options == null) {
-	      options = {};
-	    }
-	    Each.__super__.constructor.call(this);
-	    this.family = {};
-	    me = this;
-	    if (typeof items === 'function') {
-	      this.isFunction = true;
-	      !items.invalidate && (items = renew(items));
-	      items.onInvalidate(this.invalidateTransform.bind(this));
-	    }
-	    this.items = items;
-	    if (options.sort) {
-	      this.needSort = true;
-	      if (typeof options.sort === 'function') {
-	        this.sortFunction = options.sort;
-	      } else {
-	        this.sortFunction = null;
-	      }
-	    }
-	    key = options.key;
-	    this.keyFunction = typeof key === 'function' ? key : key != null ? function(item, i) {
-	      return item[key];
-	    } : void 0;
-	    this.childReactives = [];
-	    this.memoComponents = {};
-	    this.memoChildMap = {};
-	    this.cacheChildren = [];
-	    this.listComponent = new List([]);
-	    this.listComponent.holder = this;
-	    return;
-	  }
-
-	  Each.prototype.getItems = function() {};
-
-	  Each.prototype.getContentComponent = function() {
-	    var isFunction, items, key, length, listComponent, needSort, value, watchingMe, _items;
-	    listComponent = this.listComponent, items = this.items, isFunction = this.isFunction, needSort = this.needSort;
-	    if (!items) {
-	      return this.emptyPlaceHolder || (this.emptyPlaceHolder = new Nothing());
-	    }
-	    if (isFunction) {
-	      items = items();
-	      if (!items) {
-	        return this.emptyPlaceHolder || (this.emptyPlaceHolder = new Nothing());
-	      }
-	      if (typeof items !== 'object') {
-	        throw new Error('Each Component need an array or object');
-	      }
-	    }
-	    if (!(this.isArrayItems = items instanceof Array)) {
-	      items = (function() {
-	        var _results;
-	        _results = [];
-	        for (key in items) {
-	          value = items[key];
-	          _results.push([key, value]);
-	        }
-	        return _results;
-	      })();
-	    }
-	    if (needSort) {
-	      items.sort(this.sortFunction);
-	    } else {
-	      _items = this._items;
-	      _items && _items.watchingComponents && delete _items.watchingComponents[this.dcid];
-	      watchingMe = items && items.watchingComponents && items.watchingComponents[this.dcid];
-	      if (!this.notWatch && !watchingMe) {
-	        if (this.isArrayItems) {
-	          watchEachList(items, this);
-	        } else {
-	          watchEachObject(items, this);
-	        }
-	      }
-	    }
-	    this._items = items;
-	    length = items.length;
-	    if (length < listComponent.children.length) {
-	      this._setLength(length);
-	      if (isFunction || needSort || !this.isArrayItems) {
-	        this.invalidateChildren(0, length);
-	      }
-	    } else {
-	      this.invalidateChildren(0, length);
-	    }
-	    return listComponent;
-	  };
-
-	  Each.prototype.getChild = function(index) {
-	    var cacheChildren, child, childReactives, children, itemFn, keyFunction, listComponent, me, memoKey;
-	    me = this;
-	    if (keyFunction) {
-	      memoKey = this.isArrayItems ? keyFunction(_items[index], index) : keyFunction(_items[index][0], _items[index][1], index);
-	    }
-	    listComponent = this.listComponent, cacheChildren = this.cacheChildren, children = this.children, childReactives = this.childReactives, keyFunction = this.keyFunction, itemFn = this.itemFn;
-	    children = listComponent.children;
-	    if (keyFunction) {
-	      if (this.memoChildMap[memoKey]) {
-	        throw new Error('duplicated memo key in Each Component');
-	      }
-	      if (child = this.memoComponents[memoKey]) {
-	        child.valid = false;
-	        child.transformValid = false;
-	        children[index] = cacheChildren[index] = child;
-	        this.memoChildMap[memoKey] = child;
-	        return child;
-	      }
-	    }
-	    if (index < children.length) {
-	      child = children[index];
-	      child.valid = false;
-	      child.transformValid = false;
-	    } else if (index < cacheChildren.length) {
-	      child = children[index] = cacheChildren[index];
-	      child.valid = false;
-	      child.transformValid = false;
-	    } else {
-	      childReactives[index] = react(function() {
-	        var item, items, key, result, value;
-	        items = me._items;
-	        item = items[index];
-	        if (itemFn.pouring) {
-	          child.invalidateTransform();
-	        }
-	        return result = me.isArrayItems ? itemFn(item, index, items, me) : ((key = item[0], value = item[1], item), itemFn(value, key, index, items, me));
-	      });
-	      children[index] = cacheChildren[index] = child = new Func(childReactives[index]);
-	      child.holder = listComponent;
-	      listComponent.dcidIndexMap[child.dcid] = index;
-	    }
-	    return child;
-	  };
-
-	  Each.prototype.invalidateChildren = function(start, stop) {
-	    var children, i, listComponent, oldChildrenLength;
-	    if (stop == null) {
-	      stop = start + 1;
-	    }
-	    i = start;
-	    listComponent = this.listComponent;
-	    children = listComponent.children;
-	    oldChildrenLength = children.length;
-	    while (i < stop) {
-	      this.getChild(i);
-	      i++;
-	    }
-	    if (stop > oldChildrenLength) {
-	      children[stop - 1].nextNode = this.nextNode;
-	    }
-	    listComponent.invalidChildren(start, stop);
-	    return this;
-	  };
-
-	  Each.prototype._setLength = function(length) {
-	    var index, listComponent, oldLength;
-	    listComponent = this.listComponent;
-	    oldLength = listComponent.children.length;
-	    if (length >= oldLength) {
-	      return this;
-	    } else {
-	      if (this.keyFunction) {
-	        index = length;
-	        while (index < oldLength) {
-	          delete memoChildMap[children[index].memoKey];
-	          index++;
-	        }
-	      }
-	      listComponent.setLength(length);
-	      return this;
-	    }
-	  };
-
-	  Each.prototype.clone = function(options) {
-	    return (new Each(this.items, this.itemFn, options || this.options)).copyEventListeners(this);
-	  };
-
-	  Each.prototype.toString = function(indent, addNewLine) {
-	    if (indent == null) {
-	      indent = 0;
-	    }
-	    return newLine("<Each " + (funcString(this.items)) + " " + (funcString(this.itemFn)) + "/>", indent, addNewLine);
-	  };
-
-	  return Each;
-
-	})(TransformComponent);
-
-
-/***/ },
-/* 34 */
-/*!************************************!*\
-  !*** ./src/core/base/Defer.coffee ***!
-  \************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var Defer, FULFILL, INIT, REJECT, TransformComponent, extend, funcString, intersect, newLine, renew, toComponent, _ref,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
-
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
-
-	extend = __webpack_require__(/*! extend */ 9);
-
-	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
-
-	renew = __webpack_require__(/*! lazy-flow */ 5).renew;
-
-	INIT = 0;
-
-	FULFILL = 1;
-
-	REJECT = 2;
-
-	module.exports = Defer = (function(_super) {
-	  __extends(Defer, _super);
-
-	  function Defer(promise, fulfill, reject, init) {
-	    var family;
-	    this.promise = promise;
-	    Defer.__super__.constructor.apply(this, arguments);
-	    this.fulfill = fulfill || function(result) {
-	      return result;
-	    };
-	    this.reject = reject || function(error) {
-	      return error;
-	    };
-	    this.init = init && init(promise, this) || new Nothing();
-	    this.family = family = intersect([fullfill.family, reject.family, init.family]);
-	    family[this.dcid] = true;
-	    this.promiseState = INIT;
-	    promise.then(function(value) {
-	      this.promiseResult = value;
-	      this.promiseState = FULFILL;
-	      return this.invalidateTransform();
-	    })["catch"](function(error) {
-	      this.promiseResult = error;
-	      this.promiseState = REJECT;
-	      return this.invalidateTransform();
-	    });
-	    return this;
-	  }
-
-	  Defer.prototype.getContentComponent = function() {
-	    var state;
-	    if ((state = this.promiseState) === INIT) {
-	      return init;
-	    } else if (state === FULFILL) {
-	      return toComponent(this.fulfill(this.promiseResult, this.promise, this));
-	    } else {
-	      return toComponent(this.reject(this.promiseResult, this.promise, this));
-	    }
-	  };
-
-	  Defer.prototype.clone = function() {
-	    return (new Defer(this.promise, this.fulfill, this.reject, this.init.clone)).copyEventListeners(this);
-	  };
-
-	  Defer.prototype.toString = function(indent, addNewLine) {
-	    if (indent == null) {
-	      indent = 0;
-	    }
-	    if (addNewLine == null) {
-	      addNewLine = '';
-	    }
-	    return newLine('', indent, addNewLine) + '<Defer ' + this.promise + '>' + newLine('', indent, addNewLine) + funcString(this.fulfill) + newLine('', indent, addNewLine) + funcString(this.reject) + this.init.toString(indent + 2, true) + newLine('</Defer>', indent, true);
-	  };
-
-	  return Defer;
-
-	})(TransformComponent);
-
-	extend(Defer, {
-	  INIT: INIT,
-	  FULFILL: FULFILL,
-	  REJECT: REJECT
-	});
-
-
-/***/ },
-/* 35 */
-/*!*************************************!*\
-  !*** ./src/core/instantiate.coffee ***!
-  \*************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var Case, Comment, Component, Defer, Each, Func, Html, If, List, Nothing, Pick, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
-	  __slice = [].slice;
-
-	_ref = __webpack_require__(/*! ./base */ 12), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, Pick = _ref.Pick, Nothing = _ref.Nothing, Defer = _ref.Defer;
-
-	_ref1 = __webpack_require__(/*! dc-util */ 4), isEven = _ref1.isEven, numbers = _ref1.numbers;
-
-	isAttrs = __webpack_require__(/*! ./util */ 36).isAttrs;
-
-	attrsChildren = function(args) {
-	  var attrs;
-	  attrs = args[0];
-	  if (!args.length) {
-	    return [{}, []];
-	  } else if (attrs==null) {
-	    return [{}, args.slice(1)];
-	  } else if (attrs instanceof Array) {
-	    return [{}, args];
-	  } else if (typeof attrs === 'function') {
-	    return [{}, args];
-	  } else if (typeof attrs === 'object') {
-	    if (isComponent(attrs)) {
-	      return [{}, args];
-	    } else {
-	      return [attrs, args.slice(1)];
-	    }
-	  } else {
-	    return [{}, args];
-	  }
-	};
-
-	toTagChildren = function(args) {
-	  if (!(args instanceof Array)) {
-	    return [args];
-	  } else if (!args.length) {
-	    return [];
-	  } else if (args.length === 1) {
-	    return toTagChildren(args[0]);
-	  } else {
-	    return args;
-	  }
-	};
-
-	tag = exports.tag = function() {
-	  var args, attrs, children, tagName, _ref2;
-	  tagName = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-	  _ref2 = attrsChildren(args), attrs = _ref2[0], children = _ref2[1];
-	  return new Tag(tagName, attrs, toTagChildren(children));
-	};
-
-	exports.nstag = function() {
-	  var args, attrs, children, namespace, tagName, _ref2;
-	  tagName = arguments[0], namespace = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
-	  _ref2 = attrsChildren(args), attrs = _ref2[0], children = _ref2[1];
-	  return new Tag(tagName, attrs, toTagChildren(children), namespace);
-	};
-
-	exports.txt = function(attrs, text) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Text(text)]);
-	  } else {
-	    return new Text(attrs);
-	  }
-	};
-
-	exports.comment = function(attrs, text) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Comment(text)]);
-	  } else {
-	    return new Comment(attrs);
-	  }
-	};
-
-	exports.html = function(attrs, text, transform) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Html(text, transform)]);
-	  } else {
-	    return new Html(attrs, text);
-	  }
-	};
-
-	exports.if_ = function(attrs, test, then_, else_) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new If(test, then_, else_)]);
-	  } else {
-	    return new If(attrs, test, then_, else_);
-	  }
-	};
-
-	exports.case_ = function(attrs, test, map, else_) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Case(test, map, else_)]);
-	  } else {
-	    return new Case(attrs, test, map, else_);
-	  }
-	};
-
-	exports.cond = function() {
-	  var attrs, condComponents, else_, _i;
-	  attrs = arguments[0], condComponents = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), else_ = arguments[_i++];
-	  if (isAttrs(attrs)) {
-	    if (!isEven(condComponents)) {
-	      condComponents.push(else_);
-	      else_ = null;
-	    }
-	    return new Tag('div', attrs, [new Cond(condComponents, else_)]);
-	  } else {
-	    condComponents.unshift(attrs);
-	    if (!isEven(condComponents)) {
-	      condComponents.push(else_);
-	      else_ = null;
-	    }
-	    return new Cond(condComponents, else_);
-	  }
-	};
-
-	exports.func = function(attrs, fn) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Func(fn)]);
-	  } else {
-	    return new Func(attrs);
-	  }
-	};
-
-	exports.pick = function(host, field, initialContent) {
-	  return new Pick(host, field, initialContent);
-	};
-
-	exports.list = list = function() {
-	  var attrs, lst;
-	  attrs = arguments[0], lst = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new List(lst)]);
-	  } else {
-	    lst.unshift(attrs);
-	    if (lst.length === 1) {
-	      return toComponent(lst[0]);
-	    } else {
-	      return new List(lst);
-	    }
-	  }
-	};
-
-
-	/**
-	  @param
-	    itemFn - function (item, index, list, component) { ... }
-	    itemFn - function (value, key, index, hash, component) { ... }
-	 */
-
-	exports.each = function(attrs, list, itemFn) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Each(list, itemFn)]);
-	  } else {
-	    return new Each(attrs, list);
-	  }
-	};
-
-	exports.every = every = function(attrs, list, itemFn) {
-	  var children, i, item, _i, _j, _len, _len1;
-	  if (isAttrs(attrs)) {
-	    if (!list) {
-	      return new Nothing();
-	    }
-	    children = [];
-	    for (i = _i = 0, _len = list.length; _i < _len; i = ++_i) {
-	      item = list[i];
-	      children.push(itemFn(item, i, list));
-	    }
-	    return new Tag('div', attrs, [new List(children)]);
-	  } else {
-	    if (!attrs) {
-	      return new Nothing();
-	    }
-	    children = [];
-	    for (i = _j = 0, _len1 = attrs.length; _j < _len1; i = ++_j) {
-	      item = attrs[i];
-	      children.push(list(item, i, attrs));
-	    }
-	    return new List(children);
-	  }
-	};
-
-	exports.all = function(hash, itemFn) {
-	  var children, i, key, value;
-	  if (!hash) {
-	    return new Nothing();
-	  }
-	  children = [];
-	  i = 0;
-	  for (key in hash) {
-	    value = hash[key];
-	    if (!hash.hasOwnProperty(key)) {
-	      break;
-	    }
-	    children.push(itemFn(key, value, i, hash));
-	    i++;
-	  }
-	  return new List(children);
-	};
-
-	exports.nItems = function(attrs, n, itemFn) {
-	  if (isAttrs(attrs)) {
-	    if (typeof n === 'function') {
-	      return new Tag('div', attrs, [new Each(numbers(n), itemFn)]);
-	    } else {
-	      return new Tag('div', every(numbers(n), itemFn));
-	    }
-	  } else {
-	    if (typeof attrs === 'function') {
-	      return new Each(numbers(attrs), n);
-	    } else {
-	      return every(numbers(attrs), n);
-	    }
-	  }
-	};
-
-	exports.defer = function(attrs, promise, fulfill, reject, init) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Defer(promise, fulfill, reject, init)]);
-	  } else {
-	    return new Defer(attrs, promise, fulfill, reject);
-	  }
-	};
-
-	exports.clone = function(attrs, src) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [toComponent(src).clone()]);
-	  } else {
-	    return toComponent(attrs).clone(src);
-	  }
-	};
-
-
-/***/ },
-/* 36 */
-/*!******************************!*\
-  !*** ./src/core/util.coffee ***!
-  \******************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var Comment, Func, Html, Text, isComponent, mergeThenElseValue, toComponent, _ref;
-
-	_ref = __webpack_require__(/*! ./base */ 12), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
-
-	Func = __webpack_require__(/*! ./base/Func */ 24);
-
-	Text = __webpack_require__(/*! ./base/Text */ 16);
-
-	Html = __webpack_require__(/*! ./base/Html */ 29);
-
-	Comment = __webpack_require__(/*! ./base/Comment */ 28);
-
-	exports.isAttrs = function(item) {
-	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
-	};
-
-	mergeThenElseValue = function(test, thenValue, elseValue) {
-	  return dc.flow.if_(test, thenValue, elseValue);
-	};
-
-	exports._maybeIf = function(test, then_, else_) {
-	  var attrs, elseAttrs, key, thenAttrs;
-	  then_ = toComponent(then_);
-	  else_ = toComponent(else_);
-	  if (then_ === else_) {
-	    return then_;
-	  }
-	  if (then_ instanceof Nothing && else_ instanceof Nothing) {
-	    return then_;
-	  }
-	  if (typeof test === 'function') {
-	    if (then_.isTag && else_.isTag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
-	      attrs = {};
-	      thenAttrs = then_.attrs;
-	      elseAttrs = else_.attrs;
-	      for (key in bothKeys(thenAttrs, elseAttrs)) {
-	        attrs[key] = mergeThenElseValue(test, thenAttrs[key], elseAttrs[key]);
-	      }
-	      attrs.namespace = then_.namespace;
-	      return new Tag(then_.tagName, attrs, children);
-	    } else if (then_ instanceof Text && else_ instanceof Text) {
-	      return new Text(mergeThenElseValue(test, then_.text, else_.text));
-	    } else if (then_ instanceof Comment && else_ instanceof Comment) {
-	      return new Comment(mergeThenElseValue(test, then_.text, else_.text));
-	    } else if (then_ instanceof Html && else_ instanceof Html) {
-	      return new Html(mergeThenElseValue(test, then_.text, else_.text));
-	    } else if (then_ instanceof Func && else_ instanceof Func) {
-	      return new Func(flow.if_(test, then_.func, else_.func));
-	    } else {
-	      return new If(test, then_, else_);
-	    }
-	  } else if (test) {
-	    return then_;
-	  } else {
-	    return else_;
-	  }
-	};
-
-
-/***/ },
-/* 37 */
-/*!*****************************!*\
-  !*** ./src/core/tag.coffee ***!
-  \*****************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var extend, getBindProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,
-	  __slice = [].slice;
-
-	extend = __webpack_require__(/*! extend */ 9);
-
-	tag = __webpack_require__(/*! ./instantiate */ 35).tag;
-
-	getBindProp = __webpack_require__(/*! ../dom-util */ 6).getBindProp;
-
-	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section" + " svg iframe";
-
-	tagNames = tagNames.split(' ');
-
-	_fn = function(tagName) {
-	  return exports[tagName] = function() {
-	    var args;
-	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    return tag.apply(null, [tagName].concat(__slice.call(args)));
-	  };
-	};
-	for (_i = 0, _len = tagNames.length; _i < _len; _i++) {
-	  tagName = tagNames[_i];
-	  _fn(tagName);
-	}
-
-	exports.tagHtml = function() {
-	  var args;
-	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	  return tag.apply(null, ['html'].concat(__slice.call(args)));
-	};
-
-	inputTypes = 'text checkbox radio date email number'.split(' ');
-
-	input = exports.input = function(type, attrs, value) {
-	  var component;
-	  if (typeof type === 'object') {
-	    value = attrs;
-	    attrs = type;
-	    type = 'text';
-	  }
-	  attrs = extend({
-	    type: type
-	  }, attrs);
-	  component = tag('input', attrs);
-	  if (value != null) {
-	    component.prop(getBindProp(component), value);
-	    if (value.isDuplex) {
-	      component.bind('onchange', (function(event, comp) {
-	        return value(this.value);
-	      }), 'before');
-	    }
-	  }
-	  return component;
-	};
-
-	_ref = 'text checkbox radio date email tel number'.split(' ');
-	_fn1 = function(type) {
-	  return exports[type] = function(value, attrs) {
-	    var temp;
-	    if (typeof value === 'object') {
-	      temp = attrs;
-	      attrs = value;
-	      value = temp;
-	    }
-	    attrs = attrs || {};
-	    return input(type, attrs, value);
-	  };
-	};
-	for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-	  type = _ref[_j];
-	  _fn1(type);
-	}
-
-	exports.textarea = function(attrs, value) {
-	  var component;
-	  if (isAttrs(attrs)) {
-	    if (value != null) {
-	      attrs = extend({
-	        value: value
-	      }, attrs);
-	      component = tag('textarea', attrs);
-	      if (value.isDuplex) {
-	        component.bind('onchange', (function(event, comp) {
-	          return value(this.value);
-	        }), 'before');
-	      }
-	    } else {
-	      component = tag('textarea', attrs);
-	    }
-	  } else {
-	    if (attrs != null) {
-	      component = tag('textarea', {
-	        value: attrs
-	      });
-	      if (attrs.isDuplex) {
-	        component.bind('onchange', (function(event, comp) {
-	          return attrs(this.value);
-	        }), 'before');
-	      }
-	    } else {
-	      component = tag('textarea');
-	    }
-	  }
-	  return component;
-	};
-
-
-/***/ },
-/* 38 */
-/*!*****************************!*\
-  !*** ./src/dc-error.coffee ***!
-  \*****************************/
-/***/ function(module, exports) {
-
-	var DomcomError,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	DomcomError = (function(_super) {
-	  __extends(DomcomError, _super);
-
-	  function DomcomError(message, component) {
-	    this.message = message;
-	    this.component = component;
-	  }
-
-	  DomcomError.prototype.toString = function() {
-	    if (this.component) {
-	      return this.component.toString() + '\n' + this.message;
-	    } else {
-	      return this.message;
-	    }
-	  };
-
-	  return DomcomError;
-
-	})(Error);
-
-	exports.error = function(message, component) {
-	  throw new DomcomError(message, component);
-	};
-
-	exports.onerror = function(message, component) {
-	  if (message instanceof DomcomError) {
-	    console.log(message);
-	    throw new Error(message.message);
-	  } else if (message instanceof Error) {
-	    throw message;
-	  } else {
-	    if (comopenent) {
-	      console.log(component);
-	      console.log(message);
-	    } else {
-	      console.log(message);
-	    }
-	    throw new Error(message);
-	  }
-	};
-
-
-/***/ },
-/* 39 */
-/*!*********************************!*\
-  !*** ./src/domcom-addon.coffee ***!
-  \*********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var dc, extend, flow;
-
-	extend = (dc = __webpack_require__(/*! ./domcom-basic */ 1)).extend;
-
-	dc.builtinDirectives = __webpack_require__(/*! ./directives/index */ 41);
-
-	extend(dc, dc.builtinDirectives, __webpack_require__(/*! ./builtins/index */ 49), __webpack_require__(/*! ./core/prop-util */ 40));
-
-	flow = dc.flow;
-
-	extend(flow, __webpack_require__(/*! lazy-flow/addon */ 55), __webpack_require__(/*! dc-watch-list */ 10));
-
-	dc.bindings = flow.bindings;
-
-	module.exports = dc;
-
-
-/***/ },
-/* 40 */
-/*!***********************************!*\
-  !*** ./src/core/prop-util.coffee ***!
-  \***********************************/
-/***/ function(module, exports) {
-
-	var Tag, reNonUnit, unitAdd, unitDiv, unitMul, unitSub;
-
-	Tag = dc.Tag;
-
-	reNonUnit = /[\d\s\.-]/g;
-
-	exports.unitAdd = unitAdd = function(x, y) {
-	  var num;
-	  num = parseFloat(x);
-	  if (isNaN(num)) {
-	    console.log('wrong type in unitAdd(prop, value)');
-	  }
-	  return num + parseFloat(y) + x.replace(reNonUnit, '');
-	};
-
-	exports.unitSub = unitSub = function(x, y) {
-	  var num;
-	  num = parseFloat(x);
-	  if (isNaN(num)) {
-	    console.log('wrong type in unitSub(prop, value)');
-	  }
-	  return num - parseFloat(y) + x.replace(reNonUnit, '');
-	};
-
-	exports.unitMul = unitMul = function(x, y) {
-	  var num;
-	  num = parseFloat(x);
-	  if (isNaN(num)) {
-	    console.log('wrong type in unitMul(prop, value)');
-	  }
-	  return num * parseFloat(y) + x.replace(reNonUnit, '');
-	};
-
-	exports.unitDiv = unitDiv = function(x, y) {
-	  var num;
-	  num = parseFloat(x);
-	  if (isNaN(num)) {
-	    console.log('wrong type in unitDiv(prop, value)');
-	  }
-	  return num / parseFloat(y) + x.replace(reNonUnit, '');
-	};
-
-	Tag.prototype.cssAdd = function(prop, value) {
-	  return this.css(prop, unitAdd(this.css(prop), value));
-	};
-
-	Tag.prototype.cssSub = function(prop, value) {
-	  return this.css(prop, unitSub(this.css(prop), value));
-	};
-
-	Tag.prototype.cssMul = function(prop, value) {
-	  return this.css(prop, unitMul(this.css(prop), value));
-	};
-
-	Tag.prototype.cssDiv = function(prop, value) {
-	  return this.css(prop, unitDiv(this.css(prop), value));
-	};
-
-
-/***/ },
-/* 41 */
-/*!*************************************!*\
-  !*** ./src/directives/index.coffee ***!
-  \*************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var $hide, $show, _ref;
-
-	exports.$model = __webpack_require__(/*! ./model */ 43);
-
-	exports.$bind = __webpack_require__(/*! ./bind */ 44);
-
-	_ref = __webpack_require__(/*! ./show-hide */ 45), $show = _ref.$show, $hide = _ref.$hide;
-
-	exports.$show = $show;
-
-	exports.$hide = $hide;
-
-	exports.$blink = __webpack_require__(/*! ./blink */ 42);
-
-	exports.$splitter = __webpack_require__(/*! ./splitter */ 46);
-
-	exports.$options = __webpack_require__(/*! ./options */ 48);
-
-
-/***/ },
-/* 42 */
-/*!*************************************!*\
-  !*** ./src/directives/blink.coffee ***!
-  \*************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var flow, see, _ref;
-
-	_ref = __webpack_require__(/*! lazy-flow */ 5), see = _ref.see, flow = _ref.flow;
-
-	module.exports = function(interval) {
-	  return function(comp) {
-	    var timer, visible;
-	    if (interval == null) {
-	      interval = 500;
-	    }
-	    timer = null;
-	    comp.on('beforeMount', function(baseComponent) {
-	      return function() {
-	        return timer = setInterval((function() {
-	          visible(!visible());
-	          return comp.update();
-	        }), interval);
-	      };
-	    });
-	    comp.on('afterUnmount', function(baseComponent) {
-	      return function() {
-	        return clearInterval(timer);
-	      };
-	    });
-	    visible = see(true);
-	    this.style.visibility = flow(visible, function() {
-	      if (visible()) {
-	        return 'visible';
-	      } else {
-	        return 'hidden';
-	      }
-	    });
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 43 */
-/*!*************************************!*\
-  !*** ./src/directives/model.coffee ***!
-  \*************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var getBindProp;
-
-	getBindProp = __webpack_require__(/*! ../dom-util */ 6).getBindProp;
-
-	module.exports = function(binding, eventName) {
-	  return function(comp) {
-	    var bindProp, props;
-	    props = comp.props;
-	    bindProp = getBindProp(comp);
-	    comp.setProp(bindProp, binding, props, 'Props');
-	    comp.bind(eventName || 'onchange', (function() {
-	      return binding(this[bindProp]);
-	    }), 'before');
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 44 */
-/*!************************************!*\
-  !*** ./src/directives/bind.coffee ***!
-  \************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var domField, getBindProp, _ref;
-
-	_ref = __webpack_require__(/*! ../dom-util */ 6), getBindProp = _ref.getBindProp, domField = _ref.domField;
-
-	module.exports = function(binding) {
-	  return function(comp) {
-	    comp.setProp(getBindProp(comp), binding, props, 'Props');
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 45 */
-/*!*****************************************!*\
-  !*** ./src/directives/show-hide.coffee ***!
-  \*****************************************/
-/***/ function(module, exports) {
-
-	
-	/* @param test - paramenter expression for directive
-	 */
-	var showHide;
-
-	showHide = function(showing) {
-	  return function(test, display) {
-	    return function(comp) {
-	      comp.showHide(showing, test, display);
-	      return comp;
-	    };
-	  };
-	};
-
-	exports.$show = showHide(true);
-
-	exports.$hide = showHide(false);
-
-
-/***/ },
-/* 46 */
-/*!****************************************!*\
-  !*** ./src/directives/splitter.coffee ***!
-  \****************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var Component, classFn, div, option, pairListDict, span, _ref;
-
-	pairListDict = __webpack_require__(/*! dc-util */ 4).pairListDict;
-
-	classFn = __webpack_require__(/*! ../core/property */ 27).classFn;
-
-	_ref = __webpack_require__(/*! ../core/tag */ 37), div = _ref.div, span = _ref.span, option = _ref.option;
-
-	Component = __webpack_require__(/*! ../core/base/Component */ 47);
-
-	module.exports = function(direction) {
-	  return function(comp) {
-	    var arrawAAttr, arrawBAttr, arrowA, arrowAHovering, arrowB, arrowBHovering, barsize, buttonClass, children, clientX, cursor, drag, getSize, left, minAWidth, minBWidth, paneA, paneB, percent, pos, props, right, size, splitBar, splitBarAttr, splitBarAttrCss, splitbarClass, width;
-	    dc.directives({
-	      $show: dc.$show
-	    });
-	    props = comp.props;
-	    direction = direction || 'vertical';
-	    if (direction === 'vertical') {
-	      left = "top";
-	      right = "bottom";
-	      width = "height";
-	      clientX = "clientY";
-	      splitbarClass = "splitbarH";
-	      buttonClass = "splitbuttonH";
-	      cursor = "s-resize";
-	    } else {
-	      left = "left";
-	      right = "right";
-	      width = "width";
-	      clientX = "clientX";
-	      splitbarClass = "splitbarV";
-	      buttonClass = "splitbuttonV";
-	      cursor = "e-resize";
-	    }
-	    pos = 200;
-	    percent = 0.5;
-	    size = null;
-	    drag = false;
-	    getSize = function() {
-	      return size || 600;
-	    };
-	    children = comp.children;
-	    paneA = children[0];
-	    paneB = children[1];
-	    minAWidth = props.minAWidth || 0;
-	    minBWidth = props.minBWidth || 0;
-	    splitBarAttr = {
-	      "class": splitbarClass,
-	      unselectable: "on",
-	      style: splitBarAttrCss = {
-	        "cursor": cursor,
-	        "user-select": "none",
-	        "-webkit-user-select": "none",
-	        "-khtml-user-select": "none",
-	        "-moz-user-select": "none"
-	      }
-	    };
-	    splitBarAttrCss[left] = function() {
-	      return pos + 'px';
-	    };
-	    splitBarAttrCss[width] = barsize = 6;
-	    arrowAHovering = false;
-	    arrawAAttr = {
-	      "class": classFn(buttonClass, {
-	        'inactive': function() {
-	          return arrowAHovering;
-	        }
-	      }),
-	      unselectable: "on",
-	      style: {
-	        cursor: 'pointer'
-	      },
-	      onmouseover: function() {
-	        arrowAHovering = true;
-	        return comp.update();
-	      },
-	      onmouseleave: function() {
-	        arrowAHovering = false;
-	        return comp.update();
-	      },
-	      onclick: function(e) {
-	        pos = minAWidth;
-	        return comp.update();
-	      },
-	      $show: function() {
-	        return pos > minAWidth;
-	      }
-	    };
-	    arrowBHovering = false;
-	    arrawBAttr = {
-	      "class": classFn(buttonClass + ' invert', {
-	        'inactive': function() {
-	          return arrowBHovering;
-	        }
-	      }),
-	      unselectable: "on",
-	      style: {
-	        cursor: 'pointer'
-	      },
-	      onmouseover: function() {
-	        arrowBHovering = true;
-	        return comp.update();
-	      },
-	      onmouseleave: function() {
-	        arrowBHovering = false;
-	        return comp.update();
-	      },
-	      onclick: function(e) {
-	        pos = getSize() - minBWidth;
-	        return comp.update();
-	      },
-	      $show: function() {
-	        return getSize() - pos > minBWidth;
-	      }
-	    };
-	    arrowA = div(arrawAAttr);
-	    arrowB = div(arrawBAttr);
-	    splitBar = div(splitBarAttr, span(), arrowA, arrowB);
-	    comp.setChildren(1, splitBar, paneB);
-	    splitBar.bind('mousedown', function(event) {
-	      return drag = true;
-	    });
-	    dc(document).bind('mouseup', function() {
-	      return drag = false;
-	    });
-	    comp.bind('mousemove', function(event) {
-	      var bounds, pencent, w;
-	      event.continuePropagation = true;
-	      event.executeDefault = true;
-	      if (!drag) {
-	        return;
-	      }
-	      event.continuePropagation = false;
-	      event.executeDefault = false;
-	      bounds = comp.node.getBoundingClientRect();
-	      size = w = bounds[right] - bounds[left];
-	      pos = Math.max(event[clientX] - bounds[left], 0);
-	      pencent = pos / w;
-	      return comp.update();
-	    });
-	    paneA.css(pairListDict('position', 'absolute', width, (function() {
-	      return pos + 'px';
-	    })));
-	    paneB.css(pairListDict('position', 'absolute', left, (function() {
-	      return (pos + barsize) + 'px';
-	    }), width, (function() {
-	      return getSize() - (pos + barsize) + 'px';
-	    })));
-	    comp.css(pairListDict('position', 'absolute'));
-	    comp.bind('resize', function(event) {
-	      var bounds, w;
-	      event.preventDefault();
-	      event.stopPropagation();
-	      bounds = comp.node.getBoundingClientRect();
-	      w = bounds[right] - bounds[left];
-	      pos = percent * w;
-	      if (pos < minAWidth) {
-	        pos = minAWidth;
-	      } else if (w - pos < minBWidth) {
-	        pos = w - minBWidth;
-	      }
-	      return comp.update();
-	    });
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 47 */
-/*!****************************************!*\
-  !*** ./src/core/base/Component.coffee ***!
-  \****************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var Component, componentId, dc, extend, isComponent, mountList, newDcid, normalizeDomElement,
-	  __slice = [].slice;
-
-	extend = __webpack_require__(/*! extend */ 9);
-
-	normalizeDomElement = __webpack_require__(/*! ../../dom-util */ 6).normalizeDomElement;
-
-	newDcid = __webpack_require__(/*! dc-util */ 4).newDcid;
-
-	isComponent = __webpack_require__(/*! ./isComponent */ 8);
-
-	dc = __webpack_require__(/*! ../../dc */ 2);
-
-	componentId = 1;
-
-	mountList = [];
-
-	module.exports = Component = (function() {
-	  function Component() {
-	    this.listeners = {};
-	    this.baseComponent = null;
-	    this.parentNode = null;
-	    this.node = null;
-	    this.dcid = newDcid();
-	  }
-
-	  Component.prototype.on = function(event, callback) {
-	    var callbacks, eventName, listeners, _i, _len, _ref;
-	    if (!arguments.length) {
-	      dc.error('missing arguments for Component.on(event, callback)');
-	    }
-	    if (arguments.length === 1) {
-	      if (!event || typeof event !== 'object') {
-	        dc.error('wrong arguments for Component.on(event, callback)');
-	      } else {
-	        for (eventName in event) {
-	          callback = event[eventName];
-	          this.on(eventName, callback);
-	        }
-	      }
-	    } else {
-	      listeners = this.listeners;
-	      _ref = event.split(/\s*,\s*|\s+/);
-	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	        event = _ref[_i];
-	        if (callbacks = listeners[event]) {
-	          if (callbacks.indexOf(callback) < 0) {
-	            callbacks.push(callback);
-	          }
-	        } else {
-	          listeners[event] = [callback];
-	        }
-	      }
-	    }
-	    return this;
-	  };
-
-	  Component.prototype.off = function(event, callback) {
-	    var callbacks, listeners, _i, _j, _len, _len1, _ref, _ref1;
-	    if (this.argmuents.length) {
-	      dc.error('missing arguments for Component.off(event, callback)');
-	    } else if (arguments.length === 1) {
-	      listeners = this.listeners;
-	      _ref = event.split(/\s*,\s*|\s+/);
-	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	        event = _ref[_i];
-	        listeners[event] = null;
-	      }
-	    } else {
-	      listeners = this.listeners;
-	      _ref1 = event.split(/\s*,\s*|\s+/);
-	      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-	        event = _ref1[_j];
-	        callbacks = listeners[event];
-	        if (callbacks && callbacks.indexOf(callback) >= 0) {
-	          callbacks.splice(index, 1);
-	          if (!callbacks.length) {
-	            listeners[event] = null;
-	          }
-	        }
-	      }
-	    }
-	    return this;
-	  };
-
-	  Component.prototype.emit = function() {
-	    var args, callback, callbacks, event, _i, _len;
-	    event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-	    if (!(callbacks = this.listeners[event])) {
-	      return;
-	    }
-	    for (_i = 0, _len = callbacks.length; _i < _len; _i++) {
-	      callback = callbacks[_i];
-	      callback.apply(this, args);
-	    }
-	    return this;
-	  };
-
-
-	  /* if mountNode is given, it should not the node of any Component
-	  only use beforeNode if mountNode is given
-	   */
-
-	  Component.prototype.mount = function(mountNode, beforeNode) {
-	    this.emit('beforeMount');
-	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.getElementsByTagName('body')[0];
-	    this.renderDom();
-	    this.emit('afterMount');
-	    return this;
-	  };
-
-	  Component.prototype.create = function() {
-	    return this.renderDom();
-	  };
-
-	  Component.prototype.render = function() {
-	    return this.renderDom();
-	  };
-
-	  Component.prototype.update = function() {
-	    this.emit('update');
-	    this.renderDom();
-	    return this;
-	  };
-
-	  Component.prototype.unmount = function() {
-	    var component, holder;
-	    this.emit('beforeUnmount');
-	    if (!this.node || !this.node.parentNode) {
-	      this.emit('afterUnmount');
-	      return this;
-	    }
-	    component = this;
-	    holder = this.holder;
-	    while (holder && !holder.isBaseComponent) {
-	      component = holder;
-	      holder = holder.holder;
-	    }
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.removeChild(holder.dcidIndexMap[component.dcid]);
-	    }
-	    this.parentNode = null;
-	    this.nextNode = null;
-	    this.setParentAndNextNode();
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.renderDom();
-	    } else {
-	      component.renderDom();
-	    }
-	    this.emit('afterUnmount');
-	    return component;
-	  };
-
-	  Component.prototype.remount = function(parentNode) {
-	    var child, holder, index;
-	    this.emit('beforeMount');
-	    child = this;
-	    holder = this.holder;
-	    while (holder && !holder.isBaseComponent) {
-	      child = holder;
-	      holder = holder.holder;
-	    }
-	    if ((holder.isList || holder.isTag) && (index = holder.dcidIndexMap[child.dcid])) {
-	      index = index != null ? index : holder.children.length;
-	      holder.insertChild(index, child);
-	    }
-	    child.parentNode = holder ? holder.parentNode : parentNode ? parentNode : document.body;
-	    child.invalidate();
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.renderDom();
-	    } else {
-	      child.renderDom();
-	    }
-	    this.emit('afterMount');
-	    return child;
-	  };
-
-
-	  /*
-	  component.updateWhen components, events
-	  component.updateWhen setInterval, interval, options
-	  component.updateWhen dc.raf, options
-	   */
-
-	  Component.prototype.updateWhen = function() {
-	    var args;
-	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    return this._renderWhenBy('update', args);
-	  };
-
-	  Component.prototype.renderWhen = function() {
-	    var args;
-	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    return this._renderWhenBy('render', args);
-	  };
-
-	  Component.prototype._renderWhenBy = function(method, args) {
-	    if (args[0] === setInterval) {
-	      if (args[1] === 'number') {
-	        dc._renderWhenBy(method, setInterval, args[1], [this], args[2]);
-	      } else {
-	        dc._renderWhenBy(method, setInterval, [this], args[1]);
-	      }
-	    } else if (args[1] === dc.raf) {
-	      dc._renderWhenBy(method, dc.raf, [this], args[1]);
-	    } else {
-	      dc._renderWhenBy(method, args[0], args[1], [this]);
-	    }
-	    return this;
-	  };
-
-	  Component.prototype.setNode = function(node) {
-	    var holder;
-	    holder = this;
-	    while (1) {
-	      holder.node = node;
-	      holder = holder.holder;
-	      if (!holder || holder.isBaseComponent) {
-	        return;
-	      }
-	    }
-	  };
-
-	  Component.prototype.setParentAndNextNode = function() {};
-
-	  Component.prototype.setFirstNode = function(node) {
-	    var holder;
-	    holder = this;
-	    while (1) {
-	      holder.firstNode = node;
-	      holder = holder.holder;
-	      if (!holder || holder.isBaseComponent) {
-	        break;
-	      }
-	    }
-	  };
-
-	  Component.prototype.reachTag = function() {
-	    var holder;
-	    holder = this.holder;
-	    while (!holder.isTag && holder.holder) {
-	      holder = holder.holder;
-	    }
-	    return holder;
-	  };
-
-	  Component.prototype.addController = function(controller) {
-	    return controller.component = this;
-	  };
-
-	  Component.prototype.copyEventListeners = function(srcComponent) {
-	    var event, myListeners, srcListeners;
-	    myListeners = this.listeners;
-	    srcListeners = srcComponent.listeners;
-	    for (event in srcListeners) {
-	      srcListeners[event] && (myListeners[event] = srcListeners[event].splice());
-	    }
-	    return this;
-	  };
-
-	  return Component;
-
-	})();
-
-
-/***/ },
-/* 48 */
-/*!***************************************!*\
-  !*** ./src/directives/options.coffee ***!
-  \***************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var Tag, every, option, txt, _ref;
-
-	_ref = __webpack_require__(/*! ../core/instantiate */ 35), every = _ref.every, txt = _ref.txt;
-
-	option = __webpack_require__(/*! ../core/tag */ 37).option;
-
-	Tag = __webpack_require__(/*! ../core/base/Tag */ 25);
-
-	module.exports = function(items, attrs) {
-	  return function(comp) {
-	    if (!(comp instanceof Tag) || comp.tagName !== 'select') {
-	      throw new Error('options should be only used in select tag');
-	    }
-	    comp.setChildren(0, every(items, function(item) {
-	      return option(attrs, [txt(item)]);
-	    }));
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 49 */
-/*!***********************************!*\
-  !*** ./src/builtins/index.coffee ***!
-  \***********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var extend;
-
-	extend = __webpack_require__(/*! extend */ 9);
-
-	extend(exports, __webpack_require__(/*! ./accordion */ 51));
-
-	exports.triangle = __webpack_require__(/*! ./triangle */ 52);
-
-	exports.dialog = __webpack_require__(/*! ./dialog */ 50);
-
-	extend(exports, __webpack_require__(/*! ./combo */ 53));
-
-	extend(exports, __webpack_require__(/*! ./autoWidthEdit */ 54));
-
-
-/***/ },
-/* 50 */
-/*!************************************!*\
-  !*** ./src/builtins/dialog.coffee ***!
-  \************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var Component, div, globalID, if_, list, see, _ref;
-
-	see = __webpack_require__(/*! lazy-flow */ 5).see;
-
-	_ref = __webpack_require__(/*! ../core/instantiate */ 35), list = _ref.list, if_ = _ref.if_;
-
-	div = __webpack_require__(/*! ../core/tag */ 37).div;
-
-	Component = __webpack_require__(/*! ../core/base/Component */ 47).Component;
-
-	globalID = 0;
-
-	module.exports = function(options, template) {
-	  var closeCallback, dlg, openCallback, opened;
-	  if (options.showClose) {
-	    template = list(div({
-	      "class": "dcdialog-close",
-	      style: {
-	        position: 'absolute',
-	        "z-index": 10001,
-	        top: 0,
-	        right: '80px'
-	      },
-	      onclick: (function() {
-	        return dlg.close();
-	      })
-	    }), template);
-	  }
-	  if (options.overlay) {
-	    template = list(div({
-	      "class": "dcdialog-overlay",
-	      style: {
-	        "z-index": 10000
-	      }
-	    }), div({
-	      "class": "dcdialog-content",
-	      style: {
-	        position: 'absolute',
-	        "z-index": 10001
-	      }
-	    }, template));
-	  } else {
-	    template = div({
-	      "class": "dcdialog-content",
-	      style: {
-	        "z-index": 10001
-	      }
-	    }, template);
-	  }
-	  opened = see(!options.closed);
-	  dlg = if_(opened, div({
-	    id: 'dcdialog' + (++globalID),
-	    "class": "dcdialog",
-	    style: {
-	      position: 'absolute',
-	      top: '0px',
-	      left: '0px',
-	      "z-index": 9999
-	    }
-	  }, template));
-	  openCallback = options.openCallback;
-	  dlg.open = function() {
-	    openCallback && openCallback();
-	    opened(true);
-	    return dlg.update();
-	  };
-	  closeCallback = options.closeCallback;
-	  dlg.close = function() {
-	    opened(false);
-	    dlg.update();
-	    return closeCallback && closeCallback();
-	  };
-	  if (options.escClose) {
-	    dlg.on('onMount', function() {
-	      var escHandler;
-	      escHandler = function(event) {
-	        var esc;
-	        esc = 27;
-	        if (event.which === esc || event.keyCode === esc) {
-	          return dlg.close();
-	        }
-	      };
-	      return document.body.addEventListener('keydown', escHandler);
-	    });
-	    dlg.on('onUnmount', function() {
-	      return document.body.removeEventListener('keydown', escHandler);
-	    });
-	  }
-	  return dlg;
-	};
-
-
-/***/ },
-/* 51 */
-/*!***************************************!*\
-  !*** ./src/builtins/accordion.coffee ***!
-  \***************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	
-	/** @module accordion
-	 * @directive accordion
-	 */
-	var Component, a, accordion, accordionGroup, div, each, exports, extend, extendAttrs, h4, img, span, _ref;
-
-	extend = __webpack_require__(/*! extend */ 9).extend;
-
-	each = __webpack_require__(/*! ../core/instantiate */ 35).each;
-
-	_ref = __webpack_require__(/*! ../core/tag */ 37), div = _ref.div, h4 = _ref.h4, a = _ref.a, span = _ref.span, img = _ref.img;
-
-	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
-
-	Component = __webpack_require__(/*! ../core/base/Component */ 47).Component;
-
-	module.exports = exports = accordion = function(attrs, accordionGroupList, options) {
-	  var accordionOptions, comp;
-	  attrs = extendAttrs({
-	    "class": "panel-group"
-	  }, attrs || {});
-	  accordionOptions = options || {};
-	  return comp = div(attrs, each(accordionGroupList, function(group, index) {
-	    var content, groupAttrs, groupOptions, heading;
-	    groupAttrs = group[0], heading = group[1], content = group[2], groupOptions = group[3];
-	    groupOptions = groupOptions || {};
-	    groupOptions.toggleOpen = function() {
-	      var group2, i, _i, _len;
-	      groupOptions.opened = !groupOptions.opened;
-	      if (accordionOptions.closeOthers && groupOptions.opened) {
-	        for (i = _i = 0, _len = accordionGroupList.length; _i < _len; i = ++_i) {
-	          group2 = accordionGroupList[i];
-	          if (i !== index) {
-	            group2[3].opened = false;
-	          }
-	        }
-	      }
-	      return comp.update();
-	    };
-	    return accordionGroup(groupAttrs, heading, content, groupOptions);
-	  }));
-	};
-
-	exports.accordionGroup = accordionGroup = function(attrs, heading, content, options) {
-	  return div({
-	    "class": "panel panel-default"
-	  }, div({
-	    "class": "panel-heading",
-	    onclick: options.toggleOpen
-	  }, h4({
-	    "class": "panel-title"
-	  }, div({
-	    "class": "accordion-toggle"
-	  }, span({
-	    "class": {
-	      'text-muted': function() {
-	        return options.disabled;
-	      }
-	    }
-	  }, heading)))), div({
-	    "class": {
-	      "panel-collapse": function() {
-	        return !options.opened;
-	      }
-	    },
-	    style: {
-	      display: function() {
-	        if (options.opened) {
-	          return 'block';
-	        } else {
-	          return 'none';
-	        }
-	      }
-	    }
-	  }, div({
-	    "class": "panel-body"
-	  }, content)));
-	};
-
-	exports.accordion = accordion;
-
-
-/***/ },
-/* 52 */
-/*!**************************************!*\
-  !*** ./src/builtins/triangle.coffee ***!
-  \**************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var arrowStyle, div, extendAttrs, reverseSide;
-
-	div = __webpack_require__(/*! ../core/tag */ 37).div;
-
-	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
-
-	reverseSide = {
-	  left: 'right',
-	  right: 'left',
-	  top: 'bottom',
-	  bottom: 'top'
-	};
-
-	arrowStyle = function(direction, size, color) {
-	  var props, sideStyle;
-	  props = {
-	    width: 0,
-	    height: 0
-	  };
-	  sideStyle = size + "px solid transparent";
-	  if (direction === 'left' || direction === 'right') {
-	    props["border-top"] = props["border-bottom"] = sideStyle;
-	  } else {
-	    props["border-left"] = props["border-right"] = sideStyle;
-	  }
-	  props["border-" + reverseSide[direction]] = size + "px solid " + color;
-	  return props;
-	};
-
-	module.exports = function(attrs, direction, size, color) {
-	  attrs = extendAttrs(attrs, {
-	    style: arrowStyle(direction, size, color)
-	  });
-	  return div(attrs);
-	};
-
-
-/***/ },
-/* 53 */
-/*!***********************************!*\
-  !*** ./src/builtins/combo.coffee ***!
-  \***********************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var combobox, div, extendAttrs, input, list, see, span, _ref;
-
-	see = __webpack_require__(/*! lazy-flow */ 5).see;
-
-	_ref = __webpack_require__(/*! ../core/tag */ 37), list = _ref.list, input = _ref.input, span = _ref.span, div = _ref.div;
-
-	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
-
-	exports.combobox = combobox = function(attrs, modelValue, valueList, direction) {
-	  var comp, disp, item, opts, showingItems;
-	  showingItems = see(false);
-	  disp = direction === 'v' || direction === 'vertical' ? 'block' : 'inline-block';
-	  comp = null;
-	  opts = (function() {
-	    var _i, _len, _results;
-	    _results = [];
-	    for (_i = 0, _len = valueList.length; _i < _len; _i++) {
-	      item = valueList[_i];
-	      _results.push((function(item) {
-	        return span({
-	          style: {
-	            display: disp,
-	            border: "1px solid blue",
-	            "min-width": "40px"
-	          },
-	          onclick: (function() {
-	            modelValue(item);
-	            return comp.update();
-	          })
-	        }, item);
-	      })(item));
-	    }
-	    return _results;
-	  })();
-	  attrs = extendAttrs(attrs, {
-	    onmouseleave: (function() {
-	      showingItems(false);
-	      return comp.update();
-	    })
-	  });
-	  return comp = div(attrs, input({
-	    $model: modelValue,
-	    onmouseenter: (function() {
-	      showingItems(true);
-	      return comp.update();
-	    })
-	  }), div({
-	    style: {
-	      display: function() {
-	        if (showingItems()) {
-	          return 'block';
-	        } else {
-	          return 'none';
-	        }
-	      }
-	    }
-	  }, opts));
-	};
-
-	exports.vcombo = function(attrs, modelValue, valueList) {
-	  return combobox(attrs, modelValue, valueList, 'vertical');
-	};
-
-	exports.hcombo = function(attrs, modelValue, valueList) {
-	  return combobox(attrs, modelValue, valueList, 'horizontal');
-	};
-
-
-/***/ },
-/* 54 */
-/*!*******************************************!*\
-  !*** ./src/builtins/autoWidthEdit.coffee ***!
-  \*******************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var div, extend, extendAttrs, pipe, see, setAutoWidth, text, _ref, _ref1;
-
-	_ref = __webpack_require__(/*! lazy-flow */ 5), see = _ref.see, pipe = _ref.pipe;
-
-	extend = __webpack_require__(/*! extend */ 9).extend;
-
-	_ref1 = __webpack_require__(/*! ../core/tag */ 37), text = _ref1.text, div = _ref1.div;
-
-	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
-
-	exports.setAutoWidth = setAutoWidth = function(container, options) {
-	  var initialWidth, inputAttrs, inputComponent, inputEventHandler, inputEvents, inputText$, inputTextWidth$, spaceWidth, testSubject, testSubjectStyle;
-	  if (options == null) {
-	    options = {};
-	  }
-	  initialWidth = options.initialWidth || 48;
-	  spaceWidth = options.spaceWidth || 40;
-	  inputTextWidth$ = see(initialWidth);
-	  inputEvents = options.inputEvents || "onkeydown";
-	  inputComponent = options.inputComponent || container.children[0];
-	  inputText$ = see("");
-	  testSubjectStyle = {
-	    position: 'absolute',
-	    top: '30px',
-	    width: 'auto',
-	    height: '20px',
-	    whiteSpace: 'nowrap',
-	    display: 'inline-block',
-	    margin: '0',
-	    padding: '0',
-	    fontSize: function() {
-	      return container.css('fontSize');
-	    },
-	    fontFamily: function() {
-	      return container.css('fontFamily');
-	    },
-	    fontWeight: function() {
-	      return container.css('fontWeight');
-	    },
-	    letterSpacing: function() {
-	      return container.css('letterSpacing');
-	    },
-	    visibility: 'hidden'
-	  };
-	  testSubject = div({
-	    style: testSubjectStyle
-	  }, inputText$);
-	  inputAttrs = {
-	    style: {
-	      'z-index': '10',
-	      width: pipe(inputTextWidth$, function(w) {
-	        return Math.max(Math.floor(w) + spaceWidth, initialWidth) + 'px';
-	      }),
-	      whiteSpace: 'nowrap'
-	    }
-	  };
-	  inputEventHandler = function(event, comp) {
-	    event.executeDefault = true;
-	    inputText$(this.value);
-	    inputTextWidth$(testSubject.node.getBoundingClientRect().width);
-	    container.update();
-	    return this.focus();
-	  };
-	  inputComponent.extendAttrs(inputAttrs);
-	  inputComponent.bind(inputEvents, inputEventHandler);
-	  container.pushChild(testSubject);
-	  return container;
-	};
-
-	exports.autoWidthEdit = function(attrs, inputAttrs, options) {
-	  var component, inputComp;
-	  component = div(attrs, inputComp = text());
-	  return setAutoWidth(component, options);
-	};
-
-
-/***/ },
-/* 55 */
 /*!*********************************!*\
   !*** ../lazy-flow/addon.coffee ***!
   \*********************************/
@@ -6885,7 +4975,7 @@
 
 	var binary, bind, duplex, flow, see, unary, _ref;
 
-	_ref = __webpack_require__(/*! ./index */ 56), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
+	_ref = __webpack_require__(/*! ./index */ 33), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
 
 	module.exports = flow;
 
@@ -7108,7 +5198,7 @@
 
 
 /***/ },
-/* 56 */
+/* 33 */
 /*!*********************************!*\
   !*** ../lazy-flow/index.coffee ***!
   \*********************************/
@@ -7534,6 +5624,2120 @@
 	  } else {
 	    return binaryFn(x, y);
 	  }
+	};
+
+
+/***/ },
+/* 34 */
+/*!***********************************!*\
+  !*** ./src/core/base/Case.coffee ***!
+  \***********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Case, TransformComponent, funcString, intersect, newLine, renew, toComponent, _ref,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+
+	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
+
+	renew = __webpack_require__(/*! lazy-flow */ 5).renew;
+
+	module.exports = Case = (function(_super) {
+	  __extends(Case, _super);
+
+	  function Case(test, map, else_) {
+	    var families, family, key, value, _;
+	    this.map = map;
+	    if (typeof test !== 'function') {
+	      if (map.hasOwnPoperty(test)) {
+	        return toComponent(map[key]);
+	      } else {
+	        return toComponent(else_);
+	      }
+	    }
+	    Case.__super__.constructor.call(this);
+	    if (!test.invalidate) {
+	      this.test = renew(test);
+	    } else {
+	      this.test = test;
+	    }
+	    this.test.onInvalidate(this.invalidateTransform.bind(this));
+	    for (key in map) {
+	      value = map[key];
+	      map[key] = toComponent(value);
+	    }
+	    this.else_ = toComponent(else_);
+	    families = (function() {
+	      var _ref1, _results;
+	      _ref1 = this.map;
+	      _results = [];
+	      for (_ in _ref1) {
+	        value = _ref1[_];
+	        _results.push(value.family);
+	      }
+	      return _results;
+	    }).call(this);
+	    families.push(this.else_.family);
+	    this.family = family = intersect(families);
+	    family[this.dcid] = true;
+	  }
+
+	  Case.prototype.getContentComponent = function() {
+	    return this.map[this.test()] || this.else_;
+	  };
+
+	  Case.prototype.clone = function() {
+	    var cloneMap, key, value, _ref1;
+	    cloneMap = {};
+	    _ref1 = this.map;
+	    for (key in _ref1) {
+	      value = _ref1[key];
+	      cloneMap[key] = value.clone();
+	    }
+	    return (new Case(this.test, cloneMap, this["else"].clone())).copyEventListeners(this);
+	  };
+
+	  Case.prototype.toString = function(indent, addNewLine) {
+	    var comp, key, s, _ref1;
+	    if (indent == null) {
+	      indent = 0;
+	    }
+	    s = newLine('', indent, addNewLine) + '<Case ' + funcString(this.test) + '>';
+	    _ref1 = this.map;
+	    for (key in _ref1) {
+	      comp = _ref1[key];
+	      s += newLine(key + ': ' + comp.toString(indent + 2, false), indent + 2, true);
+	    }
+	    return s += this.else_.toString(indent + 2, true) + newLine('</Case>', indent, true);
+	  };
+
+	  return Case;
+
+	})(TransformComponent);
+
+
+/***/ },
+/* 35 */
+/*!***********************************!*\
+  !*** ./src/core/base/Pick.coffee ***!
+  \***********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Pick, TransformComponent, extend, newLine, toComponent,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+
+	newLine = __webpack_require__(/*! dc-util */ 4).newLine;
+
+	extend = __webpack_require__(/*! extend */ 9);
+
+	module.exports = Pick = (function(_super) {
+	  __extends(Pick, _super);
+
+	  function Pick(host, field, initialContent) {
+	    var family, get, me, set;
+	    this.host = host;
+	    Pick.__super__.constructor.call(this);
+	    me = this;
+	    if (field == null) {
+	      this.field = field = 'content';
+	    } else {
+	      this.field = field;
+	    }
+	    if (initialContent) {
+	      this._content = host[field] = toComponent(initialContent);
+	    } else {
+	      this._content = host[field] = toComponent(host[field]);
+	    }
+	    this.family = family = extend({}, this._content.family);
+	    family[this.dcid] = true;
+	    if (Object.defineProperty) {
+	      get = function() {
+	        return me._content;
+	      };
+	      set = function(content) {
+	        return me.setContent(content);
+	      };
+	      Object.defineProperty(host, field, {
+	        get: get,
+	        set: set
+	      });
+	    }
+	  }
+
+	  Pick.prototype.setContent = function(content) {
+	    var oldContent;
+	    oldContent = this._content;
+	    if (content === oldContent) {
+	      return content;
+	    } else {
+	      this.invalidateTransform();
+	      this.onSetContent(content, oldContent);
+	      return this._content = toComponent(content);
+	    }
+	  };
+
+	  Pick.prototype.onSetContent = function(content, oldContent) {};
+
+	  Pick.prototype.getContentComponent = function() {
+	    return this._content;
+	  };
+
+	  Pick.prototype.clone = function() {
+	    return (new this.constructor(this.host, this.field)).copyEventListeners(this);
+	  };
+
+	  Pick.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 0;
+	    }
+	    if (addNewLine == null) {
+	      addNewLine = '';
+	    }
+	    return newLine('', indent, addNewLine) + '<Pick:' + this.field + ': ' + this._content.toString(indent + 2, true) + '>';
+	  };
+
+	  return Pick;
+
+	})(TransformComponent);
+
+
+/***/ },
+/* 36 */
+/*!***********************************!*\
+  !*** ./src/core/base/Each.coffee ***!
+  \***********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Each, Func, List, Nothing, Text, TransformComponent, flow, funcString, isArray, newLine, react, renew, toComponent, watchEachList, watchEachObject, _ref, _ref1, _ref2,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+
+	List = __webpack_require__(/*! ./List */ 21);
+
+	Func = __webpack_require__(/*! ./Func */ 24);
+
+	Text = __webpack_require__(/*! ./Text */ 16);
+
+	Nothing = __webpack_require__(/*! ./Nothing */ 20);
+
+	_ref = __webpack_require__(/*! dc-util */ 4), isArray = _ref.isArray, funcString = _ref.funcString, newLine = _ref.newLine;
+
+	_ref1 = __webpack_require__(/*! lazy-flow */ 5), react = _ref1.react, renew = _ref1.renew, flow = _ref1.flow;
+
+	_ref2 = __webpack_require__(/*! dc-watch-list */ 10), watchEachList = _ref2.watchEachList, watchEachObject = _ref2.watchEachObject;
+
+	module.exports = Each = (function(_super) {
+	  __extends(Each, _super);
+
+	  function Each(items, itemFn, options) {
+	    var key, me;
+	    this.itemFn = itemFn;
+	    if (options == null) {
+	      options = {};
+	    }
+	    Each.__super__.constructor.call(this);
+	    this.family = {};
+	    me = this;
+	    if (typeof items === 'function') {
+	      this.isFunction = true;
+	      !items.invalidate && (items = renew(items));
+	      items.onInvalidate(this.invalidateTransform.bind(this));
+	    }
+	    this.items = items;
+	    if (options.sort) {
+	      this.needSort = true;
+	      if (typeof options.sort === 'function') {
+	        this.sortFunction = options.sort;
+	      } else {
+	        this.sortFunction = null;
+	      }
+	    }
+	    key = options.key;
+	    this.keyFunction = typeof key === 'function' ? key : key != null ? function(item, i) {
+	      return item[key];
+	    } : void 0;
+	    this.childReactives = [];
+	    this.memoComponents = {};
+	    this.memoChildMap = {};
+	    this.cacheChildren = [];
+	    this.listComponent = new List([]);
+	    this.listComponent.holder = this;
+	    return;
+	  }
+
+	  Each.prototype.getItems = function() {};
+
+	  Each.prototype.getContentComponent = function() {
+	    var isFunction, items, key, length, listComponent, needSort, value, watchingMe, _items;
+	    listComponent = this.listComponent, items = this.items, isFunction = this.isFunction, needSort = this.needSort;
+	    if (!items) {
+	      return this.emptyPlaceHolder || (this.emptyPlaceHolder = new Nothing());
+	    }
+	    if (isFunction) {
+	      items = items();
+	      if (!items) {
+	        return this.emptyPlaceHolder || (this.emptyPlaceHolder = new Nothing());
+	      }
+	      if (typeof items !== 'object') {
+	        throw new Error('Each Component need an array or object');
+	      }
+	    }
+	    if (!(this.isArrayItems = items instanceof Array)) {
+	      items = (function() {
+	        var _results;
+	        _results = [];
+	        for (key in items) {
+	          value = items[key];
+	          _results.push([key, value]);
+	        }
+	        return _results;
+	      })();
+	    }
+	    if (needSort) {
+	      items.sort(this.sortFunction);
+	    } else {
+	      _items = this._items;
+	      _items && _items.watchingComponents && delete _items.watchingComponents[this.dcid];
+	      watchingMe = items && items.watchingComponents && items.watchingComponents[this.dcid];
+	      if (!this.notWatch && !watchingMe) {
+	        if (this.isArrayItems) {
+	          watchEachList(items, this);
+	        } else {
+	          watchEachObject(items, this);
+	        }
+	      }
+	    }
+	    this._items = items;
+	    length = items.length;
+	    if (length < listComponent.children.length) {
+	      this._setLength(length);
+	      if (isFunction || needSort || !this.isArrayItems) {
+	        this.invalidateChildren(0, length);
+	      }
+	    } else {
+	      this.invalidateChildren(0, length);
+	    }
+	    return listComponent;
+	  };
+
+	  Each.prototype.getChild = function(index) {
+	    var cacheChildren, child, childReactives, children, itemFn, keyFunction, listComponent, me, memoKey;
+	    me = this;
+	    if (keyFunction) {
+	      memoKey = this.isArrayItems ? keyFunction(_items[index], index) : keyFunction(_items[index][0], _items[index][1], index);
+	    }
+	    listComponent = this.listComponent, cacheChildren = this.cacheChildren, children = this.children, childReactives = this.childReactives, keyFunction = this.keyFunction, itemFn = this.itemFn;
+	    children = listComponent.children;
+	    if (keyFunction) {
+	      if (this.memoChildMap[memoKey]) {
+	        throw new Error('duplicated memo key in Each Component');
+	      }
+	      if (child = this.memoComponents[memoKey]) {
+	        child.valid = false;
+	        child.transformValid = false;
+	        children[index] = cacheChildren[index] = child;
+	        this.memoChildMap[memoKey] = child;
+	        return child;
+	      }
+	    }
+	    if (index < children.length) {
+	      child = children[index];
+	      child.valid = false;
+	      child.transformValid = false;
+	    } else if (index < cacheChildren.length) {
+	      child = children[index] = cacheChildren[index];
+	      child.valid = false;
+	      child.transformValid = false;
+	    } else {
+	      childReactives[index] = react(function() {
+	        var item, items, key, result, value;
+	        items = me._items;
+	        item = items[index];
+	        if (itemFn.pouring) {
+	          child.invalidateTransform();
+	        }
+	        return result = me.isArrayItems ? itemFn(item, index, items, me) : ((key = item[0], value = item[1], item), itemFn(value, key, index, items, me));
+	      });
+	      children[index] = cacheChildren[index] = child = new Func(childReactives[index]);
+	      child.holder = listComponent;
+	      listComponent.dcidIndexMap[child.dcid] = index;
+	    }
+	    return child;
+	  };
+
+	  Each.prototype.invalidateChildren = function(start, stop) {
+	    var children, i, listComponent, oldChildrenLength;
+	    if (stop == null) {
+	      stop = start + 1;
+	    }
+	    i = start;
+	    listComponent = this.listComponent;
+	    children = listComponent.children;
+	    oldChildrenLength = children.length;
+	    while (i < stop) {
+	      this.getChild(i);
+	      i++;
+	    }
+	    if (stop > oldChildrenLength) {
+	      children[stop - 1].nextNode = this.nextNode;
+	    }
+	    listComponent.invalidChildren(start, stop);
+	    return this;
+	  };
+
+	  Each.prototype._setLength = function(length) {
+	    var index, listComponent, oldLength;
+	    listComponent = this.listComponent;
+	    oldLength = listComponent.children.length;
+	    if (length >= oldLength) {
+	      return this;
+	    } else {
+	      if (this.keyFunction) {
+	        index = length;
+	        while (index < oldLength) {
+	          delete memoChildMap[children[index].memoKey];
+	          index++;
+	        }
+	      }
+	      listComponent.setLength(length);
+	      return this;
+	    }
+	  };
+
+	  Each.prototype.clone = function(options) {
+	    return (new Each(this.items, this.itemFn, options || this.options)).copyEventListeners(this);
+	  };
+
+	  Each.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 0;
+	    }
+	    return newLine("<Each " + (funcString(this.items)) + " " + (funcString(this.itemFn)) + "/>", indent, addNewLine);
+	  };
+
+	  return Each;
+
+	})(TransformComponent);
+
+
+/***/ },
+/* 37 */
+/*!************************************!*\
+  !*** ./src/core/base/Defer.coffee ***!
+  \************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Defer, FULFILL, INIT, REJECT, TransformComponent, extend, funcString, intersect, newLine, renew, toComponent, _ref,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+
+	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+
+	extend = __webpack_require__(/*! extend */ 9);
+
+	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
+
+	renew = __webpack_require__(/*! lazy-flow */ 5).renew;
+
+	INIT = 0;
+
+	FULFILL = 1;
+
+	REJECT = 2;
+
+	module.exports = Defer = (function(_super) {
+	  __extends(Defer, _super);
+
+	  function Defer(promise, fulfill, reject, init) {
+	    var family;
+	    this.promise = promise;
+	    Defer.__super__.constructor.apply(this, arguments);
+	    this.fulfill = fulfill || function(result) {
+	      return result;
+	    };
+	    this.reject = reject || function(error) {
+	      return error;
+	    };
+	    this.init = init && init(promise, this) || new Nothing();
+	    this.family = family = intersect([fullfill.family, reject.family, init.family]);
+	    family[this.dcid] = true;
+	    this.promiseState = INIT;
+	    promise.then(function(value) {
+	      this.promiseResult = value;
+	      this.promiseState = FULFILL;
+	      return this.invalidateTransform();
+	    })["catch"](function(error) {
+	      this.promiseResult = error;
+	      this.promiseState = REJECT;
+	      return this.invalidateTransform();
+	    });
+	    return this;
+	  }
+
+	  Defer.prototype.getContentComponent = function() {
+	    var state;
+	    if ((state = this.promiseState) === INIT) {
+	      return init;
+	    } else if (state === FULFILL) {
+	      return toComponent(this.fulfill(this.promiseResult, this.promise, this));
+	    } else {
+	      return toComponent(this.reject(this.promiseResult, this.promise, this));
+	    }
+	  };
+
+	  Defer.prototype.clone = function() {
+	    return (new Defer(this.promise, this.fulfill, this.reject, this.init.clone)).copyEventListeners(this);
+	  };
+
+	  Defer.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 0;
+	    }
+	    if (addNewLine == null) {
+	      addNewLine = '';
+	    }
+	    return newLine('', indent, addNewLine) + '<Defer ' + this.promise + '>' + newLine('', indent, addNewLine) + funcString(this.fulfill) + newLine('', indent, addNewLine) + funcString(this.reject) + this.init.toString(indent + 2, true) + newLine('</Defer>', indent, true);
+	  };
+
+	  return Defer;
+
+	})(TransformComponent);
+
+	extend(Defer, {
+	  INIT: INIT,
+	  FULFILL: FULFILL,
+	  REJECT: REJECT
+	});
+
+
+/***/ },
+/* 38 */
+/*!*************************************!*\
+  !*** ./src/core/instantiate.coffee ***!
+  \*************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Case, Comment, Component, Defer, Each, Func, Html, If, List, Nothing, Pick, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
+	  __slice = [].slice;
+
+	_ref = __webpack_require__(/*! ./base */ 12), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, Pick = _ref.Pick, Nothing = _ref.Nothing, Defer = _ref.Defer;
+
+	_ref1 = __webpack_require__(/*! dc-util */ 4), isEven = _ref1.isEven, numbers = _ref1.numbers;
+
+	isAttrs = __webpack_require__(/*! ./util */ 39).isAttrs;
+
+	attrsChildren = function(args) {
+	  var attrs;
+	  attrs = args[0];
+	  if (!args.length) {
+	    return [{}, []];
+	  } else if (attrs==null) {
+	    return [{}, args.slice(1)];
+	  } else if (attrs instanceof Array) {
+	    return [{}, args];
+	  } else if (typeof attrs === 'function') {
+	    return [{}, args];
+	  } else if (typeof attrs === 'object') {
+	    if (isComponent(attrs)) {
+	      return [{}, args];
+	    } else {
+	      return [attrs, args.slice(1)];
+	    }
+	  } else {
+	    return [{}, args];
+	  }
+	};
+
+	toTagChildren = function(args) {
+	  if (!(args instanceof Array)) {
+	    return [args];
+	  } else if (!args.length) {
+	    return [];
+	  } else if (args.length === 1) {
+	    return toTagChildren(args[0]);
+	  } else {
+	    return args;
+	  }
+	};
+
+	tag = exports.tag = function() {
+	  var args, attrs, children, tagName, _ref2;
+	  tagName = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+	  _ref2 = attrsChildren(args), attrs = _ref2[0], children = _ref2[1];
+	  return new Tag(tagName, attrs, toTagChildren(children));
+	};
+
+	exports.nstag = function() {
+	  var args, attrs, children, namespace, tagName, _ref2;
+	  tagName = arguments[0], namespace = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+	  _ref2 = attrsChildren(args), attrs = _ref2[0], children = _ref2[1];
+	  return new Tag(tagName, attrs, toTagChildren(children), namespace);
+	};
+
+	exports.txt = function(attrs, text) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Text(text)]);
+	  } else {
+	    return new Text(attrs);
+	  }
+	};
+
+	exports.comment = function(attrs, text) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Comment(text)]);
+	  } else {
+	    return new Comment(attrs);
+	  }
+	};
+
+	exports.html = function(attrs, text, transform) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Html(text, transform)]);
+	  } else {
+	    return new Html(attrs, text);
+	  }
+	};
+
+	exports.if_ = function(attrs, test, then_, else_, merge, recursive) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new If(test, then_, else_, merge, recursive)]);
+	  } else {
+	    return new If(attrs, test, then_, merge, recursive);
+	  }
+	};
+
+	exports.mergeIf = function(attrs, test, then_, else_, recursive) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new If(test, then_, else_, true, recursive)]);
+	  } else {
+	    return new If(attrs, test, then_, true, recursive);
+	  }
+	};
+
+	exports.recursiveIf = function(attrs, test, then_, else_) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new If(test, then_, else_, true, true)]);
+	  } else {
+	    return new If(attrs, test, then_, true, true);
+	  }
+	};
+
+	exports.case_ = function(attrs, test, map, else_) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Case(test, map, else_)]);
+	  } else {
+	    return new Case(attrs, test, map, else_);
+	  }
+	};
+
+	exports.cond = function() {
+	  var attrs, condComponents, else_, _i;
+	  attrs = arguments[0], condComponents = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), else_ = arguments[_i++];
+	  if (isAttrs(attrs)) {
+	    if (!isEven(condComponents)) {
+	      condComponents.push(else_);
+	      else_ = null;
+	    }
+	    return new Tag('div', attrs, [new Cond(condComponents, else_)]);
+	  } else {
+	    condComponents.unshift(attrs);
+	    if (!isEven(condComponents)) {
+	      condComponents.push(else_);
+	      else_ = null;
+	    }
+	    return new Cond(condComponents, else_);
+	  }
+	};
+
+	exports.func = function(attrs, fn) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Func(fn)]);
+	  } else {
+	    return new Func(attrs);
+	  }
+	};
+
+	exports.pick = function(host, field, initialContent) {
+	  return new Pick(host, field, initialContent);
+	};
+
+	exports.list = list = function() {
+	  var attrs, lst;
+	  attrs = arguments[0], lst = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new List(lst)]);
+	  } else {
+	    lst.unshift(attrs);
+	    if (lst.length === 1) {
+	      return toComponent(lst[0]);
+	    } else {
+	      return new List(lst);
+	    }
+	  }
+	};
+
+
+	/**
+	  @param
+	    itemFn - function (item, index, list, component) { ... }
+	    itemFn - function (value, key, index, hash, component) { ... }
+	 */
+
+	exports.each = function(attrs, list, itemFn) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Each(list, itemFn)]);
+	  } else {
+	    return new Each(attrs, list);
+	  }
+	};
+
+	exports.every = every = function(attrs, list, itemFn) {
+	  var children, i, item, _i, _j, _len, _len1;
+	  if (isAttrs(attrs)) {
+	    if (!list) {
+	      return new Nothing();
+	    }
+	    children = [];
+	    for (i = _i = 0, _len = list.length; _i < _len; i = ++_i) {
+	      item = list[i];
+	      children.push(itemFn(item, i, list));
+	    }
+	    return new Tag('div', attrs, [new List(children)]);
+	  } else {
+	    if (!attrs) {
+	      return new Nothing();
+	    }
+	    children = [];
+	    for (i = _j = 0, _len1 = attrs.length; _j < _len1; i = ++_j) {
+	      item = attrs[i];
+	      children.push(list(item, i, attrs));
+	    }
+	    return new List(children);
+	  }
+	};
+
+	exports.all = function(hash, itemFn) {
+	  var children, i, key, value;
+	  if (!hash) {
+	    return new Nothing();
+	  }
+	  children = [];
+	  i = 0;
+	  for (key in hash) {
+	    value = hash[key];
+	    if (!hash.hasOwnProperty(key)) {
+	      break;
+	    }
+	    children.push(itemFn(key, value, i, hash));
+	    i++;
+	  }
+	  return new List(children);
+	};
+
+	exports.nItems = function(attrs, n, itemFn) {
+	  if (isAttrs(attrs)) {
+	    if (typeof n === 'function') {
+	      return new Tag('div', attrs, [new Each(numbers(n), itemFn)]);
+	    } else {
+	      return new Tag('div', every(numbers(n), itemFn));
+	    }
+	  } else {
+	    if (typeof attrs === 'function') {
+	      return new Each(numbers(attrs), n);
+	    } else {
+	      return every(numbers(attrs), n);
+	    }
+	  }
+	};
+
+	exports.defer = function(attrs, promise, fulfill, reject, init) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Defer(promise, fulfill, reject, init)]);
+	  } else {
+	    return new Defer(attrs, promise, fulfill, reject);
+	  }
+	};
+
+	exports.clone = function(attrs, src) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [toComponent(src).clone()]);
+	  } else {
+	    return toComponent(attrs).clone(src);
+	  }
+	};
+
+
+/***/ },
+/* 39 */
+/*!******************************!*\
+  !*** ./src/core/util.coffee ***!
+  \******************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Comment, Func, Html, Text, isComponent, mergeThenElseValue, toComponent, _ref;
+
+	_ref = __webpack_require__(/*! ./base */ 12), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
+
+	Func = __webpack_require__(/*! ./base/Func */ 24);
+
+	Text = __webpack_require__(/*! ./base/Text */ 16);
+
+	Html = __webpack_require__(/*! ./base/Html */ 29);
+
+	Comment = __webpack_require__(/*! ./base/Comment */ 28);
+
+	exports.isAttrs = function(item) {
+	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
+	};
+
+	mergeThenElseValue = function(test, thenValue, elseValue) {
+	  return dc.flow.if_(test, thenValue, elseValue);
+	};
+
+	exports._maybeIf = function(test, then_, else_) {
+	  var attrs, elseAttrs, key, thenAttrs;
+	  then_ = toComponent(then_);
+	  else_ = toComponent(else_);
+	  if (then_ === else_) {
+	    return then_;
+	  }
+	  if (then_ instanceof Nothing && else_ instanceof Nothing) {
+	    return then_;
+	  }
+	  if (typeof test === 'function') {
+	    if (then_.isTag && else_.isTag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
+	      attrs = {};
+	      thenAttrs = then_.attrs;
+	      elseAttrs = else_.attrs;
+	      for (key in bothKeys(thenAttrs, elseAttrs)) {
+	        attrs[key] = mergeThenElseValue(test, thenAttrs[key], elseAttrs[key]);
+	      }
+	      attrs.namespace = then_.namespace;
+	      return new Tag(then_.tagName, attrs, children);
+	    } else if (then_ instanceof Text && else_ instanceof Text) {
+	      return new Text(mergeThenElseValue(test, then_.text, else_.text));
+	    } else if (then_ instanceof Comment && else_ instanceof Comment) {
+	      return new Comment(mergeThenElseValue(test, then_.text, else_.text));
+	    } else if (then_ instanceof Html && else_ instanceof Html) {
+	      return new Html(mergeThenElseValue(test, then_.text, else_.text));
+	    } else if (then_ instanceof Func && else_ instanceof Func) {
+	      return new Func(flow.if_(test, then_.func, else_.func));
+	    } else {
+	      return new If(test, then_, else_);
+	    }
+	  } else if (test) {
+	    return then_;
+	  } else {
+	    return else_;
+	  }
+	};
+
+
+/***/ },
+/* 40 */
+/*!*****************************!*\
+  !*** ./src/core/tag.coffee ***!
+  \*****************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var extend, getBindProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,
+	  __slice = [].slice;
+
+	extend = __webpack_require__(/*! extend */ 9);
+
+	tag = __webpack_require__(/*! ./instantiate */ 38).tag;
+
+	getBindProp = __webpack_require__(/*! ../dom-util */ 6).getBindProp;
+
+	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section" + " svg iframe";
+
+	tagNames = tagNames.split(' ');
+
+	_fn = function(tagName) {
+	  return exports[tagName] = function() {
+	    var args;
+	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return tag.apply(null, [tagName].concat(__slice.call(args)));
+	  };
+	};
+	for (_i = 0, _len = tagNames.length; _i < _len; _i++) {
+	  tagName = tagNames[_i];
+	  _fn(tagName);
+	}
+
+	exports.tagHtml = function() {
+	  var args;
+	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	  return tag.apply(null, ['html'].concat(__slice.call(args)));
+	};
+
+	inputTypes = 'text checkbox radio date email number'.split(' ');
+
+	input = exports.input = function(type, attrs, value) {
+	  var component;
+	  if (typeof type === 'object') {
+	    value = attrs;
+	    attrs = type;
+	    type = 'text';
+	  }
+	  attrs = extend({
+	    type: type
+	  }, attrs);
+	  component = tag('input', attrs);
+	  if (value != null) {
+	    component.prop(getBindProp(component), value);
+	    if (value.isDuplex) {
+	      component.bind('onchange', (function(event, comp) {
+	        return value(this.value);
+	      }), 'before');
+	    }
+	  }
+	  return component;
+	};
+
+	_ref = 'text checkbox radio date email tel number'.split(' ');
+	_fn1 = function(type) {
+	  return exports[type] = function(value, attrs) {
+	    var temp;
+	    if (typeof value === 'object') {
+	      temp = attrs;
+	      attrs = value;
+	      value = temp;
+	    }
+	    attrs = attrs || {};
+	    return input(type, attrs, value);
+	  };
+	};
+	for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+	  type = _ref[_j];
+	  _fn1(type);
+	}
+
+	exports.textarea = function(attrs, value) {
+	  var component;
+	  if (isAttrs(attrs)) {
+	    if (value != null) {
+	      attrs = extend({
+	        value: value
+	      }, attrs);
+	      component = tag('textarea', attrs);
+	      if (value.isDuplex) {
+	        component.bind('onchange', (function(event, comp) {
+	          return value(this.value);
+	        }), 'before');
+	      }
+	    } else {
+	      component = tag('textarea', attrs);
+	    }
+	  } else {
+	    if (attrs != null) {
+	      component = tag('textarea', {
+	        value: attrs
+	      });
+	      if (attrs.isDuplex) {
+	        component.bind('onchange', (function(event, comp) {
+	          return attrs(this.value);
+	        }), 'before');
+	      }
+	    } else {
+	      component = tag('textarea');
+	    }
+	  }
+	  return component;
+	};
+
+
+/***/ },
+/* 41 */
+/*!*****************************!*\
+  !*** ./src/dc-error.coffee ***!
+  \*****************************/
+/***/ function(module, exports) {
+
+	var DomcomError,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	DomcomError = (function(_super) {
+	  __extends(DomcomError, _super);
+
+	  function DomcomError(message, component) {
+	    this.message = message;
+	    this.component = component;
+	  }
+
+	  DomcomError.prototype.toString = function() {
+	    if (this.component) {
+	      return this.component.toString() + '\n' + this.message;
+	    } else {
+	      return this.message;
+	    }
+	  };
+
+	  return DomcomError;
+
+	})(Error);
+
+	exports.error = function(message, component) {
+	  throw new DomcomError(message, component);
+	};
+
+	exports.onerror = function(message, component) {
+	  if (message instanceof DomcomError) {
+	    console.log(message);
+	    throw new Error(message.message);
+	  } else if (message instanceof Error) {
+	    throw message;
+	  } else {
+	    if (comopenent) {
+	      console.log(component);
+	      console.log(message);
+	    } else {
+	      console.log(message);
+	    }
+	    throw new Error(message);
+	  }
+	};
+
+
+/***/ },
+/* 42 */
+/*!*********************************!*\
+  !*** ./src/domcom-addon.coffee ***!
+  \*********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var dc, extend, flow;
+
+	extend = (dc = __webpack_require__(/*! ./domcom-basic */ 1)).extend;
+
+	dc.builtinDirectives = __webpack_require__(/*! ./directives/index */ 44);
+
+	extend(dc, dc.builtinDirectives, __webpack_require__(/*! ./builtins/index */ 52), __webpack_require__(/*! ./core/prop-util */ 43));
+
+	flow = dc.flow;
+
+	extend(flow, __webpack_require__(/*! lazy-flow/addon */ 32), __webpack_require__(/*! dc-watch-list */ 10));
+
+	dc.bindings = flow.bindings;
+
+	module.exports = dc;
+
+
+/***/ },
+/* 43 */
+/*!***********************************!*\
+  !*** ./src/core/prop-util.coffee ***!
+  \***********************************/
+/***/ function(module, exports) {
+
+	var Tag, reNonUnit, unitAdd, unitDiv, unitMul, unitSub;
+
+	Tag = dc.Tag;
+
+	reNonUnit = /[\d\s\.-]/g;
+
+	exports.unitAdd = unitAdd = function(x, y) {
+	  var num;
+	  num = parseFloat(x);
+	  if (isNaN(num)) {
+	    console.log('wrong type in unitAdd(prop, value)');
+	  }
+	  return num + parseFloat(y) + x.replace(reNonUnit, '');
+	};
+
+	exports.unitSub = unitSub = function(x, y) {
+	  var num;
+	  num = parseFloat(x);
+	  if (isNaN(num)) {
+	    console.log('wrong type in unitSub(prop, value)');
+	  }
+	  return num - parseFloat(y) + x.replace(reNonUnit, '');
+	};
+
+	exports.unitMul = unitMul = function(x, y) {
+	  var num;
+	  num = parseFloat(x);
+	  if (isNaN(num)) {
+	    console.log('wrong type in unitMul(prop, value)');
+	  }
+	  return num * parseFloat(y) + x.replace(reNonUnit, '');
+	};
+
+	exports.unitDiv = unitDiv = function(x, y) {
+	  var num;
+	  num = parseFloat(x);
+	  if (isNaN(num)) {
+	    console.log('wrong type in unitDiv(prop, value)');
+	  }
+	  return num / parseFloat(y) + x.replace(reNonUnit, '');
+	};
+
+	Tag.prototype.cssAdd = function(prop, value) {
+	  return this.css(prop, unitAdd(this.css(prop), value));
+	};
+
+	Tag.prototype.cssSub = function(prop, value) {
+	  return this.css(prop, unitSub(this.css(prop), value));
+	};
+
+	Tag.prototype.cssMul = function(prop, value) {
+	  return this.css(prop, unitMul(this.css(prop), value));
+	};
+
+	Tag.prototype.cssDiv = function(prop, value) {
+	  return this.css(prop, unitDiv(this.css(prop), value));
+	};
+
+
+/***/ },
+/* 44 */
+/*!*************************************!*\
+  !*** ./src/directives/index.coffee ***!
+  \*************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var $hide, $show, _ref;
+
+	exports.$model = __webpack_require__(/*! ./model */ 46);
+
+	exports.$bind = __webpack_require__(/*! ./bind */ 47);
+
+	_ref = __webpack_require__(/*! ./show-hide */ 48), $show = _ref.$show, $hide = _ref.$hide;
+
+	exports.$show = $show;
+
+	exports.$hide = $hide;
+
+	exports.$blink = __webpack_require__(/*! ./blink */ 45);
+
+	exports.$splitter = __webpack_require__(/*! ./splitter */ 49);
+
+	exports.$options = __webpack_require__(/*! ./options */ 51);
+
+
+/***/ },
+/* 45 */
+/*!*************************************!*\
+  !*** ./src/directives/blink.coffee ***!
+  \*************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var flow, see, _ref;
+
+	_ref = __webpack_require__(/*! lazy-flow */ 5), see = _ref.see, flow = _ref.flow;
+
+	module.exports = function(interval) {
+	  return function(comp) {
+	    var timer, visible;
+	    if (interval == null) {
+	      interval = 500;
+	    }
+	    timer = null;
+	    comp.on('beforeMount', function(baseComponent) {
+	      return function() {
+	        return timer = setInterval((function() {
+	          visible(!visible());
+	          return comp.update();
+	        }), interval);
+	      };
+	    });
+	    comp.on('afterUnmount', function(baseComponent) {
+	      return function() {
+	        return clearInterval(timer);
+	      };
+	    });
+	    visible = see(true);
+	    this.style.visibility = flow(visible, function() {
+	      if (visible()) {
+	        return 'visible';
+	      } else {
+	        return 'hidden';
+	      }
+	    });
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 46 */
+/*!*************************************!*\
+  !*** ./src/directives/model.coffee ***!
+  \*************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var getBindProp;
+
+	getBindProp = __webpack_require__(/*! ../dom-util */ 6).getBindProp;
+
+	module.exports = function(binding, eventName) {
+	  return function(comp) {
+	    var bindProp, props;
+	    props = comp.props;
+	    bindProp = getBindProp(comp);
+	    comp.setProp(bindProp, binding, props, 'Props');
+	    comp.bind(eventName || 'onchange', (function() {
+	      return binding(this[bindProp]);
+	    }), 'before');
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 47 */
+/*!************************************!*\
+  !*** ./src/directives/bind.coffee ***!
+  \************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var domField, getBindProp, _ref;
+
+	_ref = __webpack_require__(/*! ../dom-util */ 6), getBindProp = _ref.getBindProp, domField = _ref.domField;
+
+	module.exports = function(binding) {
+	  return function(comp) {
+	    comp.setProp(getBindProp(comp), binding, props, 'Props');
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 48 */
+/*!*****************************************!*\
+  !*** ./src/directives/show-hide.coffee ***!
+  \*****************************************/
+/***/ function(module, exports) {
+
+	
+	/* @param test - paramenter expression for directive
+	 */
+	var showHide;
+
+	showHide = function(showing) {
+	  return function(test, display) {
+	    return function(comp) {
+	      comp.showHide(showing, test, display);
+	      return comp;
+	    };
+	  };
+	};
+
+	exports.$show = showHide(true);
+
+	exports.$hide = showHide(false);
+
+
+/***/ },
+/* 49 */
+/*!****************************************!*\
+  !*** ./src/directives/splitter.coffee ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Component, classFn, div, option, pairListDict, span, _ref;
+
+	pairListDict = __webpack_require__(/*! dc-util */ 4).pairListDict;
+
+	classFn = __webpack_require__(/*! ../core/property */ 27).classFn;
+
+	_ref = __webpack_require__(/*! ../core/tag */ 40), div = _ref.div, span = _ref.span, option = _ref.option;
+
+	Component = __webpack_require__(/*! ../core/base/Component */ 50);
+
+	module.exports = function(direction) {
+	  return function(comp) {
+	    var arrawAAttr, arrawBAttr, arrowA, arrowAHovering, arrowB, arrowBHovering, barsize, buttonClass, children, clientX, cursor, drag, getSize, left, minAWidth, minBWidth, paneA, paneB, percent, pos, props, right, size, splitBar, splitBarAttr, splitBarAttrCss, splitbarClass, width;
+	    dc.directives({
+	      $show: dc.$show
+	    });
+	    props = comp.props;
+	    direction = direction || 'vertical';
+	    if (direction === 'vertical') {
+	      left = "top";
+	      right = "bottom";
+	      width = "height";
+	      clientX = "clientY";
+	      splitbarClass = "splitbarH";
+	      buttonClass = "splitbuttonH";
+	      cursor = "s-resize";
+	    } else {
+	      left = "left";
+	      right = "right";
+	      width = "width";
+	      clientX = "clientX";
+	      splitbarClass = "splitbarV";
+	      buttonClass = "splitbuttonV";
+	      cursor = "e-resize";
+	    }
+	    pos = 200;
+	    percent = 0.5;
+	    size = null;
+	    drag = false;
+	    getSize = function() {
+	      return size || 600;
+	    };
+	    children = comp.children;
+	    paneA = children[0];
+	    paneB = children[1];
+	    minAWidth = props.minAWidth || 0;
+	    minBWidth = props.minBWidth || 0;
+	    splitBarAttr = {
+	      "class": splitbarClass,
+	      unselectable: "on",
+	      style: splitBarAttrCss = {
+	        "cursor": cursor,
+	        "user-select": "none",
+	        "-webkit-user-select": "none",
+	        "-khtml-user-select": "none",
+	        "-moz-user-select": "none"
+	      }
+	    };
+	    splitBarAttrCss[left] = function() {
+	      return pos + 'px';
+	    };
+	    splitBarAttrCss[width] = barsize = 6;
+	    arrowAHovering = false;
+	    arrawAAttr = {
+	      "class": classFn(buttonClass, {
+	        'inactive': function() {
+	          return arrowAHovering;
+	        }
+	      }),
+	      unselectable: "on",
+	      style: {
+	        cursor: 'pointer'
+	      },
+	      onmouseover: function() {
+	        arrowAHovering = true;
+	        return comp.update();
+	      },
+	      onmouseleave: function() {
+	        arrowAHovering = false;
+	        return comp.update();
+	      },
+	      onclick: function(e) {
+	        pos = minAWidth;
+	        return comp.update();
+	      },
+	      $show: function() {
+	        return pos > minAWidth;
+	      }
+	    };
+	    arrowBHovering = false;
+	    arrawBAttr = {
+	      "class": classFn(buttonClass + ' invert', {
+	        'inactive': function() {
+	          return arrowBHovering;
+	        }
+	      }),
+	      unselectable: "on",
+	      style: {
+	        cursor: 'pointer'
+	      },
+	      onmouseover: function() {
+	        arrowBHovering = true;
+	        return comp.update();
+	      },
+	      onmouseleave: function() {
+	        arrowBHovering = false;
+	        return comp.update();
+	      },
+	      onclick: function(e) {
+	        pos = getSize() - minBWidth;
+	        return comp.update();
+	      },
+	      $show: function() {
+	        return getSize() - pos > minBWidth;
+	      }
+	    };
+	    arrowA = div(arrawAAttr);
+	    arrowB = div(arrawBAttr);
+	    splitBar = div(splitBarAttr, span(), arrowA, arrowB);
+	    comp.setChildren(1, splitBar, paneB);
+	    splitBar.bind('mousedown', function(event) {
+	      return drag = true;
+	    });
+	    dc(document).bind('mouseup', function() {
+	      return drag = false;
+	    });
+	    comp.bind('mousemove', function(event) {
+	      var bounds, pencent, w;
+	      event.continuePropagation = true;
+	      event.executeDefault = true;
+	      if (!drag) {
+	        return;
+	      }
+	      event.continuePropagation = false;
+	      event.executeDefault = false;
+	      bounds = comp.node.getBoundingClientRect();
+	      size = w = bounds[right] - bounds[left];
+	      pos = Math.max(event[clientX] - bounds[left], 0);
+	      pencent = pos / w;
+	      return comp.update();
+	    });
+	    paneA.css(pairListDict('position', 'absolute', width, (function() {
+	      return pos + 'px';
+	    })));
+	    paneB.css(pairListDict('position', 'absolute', left, (function() {
+	      return (pos + barsize) + 'px';
+	    }), width, (function() {
+	      return getSize() - (pos + barsize) + 'px';
+	    })));
+	    comp.css(pairListDict('position', 'absolute'));
+	    comp.bind('resize', function(event) {
+	      var bounds, w;
+	      event.preventDefault();
+	      event.stopPropagation();
+	      bounds = comp.node.getBoundingClientRect();
+	      w = bounds[right] - bounds[left];
+	      pos = percent * w;
+	      if (pos < minAWidth) {
+	        pos = minAWidth;
+	      } else if (w - pos < minBWidth) {
+	        pos = w - minBWidth;
+	      }
+	      return comp.update();
+	    });
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 50 */
+/*!****************************************!*\
+  !*** ./src/core/base/Component.coffee ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Component, componentId, dc, extend, isComponent, mountList, newDcid, normalizeDomElement,
+	  __slice = [].slice;
+
+	extend = __webpack_require__(/*! extend */ 9);
+
+	normalizeDomElement = __webpack_require__(/*! ../../dom-util */ 6).normalizeDomElement;
+
+	newDcid = __webpack_require__(/*! dc-util */ 4).newDcid;
+
+	isComponent = __webpack_require__(/*! ./isComponent */ 8);
+
+	dc = __webpack_require__(/*! ../../dc */ 2);
+
+	componentId = 1;
+
+	mountList = [];
+
+	module.exports = Component = (function() {
+	  function Component() {
+	    this.listeners = {};
+	    this.baseComponent = null;
+	    this.parentNode = null;
+	    this.node = null;
+	    this.removing = false;
+	    this.dcid = newDcid();
+	  }
+
+	  Component.prototype.on = function(event, callback) {
+	    var callbacks, eventName, listeners, _i, _len, _ref;
+	    if (!arguments.length) {
+	      dc.error('missing arguments for Component.on(event, callback)');
+	    }
+	    if (arguments.length === 1) {
+	      if (!event || typeof event !== 'object') {
+	        dc.error('wrong arguments for Component.on(event, callback)');
+	      } else {
+	        for (eventName in event) {
+	          callback = event[eventName];
+	          this.on(eventName, callback);
+	        }
+	      }
+	    } else {
+	      listeners = this.listeners;
+	      _ref = event.split(/\s*,\s*|\s+/);
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        event = _ref[_i];
+	        if (callbacks = listeners[event]) {
+	          if (callbacks.indexOf(callback) < 0) {
+	            callbacks.push(callback);
+	          }
+	        } else {
+	          listeners[event] = [callback];
+	        }
+	      }
+	    }
+	    return this;
+	  };
+
+	  Component.prototype.off = function(event, callback) {
+	    var callbacks, listeners, _i, _j, _len, _len1, _ref, _ref1;
+	    if (this.argmuents.length) {
+	      dc.error('missing arguments for Component.off(event, callback)');
+	    } else if (arguments.length === 1) {
+	      listeners = this.listeners;
+	      _ref = event.split(/\s*,\s*|\s+/);
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        event = _ref[_i];
+	        listeners[event] = null;
+	      }
+	    } else {
+	      listeners = this.listeners;
+	      _ref1 = event.split(/\s*,\s*|\s+/);
+	      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+	        event = _ref1[_j];
+	        callbacks = listeners[event];
+	        if (callbacks && callbacks.indexOf(callback) >= 0) {
+	          callbacks.splice(index, 1);
+	          if (!callbacks.length) {
+	            listeners[event] = null;
+	          }
+	        }
+	      }
+	    }
+	    return this;
+	  };
+
+	  Component.prototype.emit = function() {
+	    var args, callback, callbacks, event, _i, _len;
+	    event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+	    if (!(callbacks = this.listeners[event])) {
+	      return;
+	    }
+	    for (_i = 0, _len = callbacks.length; _i < _len; _i++) {
+	      callback = callbacks[_i];
+	      callback.apply(this, args);
+	    }
+	    return this;
+	  };
+
+
+	  /* if mountNode is given, it should not the node of any Component
+	  only use beforeNode if mountNode is given
+	   */
+
+	  Component.prototype.mount = function(mountNode, beforeNode) {
+	    this.emit('beforeMount');
+	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.getElementsByTagName('body')[0];
+	    this.renderDom();
+	    this.emit('afterMount');
+	    return this;
+	  };
+
+	  Component.prototype.create = function() {
+	    return this.renderDom();
+	  };
+
+	  Component.prototype.render = function() {
+	    return this.renderDom();
+	  };
+
+	  Component.prototype.update = function() {
+	    this.emit('update');
+	    this.renderDom();
+	    return this;
+	  };
+
+	  Component.prototype.unmount = function() {
+	    var component, holder;
+	    this.emit('beforeUnmount');
+	    if (!this.node || !this.node.parentNode) {
+	      this.emit('afterUnmount');
+	      return this;
+	    }
+	    component = this;
+	    holder = this.holder;
+	    while (holder && !holder.isBaseComponent) {
+	      component = holder;
+	      holder = holder.holder;
+	    }
+	    if (holder && (holder.isList || holder.isTag)) {
+	      holder.removeChild(holder.dcidIndexMap[component.dcid]);
+	    }
+	    this.parentNode = null;
+	    this.nextNode = null;
+	    this.setParentAndNextNode();
+	    if (holder && (holder.isList || holder.isTag)) {
+	      holder.renderDom();
+	    } else {
+	      component.renderDom();
+	    }
+	    this.emit('afterUnmount');
+	    return component;
+	  };
+
+	  Component.prototype.remount = function(parentNode) {
+	    var child, holder, index;
+	    this.emit('beforeMount');
+	    child = this;
+	    holder = this.holder;
+	    while (holder && !holder.isBaseComponent) {
+	      child = holder;
+	      holder = holder.holder;
+	    }
+	    if ((holder.isList || holder.isTag) && (index = holder.dcidIndexMap[child.dcid])) {
+	      index = index != null ? index : holder.children.length;
+	      holder.insertChild(index, child);
+	    }
+	    child.parentNode = holder ? holder.parentNode : parentNode ? parentNode : document.body;
+	    child.invalidate();
+	    if (holder && (holder.isList || holder.isTag)) {
+	      holder.renderDom();
+	    } else {
+	      child.renderDom();
+	    }
+	    this.emit('afterMount');
+	    return child;
+	  };
+
+	  Component.prototype.destroy = function() {
+	    this.listeners = null;
+	    this.node = null;
+	    this.baseComponent = null;
+	    return this.parentNode = null;
+	  };
+
+
+	  /*
+	  component.updateWhen components, events
+	  component.updateWhen setInterval, interval, options
+	  component.updateWhen dc.raf, options
+	   */
+
+	  Component.prototype.updateWhen = function() {
+	    var args;
+	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return this._renderWhenBy('update', args);
+	  };
+
+	  Component.prototype.renderWhen = function() {
+	    var args;
+	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return this._renderWhenBy('render', args);
+	  };
+
+	  Component.prototype._renderWhenBy = function(method, args) {
+	    if (args[0] === setInterval) {
+	      if (args[1] === 'number') {
+	        dc._renderWhenBy(method, setInterval, args[1], [this], args[2]);
+	      } else {
+	        dc._renderWhenBy(method, setInterval, [this], args[1]);
+	      }
+	    } else if (args[1] === dc.raf) {
+	      dc._renderWhenBy(method, dc.raf, [this], args[1]);
+	    } else {
+	      dc._renderWhenBy(method, args[0], args[1], [this]);
+	    }
+	    return this;
+	  };
+
+	  Component.prototype.setNode = function(node) {
+	    var holder;
+	    holder = this;
+	    while (1) {
+	      holder.node = node;
+	      holder = holder.holder;
+	      if (!holder || holder.isBaseComponent) {
+	        return;
+	      }
+	    }
+	  };
+
+	  Component.prototype.setParentAndNextNode = function() {};
+
+	  Component.prototype.setFirstNode = function(node) {
+	    var holder;
+	    holder = this;
+	    while (1) {
+	      holder.firstNode = node;
+	      holder = holder.holder;
+	      if (!holder || holder.isBaseComponent) {
+	        break;
+	      }
+	    }
+	  };
+
+	  Component.prototype.reachTag = function() {
+	    var holder;
+	    holder = this.holder;
+	    while (!holder.isTag && holder.holder) {
+	      holder = holder.holder;
+	    }
+	    return holder;
+	  };
+
+	  Component.prototype.addController = function(controller) {
+	    return controller.component = this;
+	  };
+
+	  Component.prototype.copyEventListeners = function(srcComponent) {
+	    var event, myListeners, srcListeners;
+	    myListeners = this.listeners;
+	    srcListeners = srcComponent.listeners;
+	    for (event in srcListeners) {
+	      srcListeners[event] && (myListeners[event] = srcListeners[event].splice());
+	    }
+	    return this;
+	  };
+
+	  return Component;
+
+	})();
+
+
+/***/ },
+/* 51 */
+/*!***************************************!*\
+  !*** ./src/directives/options.coffee ***!
+  \***************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Tag, every, option, txt, _ref;
+
+	_ref = __webpack_require__(/*! ../core/instantiate */ 38), every = _ref.every, txt = _ref.txt;
+
+	option = __webpack_require__(/*! ../core/tag */ 40).option;
+
+	Tag = __webpack_require__(/*! ../core/base/Tag */ 25);
+
+	module.exports = function(items, attrs) {
+	  return function(comp) {
+	    if (!(comp instanceof Tag) || comp.tagName !== 'select') {
+	      throw new Error('options should be only used in select tag');
+	    }
+	    comp.setChildren(0, every(items, function(item) {
+	      return option(attrs, [txt(item)]);
+	    }));
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 52 */
+/*!***********************************!*\
+  !*** ./src/builtins/index.coffee ***!
+  \***********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var extend;
+
+	extend = __webpack_require__(/*! extend */ 9);
+
+	extend(exports, __webpack_require__(/*! ./accordion */ 54));
+
+	exports.triangle = __webpack_require__(/*! ./triangle */ 55);
+
+	exports.dialog = __webpack_require__(/*! ./dialog */ 53);
+
+	extend(exports, __webpack_require__(/*! ./combo */ 56));
+
+	extend(exports, __webpack_require__(/*! ./autoWidthEdit */ 57));
+
+
+/***/ },
+/* 53 */
+/*!************************************!*\
+  !*** ./src/builtins/dialog.coffee ***!
+  \************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var Component, div, globalID, if_, list, see, _ref;
+
+	see = __webpack_require__(/*! lazy-flow */ 5).see;
+
+	_ref = __webpack_require__(/*! ../core/instantiate */ 38), list = _ref.list, if_ = _ref.if_;
+
+	div = __webpack_require__(/*! ../core/tag */ 40).div;
+
+	Component = __webpack_require__(/*! ../core/base/Component */ 50).Component;
+
+	globalID = 0;
+
+	module.exports = function(options, template) {
+	  var closeCallback, dlg, openCallback, opened;
+	  if (options.showClose) {
+	    template = list(div({
+	      "class": "dcdialog-close",
+	      style: {
+	        position: 'absolute',
+	        "z-index": 10001,
+	        top: 0,
+	        right: '80px'
+	      },
+	      onclick: (function() {
+	        return dlg.close();
+	      })
+	    }), template);
+	  }
+	  if (options.overlay) {
+	    template = list(div({
+	      "class": "dcdialog-overlay",
+	      style: {
+	        "z-index": 10000
+	      }
+	    }), div({
+	      "class": "dcdialog-content",
+	      style: {
+	        position: 'absolute',
+	        "z-index": 10001
+	      }
+	    }, template));
+	  } else {
+	    template = div({
+	      "class": "dcdialog-content",
+	      style: {
+	        "z-index": 10001
+	      }
+	    }, template);
+	  }
+	  opened = see(!options.closed);
+	  dlg = if_(opened, div({
+	    id: 'dcdialog' + (++globalID),
+	    "class": "dcdialog",
+	    style: {
+	      position: 'absolute',
+	      top: '0px',
+	      left: '0px',
+	      "z-index": 9999
+	    }
+	  }, template));
+	  openCallback = options.openCallback;
+	  dlg.open = function() {
+	    openCallback && openCallback();
+	    opened(true);
+	    return dlg.update();
+	  };
+	  closeCallback = options.closeCallback;
+	  dlg.close = function() {
+	    opened(false);
+	    dlg.update();
+	    return closeCallback && closeCallback();
+	  };
+	  if (options.escClose) {
+	    dlg.on('onMount', function() {
+	      var escHandler;
+	      escHandler = function(event) {
+	        var esc;
+	        esc = 27;
+	        if (event.which === esc || event.keyCode === esc) {
+	          return dlg.close();
+	        }
+	      };
+	      return document.body.addEventListener('keydown', escHandler);
+	    });
+	    dlg.on('onUnmount', function() {
+	      return document.body.removeEventListener('keydown', escHandler);
+	    });
+	  }
+	  return dlg;
+	};
+
+
+/***/ },
+/* 54 */
+/*!***************************************!*\
+  !*** ./src/builtins/accordion.coffee ***!
+  \***************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	
+	/** @module accordion
+	 * @directive accordion
+	 */
+	var Component, a, accordion, accordionGroup, div, each, exports, extend, extendAttrs, h4, img, span, _ref;
+
+	extend = __webpack_require__(/*! extend */ 9).extend;
+
+	each = __webpack_require__(/*! ../core/instantiate */ 38).each;
+
+	_ref = __webpack_require__(/*! ../core/tag */ 40), div = _ref.div, h4 = _ref.h4, a = _ref.a, span = _ref.span, img = _ref.img;
+
+	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
+
+	Component = __webpack_require__(/*! ../core/base/Component */ 50).Component;
+
+	module.exports = exports = accordion = function(attrs, accordionGroupList, options) {
+	  var accordionOptions, comp;
+	  attrs = extendAttrs({
+	    "class": "panel-group"
+	  }, attrs || {});
+	  accordionOptions = options || {};
+	  return comp = div(attrs, each(accordionGroupList, function(group, index) {
+	    var content, groupAttrs, groupOptions, heading;
+	    groupAttrs = group[0], heading = group[1], content = group[2], groupOptions = group[3];
+	    groupOptions = groupOptions || {};
+	    groupOptions.toggleOpen = function() {
+	      var group2, i, _i, _len;
+	      groupOptions.opened = !groupOptions.opened;
+	      if (accordionOptions.closeOthers && groupOptions.opened) {
+	        for (i = _i = 0, _len = accordionGroupList.length; _i < _len; i = ++_i) {
+	          group2 = accordionGroupList[i];
+	          if (i !== index) {
+	            group2[3].opened = false;
+	          }
+	        }
+	      }
+	      return comp.update();
+	    };
+	    return accordionGroup(groupAttrs, heading, content, groupOptions);
+	  }));
+	};
+
+	exports.accordionGroup = accordionGroup = function(attrs, heading, content, options) {
+	  return div({
+	    "class": "panel panel-default"
+	  }, div({
+	    "class": "panel-heading",
+	    onclick: options.toggleOpen
+	  }, h4({
+	    "class": "panel-title"
+	  }, div({
+	    "class": "accordion-toggle"
+	  }, span({
+	    "class": {
+	      'text-muted': function() {
+	        return options.disabled;
+	      }
+	    }
+	  }, heading)))), div({
+	    "class": {
+	      "panel-collapse": function() {
+	        return !options.opened;
+	      }
+	    },
+	    style: {
+	      display: function() {
+	        if (options.opened) {
+	          return 'block';
+	        } else {
+	          return 'none';
+	        }
+	      }
+	    }
+	  }, div({
+	    "class": "panel-body"
+	  }, content)));
+	};
+
+	exports.accordion = accordion;
+
+
+/***/ },
+/* 55 */
+/*!**************************************!*\
+  !*** ./src/builtins/triangle.coffee ***!
+  \**************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var arrowStyle, div, extendAttrs, reverseSide;
+
+	div = __webpack_require__(/*! ../core/tag */ 40).div;
+
+	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
+
+	reverseSide = {
+	  left: 'right',
+	  right: 'left',
+	  top: 'bottom',
+	  bottom: 'top'
+	};
+
+	arrowStyle = function(direction, size, color) {
+	  var props, sideStyle;
+	  props = {
+	    width: 0,
+	    height: 0
+	  };
+	  sideStyle = size + "px solid transparent";
+	  if (direction === 'left' || direction === 'right') {
+	    props["border-top"] = props["border-bottom"] = sideStyle;
+	  } else {
+	    props["border-left"] = props["border-right"] = sideStyle;
+	  }
+	  props["border-" + reverseSide[direction]] = size + "px solid " + color;
+	  return props;
+	};
+
+	module.exports = function(attrs, direction, size, color) {
+	  attrs = extendAttrs(attrs, {
+	    style: arrowStyle(direction, size, color)
+	  });
+	  return div(attrs);
+	};
+
+
+/***/ },
+/* 56 */
+/*!***********************************!*\
+  !*** ./src/builtins/combo.coffee ***!
+  \***********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var combobox, div, extendAttrs, input, list, see, span, _ref;
+
+	see = __webpack_require__(/*! lazy-flow */ 5).see;
+
+	_ref = __webpack_require__(/*! ../core/tag */ 40), list = _ref.list, input = _ref.input, span = _ref.span, div = _ref.div;
+
+	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
+
+	exports.combobox = combobox = function(attrs, modelValue, valueList, direction) {
+	  var comp, disp, item, opts, showingItems;
+	  showingItems = see(false);
+	  disp = direction === 'v' || direction === 'vertical' ? 'block' : 'inline-block';
+	  comp = null;
+	  opts = (function() {
+	    var _i, _len, _results;
+	    _results = [];
+	    for (_i = 0, _len = valueList.length; _i < _len; _i++) {
+	      item = valueList[_i];
+	      _results.push((function(item) {
+	        return span({
+	          style: {
+	            display: disp,
+	            border: "1px solid blue",
+	            "min-width": "40px"
+	          },
+	          onclick: (function() {
+	            modelValue(item);
+	            return comp.update();
+	          })
+	        }, item);
+	      })(item));
+	    }
+	    return _results;
+	  })();
+	  attrs = extendAttrs(attrs, {
+	    onmouseleave: (function() {
+	      showingItems(false);
+	      return comp.update();
+	    })
+	  });
+	  return comp = div(attrs, input({
+	    $model: modelValue,
+	    onmouseenter: (function() {
+	      showingItems(true);
+	      return comp.update();
+	    })
+	  }), div({
+	    style: {
+	      display: function() {
+	        if (showingItems()) {
+	          return 'block';
+	        } else {
+	          return 'none';
+	        }
+	      }
+	    }
+	  }, opts));
+	};
+
+	exports.vcombo = function(attrs, modelValue, valueList) {
+	  return combobox(attrs, modelValue, valueList, 'vertical');
+	};
+
+	exports.hcombo = function(attrs, modelValue, valueList) {
+	  return combobox(attrs, modelValue, valueList, 'horizontal');
+	};
+
+
+/***/ },
+/* 57 */
+/*!*******************************************!*\
+  !*** ./src/builtins/autoWidthEdit.coffee ***!
+  \*******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var div, extend, extendAttrs, pipe, see, setAutoWidth, text, _ref, _ref1;
+
+	_ref = __webpack_require__(/*! lazy-flow */ 5), see = _ref.see, pipe = _ref.pipe;
+
+	extend = __webpack_require__(/*! extend */ 9).extend;
+
+	_ref1 = __webpack_require__(/*! ../core/tag */ 40), text = _ref1.text, div = _ref1.div;
+
+	extendAttrs = __webpack_require__(/*! ../core/property */ 27).extendAttrs;
+
+	exports.setAutoWidth = setAutoWidth = function(container, options) {
+	  var initialWidth, inputAttrs, inputComponent, inputEventHandler, inputEvents, inputText$, inputTextWidth$, spaceWidth, testSubject, testSubjectStyle;
+	  if (options == null) {
+	    options = {};
+	  }
+	  initialWidth = options.initialWidth || 48;
+	  spaceWidth = options.spaceWidth || 40;
+	  inputTextWidth$ = see(initialWidth);
+	  inputEvents = options.inputEvents || "onkeydown";
+	  inputComponent = options.inputComponent || container.children[0];
+	  inputText$ = see("");
+	  testSubjectStyle = {
+	    position: 'absolute',
+	    top: '30px',
+	    width: 'auto',
+	    height: '20px',
+	    whiteSpace: 'nowrap',
+	    display: 'inline-block',
+	    margin: '0',
+	    padding: '0',
+	    fontSize: function() {
+	      return container.css('fontSize');
+	    },
+	    fontFamily: function() {
+	      return container.css('fontFamily');
+	    },
+	    fontWeight: function() {
+	      return container.css('fontWeight');
+	    },
+	    letterSpacing: function() {
+	      return container.css('letterSpacing');
+	    },
+	    visibility: 'hidden'
+	  };
+	  testSubject = div({
+	    style: testSubjectStyle
+	  }, inputText$);
+	  inputAttrs = {
+	    style: {
+	      'z-index': '10',
+	      width: pipe(inputTextWidth$, function(w) {
+	        return Math.max(Math.floor(w) + spaceWidth, initialWidth) + 'px';
+	      }),
+	      whiteSpace: 'nowrap'
+	    }
+	  };
+	  inputEventHandler = function(event, comp) {
+	    event.executeDefault = true;
+	    inputText$(this.value);
+	    inputTextWidth$(testSubject.node.getBoundingClientRect().width);
+	    container.update();
+	    return this.focus();
+	  };
+	  inputComponent.extendAttrs(inputAttrs);
+	  inputComponent.bind(inputEvents, inputEventHandler);
+	  container.pushChild(testSubject);
+	  return container;
+	};
+
+	exports.autoWidthEdit = function(attrs, inputAttrs, options) {
+	  var component, inputComp;
+	  component = div(attrs, inputComp = text());
+	  return setAutoWidth(component, options);
 	};
 
 

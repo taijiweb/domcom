@@ -14,6 +14,7 @@ Text = require './Text'
 
 module.exports = class Html extends Text
   constructor: (text, @transform) ->
+    @isHtml = true
     super(text)
 
   createDom: ->

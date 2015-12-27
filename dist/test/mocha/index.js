@@ -18,6 +18,8 @@ require('./test-directive');
 
 require('./test-singleton');
 
+require('./test-merge-if');
+
 require('./test-group');
 
 require('./test-ref-clone');

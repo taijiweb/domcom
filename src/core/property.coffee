@@ -160,13 +160,20 @@ exports.eventHandlerFromArray = (callbackList, eventName, component) ->
     return
 
 attrPropNameMap = {'for':'htmlFor'}
+
 exports.attrToPropName = (name) ->
-  if newName=attrPropNameMap[name] then return newName
+  if newName=attrPropNameMap[name]
+    return newName
+
   pieces = name.split('-')
-  if pieces.length==1 then return name
+
+  if pieces.length==1
+    return name
+
   i = 1
   len = pieces.length
   while i<len
     pieces[i] = pieces[i][0].toUpperCase()+pieces[i][1...]
     i++
+
   pieces.join('')

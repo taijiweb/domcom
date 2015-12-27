@@ -11,7 +11,7 @@ describe('group component: List, Each', function() {
     it('all of item in list should be  component', function() {
       var comp;
       comp = list([1, 2]);
-      return expect(!!isComponent(comp.children[0])).to.equal(true);
+      return expect(isComponent(comp.children[0])).to.equal(true);
     });
     it('should create list component', function() {
       var comp;
