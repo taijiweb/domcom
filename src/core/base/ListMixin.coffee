@@ -6,6 +6,7 @@ Nothing = require './Nothing'
 {checkConflictOffspring} = require '../../dom-util'
 
 # todo: to simplify, use sort to replace binaryInsert and binarySearch
+# tried once, but it seems to be not simple enough
 
 module.exports =
 
@@ -74,6 +75,7 @@ module.exports =
         child = children[listIndex]
 
         if child.holder!=@
+          # should invalidate old holder at first
           child.invalidate()
           child.holder = @
 
@@ -125,9 +127,6 @@ module.exports =
     @dcidIndexMap[child.dcid] = index
 
     if @node
-      # below will be executed before List.updateChildrenDom()
-#      if index > oldChildrenLength
-#        child.nextNode = @childrenNextNode
 
       {invalidIndexes} = @
       insertLocation = binaryInsert(index, invalidIndexes)
@@ -232,10 +231,6 @@ module.exports =
 
       startIndex++
       i++
-
-    # below will be executed before List.updateChildrenDom()
-    #    if stopIndex>=oldChildrenLength
-    #      child.nextNode = @childrenNextNode
 
     return @
 

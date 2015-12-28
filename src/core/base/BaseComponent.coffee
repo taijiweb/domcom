@@ -14,7 +14,7 @@ module.exports = class BaseComponent extends Component
 
     if !@node
       @valid = true
-      @emit('beforeAttach')
+      @emit('willAttach')
       @createDom()
     else
       @removing = false

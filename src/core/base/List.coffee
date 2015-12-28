@@ -65,6 +65,13 @@ module.exports = exports = class List extends BaseComponent
 
     return
 
+  markRemovingDom: (removing) ->
+    if !removing || (@node and @node.parentNode)
+      @removing = removing
+      for child in @children
+        child.markRemovingDom(removing)
+    return
+
   removeDom: ->
     if @removing
       @removing = false
@@ -74,13 +81,6 @@ module.exports = exports = class List extends BaseComponent
       for child in @children
         child.removeDom()
     @
-
-  markRemovingDom: (removing) ->
-    if !removing || (@node and @node.parentNode)
-      @removing = removing
-      for child in @children
-        child.markRemovingDom(removing)
-    return
 
   removeNode: ->
     @node.parentNode = null

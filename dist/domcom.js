@@ -1845,7 +1845,7 @@
 	    }
 	    if (!this.node) {
 	      this.valid = true;
-	      this.emit('beforeAttach');
+	      this.emit('willAttach');
 	      this.createDom();
 	    } else {
 	      this.removing = false;
@@ -2947,6 +2947,18 @@
 	    }
 	  };
 
+	  List.prototype.markRemovingDom = function(removing) {
+	    var child, _i, _len, _ref;
+	    if (!removing || (this.node && this.node.parentNode)) {
+	      this.removing = removing;
+	      _ref = this.children;
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        child = _ref[_i];
+	        child.markRemovingDom(removing);
+	      }
+	    }
+	  };
+
 	  List.prototype.removeDom = function() {
 	    var child, _i, _len, _ref;
 	    if (this.removing) {
@@ -2961,18 +2973,6 @@
 	      }
 	    }
 	    return this;
-	  };
-
-	  List.prototype.markRemovingDom = function(removing) {
-	    var child, _i, _len, _ref;
-	    if (!removing || (this.node && this.node.parentNode)) {
-	      this.removing = removing;
-	      _ref = this.children;
-	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	        child = _ref[_i];
-	        child.markRemovingDom(removing);
-	      }
-	    }
 	  };
 
 	  List.prototype.removeNode = function() {
