@@ -6,7 +6,7 @@ module.exports = function() {
   var comp, counter, counter$, txt1;
   counter$ = see(counter = 0);
   comp = p(txt1 = txt(counter$));
-  comp.on('willAttach', function() {
+  comp.on('attach', function() {
     var count, countHandle;
     count = function() {
       counter$(counter++);

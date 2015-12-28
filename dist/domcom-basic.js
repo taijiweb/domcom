@@ -1829,7 +1829,7 @@
 	    }
 	    if (!this.node) {
 	      this.valid = true;
-	      this.emit('willAttach');
+	      this.emit('attach');
 	      this.createDom();
 	    } else {
 	      this.removing = false;
