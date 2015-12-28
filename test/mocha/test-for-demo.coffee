@@ -112,10 +112,6 @@ describe 'demo', ->
       comp = list buttons, div1
       div1.mount()
       div1.unmount()
-      div1.remount()
-      div1.unmount()
-#      expect(->div1.mount()).not.to.throw()
-#      expect(->div1.unmount()).not.to.throw()
       comp.mount()
       comp.unmount()
 

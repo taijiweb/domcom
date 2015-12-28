@@ -7,9 +7,11 @@ module.exports = class BaseComponent extends Component
     @isBaseComponent = true
     @baseComponent = @
 
-  getBaseComponent: -> @
+  renderDom: (oldBaseComponent) ->
 
-  renderDom: ->
+    if oldBaseComponent and oldBaseComponent!=@
+      oldBaseComponent.markRemovingDom(true)
+
     if !@node
       @valid = true
       @emit('beforeAttach')
@@ -19,7 +21,12 @@ module.exports = class BaseComponent extends Component
       if !@valid
         @valid = true
         @updateDom()
+
     @attachNode(@parentNode, @nextNode)
+
+    if oldBaseComponent and oldBaseComponent!=@
+      oldBaseComponent.removeDom()
+
     @
 
   invalidate: ->
@@ -27,14 +34,7 @@ module.exports = class BaseComponent extends Component
     @valid = false
     @holder and @holder.invalidateContent(@)
 
-  # while TransformComponent.renderDom(),
-  # if oldBaseComponent is not the same as the new baseComponent
-  # oldBaseComponent should be removed from dom
-  # if and only if it's and its offspring's parentNode is equal to
-  # the transformComponent's parentNode
   markRemovingDom: (removing) ->
-    # if the parentNode of this component has changed to other parentNode
-    # it should have bene moved to other places, or have been removed before
     if !removing || (@node and @node.parentNode)
       @removing = removing
     return

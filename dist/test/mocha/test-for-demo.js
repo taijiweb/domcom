@@ -187,8 +187,6 @@ describe('demo', function() {
       comp = list(buttons, div1);
       div1.mount();
       div1.unmount();
-      div1.remount();
-      div1.unmount();
       comp.mount();
       return comp.unmount();
     });

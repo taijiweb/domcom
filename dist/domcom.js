@@ -1839,11 +1839,10 @@
 	    this.baseComponent = this;
 	  }
 
-	  BaseComponent.prototype.getBaseComponent = function() {
-	    return this;
-	  };
-
-	  BaseComponent.prototype.renderDom = function() {
+	  BaseComponent.prototype.renderDom = function(oldBaseComponent) {
+	    if (oldBaseComponent && oldBaseComponent !== this) {
+	      oldBaseComponent.markRemovingDom(true);
+	    }
 	    if (!this.node) {
 	      this.valid = true;
 	      this.emit('beforeAttach');
@@ -1856,6 +1855,9 @@
 	      }
 	    }
 	    this.attachNode(this.parentNode, this.nextNode);
+	    if (oldBaseComponent && oldBaseComponent !== this) {
+	      oldBaseComponent.removeDom();
+	    }
 	    return this;
 	  };
 
@@ -2036,22 +2038,18 @@
 	  Component.prototype.mount = function(mountNode, beforeNode) {
 	    this.emit('beforeMount');
 	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.getElementsByTagName('body')[0];
-	    this.renderDom();
+	    this.render();
 	    this.emit('afterMount');
 	    return this;
 	  };
 
-	  Component.prototype.create = function() {
-	    return this.renderDom();
-	  };
-
 	  Component.prototype.render = function() {
-	    return this.renderDom();
+	    return this.renderDom(this.baseComponent);
 	  };
 
 	  Component.prototype.update = function() {
 	    this.emit('update');
-	    this.renderDom();
+	    this.render();
 	    return this;
 	  };
 
@@ -2076,30 +2074,6 @@
 	      this.emit('afterUnmount');
 	      return this;
 	    }
-	  };
-
-	  Component.prototype.remount = function(parentNode) {
-	    var child, holder, index;
-	    this.emit('beforeMount');
-	    child = this;
-	    holder = this.holder;
-	    while (holder && !holder.isBaseComponent) {
-	      child = holder;
-	      holder = holder.holder;
-	    }
-	    if ((holder && (holder.isList || holder.isTag)) && (index = holder.dcidIndexMap[child.dcid])) {
-	      index = index != null ? index : holder.children.length;
-	      holder.insertChild(index, child);
-	    }
-	    child.parentNode = holder ? holder.parentNode : parentNode ? parentNode : document.body;
-	    child.invalidate();
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.renderDom();
-	    } else {
-	      child.renderDom();
-	    }
-	    this.emit('afterMount');
-	    return child;
 	  };
 
 	  Component.prototype.destroy = function() {
@@ -2714,60 +2688,36 @@
 	    return this.invalidate();
 	  };
 
-	  TransformComponent.prototype.getBaseComponent = function() {
-	    var content, oldContent;
-	    if (!this.node) {
-	      this.emit('beforeAttach');
-	    }
-	    if (this.transformValid) {
-	      content = this.content;
+	  TransformComponent.prototype.renderDom = function(oldBaseComponent) {
+	    var baseComponent, content, oldContent;
+	    if (this.valid) {
+	      if (oldBaseComponent === this.baseComponent) {
+	        return this;
+	      } else {
+	        baseComponent = this.baseComponent;
+	        baseComponent.renderDom(oldBaseComponent);
+	        this.node = baseComponent.node;
+	        this.firstNode = baseComponent.firstNode;
+	      }
 	    } else {
-	      this.transformValid = true;
 	      this.valid = true;
-	      oldContent = this.content;
-	      content = this.getContentComponent();
-	      if (content !== oldContent) {
-	        this.emit('contentChanged', oldContent, content);
+	      if (!this.transformValid) {
+	        this.transformValid = true;
+	        oldContent = this.content;
+	        this.content = content = this.getContentComponent();
 	        if (oldContent && oldContent.holder === this) {
 	          oldContent.holder = null;
 	        }
-	        this.content = content;
+	        content.holder = this;
+	      } else {
+	        content = this.content;
 	      }
-	    }
-	    content.holder = this;
-	    return this.baseComponent = content.getBaseComponent();
-	  };
-
-	  TransformComponent.prototype.renderDom = function() {
-	    var baseComponent, node, oldBaseComponent, parentNode;
-	    parentNode = this.parentNode, node = this.node;
-	    if (this.valid) {
-	      if (parentNode && !node.parentNode) {
-	        baseComponent = this.baseComponent;
-	        baseComponent.markRemovingDom(false);
-	        baseComponent.parentNode = parentNode;
-	        baseComponent.nextNode = this.nextNode;
-	        baseComponent.attachNode();
-	      }
-	      return this;
-	    }
-	    this.valid = true;
-	    oldBaseComponent = this.baseComponent;
-	    baseComponent = this.getBaseComponent();
-	    if (baseComponent !== oldBaseComponent) {
-	      if (oldBaseComponent) {
-	        oldBaseComponent.markRemovingDom(true);
-	      }
-	      baseComponent.setParentNode(parentNode);
-	      baseComponent.setNextNode(this.nextNode);
-	      baseComponent.renderDom();
+	      content.parentNode = this.parentNode;
+	      content.nextNode = this.nextNode;
+	      content.renderDom(oldBaseComponent);
+	      this.baseComponent = baseComponent = content.baseComponent;
 	      this.node = baseComponent.node;
 	      this.firstNode = baseComponent.firstNode;
-	      if (oldBaseComponent) {
-	        oldBaseComponent.removeDom();
-	      }
-	    } else {
-	      baseComponent.renderDom();
 	    }
 	    return this;
 	  };
@@ -3156,7 +3106,7 @@
 	        child.holder = this;
 	      }
 	      try {
-	        child.renderDom();
+	        child.renderDom(child.baseComponent);
 	      } catch (_error) {
 	        e = _error;
 	        dc.onerror(e);
@@ -3188,7 +3138,7 @@
 	          child.holder = this;
 	        }
 	        try {
-	          child.renderDom();
+	          child.renderDom(child.baseComponent);
 	        } catch (_error) {
 	          e = _error;
 	          dc.onerror(e);
@@ -7053,22 +7003,18 @@
 	  Component.prototype.mount = function(mountNode, beforeNode) {
 	    this.emit('beforeMount');
 	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.getElementsByTagName('body')[0];
-	    this.renderDom();
+	    this.render();
 	    this.emit('afterMount');
 	    return this;
 	  };
 
-	  Component.prototype.create = function() {
-	    return this.renderDom();
-	  };
-
 	  Component.prototype.render = function() {
-	    return this.renderDom();
+	    return this.renderDom(this.baseComponent);
 	  };
 
 	  Component.prototype.update = function() {
 	    this.emit('update');
-	    this.renderDom();
+	    this.render();
 	    return this;
 	  };
 
@@ -7093,30 +7039,6 @@
 	      this.emit('afterUnmount');
 	      return this;
 	    }
-	  };
-
-	  Component.prototype.remount = function(parentNode) {
-	    var child, holder, index;
-	    this.emit('beforeMount');
-	    child = this;
-	    holder = this.holder;
-	    while (holder && !holder.isBaseComponent) {
-	      child = holder;
-	      holder = holder.holder;
-	    }
-	    if ((holder && (holder.isList || holder.isTag)) && (index = holder.dcidIndexMap[child.dcid])) {
-	      index = index != null ? index : holder.children.length;
-	      holder.insertChild(index, child);
-	    }
-	    child.parentNode = holder ? holder.parentNode : parentNode ? parentNode : document.body;
-	    child.invalidate();
-	    if (holder && (holder.isList || holder.isTag)) {
-	      holder.renderDom();
-	    } else {
-	      child.renderDom();
-	    }
-	    this.emit('afterMount');
-	    return child;
 	  };
 
 	  Component.prototype.destroy = function() {

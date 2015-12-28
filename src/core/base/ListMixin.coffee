@@ -44,7 +44,7 @@ module.exports =
         child.holder = @
 
       try
-        child.renderDom()
+        child.renderDom(child.baseComponent)
       catch e
         dc.onerror(e)
 
@@ -78,7 +78,7 @@ module.exports =
           child.holder = @
 
         try
-          child.renderDom()
+          child.renderDom(child.baseComponent)
         catch e
           dc.onerror(e)
 
@@ -148,7 +148,6 @@ module.exports =
     @invalidate()
     child = children[index]
 
-    # to tell child will be removed from DOM while child.renderDom()
     child.markRemovingDom(true)
 
     substractSet(@family, child.family)

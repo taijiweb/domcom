@@ -65,17 +65,16 @@ module.exports = class Component
   mount: (mountNode, beforeNode) ->
     @emit('beforeMount')
     @parentNode = normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]
-    @renderDom()
+    @render()
     @emit('afterMount')
     @
 
-  create: -> @renderDom()
-
-  render: -> @renderDom()
+  render: ->
+    @renderDom(@baseComponent)
 
   update: ->
     @emit('update')
-    @renderDom()
+    @render()
     @
 
   unmount: ->
@@ -100,26 +99,6 @@ module.exports = class Component
       @emit('afterUnmount')
 
       @
-
-  remount: (parentNode) ->
-    @emit('beforeMount')
-    child = @
-    holder = @holder
-    while holder and !holder.isBaseComponent
-      child = holder
-      holder = holder.holder
-    if (holder and (holder.isList or holder.isTag)) and index = holder.dcidIndexMap[child.dcid]
-      index = if index? then index else holder.children.length
-      holder.insertChild(index, child)
-    child.parentNode =
-      if holder then holder.parentNode
-      else if parentNode then parentNode
-      else document.body
-    child.invalidate()
-    if holder and (holder.isList or holder.isTag) then holder.renderDom()
-    else child.renderDom()
-    @emit('afterMount')
-    child
 
   destroy: ->
     this.listeners = null

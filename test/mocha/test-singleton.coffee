@@ -374,4 +374,3 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
       expect(x).to.equal 'called'
       comp.update()
       expect(comp.node.textContent).to.equal '2'
-
