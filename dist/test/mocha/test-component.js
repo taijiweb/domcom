@@ -1,6 +1,8 @@
-var Component, List, Tag, Text, a, bindings, button, classFn, div, duplex, expect, flow, func, idescribe, if_, iit, input, li, list, ndescribe, nit, p, span, styleFrom, text, txt, _ref;
+var Component, List, Tag, Text, a, bindings, button, classFn, div, duplex, expect, flow, func, idescribe, if_, iit, input, li, list, ndescribe, newDemoNode, nit, p, span, styleFrom, text, txt, _ref;
 
 _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
+
+newDemoNode = require('./helper').newDemoNode;
 
 bindings = dc.bindings, duplex = dc.duplex, flow = dc.flow, classFn = dc.classFn, styleFrom = dc.styleFrom, Tag = dc.Tag, Text = dc.Text, List = dc.List, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, txt = dc.txt, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, button = dc.button, input = dc.input;
 
@@ -286,6 +288,36 @@ describe("component  ", function() {
       comp = div(2);
       comp.mount();
       return comp.unmount();
+    });
+    it('should execute component.remove', function() {
+      var comp;
+      comp = div(1);
+      comp.mount(newDemoNode('replace-demo3'));
+      comp.remove();
+      return expect(document.getElementById('replace-demo3').innerHTML).to.equal('');
+    });
+    it('should execute component.remove child component', function() {
+      var comp1, comp3;
+      comp1 = div(comp3 = div(3));
+      comp1.mount(newDemoNode('replace-demo4'));
+      comp3.remove();
+      return expect(document.getElementById('replace-demo4').innerHTML).to.equal('<div></div>');
+    });
+    it('should execute component.replace', function() {
+      var comp1, comp2;
+      comp1 = div(1);
+      comp1.mount(newDemoNode('replace-demo'));
+      comp2 = div(2);
+      comp2.replace(comp1);
+      return expect(document.getElementById('replace-demo').innerHTML).to.equal('<div>2</div>');
+    });
+    it('should execute component.replace child component', function() {
+      var comp1, comp2, comp3;
+      comp1 = div(comp3 = div(3));
+      comp1.mount(newDemoNode('replace-demo2'));
+      comp2 = div(2);
+      comp2.replace(comp3);
+      return expect(document.getElementById('replace-demo2').innerHTML).to.equal('<div><div>2</div></div>');
     });
     return it('p(->12) ', function() {
       var comp;

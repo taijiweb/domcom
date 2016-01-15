@@ -5,12 +5,12 @@ _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescri
 duplex = dc.duplex, see = dc.see, classFn = dc.classFn, styleFrom = dc.styleFrom, model = dc.model, show = dc.show, Tag = dc.Tag, Text = dc.Text, List = dc.List, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, txt = dc.txt, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, button = dc.button, input = dc.input;
 
 describe("component event", function() {
-  describe('beforeMount', function() {
+  describe('mount', function() {
     it('component shoud call listeners before mounting', function() {
       var comp, x;
       x = 0;
       comp = p();
-      comp.on('beforeMount', function() {
+      comp.on('mount', function() {
         return x = 1;
       });
       comp.mount();
@@ -20,7 +20,7 @@ describe("component event", function() {
       var comp, x;
       x = 0;
       comp = if_(1, 2, 3);
-      comp.on('beforeMount', function() {
+      comp.on('mount', function() {
         return x = 1;
       });
       comp.mount();
@@ -30,7 +30,7 @@ describe("component event", function() {
       var comp, t, x;
       x = see(0);
       comp = if_(x, t = txt(1), txt(2));
-      t.on('beforeMount', function() {
+      t.on('mount', function() {
         return x(1);
       });
       comp.mount();
@@ -43,7 +43,7 @@ describe("component event", function() {
       var comp, t, x;
       x = see(0);
       comp = if_(x, p(t = txt(1)), txt(2));
-      t.on('beforeMount', function() {
+      t.on('mount', function() {
         return x(1);
       });
       comp.mount();
@@ -53,15 +53,15 @@ describe("component event", function() {
       return expect(x()).to.equal(1);
     });
   });
-  return describe('afterUnmount callback', function() {
+  return describe('unmount callback', function() {
     it('component shoud call listeners after mounting', function() {
       var comp, x;
       x = see(0);
       comp = p();
-      comp.on('beforeMount', function() {
+      comp.on('mount', function() {
         return x(1);
       });
-      comp.on('afterUnmount', function() {
+      comp.on('unmount', function() {
         return x(2);
       });
       comp.mount();
@@ -69,15 +69,15 @@ describe("component event", function() {
       comp.unmount();
       return expect(x()).to.equal(2);
     });
-    it('component shoud call listeners before mounting if_', function() {
+    it('component shoud call mount and unmount listeners', function() {
       var comp, x, y;
       x = 0;
       y = 0;
       comp = if_(1, 2, 3);
-      comp.on('beforeMount', function() {
+      comp.on('mount', function() {
         return x = 1;
       });
-      comp.on('afterMount', function() {
+      comp.on('unmount', function() {
         return y = 2;
       });
       comp.mount();
@@ -85,15 +85,15 @@ describe("component event", function() {
       comp.unmount();
       return expect(y).to.equal(2);
     });
-    it('component shoud NOT call then_.listeners["beforeMount"] before updating if_', function() {
+    it('component shoud NOT call then_.listeners["mount"] before updating if_', function() {
       var comp, t, t2, x, y;
       x = see(0);
       y = 0;
       comp = if_(x, t = txt(1), t2 = txt(2));
-      t.on('beforeMount', function() {
+      t.on('mount', function() {
         return x(1);
       });
-      t2.on('afterUnmount', function() {
+      t2.on('unmount', function() {
         return y = 2;
       });
       comp.mount();
@@ -108,11 +108,8 @@ describe("component event", function() {
       x = see(0);
       y = 0;
       comp = if_(x, p(t = txt(1)), p(t2 = txt(2)));
-      t.on('beforeMount', function() {
+      t.on('mount', function() {
         return x(1);
-      });
-      t2.on('afterMount', function() {
-        return y = 2;
       });
       comp.mount();
       expect(x()).to.equal(0);

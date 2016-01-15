@@ -645,9 +645,9 @@
 	  return result;
 	};
 
-	exports.substractSet = function(whole, part) {
+	exports.substractSet = function(whole, unit) {
 	  var key;
-	  for (key in part) {
+	  for (key in unit) {
 	    delete whole[key];
 	  }
 	  return whole;
@@ -1303,20 +1303,15 @@
 	  }
 	};
 
-	if (typeof window !== 'undefined') {
-	  exports.checkConflictOffspring = function(family, child) {
-	    var childDcid, dcid;
-	    childDcid = child.dcid;
-	    for (dcid in child.family) {
-	      if (family[dcid]) {
-	        throw new Error('do not allow to have the same component to be referenced in different location of one List');
-	      }
-	      family[dcid] = true;
+	exports.extendChildFamily = function(family, child) {
+	  var dcid;
+	  for (dcid in child.family) {
+	    if (family[dcid]) {
+	      throw new Error('do not allow to have the same component to be referenced in different location of one List');
 	    }
-	  };
-	} else {
-	  exports.checkConflictOffspring = function(family, child) {};
-	}
+	    family[dcid] = true;
+	  }
+	};
 
 
 /***/ },
@@ -2036,10 +2031,9 @@
 	   */
 
 	  Component.prototype.mount = function(mountNode, beforeNode) {
-	    this.emit('beforeMount');
+	    this.emit('mount');
 	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.getElementsByTagName('body')[0];
 	    this.render();
-	    this.emit('afterMount');
 	    return this;
 	  };
 
@@ -2055,10 +2049,8 @@
 
 	  Component.prototype.unmount = function() {
 	    var component, holder;
-	    this.emit('beforeUnmount');
 	    if (!this.node || !this.node.parentNode) {
-	      this.emit('afterUnmount');
-	      return this;
+
 	    } else {
 	      component = this;
 	      holder = this.holder;
@@ -2068,12 +2060,59 @@
 	      }
 	      if (holder && (holder.isList || holder.isTag)) {
 	        holder.removeChild(holder.dcidIndexMap[component.dcid]);
+	        component.markRemovingDom(true);
+	        holder.update();
+	      } else {
+	        component.markRemovingDom(true);
+	        component.removeDom();
 	      }
-	      component.markRemovingDom(true);
-	      component.removeDom();
-	      this.emit('afterUnmount');
+	    }
+	    this.emit('unmount');
+	    return this;
+	  };
+
+	  Component.prototype.remove = function() {
+	    var component, holder;
+	    this.emit('remove');
+	    if (!this.node || !this.node.parentNode) {
+	      return this;
+	    } else {
+	      component = this;
+	      holder = this.holder;
+	      if (holder) {
+	        if (holder.isTransformComponent) {
+	          dc.error('Should not remove the content of TransformComponent');
+	        } else {
+	          holder.removeChild(component);
+	          holder.update();
+	        }
+	      } else {
+	        component.markRemovingDom(true);
+	        component.removeDom();
+	      }
 	      return this;
 	    }
+	  };
+
+	  Component.prototype.replace = function(oldComponent) {
+	    var holder, node;
+	    holder = oldComponent.holder;
+	    if (holder) {
+	      if (holder.isTransformComponent) {
+	        dc.error('Should not replace the content of TransformComponent');
+	      } else {
+	        holder.replaceChild(oldComponent, this);
+	        holder.update();
+	      }
+	    } else {
+	      node = oldComponent.node;
+	      this.setParentNode(oldComponent.parentNode);
+	      this.setNextNode(oldComponent.nextNode);
+	      oldComponent.markRemovingDom(true);
+	      this.renderDom();
+	      oldComponent.removeDom();
+	    }
+	    return this;
 	  };
 
 	  Component.prototype.destroy = function() {
@@ -3062,8 +3101,10 @@
   \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Nothing, binaryInsert, binarySearch, checkConflictOffspring, substractSet, toComponent, toComponentList, _ref,
+	var Nothing, binaryInsert, binarySearch, extendChildFamily, isComponent, substractSet, toComponent, toComponentList, _ref,
 	  __slice = [].slice;
+
+	isComponent = __webpack_require__(/*! ./isComponent */ 8);
 
 	toComponent = __webpack_require__(/*! ./toComponent */ 19);
 
@@ -3073,7 +3114,7 @@
 
 	_ref = __webpack_require__(/*! dc-util */ 4), binarySearch = _ref.binarySearch, binaryInsert = _ref.binaryInsert, substractSet = _ref.substractSet;
 
-	checkConflictOffspring = __webpack_require__(/*! ../../dom-util */ 6).checkConflictOffspring;
+	extendChildFamily = __webpack_require__(/*! ../../dom-util */ 6).extendChildFamily;
 
 	module.exports = {
 	  initChildren: function(children) {
@@ -3085,7 +3126,7 @@
 	    for (i = _i = 0, _len = children.length; _i < _len; i = ++_i) {
 	      child = children[i];
 	      child = children[i];
-	      checkConflictOffspring(family, child);
+	      extendChildFamily(family, child);
 	      child.holder = this;
 	      dcidIndexMap[child.dcid] = i;
 	    }
@@ -3199,8 +3240,14 @@
 	    }
 	    return this;
 	  },
-	  removeChild: function(index) {
-	    var child, children, invalidIndex, invalidIndexes, prevIndex;
+	  removeChild: function(indexOrComponent) {
+	    var child, children, index, invalidIndex, invalidIndexes, prevIndex;
+	    if (isComponent(indexOrComponent)) {
+	      index = this.dcidIndexMap[indexOrComponent.dcid];
+	      delete this.dcidIndexMap[indexOrComponent.id];
+	    } else {
+	      index = indexOrComponent;
+	    }
 	    children = this.children;
 	    if (index > children.length) {
 	      return this;
@@ -3220,8 +3267,35 @@
 	      if (prevIndex >= 0) {
 	        children[prevIndex].nextNode = child.nextNode;
 	      }
-	      this.node.splice(index, 1);
+	      this.childNodes.splice(index, 1);
 	      this.removedChildren[child.dcid] = child;
+	    }
+	    return this;
+	  },
+	  replaceChild: function(indexOrOldChild, newChild) {
+	    var children, index, oldChild;
+	    children = this.children;
+	    if (isComponent(indexOrOldChild)) {
+	      oldChild = indexOrOldChild;
+	      index = this.dcidIndexMap[oldChild.dcid];
+	      delete this.dcidIndexMap[oldChild.id];
+	    } else {
+	      if (indexOrOldChild > children.length || indexOrOldChild < 0) {
+	        dc.error('the old child index to be replaced is out of bound');
+	      }
+	      index = indexOrOldChild;
+	      oldChild = children[index];
+	    }
+	    newChild = toComponent(newChild);
+	    children[index] = newChild;
+	    this.dcidIndexMap[newChild.id] = index;
+	    this.invalidate();
+	    oldChild.markRemovingDom(true);
+	    substractSet(this.family, oldChild.family);
+	    extendChildFamily(this.family, newChild);
+	    if (this.node) {
+	      binaryInsert(index, this.invalidIndexes);
+	      this.removedChildren[oldChild.dcid] = oldChild;
 	    }
 	    return this;
 	  },
@@ -3289,7 +3363,7 @@
 	            this.removedChildren[oldChild.dcid] = oldChild;
 	          }
 	        }
-	        checkConflictOffspring(family, child);
+	        extendChildFamily(family, child);
 	        children[startIndex] = child;
 	        dcidIndexMap[child.dcid] = startIndex;
 	        if (node) {
@@ -4091,20 +4165,15 @@
 	  }
 	};
 
-	if (typeof window !== 'undefined') {
-	  exports.checkConflictOffspring = function(family, child) {
-	    var childDcid, dcid;
-	    childDcid = child.dcid;
-	    for (dcid in child.family) {
-	      if (family[dcid]) {
-	        throw new Error('do not allow to have the same component to be referenced in different location of one List');
-	      }
-	      family[dcid] = true;
+	exports.extendChildFamily = function(family, child) {
+	  var dcid;
+	  for (dcid in child.family) {
+	    if (family[dcid]) {
+	      throw new Error('do not allow to have the same component to be referenced in different location of one List');
 	    }
-	  };
-	} else {
-	  exports.checkConflictOffspring = function(family, child) {};
-	}
+	    family[dcid] = true;
+	  }
+	};
 
 
 /***/ },
@@ -4878,7 +4947,7 @@
 	  });
 	};
 
-	flow.no = function(x) {
+	flow.no = flow.not = flow.not_ = function(x) {
 	  return unary(x, function(x) {
 	    return !x;
 	  });
@@ -4939,6 +5008,18 @@
 	flow.min = function(x, y) {
 	  return binary(x, y, function(x, y) {
 	    return Math.min(x, y);
+	  });
+	};
+
+	flow.and = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x && y;
+	  });
+	};
+
+	flow.or = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x || y;
 	  });
 	};
 
@@ -6618,7 +6699,7 @@
 	      interval = 500;
 	    }
 	    timer = null;
-	    comp.on('beforeMount', function(baseComponent) {
+	    comp.on('mount', function(baseComponent) {
 	      return function() {
 	        return timer = setInterval((function() {
 	          visible(!visible());
@@ -6626,7 +6707,7 @@
 	        }), interval);
 	      };
 	    });
-	    comp.on('afterUnmount', function(baseComponent) {
+	    comp.on('unmount', function(baseComponent) {
 	      return function() {
 	        return clearInterval(timer);
 	      };
@@ -7001,10 +7082,9 @@
 	   */
 
 	  Component.prototype.mount = function(mountNode, beforeNode) {
-	    this.emit('beforeMount');
+	    this.emit('mount');
 	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.getElementsByTagName('body')[0];
 	    this.render();
-	    this.emit('afterMount');
 	    return this;
 	  };
 
@@ -7020,10 +7100,8 @@
 
 	  Component.prototype.unmount = function() {
 	    var component, holder;
-	    this.emit('beforeUnmount');
 	    if (!this.node || !this.node.parentNode) {
-	      this.emit('afterUnmount');
-	      return this;
+
 	    } else {
 	      component = this;
 	      holder = this.holder;
@@ -7033,12 +7111,59 @@
 	      }
 	      if (holder && (holder.isList || holder.isTag)) {
 	        holder.removeChild(holder.dcidIndexMap[component.dcid]);
+	        component.markRemovingDom(true);
+	        holder.update();
+	      } else {
+	        component.markRemovingDom(true);
+	        component.removeDom();
 	      }
-	      component.markRemovingDom(true);
-	      component.removeDom();
-	      this.emit('afterUnmount');
+	    }
+	    this.emit('unmount');
+	    return this;
+	  };
+
+	  Component.prototype.remove = function() {
+	    var component, holder;
+	    this.emit('remove');
+	    if (!this.node || !this.node.parentNode) {
+	      return this;
+	    } else {
+	      component = this;
+	      holder = this.holder;
+	      if (holder) {
+	        if (holder.isTransformComponent) {
+	          dc.error('Should not remove the content of TransformComponent');
+	        } else {
+	          holder.removeChild(component);
+	          holder.update();
+	        }
+	      } else {
+	        component.markRemovingDom(true);
+	        component.removeDom();
+	      }
 	      return this;
 	    }
+	  };
+
+	  Component.prototype.replace = function(oldComponent) {
+	    var holder, node;
+	    holder = oldComponent.holder;
+	    if (holder) {
+	      if (holder.isTransformComponent) {
+	        dc.error('Should not replace the content of TransformComponent');
+	      } else {
+	        holder.replaceChild(oldComponent, this);
+	        holder.update();
+	      }
+	    } else {
+	      node = oldComponent.node;
+	      this.setParentNode(oldComponent.parentNode);
+	      this.setNextNode(oldComponent.nextNode);
+	      oldComponent.markRemovingDom(true);
+	      this.renderDom();
+	      oldComponent.removeDom();
+	    }
+	    return this;
 	  };
 
 	  Component.prototype.destroy = function() {

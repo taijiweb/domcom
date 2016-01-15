@@ -75,17 +75,12 @@ exports.domValue = (value) ->
     if !value? then return ''
     else value
 
-if typeof window != 'undefined'
-  # family do not consider exceeding TransformComponent
-  # a BaseComponent can have only one reference of one component in all of its family
-  # it's the responsiblility of the user program of domcom to keep no conflicting reference while exceeding TransformComponent
-  exports.checkConflictOffspring = (family, child) ->
-    childDcid = child.dcid
-    for dcid of child.family
-      if family[dcid]
-        throw new Error 'do not allow to have the same component to be referenced in different location of one List'
-      family[dcid] = true
-    return
-
-else
-  exports.checkConflictOffspring = (family, child) ->
+# family do not consider exceeding TransformComponent
+# a BaseComponent can have only one reference of one component in all of its family
+# it's the responsiblility of the user program of domcom to keep no conflicting reference while exceeding TransformComponent
+exports.extendChildFamily = (family, child) ->
+  for dcid of child.family
+    if family[dcid]
+      throw new Error 'do not allow to have the same component to be referenced in different location of one List'
+    family[dcid] = true
+  return

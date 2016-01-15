@@ -1,9 +1,10 @@
+isComponent = require './isComponent'
 toComponent = require './toComponent'
 toComponentList = require './toComponentList'
 Nothing = require './Nothing'
 
 {binarySearch, binaryInsert, substractSet} = require 'dc-util'
-{checkConflictOffspring} = require '../../dom-util'
+{extendChildFamily} = require '../../dom-util'
 
 # todo: to simplify, use sort to replace binaryInsert and binarySearch
 # tried once, but it seems to be not simple enough
@@ -19,7 +20,7 @@ module.exports =
 
     for child, i in children
       child = children[i]
-      checkConflictOffspring(family, child)
+      extendChildFamily(family, child)
       child.holder = @
       dcidIndexMap[child.dcid] = i
     @children = children
@@ -140,9 +141,17 @@ module.exports =
 
     @
 
-  removeChild: (index) ->
-    {children} = @
-    if index>children.length then return @
+  removeChild: (indexOrComponent) ->
+    if isComponent(indexOrComponent)
+      index = this.dcidIndexMap[indexOrComponent.dcid]
+      delete this.dcidIndexMap[indexOrComponent.id]
+    else
+      index = indexOrComponent
+
+    {children} = this
+
+    if index > children.length
+      return this
 
     @invalidate()
     child = children[index]
@@ -163,8 +172,38 @@ module.exports =
       if prevIndex >= 0
         children[prevIndex].nextNode = child.nextNode
 
-      @node.splice(index, 1)
+      @childNodes.splice(index, 1)
       @removedChildren[child.dcid] = child
+
+    @
+
+  replaceChild: (indexOrOldChild, newChild) ->
+    {children} = this
+
+    if isComponent(indexOrOldChild)
+      oldChild = indexOrOldChild
+      index = this.dcidIndexMap[oldChild.dcid]
+      delete this.dcidIndexMap[oldChild.id]
+    else
+      if indexOrOldChild > children.length || indexOrOldChild < 0
+        dc.error('the old child index to be replaced is out of bound')
+      index = indexOrOldChild
+      oldChild = children[index]
+
+    newChild = toComponent(newChild)
+    children[index] = newChild
+    this.dcidIndexMap[newChild.id] = index
+
+    @invalidate()
+
+    oldChild.markRemovingDom(true)
+
+    substractSet(@family, oldChild.family)
+    extendChildFamily(@family, newChild)
+
+    if @node
+      binaryInsert(index, @invalidIndexes)
+      @removedChildren[oldChild.dcid] = oldChild
 
     @
 
@@ -220,7 +259,7 @@ module.exports =
         if oldChild
           substractSet(family, oldChild.family)
           if node then @removedChildren[oldChild.dcid] = oldChild
-        checkConflictOffspring(family, child)
+        extendChildFamily(family, child)
         children[startIndex] = child
         dcidIndexMap[child.dcid] = startIndex
 

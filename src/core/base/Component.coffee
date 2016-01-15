@@ -63,10 +63,9 @@ module.exports = class Component
   only use beforeNode if mountNode is given
   ###
   mount: (mountNode, beforeNode) ->
-    @emit('beforeMount')
+    @emit('mount')
     @parentNode = normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]
     @render()
-    @emit('afterMount')
     @
 
   render: ->
@@ -78,11 +77,8 @@ module.exports = class Component
     @
 
   unmount: ->
-    @emit('beforeUnmount')
-
     if !@node or !@node.parentNode
-      @emit('afterUnmount')
-      return @
+      # pass
     else
       component = @
       holder = @holder
@@ -92,13 +88,52 @@ module.exports = class Component
 
       if holder and (holder.isList or holder.isTag)
         holder.removeChild(holder.dcidIndexMap[component.dcid])
+        component.markRemovingDom(true)
+        holder.update()
+      else
+        component.markRemovingDom(true)
+        component.removeDom()
+    @emit('unmount')
+    @
 
-      component.markRemovingDom(true)
-      component.removeDom()
+  remove: ->
+    @emit('remove')
 
-      @emit('afterUnmount')
+    if !@node or !@node.parentNode
+      return @
+    else
+      component = @
+      holder = @holder
+      if  holder
+        if holder.isTransformComponent
+          dc.error('Should not remove the content of TransformComponent')
+        else
+          # holder is List or Tag
+          holder.removeChild(component)
+          holder.update()
+      else
+        component.markRemovingDom(true)
+        component.removeDom()
+      this
 
-      @
+  replace: (oldComponent) ->
+    holder = oldComponent.holder
+    if  holder
+      if holder.isTransformComponent
+        dc.error('Should not replace the content of TransformComponent')
+      else
+        # holder is List or Tag
+        holder.replaceChild(oldComponent, this)
+        holder.update()
+    else
+      node = oldComponent.node
+      this.setParentNode(oldComponent.parentNode)
+      this.setNextNode(oldComponent.nextNode)
+      oldComponent.markRemovingDom(true)
+      this.renderDom()
+      oldComponent.removeDom()
+    this
+
 
   destroy: ->
     this.listeners = null

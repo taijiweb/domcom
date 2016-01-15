@@ -36,7 +36,11 @@ module.exports = class If extends TransformComponent
 
     return this
 
-  getContentComponent: -> if @test() then @then_ else @else_
+  getContentComponent: ->
+    if @test()
+      @then_
+    else
+      @else_
 
   clone: -> (new If(@test, @then_.clone(), @else_.clone())).copyEventListeners(@)
 

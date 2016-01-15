@@ -1,5 +1,7 @@
 {expect, iit, idescribe, nit, ndescribe} = require('bdd-test-helper')
 
+{newDemoNode} = require('./helper')
+
 {bindings, duplex, flow
 classFn, styleFrom
 Tag, Text, List
@@ -205,6 +207,32 @@ describe "component  ", ->
       comp = div(2)
       comp.mount()
       comp.unmount()
+
+    it 'should execute component.remove', ->
+      comp = div(1)
+      comp.mount(newDemoNode('replace-demo3'))
+      comp.remove()
+      expect(document.getElementById('replace-demo3').innerHTML).to.equal('')
+
+    it 'should execute component.remove child component', ->
+      comp1 = div(comp3=(div(3)))
+      comp1.mount(newDemoNode('replace-demo4'))
+      comp3.remove()
+      expect(document.getElementById('replace-demo4').innerHTML).to.equal('<div></div>')
+
+    it 'should execute component.replace', ->
+      comp1 = div(1)
+      comp1.mount(newDemoNode('replace-demo'))
+      comp2 = div(2)
+      comp2.replace(comp1)
+      expect(document.getElementById('replace-demo').innerHTML).to.equal('<div>2</div>')
+
+    it 'should execute component.replace child component', ->
+      comp1 = div(comp3=(div(3)))
+      comp1.mount(newDemoNode('replace-demo2'))
+      comp2 = div(2)
+      comp2.replace(comp3)
+      expect(document.getElementById('replace-demo2').innerHTML).to.equal('<div><div>2</div></div>')
 
     it 'p(->12) ', ->
       comp = p(->12)
