@@ -57,7 +57,7 @@
 
 	dc.extend = extend = __webpack_require__(/*! extend */ 8);
 
-	extend(dc, __webpack_require__(/*! ./config */ 6), __webpack_require__(/*! lazy-flow */ 4), __webpack_require__(/*! dc-watch-list */ 9), __webpack_require__(/*! ./dom-util */ 5), __webpack_require__(/*! dc-util */ 3), __webpack_require__(/*! ./core/index */ 10), __webpack_require__(/*! ./dc-error */ 39));
+	extend(dc, __webpack_require__(/*! ./config */ 6), __webpack_require__(/*! lazy-flow */ 4), __webpack_require__(/*! dc-watch-list */ 9), __webpack_require__(/*! ./dom-util */ 5), __webpack_require__(/*! dc-util */ 3), __webpack_require__(/*! ./core/index */ 10), __webpack_require__(/*! ./dc-error */ 43));
 
 
 /***/ },
@@ -1702,7 +1702,7 @@
 
 	extend = __webpack_require__(/*! extend */ 8);
 
-	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 11), __webpack_require__(/*! ./instantiate */ 36), __webpack_require__(/*! ./tag */ 38), __webpack_require__(/*! ./property */ 25));
+	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 11), __webpack_require__(/*! ./instantiate */ 40), __webpack_require__(/*! ./tag */ 42), __webpack_require__(/*! ./property */ 25));
 
 
 /***/ },
@@ -1725,17 +1725,17 @@
 	  List: __webpack_require__(/*! ./List */ 20),
 	  Tag: __webpack_require__(/*! ./Tag */ 24),
 	  Text: __webpack_require__(/*! ./Text */ 15),
-	  Comment: __webpack_require__(/*! ./Comment */ 26),
+	  Comment: __webpack_require__(/*! ./Comment */ 30),
 	  Cdata: __webpack_require__(/*! ./Cdata */ 12),
-	  Html: __webpack_require__(/*! ./Html */ 27),
+	  Html: __webpack_require__(/*! ./Html */ 31),
 	  Nothing: __webpack_require__(/*! ./Nothing */ 19),
 	  TransformComponent: __webpack_require__(/*! ./TransformComponent */ 17),
-	  If: __webpack_require__(/*! ./If */ 28),
-	  Case: __webpack_require__(/*! ./Case */ 32),
+	  If: __webpack_require__(/*! ./If */ 32),
+	  Case: __webpack_require__(/*! ./Case */ 36),
 	  Func: __webpack_require__(/*! ./Func */ 23),
-	  Pick: __webpack_require__(/*! ./Pick */ 33),
-	  Each: __webpack_require__(/*! ./Each */ 34),
-	  Defer: __webpack_require__(/*! ./Defer */ 35),
+	  Pick: __webpack_require__(/*! ./Pick */ 37),
+	  Each: __webpack_require__(/*! ./Each */ 38),
+	  Defer: __webpack_require__(/*! ./Defer */ 39),
 	  Route: route.Route,
 	  route: route
 	};
@@ -2079,7 +2079,7 @@
 	  };
 
 	  Component.prototype.replace = function(oldComponent) {
-	    var holder, node;
+	    var holder;
 	    holder = oldComponent.holder;
 	    if (holder) {
 	      if (holder.isTransformComponent) {
@@ -2089,7 +2089,6 @@
 	        holder.update();
 	      }
 	    } else {
-	      node = oldComponent.node;
 	      this.setParentNode(oldComponent.parentNode);
 	      this.setNextNode(oldComponent.nextNode);
 	      oldComponent.markRemovingDom(true);
@@ -2100,8 +2099,12 @@
 	  };
 
 	  Component.prototype.destroy = function() {
+	    this.remove();
 	    this.listeners = null;
-	    this.node = null;
+	    if (this.node) {
+	      delete this.node.component;
+	      this.node = null;
+	    }
 	    this.baseComponent = null;
 	    return this.parentNode = null;
 	  };
@@ -4046,43 +4049,38 @@
 
 /***/ },
 /* 25 */
-/*!**********************************!*\
-  !*** ./src/core/property.coffee ***!
-  \**********************************/
+/*!****************************************!*\
+  !*** ./src/core/property/index.coffee ***!
+  \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var attrPropNameMap, classFn, cloneObject, config, domField, extend, extendEventValue, isArray, isComponent, overAttrs, react, styleFrom, _ref,
-	  __slice = [].slice;
-
-	_ref = __webpack_require__(/*! dc-util */ 3), isArray = _ref.isArray, cloneObject = _ref.cloneObject;
-
-	domField = __webpack_require__(/*! ../dom-util */ 5).domField;
-
-	react = __webpack_require__(/*! lazy-flow */ 4).react;
+	var exports, extend;
 
 	extend = __webpack_require__(/*! extend */ 8);
 
-	isComponent = __webpack_require__(/*! ./base/isComponent */ 7).isComponent;
+	module.exports = exports = extend({}, __webpack_require__(/*! ./attrs */ 26), __webpack_require__(/*! ./events */ 27), __webpack_require__(/*! ./style */ 29));
 
-	exports.extendEventValue = extendEventValue = function(props, prop, value, before) {
-	  var oldValue;
-	  oldValue = props[prop];
-	  if (!oldValue) {
-	    oldValue = [];
-	  } else if (!(oldValue instanceof Array)) {
-	    oldValue = [oldValue];
-	  }
-	  if (!value) {
-	    value = [];
-	  } else if (!(value instanceof Array)) {
-	    value = [value];
-	  }
-	  if (before) {
-	    return props[prop] = value.concat(oldValue);
-	  } else {
-	    return props[prop] = oldValue.concat(value);
-	  }
-	};
+	exports.classFn = __webpack_require__(/*! ./classFn */ 28);
+
+
+/***/ },
+/* 26 */
+/*!****************************************!*\
+  !*** ./src/core/property/attrs.coffee ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var attrPropNameMap, classFn, extend, extendEventValue, isComponent, overAttrs, styleFrom;
+
+	extend = __webpack_require__(/*! extend */ 8);
+
+	isComponent = __webpack_require__(/*! ../base/isComponent */ 7).isComponent;
+
+	extendEventValue = __webpack_require__(/*! ./events */ 27).extendEventValue;
+
+	classFn = __webpack_require__(/*! ./classFn */ 28);
+
+	styleFrom = __webpack_require__(/*! ./style */ 29).styleFrom;
 
 	exports.extendAttrs = function(attrs, obj, options) {
 	  var key, objClass, style, value;
@@ -4151,7 +4149,109 @@
 	  }
 	};
 
-	exports.classFn = classFn = function() {
+	attrPropNameMap = {
+	  'for': 'htmlFor'
+	};
+
+	exports.attrToPropName = function(name) {
+	  var i, len, newName, pieces;
+	  if (newName = attrPropNameMap[name]) {
+	    return newName;
+	  }
+	  pieces = name.split('-');
+	  if (pieces.length === 1) {
+	    return name;
+	  }
+	  i = 1;
+	  len = pieces.length;
+	  while (i < len) {
+	    pieces[i] = pieces[i][0].toUpperCase() + pieces[i].slice(1);
+	    i++;
+	  }
+	  return pieces.join('');
+	};
+
+
+/***/ },
+/* 27 */
+/*!*****************************************!*\
+  !*** ./src/core/property/events.coffee ***!
+  \*****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var config, extendEventValue;
+
+	config = __webpack_require__(/*! ../../config */ 6);
+
+	exports.extendEventValue = extendEventValue = function(props, prop, value, before) {
+	  var oldValue;
+	  oldValue = props[prop];
+	  if (!oldValue) {
+	    oldValue = [];
+	  } else if (!(oldValue instanceof Array)) {
+	    oldValue = [oldValue];
+	  }
+	  if (!value) {
+	    value = [];
+	  } else if (!(value instanceof Array)) {
+	    value = [value];
+	  }
+	  if (before) {
+	    return props[prop] = value.concat(oldValue);
+	  } else {
+	    return props[prop] = oldValue.concat(value);
+	  }
+	};
+
+	exports.eventHandlerFromArray = function(callbackList, eventName, component) {
+	  return function(event) {
+	    var comp, fn, node, options, updateList, _i, _j, _len, _len1, _ref;
+	    node = component.node;
+	    for (_i = 0, _len = callbackList.length; _i < _len; _i++) {
+	      fn = callbackList[_i];
+	      if (fn) {
+	        fn.call(node, event, component);
+	      }
+	    }
+	    updateList = component.eventUpdateConfig[eventName];
+	    if (updateList) {
+	      for (_j = 0, _len1 = updateList.length; _j < _len1; _j++) {
+	        _ref = updateList[_j], comp = _ref[0], options = _ref[1];
+	        if (options.alwaysUpdating || !config.useSystemUpdating) {
+	          comp[options.method]();
+	        }
+	      }
+	    }
+	    if (!event) {
+	      return;
+	    }
+	    if (!event.executeDefault) {
+	      event.preventDefault();
+	    }
+	    if (!event.continuePropagation) {
+	      event.stopPropagation();
+	    }
+	  };
+	};
+
+
+/***/ },
+/* 28 */
+/*!******************************************!*\
+  !*** ./src/core/property/classFn.coffee ***!
+  \******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var domField, isArray, react,
+	  __slice = [].slice;
+
+	react = __webpack_require__(/*! lazy-flow */ 4).react;
+
+	domField = __webpack_require__(/*! ../../dom-util */ 5).domField;
+
+	isArray = __webpack_require__(/*! dc-util */ 3).isArray;
+
+	module.exports = function() {
 	  var classMap, extendClassMap, items, method, processClassValue;
 	  items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	  classMap = {};
@@ -4195,7 +4295,7 @@
 	    }
 	  };
 	  extendClassMap = function(items) {
-	    var item, name, names, value, _i, _j, _len, _len1, _ref1;
+	    var item, name, names, value, _i, _j, _len, _len1, _ref;
 	    if (!items) {
 	      return;
 	    }
@@ -4220,9 +4320,9 @@
 	      } else if (item instanceof Array) {
 	        extendClassMap(item);
 	      } else if (item && item.classMap) {
-	        _ref1 = item.classMap;
-	        for (name in _ref1) {
-	          value = _ref1[name];
+	        _ref = item.classMap;
+	        for (name in _ref) {
+	          value = _ref[name];
 	          if (typeof value !== 'function') {
 	            value = true;
 	          }
@@ -4261,8 +4361,20 @@
 	  return method;
 	};
 
+
+/***/ },
+/* 29 */
+/*!****************************************!*\
+  !*** ./src/core/property/style.coffee ***!
+  \****************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var cloneObject, styleFrom;
+
+	cloneObject = __webpack_require__(/*! dc-util */ 3).cloneObject;
+
 	exports.styleFrom = styleFrom = function(value) {
-	  var item, key, result, v, _i, _j, _len, _len1, _ref1, _ref2;
+	  var item, key, result, v, _i, _j, _len, _len1, _ref, _ref1;
 	  if (typeof value === 'string') {
 	    result = {};
 	    value = value.trim().split(/\s*;\s*/);
@@ -4272,7 +4384,7 @@
 	      if (!item) {
 	        continue;
 	      }
-	      _ref1 = item.split(/\s*:\s*/), key = _ref1[0], v = _ref1[1];
+	      _ref = item.split(/\s*:\s*/), key = _ref[0], v = _ref[1];
 	      result[key] = v;
 	    }
 	    return result;
@@ -4285,7 +4397,7 @@
 	        if (!item) {
 	          continue;
 	        }
-	        _ref2 = item.split(/\s*:\s*/), key = _ref2[0], value = _ref2[1];
+	        _ref1 = item.split(/\s*:\s*/), key = _ref1[0], value = _ref1[1];
 	      } else {
 	        key = item[0], value = item[1];
 	      }
@@ -4299,58 +4411,9 @@
 	  }
 	};
 
-	config = __webpack_require__(/*! ../config */ 6);
-
-	exports.eventHandlerFromArray = function(callbackList, eventName, component) {
-	  return function(event) {
-	    var comp, fn, node, options, updateList, _i, _j, _len, _len1, _ref1;
-	    node = component.node;
-	    for (_i = 0, _len = callbackList.length; _i < _len; _i++) {
-	      fn = callbackList[_i];
-	      fn && fn.call(node, event, component);
-	    }
-	    updateList = component.eventUpdateConfig[eventName];
-	    if (updateList) {
-	      for (_j = 0, _len1 = updateList.length; _j < _len1; _j++) {
-	        _ref1 = updateList[_j], comp = _ref1[0], options = _ref1[1];
-	        if (options.alwaysUpdating || !config.useSystemUpdating) {
-	          comp[options.method]();
-	        }
-	      }
-	    }
-	    if (!event) {
-	      return;
-	    }
-	    !event.executeDefault && event.preventDefault();
-	    !event.continuePropagation && event.stopPropagation();
-	  };
-	};
-
-	attrPropNameMap = {
-	  'for': 'htmlFor'
-	};
-
-	exports.attrToPropName = function(name) {
-	  var i, len, newName, pieces;
-	  if (newName = attrPropNameMap[name]) {
-	    return newName;
-	  }
-	  pieces = name.split('-');
-	  if (pieces.length === 1) {
-	    return name;
-	  }
-	  i = 1;
-	  len = pieces.length;
-	  while (i < len) {
-	    pieces[i] = pieces[i][0].toUpperCase() + pieces[i].slice(1);
-	    i++;
-	  }
-	  return pieces.join('');
-	};
-
 
 /***/ },
-/* 26 */
+/* 30 */
 /*!**************************************!*\
   !*** ./src/core/base/Comment.coffee ***!
   \**************************************/
@@ -4417,7 +4480,7 @@
 
 
 /***/ },
-/* 27 */
+/* 31 */
 /*!***********************************!*\
   !*** ./src/core/base/Html.coffee ***!
   \***********************************/
@@ -4547,7 +4610,7 @@
 
 
 /***/ },
-/* 28 */
+/* 32 */
 /*!*********************************!*\
   !*** ./src/core/base/If.coffee ***!
   \*********************************/
@@ -4565,7 +4628,7 @@
 
 	renew = __webpack_require__(/*! lazy-flow */ 4).renew;
 
-	mergeIf = __webpack_require__(/*! ../mergeIf */ 29);
+	mergeIf = __webpack_require__(/*! ../mergeIf */ 33);
 
 	module.exports = If = (function(_super) {
 	  __extends(If, _super);
@@ -4629,7 +4692,7 @@
 
 
 /***/ },
-/* 29 */
+/* 33 */
 /*!*********************************!*\
   !*** ./src/core/mergeIf.coffee ***!
   \*********************************/
@@ -4649,13 +4712,13 @@
 
 	eventHandlerFromArray = __webpack_require__(/*! ./property */ 25).eventHandlerFromArray;
 
-	flow = __webpack_require__(/*! lazy-flow/addon */ 30);
+	flow = __webpack_require__(/*! lazy-flow/addon */ 34);
 
 	flowIf = flow.if_;
 
 	exports = module.exports = mergeIf = function(test, then_, else_, recursive) {
 	  var If, children, className, component, elseTransform, events, props, style, thenTransform, transform;
-	  If = __webpack_require__(/*! ./base/If */ 28);
+	  If = __webpack_require__(/*! ./base/If */ 32);
 	  if (then_ === else_) {
 	    return toComponent(then_);
 	  }
@@ -4784,7 +4847,7 @@
 
 
 /***/ },
-/* 30 */
+/* 34 */
 /*!*********************************!*\
   !*** ../lazy-flow/addon.coffee ***!
   \*********************************/
@@ -4792,7 +4855,7 @@
 
 	var binary, bind, duplex, flow, see, unary, _ref;
 
-	_ref = __webpack_require__(/*! ./index */ 31), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
+	_ref = __webpack_require__(/*! ./index */ 35), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
 
 	module.exports = flow;
 
@@ -5027,7 +5090,7 @@
 
 
 /***/ },
-/* 31 */
+/* 35 */
 /*!*********************************!*\
   !*** ../lazy-flow/index.coffee ***!
   \*********************************/
@@ -5457,7 +5520,7 @@
 
 
 /***/ },
-/* 32 */
+/* 36 */
 /*!***********************************!*\
   !*** ./src/core/base/Case.coffee ***!
   \***********************************/
@@ -5550,7 +5613,7 @@
 
 
 /***/ },
-/* 33 */
+/* 37 */
 /*!***********************************!*\
   !*** ./src/core/base/Pick.coffee ***!
   \***********************************/
@@ -5644,7 +5707,7 @@
 
 
 /***/ },
-/* 34 */
+/* 38 */
 /*!***********************************!*\
   !*** ./src/core/base/Each.coffee ***!
   \***********************************/
@@ -5867,7 +5930,7 @@
 
 
 /***/ },
-/* 35 */
+/* 39 */
 /*!************************************!*\
   !*** ./src/core/base/Defer.coffee ***!
   \************************************/
@@ -5959,7 +6022,7 @@
 
 
 /***/ },
-/* 36 */
+/* 40 */
 /*!*************************************!*\
   !*** ./src/core/instantiate.coffee ***!
   \*************************************/
@@ -5972,7 +6035,7 @@
 
 	_ref1 = __webpack_require__(/*! dc-util */ 3), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
-	isAttrs = __webpack_require__(/*! ./util */ 37).isAttrs;
+	isAttrs = __webpack_require__(/*! ./util */ 41).isAttrs;
 
 	attrsChildren = function(args) {
 	  var attrs;
@@ -6212,7 +6275,7 @@
 
 
 /***/ },
-/* 37 */
+/* 41 */
 /*!******************************!*\
   !*** ./src/core/util.coffee ***!
   \******************************/
@@ -6226,9 +6289,9 @@
 
 	Text = __webpack_require__(/*! ./base/Text */ 15);
 
-	Html = __webpack_require__(/*! ./base/Html */ 27);
+	Html = __webpack_require__(/*! ./base/Html */ 31);
 
-	Comment = __webpack_require__(/*! ./base/Comment */ 26);
+	Comment = __webpack_require__(/*! ./base/Comment */ 30);
 
 	exports.isAttrs = function(item) {
 	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
@@ -6278,7 +6341,7 @@
 
 
 /***/ },
-/* 38 */
+/* 42 */
 /*!*****************************!*\
   !*** ./src/core/tag.coffee ***!
   \*****************************/
@@ -6289,7 +6352,7 @@
 
 	extend = __webpack_require__(/*! extend */ 8);
 
-	tag = __webpack_require__(/*! ./instantiate */ 36).tag;
+	tag = __webpack_require__(/*! ./instantiate */ 40).tag;
 
 	getBindProp = __webpack_require__(/*! ../dom-util */ 5).getBindProp;
 
@@ -6392,7 +6455,7 @@
 
 
 /***/ },
-/* 39 */
+/* 43 */
 /*!*****************************!*\
   !*** ./src/dc-error.coffee ***!
   \*****************************/

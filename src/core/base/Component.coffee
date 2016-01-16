@@ -126,7 +126,6 @@ module.exports = class Component
         holder.replaceChild(oldComponent, this)
         holder.update()
     else
-      node = oldComponent.node
       this.setParentNode(oldComponent.parentNode)
       this.setNextNode(oldComponent.nextNode)
       oldComponent.markRemovingDom(true)
@@ -136,8 +135,11 @@ module.exports = class Component
 
 
   destroy: ->
+    this.remove()
     this.listeners = null
-    this.node = null
+    if this.node
+      delete this.node.component
+      this.node = null
     this.baseComponent = null
     this.parentNode = null
 
