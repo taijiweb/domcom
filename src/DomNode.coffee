@@ -42,9 +42,9 @@ module.exports = class DomNode
     this
 
   bind: (eventNames, handler) ->
-    names = eventNames.split(/\s+/)
+    eventNames = eventNames.split(/\s+/)
     {node} = @
-    for name in names
+    for name in eventNames
       if name[..1]=='on' then name = name[2...]
       if node instanceof Node
         addEventListener(node, name, handler)
@@ -55,7 +55,7 @@ module.exports = class DomNode
   unbind: (eventNames, handler) ->
     names = eventNames.split(/\s+/)
     {node} = @
-    for name in names
+    for name in eventNames
       if name[..1]=='on' then name = name[2...]
       if node instanceof Node
         removeEventListener(node, name, handler)

@@ -1,5 +1,7 @@
 {expect, iit, idescribe, nit, ndescribe} = require('bdd-test-helper')
 
+{fakeEvent} = require('./helper')
+
 {duplex, see
 classFn, styleFrom
 model, show
@@ -89,9 +91,40 @@ describe "component event", ->
     expect(y).to.equal 0
 
 describe "delegate event", ->
-  it 'component shoud call listeners before mounting', ->
+  it 'component should delegate click event', ->
     x = 0
     comp = p()
-    comp.on('mount', -> x=1)
     comp.mount()
+    comp.delegate('click')
+    comp.do_click = -> x = 1
+    comp.node.onclick(fakeEvent(comp.node))
+    expect(x).to.equal 1
+
+  it 'component should delegate click event to its holder', ->
+    x = 0
+    comp = list([child = p()])
+    comp.mount()
+    child.delegateByHolder('click')
+    comp.do_click = -> x = 1
+    child.node.onclick(fakeEvent(child.node))
+    expect(x).to.equal 1
+
+  it 'component should delegate click event from tag ancestor to its holder', ->
+    x = 0
+    comp = div(lst = list([child = p()]))
+    comp.mount()
+    comp.delegateByHolder('click')
+    lst.do_click = -> x = 1
+    comp.node.onclick(fakeEvent(child.node))
+    expect(child.node.onclick).to.be.null
+    expect(x).to.equal 1
+
+  it 'component should delegate click event by given component', ->
+    x = 0
+    comp = div(lst = list([child = p()]))
+    comp.mount()
+    comp.delegateByComponent('click', lst)
+    lst.do_click = -> x = 1
+    comp.node.onclick(fakeEvent(child.node))
+    expect(child.node.onclick).to.be.null
     expect(x).to.equal 1

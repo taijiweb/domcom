@@ -133,7 +133,6 @@ module.exports = class Component
       oldComponent.removeDom()
     this
 
-
   destroy: ->
     this.remove()
     this.listeners = null

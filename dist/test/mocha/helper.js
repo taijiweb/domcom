@@ -5,3 +5,15 @@ exports.newDemoNode = function(id) {
   id && node.setAttribute('id', id);
   return node;
 };
+
+exports.fakeEvent = function(targetNode, type) {
+  if (type == null) {
+    type = 'click';
+  }
+  return {
+    target: targetNode,
+    type: type,
+    preventDefault: function() {},
+    stopPropagation: function() {}
+  };
+};

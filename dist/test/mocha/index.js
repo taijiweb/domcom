@@ -26,7 +26,7 @@ require('./test-ref-clone');
 
 require('./test-accordion');
 
-require('./test-component-event');
+require('./test-event');
 
 require('./test-route');
 
