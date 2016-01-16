@@ -33,7 +33,7 @@ describe('domcom/mergeIf', function() {
     x(1);
     comp.update();
     expect(comp.node[0].textContent).to.equal('1', 'update x 1');
-    return expect(demoNode.innerHTML).to.equal('12', 'mount');
+    return expect(demoNode.innerHTML).to.equal('12', 'update');
   });
   it('should render if_(x, list(t2, t1), new List([t1]))', function() {
     var comp, demoNode, lst, t1, t2, x;

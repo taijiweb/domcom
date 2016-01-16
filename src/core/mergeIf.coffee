@@ -1,7 +1,5 @@
 extend = require('extend')
 
-toComponent = require './base/toComponent'
-
 Tag = require('./base/Tag')
 List = require('./base/List')
 Nothing = require('./base/Nothing')
@@ -11,17 +9,19 @@ Nothing = require('./base/Nothing')
 flow = require('lazy-flow/addon')
 flowIf = flow.if_
 
+# do not need toComponent
+# do not need check whether test is a function
+# because mergeIf is called in If component constructor,
+# after then_, else_ was converted to component
+# and check test is a function
 exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
-  # avoid loop require
+
   If = require('./base/If')
 
-  if then_==else_ then return toComponent then_
-  then_ = toComponent(then_)
-  else_ = toComponent(else_)
-  if typeof test != 'function'
-    return if test then then_ else else_
+  if then_==else_
+    return then_
 
-  if ( then_.constructor==Tag and else_.constructor==Tag and
+  else if ( then_.constructor==Tag and else_.constructor==Tag and
        then_.tagName == else_.tagName and then_.namespace==else_.namespace)
 
     children = mergeIfChildren(test, then_, else_, recursive)
@@ -102,10 +102,10 @@ exports.mergeIfChildren = mergeIfChildren = (test, then_, else_, recursive) ->
 
   children
 
-exports.mergeIfClassFn = mergeIfClassFn = (test, thenClassName, elseClassName) ->
+mergeIfClassFn = (test, thenClassName, elseClassName) ->
   mergeIfProps(test, thenClassName.classMap, elseClassName.classMap)
 
-exports.mergeIfProps = mergeIfProps = (test, thenProps, elseProps) ->
+mergeIfProps = (test, thenProps, elseProps) ->
   unified = extend({}, thenProps, elseProps)
   for prop of unified
     unified[prop] = flowIf(test, thenProps[prop], elseProps[prop])
@@ -113,7 +113,7 @@ exports.mergeIfProps = mergeIfProps = (test, thenProps, elseProps) ->
 
 emptyEventCallback = ->
 
-exports.mergeIfEvents = mergeIfEvents = (test, thenEvents, elseEvents, component) ->
+mergeIfEvents = (test, thenEvents, elseEvents, component) ->
 
   unified = extend({}, thenEvents, elseEvents)
 

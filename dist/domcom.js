@@ -4714,11 +4714,9 @@
   \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var List, Nothing, Tag, emptyEventCallback, eventHandlerFromArray, exports, extend, flow, flowIf, mergeIf, mergeIfChild, mergeIfChildren, mergeIfClassFn, mergeIfEvents, mergeIfProps, toComponent;
+	var List, Nothing, Tag, emptyEventCallback, eventHandlerFromArray, exports, extend, flow, flowIf, mergeIf, mergeIfChild, mergeIfChildren, mergeIfClassFn, mergeIfEvents, mergeIfProps;
 
 	extend = __webpack_require__(/*! extend */ 9);
-
-	toComponent = __webpack_require__(/*! ./base/toComponent */ 19);
 
 	Tag = __webpack_require__(/*! ./base/Tag */ 25);
 
@@ -4736,18 +4734,8 @@
 	  var If, children, className, component, elseTransform, events, props, style, thenTransform, transform;
 	  If = __webpack_require__(/*! ./base/If */ 33);
 	  if (then_ === else_) {
-	    return toComponent(then_);
-	  }
-	  then_ = toComponent(then_);
-	  else_ = toComponent(else_);
-	  if (typeof test !== 'function') {
-	    if (test) {
-	      return then_;
-	    } else {
-	      return else_;
-	    }
-	  }
-	  if (then_.constructor === Tag && else_.constructor === Tag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
+	    return then_;
+	  } else if (then_.constructor === Tag && else_.constructor === Tag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
 	    children = mergeIfChildren(test, then_, else_, recursive);
 	    component = new Tag(then_.tagName, {}, children);
 	    className = mergeIfClassFn(test, then_.className, else_.className);
@@ -4821,11 +4809,11 @@
 	  return children;
 	};
 
-	exports.mergeIfClassFn = mergeIfClassFn = function(test, thenClassName, elseClassName) {
+	mergeIfClassFn = function(test, thenClassName, elseClassName) {
 	  return mergeIfProps(test, thenClassName.classMap, elseClassName.classMap);
 	};
 
-	exports.mergeIfProps = mergeIfProps = function(test, thenProps, elseProps) {
+	mergeIfProps = function(test, thenProps, elseProps) {
 	  var prop, unified;
 	  unified = extend({}, thenProps, elseProps);
 	  for (prop in unified) {
@@ -4836,7 +4824,7 @@
 
 	emptyEventCallback = function() {};
 
-	exports.mergeIfEvents = mergeIfEvents = function(test, thenEvents, elseEvents, component) {
+	mergeIfEvents = function(test, thenEvents, elseEvents, component) {
 	  var elseCallbackList, elseHandler, eventName, thenCallbackList, thenHandler, unified;
 	  unified = extend({}, thenEvents, elseEvents);
 	  for (eventName in unified) {

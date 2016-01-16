@@ -6,7 +6,8 @@ mergeIf = require('../mergeIf')
 
 module.exports = class If extends TransformComponent
   constructor: (test, then_, else_, merge, recursive) ->
-    if then_==else_ then return toComponent then_
+    if then_==else_
+      return toComponent then_
 
     then_ = toComponent(then_)
     else_ = toComponent(else_)
