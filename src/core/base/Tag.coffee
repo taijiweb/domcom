@@ -1,6 +1,6 @@
 extend = require 'extend'
 dc = require '../../dc'
-{domField, domValue} = require('domcom/lib/dom-util')
+{domField, domValue} = require('../../dom-util')
 {classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require '../property'
 BaseComponent = require './BaseComponent'
 {funcString, newLine, cloneObject} = require 'dc-util'
@@ -306,6 +306,8 @@ module.exports = class Tag extends BaseComponent
     node =
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
+
+    node.component = this
 
     @node = node
     @firstNode = node

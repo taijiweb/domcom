@@ -19,15 +19,20 @@ module.exports = class Html extends Text
 
   createDom: ->
     @textValid = true
-    node = document.createElement('DIV')
+    childNodes = document.createElement('div')
     text = @transform and @transform(domValue(@text)) or domValue(@text)
-    node.innerHTML = text
+    childNodes.innerHTML = text
     @cacheText = text
     # when the node in createElement('div').childNodes is inserted to dom,
     # it is removed from the active childNodes
     # so they should be keep in an array
-    @node = for node in node.childNodes then node
-    @firstNode = @node[0]
+    childNodes = childNodes.childNodes
+    @node = node = []
+    node.length = childNodes.length
+    for n, i in childNodes
+      n.component = this
+      node[i] = n
+    @firstNode = node[0]
     @
 
   updateDom: ->
@@ -41,16 +46,17 @@ module.exports = class Html extends Text
     if text!=@cacheText
       if @node.parentNode
         @removeNode()
-      node = document.createElement('DIV')
-      node.innerHTML =  text
+      childNodes = document.createElement('DIV')
+      childNodes.innerHTML =  text
       # when the node in createElement('div').childNodes is inserted to dom,
       # it is removed from the active childNodes
       # so they should be keep in an array
-      myNode = @node
-      childNodes =  node.childNodes
-      myNode.length = childNodes.length
+      node = @node
+      childNodes =  childNodes.childNodes
+      node.length = childNodes.length
       for n,i in childNodes
-        myNode[i] = n
+        node[i] = n
+        n.component = this
       @firstNode = node[0]
       @cacheText = text
     # else null # text do not change, do nothing
@@ -82,8 +88,10 @@ module.exports = class Html extends Text
     node.parentNode = null
     for childNode in node
       parentNode.removeChild(childNode)
+      delete childNode.component
     return
 
-  toString: (indent=2, addNewLine) -> newLine("<Html #{funcString(@text)}/>", indent, addNewLine)
+  toString: (indent=2, addNewLine) ->
+    newLine("<Html #{funcString(@text)}/>", indent, addNewLine)
 
 # todo: implement another WrapHtml, which is always wraped in a tag
