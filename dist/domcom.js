@@ -3756,7 +3756,7 @@
 	    if (!eventHandlers) {
 	      events[eventName] = [handler];
 	      if (this.node) {
-	        this.node[eventName] = eventHandlerFromArray(events[eventName], eventName);
+	        this.node[eventName] = eventHandlerFromArray(events[eventName], eventName, this);
 	      } else {
 	        this.hasActiveEvents = true;
 	        this.hasActiveProperties = true;
@@ -4439,116 +4439,127 @@
   \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, Html, Text, domValue, funcString, newLine, _ref,
+	var Html, ListMixin, Tag, domField, domValue, funcString, method, newLine, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
-
-	Text = __webpack_require__(/*! ./Text */ 16);
+	Tag = __webpack_require__(/*! ./Tag */ 25);
 
 	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	domValue = __webpack_require__(/*! ../../dom-util */ 6).domValue;
+	_ref1 = __webpack_require__(/*! ../../dom-util */ 6), domValue = _ref1.domValue, domField = _ref1.domField;
 
 	module.exports = Html = (function(_super) {
 	  __extends(Html, _super);
 
-	  function Html(text, transform) {
-	    this.transform = transform;
-	    this.isHtml = true;
-	    Html.__super__.constructor.call(this, text);
+	  function Html(attrs, text, transform) {
+	    var me, set;
+	    if (typeof attrs === 'string' || typeof attrs === 'function') {
+	      this.transform = text;
+	      text = attrs;
+	      attrs = {};
+	    } else {
+	      attrs = attrs || {};
+	      this.transform = transform;
+	    }
+	    this._text = text = domField(text);
+	    me = this;
+	    if (typeof text === 'function') {
+	      text.onInvalidate(function() {
+	        me.textValid = false;
+	        return me.invalidate();
+	      });
+	    }
+	    Html.__super__.constructor.call(this, 'div', attrs, []);
+	    if (Object.defineProperty) {
+	      ({
+	        get: function() {
+	          return me._text;
+	        }
+	      });
+	      set = function(text) {
+	        me.setText(text);
+	        return text;
+	      };
+	      Object.defineProperty(this, 'text', {
+	        set: set
+	      });
+	    }
+	    this;
 	  }
 
 	  Html.prototype.createDom = function() {
-	    var childNodes, i, n, node, text, _i, _len;
+	    var node;
 	    this.textValid = true;
-	    childNodes = document.createElement('div');
-	    text = this.transform && this.transform(domValue(this.text)) || domValue(this.text);
-	    childNodes.innerHTML = text;
-	    this.cacheText = text;
-	    childNodes = childNodes.childNodes;
-	    this.node = node = [];
-	    node.length = childNodes.length;
-	    for (i = _i = 0, _len = childNodes.length; _i < _len; i = ++_i) {
-	      n = childNodes[i];
-	      n.component = this;
-	      node[i] = n;
-	    }
-	    this.firstNode = node[0];
+	    this.node = this.firstNode = node = document.createElement('div');
+	    node.component = this;
+	    this.updateProperties();
+	    this.cacheText = node.innerHTML = this.transform && this.transform(domValue(this._text)) || domValue(this._text);
 	    return this;
 	  };
 
 	  Html.prototype.updateDom = function() {
-	    var childNodes, i, n, node, text, _i, _len;
+	    var node, text;
 	    if (this.textValid) {
 	      return this;
 	    }
 	    this.textValid = true;
-	    text = this.transform && this.transform(domValue(this.text)) || domValue(this.text);
+	    text = this.transform && this.transform(domValue(this._text)) || domValue(this._text);
+	    node = this.node;
 	    if (text !== this.cacheText) {
-	      if (this.node.parentNode) {
-	        this.removeNode();
+	      if (node.childNodes.length >= 2) {
+	        if (node.parentNode) {
+	          this.removeNode();
+	        }
+	        this.node = this.firstNode = node = node.cloneNode(false);
+	        node.component = this;
 	      }
-	      childNodes = document.createElement('DIV');
-	      childNodes.innerHTML = text;
-	      node = this.node;
-	      childNodes = childNodes.childNodes;
-	      node.length = childNodes.length;
-	      for (i = _i = 0, _len = childNodes.length; _i < _len; i = ++_i) {
-	        n = childNodes[i];
-	        node[i] = n;
-	        n.component = this;
-	      }
-	      this.firstNode = node[0];
+	      node.innerHTML = text;
 	      this.cacheText = text;
 	    }
+	    this.updateProperties();
 	    return this;
 	  };
 
-	  Html.prototype.attachNode = function() {
-	    var childNode, e, nextNode, node, parentNode, _i, _len;
-	    node = this.node, parentNode = this.parentNode, nextNode = this.nextNode;
-	    if (parentNode === node.parentNode && nextNode === node.nextNode) {
-	      return node;
-	    } else {
-	      node.parentNode = parentNode;
-	      node.nextNode = nextNode;
-	      for (_i = 0, _len = node.length; _i < _len; _i++) {
-	        childNode = node[_i];
-	        try {
-	          parentNode.insertBefore(childNode, this.nextNode);
-	        } catch (_error) {
-	          e = _error;
-	          dc.error(e);
-	        }
-	      }
-	      return node;
+	  Html.prototype.setText = function(text) {
+	    var me;
+	    text = domField(text);
+	    if (this._text === text) {
+	      return this;
 	    }
-	  };
-
-	  Html.prototype.removeNode = function() {
-	    var childNode, node, parentNode, _i, _len;
-	    node = this.node;
-	    parentNode = node.parentNode;
-	    node.parentNode = null;
-	    for (_i = 0, _len = node.length; _i < _len; _i++) {
-	      childNode = node[_i];
-	      parentNode.removeChild(childNode);
-	      delete childNode.component;
+	    this.textValid = false;
+	    this._text = text;
+	    me = this;
+	    if (typeof text === 'function') {
+	      text.onInvalidate(function() {
+	        me.textValid = false;
+	        return me.invalidate();
+	      });
 	    }
+	    this.invalidate();
+	    return this;
 	  };
 
 	  Html.prototype.toString = function(indent, addNewLine) {
 	    if (indent == null) {
 	      indent = 2;
 	    }
-	    return newLine("<Html " + (funcString(this.text)) + "/>", indent, addNewLine);
+	    return newLine("<Html " + (funcString(this._text)) + "/>", indent, addNewLine);
 	  };
 
 	  return Html;
 
-	})(Text);
+	})(Tag);
+
+	ListMixin = __webpack_require__(/*! ./ListMixin */ 22);
+
+	for (method in ListMixin) {
+	  Html.prototype[method] = function() {
+	    return dc.error('Html component has no children components, do not call ListMixin method on it');
+	  };
+	}
+
+	Html.prototype.initChildren = function() {};
 
 
 /***/ },
@@ -5598,7 +5609,8 @@
 	        return me._content;
 	      };
 	      set = function(content) {
-	        return me.setContent(content);
+	        me.setContent(content);
+	        return content;
 	      };
 	      Object.defineProperty(host, field, {
 	        get: get,
@@ -5611,15 +5623,18 @@
 	    var oldContent;
 	    oldContent = this._content;
 	    if (content === oldContent) {
-	      return content;
+	      return this;
 	    } else {
 	      this.invalidateTransform();
 	      this.onSetContent(content, oldContent);
-	      return this._content = toComponent(content);
+	      this._content = toComponent(content);
+	      return this;
 	    }
 	  };
 
-	  Pick.prototype.onSetContent = function(content, oldContent) {};
+	  Pick.prototype.onSetContent = function(content, oldContent) {
+	    return this;
+	  };
 
 	  Pick.prototype.getContentComponent = function() {
 	    return this._content;
@@ -6040,11 +6055,7 @@
 	};
 
 	exports.html = function(attrs, text, transform) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Html(text, transform)]);
-	  } else {
-	    return new Html(attrs, text);
-	  }
+	  return new Html(attrs, text, transform);
 	};
 
 	exports.if_ = function(attrs, test, then_, else_, merge, recursive) {
@@ -6403,11 +6414,52 @@
   \*****************************/
 /***/ function(module, exports) {
 
-	var DomcomError,
+	var DomcomError, dcError, slice, stackReg, stackReg2, stacktraceMessage,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	DomcomError = (function(_super) {
+	slice = [].slice;
+
+	stackReg = /at\s+(.*)\s+\((.*):(\d*):(\d*)\)/gi;
+
+	stackReg2 = /at\s+()(.*):(\d*):(\d*)/gi;
+
+	stacktraceMessage = function(message, stackIndex) {
+	  var error, file, itemInfo, line, method, pos, stackItem, stacklist, stacklistLength;
+	  if (stackIndex == null) {
+	    stackIndex = 1;
+	  }
+	  if (message) {
+	    if (!dcError.prodution) {
+	      console.log(message);
+	    }
+	    message += ':\n';
+	  } else {
+	    message = "";
+	  }
+	  error = new Error();
+	  if (!dcError.prodution) {
+	    console.log(error);
+	  }
+	  stacklist = error.stack.split('\n').slice(3);
+	  stackIndex = 1;
+	  stacklistLength = stacklist.length;
+	  while (stackIndex < stacklistLength) {
+	    stackItem = stacklist[stackIndex];
+	    itemInfo = stackReg.exec(stackItem) || stackReg2.exec(stackItem);
+	    if (itemInfo && itemInfo.length === 5) {
+	      method = itemInfo[1];
+	      file = itemInfo[2];
+	      line = itemInfo[3];
+	      pos = itemInfo[4];
+	      message += file + ':' + line + ':' + pos + ':' + method + '\n';
+	    }
+	    stackIndex++;
+	  }
+	  return message;
+	};
+
+	exports.DomcomError = DomcomError = (function(_super) {
 	  __extends(DomcomError, _super);
 
 	  function DomcomError(message, component) {
@@ -6427,7 +6479,8 @@
 
 	})(Error);
 
-	exports.error = function(message, component) {
+	exports.error = dcError = function(message, component) {
+	  message = stacktraceMessage(message, 2);
 	  throw new DomcomError(message, component);
 	};
 
@@ -6444,7 +6497,7 @@
 	    } else {
 	      console.log(message);
 	    }
-	    throw new Error(message);
+	    throw new Error(message + ':\n' + stacktraceMessage());
 	  }
 	};
 

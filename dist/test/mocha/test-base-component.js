@@ -146,11 +146,19 @@ describe("test base component", function() {
     });
   });
   return describe('process Html', function() {
-    it('should mount html', function() {
+    it('should process Html.node.component', function() {
+      var comp, demoNode, str;
+      str = see('');
+      comp = html(str);
+      comp.mount(demoNode = newDemoNode());
+      expect(demoNode.innerHTML).to.equal('<div></div>');
+      return expect(comp.node.component).to.equal(comp);
+    });
+    it('should mount html component', function() {
       var comp, demoNode, s;
       comp = new Html(s = '<div>1</div><p>2</p>');
       comp.mount(demoNode = newDemoNode());
-      return expect(demoNode.innerHTML).to.equal(s);
+      return expect(demoNode.innerHTML).to.equal('<div><div>1</div><p>2</p></div>');
     });
     it('should mount html component with transform', function() {
       var comp, demoNode, s;
@@ -158,20 +166,42 @@ describe("test base component", function() {
         return text + 'a';
       });
       comp.mount(demoNode = newDemoNode());
-      return expect(demoNode.innerHTML).to.equal(s + 'a');
+      return expect(demoNode.innerHTML).to.equal('<div><div>1</div><p>2</p>a</div>');
     });
-    return it('should mount html component with reative function', function() {
-      var comp, demoNode, s, str;
-      str = see(s = '<div>1</div><p>2</p>');
+    it('should mount html component with reactive function', function() {
+      var comp, demoNode, str;
+      str = see('<div>1</div><p>2</p>');
       comp = new Html(str, function(text) {
         return text + 'a';
       });
       comp.mount(demoNode = newDemoNode());
+      expect(demoNode.innerHTML).to.equal('<div><div>1</div><p>2</p>a</div>');
       str('x');
       comp.update();
-      expect(demoNode.innerHTML).to.equal('xa');
+      expect(demoNode.innerHTML).to.equal('<div>xa</div>');
       comp.update();
-      return expect(demoNode.innerHTML).to.equal('xa');
+      return expect(demoNode.innerHTML).to.equal('<div>xa</div>');
+    });
+    it('should Html.bind', function() {
+      var comp, demoNode, str, x;
+      str = see('');
+      comp = html(str);
+      comp.mount(demoNode = newDemoNode());
+      x = 1;
+      comp.bind('click', function() {
+        return x = 2;
+      });
+      comp.node.onclick();
+      return expect(x).to.equal(2);
+    });
+    return it('should Html.text setter', function() {
+      var comp, str;
+      str = see('');
+      comp = html(str);
+      comp.mount();
+      comp.text = 'x';
+      comp.update();
+      return expect(comp.node.innerHTML).to.equal('x');
     });
   });
 });

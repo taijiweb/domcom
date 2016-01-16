@@ -43,8 +43,7 @@ exports.comment = (attrs, text) ->
 # this is for Html Component, which takes some text as innerHTML
 # for <html> ... </html>, please use tagHtml instead
 exports.html = (attrs, text, transform) ->
-  if isAttrs(attrs) then new Tag('div', attrs, [new Html(text, transform)])
-  else new Html(attrs, text)
+  new Html(attrs, text, transform)
 
 exports.if_ = (attrs, test, then_, else_, merge, recursive) ->
   if isAttrs(attrs) then new Tag('div', attrs, [new If(test, then_, else_, merge, recursive)])

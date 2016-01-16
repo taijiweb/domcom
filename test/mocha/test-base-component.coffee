@@ -108,22 +108,47 @@ describe "test base component", ->
       expect(comp.node[0].tagName).to.equal 'SPAN'
 
   describe 'process Html',  ->
-    it 'should mount html', ->
+    it 'should process Html.node.component', ->
+      str = see ''
+      comp = html(str)
+      comp.mount(demoNode=newDemoNode())
+      expect(demoNode.innerHTML).to.equal '<div></div>'
+      expect(comp.node.component).to.equal(comp)
+
+    it 'should mount html component', ->
       comp = new Html(s='<div>1</div><p>2</p>')
       comp.mount(demoNode=newDemoNode())
-      expect(demoNode.innerHTML).to.equal s
+      expect(demoNode.innerHTML).to.equal '<div><div>1</div><p>2</p></div>'
 
     it 'should mount html component with transform', ->
       comp = new Html(s='<div>1</div><p>2</p>', (text)-> text + 'a')
       comp.mount(demoNode=newDemoNode())
-      expect(demoNode.innerHTML).to.equal s + 'a'
+      expect(demoNode.innerHTML).to.equal '<div><div>1</div><p>2</p>a</div>'
 
-    it 'should mount html component with reative function', ->
-      str = see s='<div>1</div><p>2</p>'
+    it 'should mount html component with reactive function', ->
+      str = see '<div>1</div><p>2</p>'
       comp = new Html(str, (text) -> text + 'a')
       comp.mount(demoNode=newDemoNode())
+      expect(demoNode.innerHTML).to.equal '<div><div>1</div><p>2</p>a</div>'
       str 'x'
       comp.update()
-      expect(demoNode.innerHTML).to.equal 'xa'
+      expect(demoNode.innerHTML).to.equal '<div>xa</div>'
       comp.update()
-      expect(demoNode.innerHTML).to.equal 'xa'
+      expect(demoNode.innerHTML).to.equal '<div>xa</div>'
+
+    it 'should Html.bind', ->
+      str = see ''
+      comp = html(str)
+      comp.mount(demoNode=newDemoNode())
+      x = 1
+      comp.bind('click', -> x = 2)
+      comp.node.onclick()
+      expect(x).to.equal(2)
+
+    it 'should Html.text setter', ->
+      str = see ''
+      comp = html(str)
+      comp.mount()
+      comp.text = 'x'
+      comp.update()
+      expect(comp.node.innerHTML).to.equal 'x'

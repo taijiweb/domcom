@@ -31,6 +31,7 @@ module.exports = class Pick extends TransformComponent
 
       set = (content) ->
         me.setContent(content)
+        content
 
       Object.defineProperty(host, field, {get, set})
 
@@ -38,13 +39,14 @@ module.exports = class Pick extends TransformComponent
     oldContent = @_content
 
     if content == oldContent
-      content
+      @
     else
        @invalidateTransform()
        @onSetContent(content, oldContent)
        @_content = toComponent content
+       @
 
-  onSetContent: (content, oldContent) ->
+  onSetContent: (content, oldContent) -> @
 
   getContentComponent: -> @_content
 

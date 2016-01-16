@@ -212,7 +212,7 @@ module.exports = class Tag extends BaseComponent
     if !eventHandlers
       events[eventName] = [handler]
       if @node
-        @node[eventName] = eventHandlerFromArray(events[eventName], eventName)
+        @node[eventName] = eventHandlerFromArray(events[eventName], eventName, this)
       else
         @hasActiveEvents = true
         @hasActiveProperties = true

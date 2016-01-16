@@ -1,38 +1,54 @@
-BaseComponent = require './BaseComponent'
-Text = require './Text'
+Tag = require './Tag'
 {funcString, newLine} = require 'dc-util'
-{domValue} = require '../../dom-util'
+{domValue, domField} = require '../../dom-util'
 
 # !!! Warning:
 # By default, Html does not escape to safe the html.
-# So it's UNSAFE!!! to use Html class without a transform function.
-# It's your responsibility to keep it in safe!
-# Maybe a npm package like escape-html would help.
+# So it's UNSAFE to use Html class without a transform function!!!
+# It's the responsibilityn of user program to keep it in safe!
+# Maybe a npm package like escape-html will help.
 
-# this is for Html Component, which take some text as innerHTML
+# this is Html Component, which take some text as innerHTML
 # for <html> ... </html>, please use tagHtml instead
 
-module.exports = class Html extends Text
-  constructor: (text, @transform) ->
-    @isHtml = true
-    super(text)
+module.exports = class Html extends Tag
+  constructor: (attrs, text, transform) ->
+    if typeof attrs == 'string' || typeof attrs == 'function'
+      @transform = text
+      text = attrs
+      attrs = {}
+    else
+      attrs = attrs || {}
+      @transform = transform
+
+    @_text = text = domField(text)
+
+    me = @
+    if typeof text == 'function'
+      text.onInvalidate ->
+        me.textValid = false
+        me.invalidate()
+
+    super('div', attrs, [])
+
+    if Object.defineProperty
+
+      get: -> me._text
+
+      set = (text) ->
+        me.setText(text)
+        text
+
+      Object.defineProperty(this, 'text', {set})
+
+    this
 
   createDom: ->
     @textValid = true
-    childNodes = document.createElement('div')
-    text = @transform and @transform(domValue(@text)) or domValue(@text)
-    childNodes.innerHTML = text
-    @cacheText = text
-    # when the node in createElement('div').childNodes is inserted to dom,
-    # it is removed from the active childNodes
-    # so they should be keep in an array
-    childNodes = childNodes.childNodes
-    @node = node = []
-    node.length = childNodes.length
-    for n, i in childNodes
-      n.component = this
-      node[i] = n
-    @firstNode = node[0]
+    @node = @firstNode = node = document.createElement('div')
+    node.component = this
+    this.updateProperties()
+    this.cacheText = node.innerHTML = @transform and @transform(domValue(@_text)) or domValue(@_text)
     @
 
   updateDom: ->
@@ -40,58 +56,51 @@ module.exports = class Html extends Text
       return @
 
     @textValid = true
+    text = @transform and @transform(domValue(@_text)) or domValue(@_text)
 
-    text = @transform and @transform(domValue(@text)) or domValue(@text)
+    node = @node
 
     if text!=@cacheText
-      if @node.parentNode
-        @removeNode()
-      childNodes = document.createElement('DIV')
-      childNodes.innerHTML =  text
-      # when the node in createElement('div').childNodes is inserted to dom,
-      # it is removed from the active childNodes
-      # so they should be keep in an array
-      node = @node
-      childNodes =  childNodes.childNodes
-      node.length = childNodes.length
-      for n,i in childNodes
-        node[i] = n
-        n.component = this
-      @firstNode = node[0]
+      if node.childNodes.length >=2
+        if node.parentNode
+          @removeNode()
+        @node = @firstNode = node = node.cloneNode(false)
+        node.component = this
+      node.innerHTML =  text
+
       @cacheText = text
     # else null # text do not change, do nothing
 
+    # this should be done after this.node is processed
+    # because may be cloneNode
+    this.updateProperties()
+
     @
 
-  attachNode: ->
-    {node, parentNode, nextNode} = @
+  setText: (text) ->
+    text = domField(text)
+    if @_text == text
+      return this
 
-    if parentNode == node.parentNode and nextNode == node.nextNode
-      node
-    else
-      node.parentNode = parentNode
-      node.nextNode = nextNode
+    @textValid = false
+    @_text = text
 
-      for childNode in node
-        try
-          parentNode.insertBefore(childNode, @nextNode)
-        catch e
-          dc.error(e)
-        # do not need set nextNode for every childNode
-        # domcom do not care about them
-
-      node
-
-  removeNode: ->
-    {node} = @
-    parentNode = node.parentNode
-    node.parentNode = null
-    for childNode in node
-      parentNode.removeChild(childNode)
-      delete childNode.component
-    return
+    me = @
+    if typeof text == 'function'
+      text.onInvalidate ->
+        me.textValid = false
+        me.invalidate()
+    @invalidate()
+    @
 
   toString: (indent=2, addNewLine) ->
-    newLine("<Html #{funcString(@text)}/>", indent, addNewLine)
+    newLine("<Html #{funcString(@_text)}/>", indent, addNewLine)
 
-# todo: implement another WrapHtml, which is always wraped in a tag
+ListMixin = require('./ListMixin')
+for method of ListMixin
+  Html.prototype[method] = ->
+    dc.error('Html component has no children components, do not call ListMixin method on it')
+
+# initChildren is called by the constructor of Tag class
+# so put a empty definition here
+Html.prototype.initChildren = ->
