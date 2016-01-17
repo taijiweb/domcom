@@ -42,53 +42,44 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/*!***************************!*\
-  !*** ./src/domcom.coffee ***!
-  \***************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var dc;
 
-	dc = __webpack_require__(/*! ./domcom-basic */ 1);
+	dc = __webpack_require__(1);
 
-	__webpack_require__(/*! ./domcom-addon */ 45);
+	__webpack_require__(45);
 
 	module.exports = dc;
 
 
 /***/ },
 /* 1 */
-/*!*********************************!*\
-  !*** ./src/domcom-basic.coffee ***!
-  \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var dc, extend;
 
-	module.exports = dc = __webpack_require__(/*! ./dc */ 5);
+	module.exports = dc = __webpack_require__(5);
 
 	if (typeof window !== 'undefined') {
 	  window.dc = dc;
 	}
 
-	dc.DomNode = __webpack_require__(/*! ./DomNode */ 6);
+	dc.DomNode = __webpack_require__(6);
 
-	dc.extend = extend = __webpack_require__(/*! extend */ 10);
+	dc.extend = extend = __webpack_require__(10);
 
-	extend(dc, __webpack_require__(/*! ./config */ 8), __webpack_require__(/*! lazy-flow */ 3), __webpack_require__(/*! dc-watch-list */ 2), __webpack_require__(/*! ./dom-util */ 7), __webpack_require__(/*! dc-util */ 4), __webpack_require__(/*! ./core/index */ 11), __webpack_require__(/*! ./dc-error */ 44));
+	extend(dc, __webpack_require__(8), __webpack_require__(3), __webpack_require__(2), __webpack_require__(7), __webpack_require__(4), __webpack_require__(11), __webpack_require__(44));
 
 
 /***/ },
 /* 2 */
-/*!*********************************!*\
-  !*** ../dc-watch-list/index.js ***!
-  \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var flow, react, slice,
 	  __slice = [].slice;
 
-	react = (flow = __webpack_require__(/*! lazy-flow */ 3)).react;
+	react = (flow = __webpack_require__(3)).react;
 
 	module.exports = flow;
 
@@ -347,15 +338,12 @@
 
 /***/ },
 /* 3 */
-/*!*****************************!*\
-  !*** ../lazy-flow/index.js ***!
-  \*****************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var dependent, flow, funcString, newLine, react, renew, see, _ref,
 	  __slice = [].slice;
 
-	_ref = __webpack_require__(/*! dc-util */ 4), newLine = _ref.newLine, funcString = _ref.funcString;
+	_ref = __webpack_require__(4), newLine = _ref.newLine, funcString = _ref.funcString;
 
 	react = function(method) {
 	  if (method.invalidate) {
@@ -777,9 +765,6 @@
 
 /***/ },
 /* 4 */
-/*!***************************!*\
-  !*** ../dc-util/index.js ***!
-  \***************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var dupStr, globalDcid,
@@ -1025,7 +1010,7 @@
 
 	exports.numbers = function(n) {
 	  var flow, i, result;
-	  flow = __webpack_require__(/*! lazy-flow */ 3);
+	  flow = __webpack_require__(3);
 	  if (typeof n === 'function') {
 	    return flow(n, function() {
 	      var i, length, result;
@@ -1052,22 +1037,19 @@
 
 /***/ },
 /* 5 */
-/*!***********************!*\
-  !*** ./src/dc.coffee ***!
-  \***********************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var DomNode, addEventListener, addRenderUpdate, addSetIntervalUpdate, dc, dcid, directiveRegistry, domNodeCache, isComponent, isElement, isEven, newDcid, querySelector, raf, readyFnList, render, renderCallbackList, renderLoop, requestAnimationFrame, _ref, _ref1, _ref2, _renderComponentWhenBy;
 
-	DomNode = __webpack_require__(/*! ./DomNode */ 6);
+	DomNode = __webpack_require__(6);
 
-	_ref = __webpack_require__(/*! ./dom-util */ 7), requestAnimationFrame = _ref.requestAnimationFrame, raf = _ref.raf, isElement = _ref.isElement, addEventListener = _ref.addEventListener;
+	_ref = __webpack_require__(7), requestAnimationFrame = _ref.requestAnimationFrame, raf = _ref.raf, isElement = _ref.isElement, addEventListener = _ref.addEventListener;
 
-	_ref1 = __webpack_require__(/*! dc-util */ 4), newDcid = _ref1.newDcid, isEven = _ref1.isEven;
+	_ref1 = __webpack_require__(4), newDcid = _ref1.newDcid, isEven = _ref1.isEven;
 
-	_ref2 = __webpack_require__(/*! ./config */ 8), domNodeCache = _ref2.domNodeCache, readyFnList = _ref2.readyFnList, directiveRegistry = _ref2.directiveRegistry, renderCallbackList = _ref2.renderCallbackList;
+	_ref2 = __webpack_require__(8), domNodeCache = _ref2.domNodeCache, readyFnList = _ref2.readyFnList, directiveRegistry = _ref2.directiveRegistry, renderCallbackList = _ref2.renderCallbackList;
 
-	isComponent = __webpack_require__(/*! ./core/base/isComponent */ 9);
+	isComponent = __webpack_require__(9);
 
 
 	/** @api dc(element) - dc component constructor
@@ -1317,16 +1299,13 @@
 
 /***/ },
 /* 6 */
-/*!****************************!*\
-  !*** ./src/DomNode.coffee ***!
-  \****************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var DomNode, addEventListener, newLine, processProp, removeEventListener, _ref;
 
-	newLine = __webpack_require__(/*! dc-util */ 4).newLine;
+	newLine = __webpack_require__(4).newLine;
 
-	_ref = __webpack_require__(/*! ./dom-util */ 7), addEventListener = _ref.addEventListener, removeEventListener = _ref.removeEventListener;
+	_ref = __webpack_require__(7), addEventListener = _ref.addEventListener, removeEventListener = _ref.removeEventListener;
 
 	processProp = function(props, cache, prop, value) {
 	  var p, _i, _len, _results;
@@ -1468,9 +1447,6 @@
 
 /***/ },
 /* 7 */
-/*!*****************************!*\
-  !*** ./src/dom-util.coffee ***!
-  \*****************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var renew, _raf;
@@ -1527,7 +1503,7 @@
 	  };
 	}
 
-	renew = __webpack_require__(/*! lazy-flow */ 3).renew;
+	renew = __webpack_require__(3).renew;
 
 	exports.domField = function(value) {
 	  var fn;
@@ -1585,9 +1561,6 @@
 
 /***/ },
 /* 8 */
-/*!***************************!*\
-  !*** ./src/config.coffee ***!
-  \***************************/
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -1601,9 +1574,6 @@
 
 /***/ },
 /* 9 */
-/*!******************************************!*\
-  !*** ./src/core/base/isComponent.coffee ***!
-  \******************************************/
 /***/ function(module, exports) {
 
 	module.exports = function(item) {
@@ -1613,9 +1583,6 @@
 
 /***/ },
 /* 10 */
-/*!***************************!*\
-  !*** ./~/extend/index.js ***!
-  \***************************/
 /***/ function(module, exports) {
 
 	var hasOwn = Object.prototype.hasOwnProperty;
@@ -1711,49 +1678,43 @@
 
 /***/ },
 /* 11 */
-/*!*******************************!*\
-  !*** ./src/core/index.coffee ***!
-  \*******************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports, extend;
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
-	module.exports = exports = extend({}, __webpack_require__(/*! ./base */ 12), __webpack_require__(/*! ./instantiate */ 41), __webpack_require__(/*! ./tag */ 43), __webpack_require__(/*! ./property */ 26));
+	module.exports = exports = extend({}, __webpack_require__(12), __webpack_require__(41), __webpack_require__(43), __webpack_require__(26));
 
 
 /***/ },
 /* 12 */
-/*!************************************!*\
-  !*** ./src/core/base/index.coffee ***!
-  \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var route;
 
-	route = __webpack_require__(/*! ./route */ 17);
+	route = __webpack_require__(17);
 
 	module.exports = {
-	  isComponent: __webpack_require__(/*! ./isComponent */ 9),
-	  toComponent: __webpack_require__(/*! ./toComponent */ 19),
-	  toComponentList: __webpack_require__(/*! ./toComponentList */ 23),
-	  Component: __webpack_require__(/*! ./component */ 15),
-	  BaseComponent: __webpack_require__(/*! ./BaseComponent */ 14),
-	  List: __webpack_require__(/*! ./List */ 21),
-	  Tag: __webpack_require__(/*! ./Tag */ 25),
-	  Text: __webpack_require__(/*! ./Text */ 16),
-	  Comment: __webpack_require__(/*! ./Comment */ 31),
-	  Cdata: __webpack_require__(/*! ./Cdata */ 13),
-	  Html: __webpack_require__(/*! ./Html */ 32),
-	  Nothing: __webpack_require__(/*! ./Nothing */ 20),
-	  TransformComponent: __webpack_require__(/*! ./TransformComponent */ 18),
-	  If: __webpack_require__(/*! ./If */ 33),
-	  Case: __webpack_require__(/*! ./Case */ 37),
-	  Func: __webpack_require__(/*! ./Func */ 24),
-	  Pick: __webpack_require__(/*! ./Pick */ 38),
-	  Each: __webpack_require__(/*! ./Each */ 39),
-	  Defer: __webpack_require__(/*! ./Defer */ 40),
+	  isComponent: __webpack_require__(9),
+	  toComponent: __webpack_require__(19),
+	  toComponentList: __webpack_require__(23),
+	  Component: __webpack_require__(15),
+	  BaseComponent: __webpack_require__(14),
+	  List: __webpack_require__(21),
+	  Tag: __webpack_require__(25),
+	  Text: __webpack_require__(16),
+	  Comment: __webpack_require__(31),
+	  Cdata: __webpack_require__(13),
+	  Html: __webpack_require__(32),
+	  Nothing: __webpack_require__(20),
+	  TransformComponent: __webpack_require__(18),
+	  If: __webpack_require__(33),
+	  Case: __webpack_require__(37),
+	  Func: __webpack_require__(24),
+	  Pick: __webpack_require__(38),
+	  Each: __webpack_require__(39),
+	  Defer: __webpack_require__(40),
 	  Route: route.Route,
 	  route: route
 	};
@@ -1761,22 +1722,19 @@
 
 /***/ },
 /* 13 */
-/*!************************************!*\
-  !*** ./src/core/base/Cdata.coffee ***!
-  \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Cdata, Text, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
+	BaseComponent = __webpack_require__(14);
 
-	Text = __webpack_require__(/*! ./Text */ 16);
+	Text = __webpack_require__(16);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	domValue = __webpack_require__(/*! ../../dom-util */ 7).domValue;
+	domValue = __webpack_require__(7).domValue;
 
 	module.exports = Cdata = (function(_super) {
 	  __extends(Cdata, _super);
@@ -1814,18 +1772,15 @@
 
 /***/ },
 /* 14 */
-/*!********************************************!*\
-  !*** ./src/core/base/BaseComponent.coffee ***!
-  \********************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Component, cloneObject,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	Component = __webpack_require__(/*! ./component */ 15);
+	Component = __webpack_require__(15);
 
-	cloneObject = __webpack_require__(/*! dc-util */ 4).cloneObject;
+	cloneObject = __webpack_require__(4).cloneObject;
 
 	module.exports = BaseComponent = (function(_super) {
 	  __extends(BaseComponent, _super);
@@ -1924,23 +1879,20 @@
 
 /***/ },
 /* 15 */
-/*!****************************************!*\
-  !*** ./src/core/base/component.coffee ***!
-  \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, componentId, dc, extend, isComponent, mountList, newDcid, normalizeDomElement,
 	  __slice = [].slice;
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
-	normalizeDomElement = __webpack_require__(/*! ../../dom-util */ 7).normalizeDomElement;
+	normalizeDomElement = __webpack_require__(7).normalizeDomElement;
 
-	newDcid = __webpack_require__(/*! dc-util */ 4).newDcid;
+	newDcid = __webpack_require__(4).newDcid;
 
-	isComponent = __webpack_require__(/*! ./isComponent */ 9);
+	isComponent = __webpack_require__(9);
 
-	dc = __webpack_require__(/*! ../../dc */ 5);
+	dc = __webpack_require__(5);
 
 	componentId = 1;
 
@@ -2191,20 +2143,17 @@
 
 /***/ },
 /* 16 */
-/*!***********************************!*\
-  !*** ./src/core/base/Text.coffee ***!
-  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Text, domField, domValue, dynamic, exports, funcString, hasTextContent, newLine, value, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
+	BaseComponent = __webpack_require__(14);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
 
-	_ref1 = __webpack_require__(/*! ../../dom-util */ 7), domField = _ref1.domField, domValue = _ref1.domValue;
+	_ref1 = __webpack_require__(7), domField = _ref1.domField, domValue = _ref1.domValue;
 
 	if ('textContent' in document.documentElement) {
 	  hasTextContent = true;
@@ -2281,9 +2230,6 @@
 
 /***/ },
 /* 17 */
-/*!************************************!*\
-  !*** ./src/core/base/route.coffee ***!
-  \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -2313,13 +2259,13 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+	TransformComponent = __webpack_require__(18);
 
-	isComponent = __webpack_require__(/*! ./isComponent */ 9);
+	isComponent = __webpack_require__(9);
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+	toComponent = __webpack_require__(19);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), isEven = _ref.isEven, matchCurvedString = _ref.matchCurvedString;
+	_ref = __webpack_require__(4), isEven = _ref.isEven, matchCurvedString = _ref.matchCurvedString;
 
 	module.exports = route = function() {
 	  var baseIndex, otherwise, routeList, _i;
@@ -2694,16 +2640,13 @@
 
 /***/ },
 /* 18 */
-/*!*************************************************!*\
-  !*** ./src/core/base/TransformComponent.coffee ***!
-  \*************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, TransformComponent,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	Component = __webpack_require__(/*! ./component */ 15);
+	Component = __webpack_require__(15);
 
 	module.exports = TransformComponent = (function(_super) {
 	  __extends(TransformComponent, _super);
@@ -2798,20 +2741,17 @@
 
 /***/ },
 /* 19 */
-/*!******************************************!*\
-  !*** ./src/core/base/toComponent.coffee ***!
-  \******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Nothing, Text, isComponent, react, toComponent;
 
-	isComponent = __webpack_require__(/*! ./isComponent */ 9);
+	isComponent = __webpack_require__(9);
 
-	Nothing = __webpack_require__(/*! ./Nothing */ 20);
+	Nothing = __webpack_require__(20);
 
-	Text = __webpack_require__(/*! ./Text */ 16);
+	Text = __webpack_require__(16);
 
-	react = __webpack_require__(/*! lazy-flow */ 3).react;
+	react = __webpack_require__(3).react;
 
 	module.exports = toComponent = function(item) {
 	  var Func, List, component, e;
@@ -2820,7 +2760,7 @@
 	  } else if (typeof item === 'function') {
 	    return new Text(item);
 	  } else if (item instanceof Array) {
-	    List = __webpack_require__(/*! ./List */ 21);
+	    List = __webpack_require__(21);
 	    return new List((function() {
 	      var _i, _len, _results;
 	      _results = [];
@@ -2833,7 +2773,7 @@
 	  } else if (item == null) {
 	    return new Nothing();
 	  } else if (item.then && item["catch"]) {
-	    Func = __webpack_require__(/*! ./Func */ 24);
+	    Func = __webpack_require__(24);
 	    component = new Func(react(function() {
 	      return component.promiseResult;
 	    }));
@@ -2853,18 +2793,15 @@
 
 /***/ },
 /* 20 */
-/*!**************************************!*\
-  !*** ./src/core/base/Nothing.coffee ***!
-  \**************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Nothing, newLine,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
+	BaseComponent = __webpack_require__(14);
 
-	newLine = __webpack_require__(/*! dc-util */ 4).newLine;
+	newLine = __webpack_require__(4).newLine;
 
 	module.exports = Nothing = (function(_super) {
 	  __extends(Nothing, _super);
@@ -2913,18 +2850,15 @@
 
 /***/ },
 /* 21 */
-/*!***********************************!*\
-  !*** ./src/core/base/List.coffee ***!
-  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, List, ListMixin, exports, extend, newLine,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
+	BaseComponent = __webpack_require__(14);
 
-	newLine = __webpack_require__(/*! dc-util */ 4).newLine;
+	newLine = __webpack_require__(4).newLine;
 
 	module.exports = exports = List = (function(_super) {
 	  __extends(List, _super);
@@ -3092,34 +3026,31 @@
 
 	})(BaseComponent);
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
-	ListMixin = __webpack_require__(/*! ./ListMixin */ 22);
+	ListMixin = __webpack_require__(22);
 
 	extend(List.prototype, ListMixin);
 
 
 /***/ },
 /* 22 */
-/*!****************************************!*\
-  !*** ./src/core/base/ListMixin.coffee ***!
-  \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Nothing, binaryInsert, binarySearch, extendChildFamily, isComponent, substractSet, toComponent, toComponentList, _ref,
 	  __slice = [].slice;
 
-	isComponent = __webpack_require__(/*! ./isComponent */ 9);
+	isComponent = __webpack_require__(9);
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+	toComponent = __webpack_require__(19);
 
-	toComponentList = __webpack_require__(/*! ./toComponentList */ 23);
+	toComponentList = __webpack_require__(23);
 
-	Nothing = __webpack_require__(/*! ./Nothing */ 20);
+	Nothing = __webpack_require__(20);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), binarySearch = _ref.binarySearch, binaryInsert = _ref.binaryInsert, substractSet = _ref.substractSet;
+	_ref = __webpack_require__(4), binarySearch = _ref.binarySearch, binaryInsert = _ref.binaryInsert, substractSet = _ref.substractSet;
 
-	extendChildFamily = __webpack_require__(/*! ../../dom-util */ 7).extendChildFamily;
+	extendChildFamily = __webpack_require__(7).extendChildFamily;
 
 	module.exports = {
 	  initChildren: function(children) {
@@ -3406,14 +3337,11 @@
 
 /***/ },
 /* 23 */
-/*!**********************************************!*\
-  !*** ./src/core/base/toComponentList.coffee ***!
-  \**********************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var toComponent, toComponentList;
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+	toComponent = __webpack_require__(19);
 
 	module.exports = toComponentList = function(item) {
 	  var e, _i, _len, _results;
@@ -3434,22 +3362,19 @@
 
 /***/ },
 /* 24 */
-/*!***********************************!*\
-  !*** ./src/core/base/Func.coffee ***!
-  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Func, TransformComponent, funcString, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+	toComponent = __webpack_require__(19);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+	TransformComponent = __webpack_require__(18);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	renew = __webpack_require__(/*! lazy-flow */ 3).renew;
+	renew = __webpack_require__(3).renew;
 
 	module.exports = Func = (function(_super) {
 	  __extends(Func, _super);
@@ -3489,9 +3414,6 @@
 
 /***/ },
 /* 25 */
-/*!**********************************!*\
-  !*** ./src/core/base/Tag.coffee ***!
-  \**********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, ListMixin, Tag, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, domValue, eventHandlerFromArray, extend, flow, funcString, newLine, react, styleFrom, updating, _ref, _ref1, _ref2, _ref3,
@@ -3499,21 +3421,21 @@
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
-	dc = __webpack_require__(/*! ../../dc */ 5);
+	dc = __webpack_require__(5);
 
-	_ref = __webpack_require__(/*! ../../dom-util */ 7), domField = _ref.domField, domValue = _ref.domValue;
+	_ref = __webpack_require__(7), domField = _ref.domField, domValue = _ref.domValue;
 
-	_ref1 = __webpack_require__(/*! ../property */ 26), classFn = _ref1.classFn, styleFrom = _ref1.styleFrom, eventHandlerFromArray = _ref1.eventHandlerFromArray, attrToPropName = _ref1.attrToPropName, updating = _ref1.updating;
+	_ref1 = __webpack_require__(26), classFn = _ref1.classFn, styleFrom = _ref1.styleFrom, eventHandlerFromArray = _ref1.eventHandlerFromArray, attrToPropName = _ref1.attrToPropName, updating = _ref1.updating;
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
+	BaseComponent = __webpack_require__(14);
 
-	_ref2 = __webpack_require__(/*! dc-util */ 4), funcString = _ref2.funcString, newLine = _ref2.newLine, cloneObject = _ref2.cloneObject;
+	_ref2 = __webpack_require__(4), funcString = _ref2.funcString, newLine = _ref2.newLine, cloneObject = _ref2.cloneObject;
 
-	directiveRegistry = __webpack_require__(/*! ../../config */ 8).directiveRegistry;
+	directiveRegistry = __webpack_require__(8).directiveRegistry;
 
-	_ref3 = __webpack_require__(/*! lazy-flow */ 3), flow = _ref3.flow, react = _ref3.react;
+	_ref3 = __webpack_require__(3), flow = _ref3.flow, react = _ref3.react;
 
 	module.exports = Tag = (function(_super) {
 	  __extends(Tag, _super);
@@ -4060,45 +3982,39 @@
 
 	})(BaseComponent);
 
-	ListMixin = __webpack_require__(/*! ./ListMixin */ 22);
+	ListMixin = __webpack_require__(22);
 
 	extend(Tag.prototype, ListMixin);
 
 
 /***/ },
 /* 26 */
-/*!****************************************!*\
-  !*** ./src/core/property/index.coffee ***!
-  \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports, extend;
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
-	module.exports = exports = extend({}, __webpack_require__(/*! ./attrs */ 27), __webpack_require__(/*! ./events */ 28), __webpack_require__(/*! ./style */ 30));
+	module.exports = exports = extend({}, __webpack_require__(27), __webpack_require__(28), __webpack_require__(30));
 
-	exports.classFn = __webpack_require__(/*! ./classFn */ 29);
+	exports.classFn = __webpack_require__(29);
 
 
 /***/ },
 /* 27 */
-/*!****************************************!*\
-  !*** ./src/core/property/attrs.coffee ***!
-  \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var attrPropNameMap, classFn, extend, extendEventValue, isComponent, overAttrs, styleFrom;
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
-	isComponent = __webpack_require__(/*! ../base/isComponent */ 9).isComponent;
+	isComponent = __webpack_require__(9).isComponent;
 
-	extendEventValue = __webpack_require__(/*! ./events */ 28).extendEventValue;
+	extendEventValue = __webpack_require__(28).extendEventValue;
 
-	classFn = __webpack_require__(/*! ./classFn */ 29);
+	classFn = __webpack_require__(29);
 
-	styleFrom = __webpack_require__(/*! ./style */ 30).styleFrom;
+	styleFrom = __webpack_require__(30).styleFrom;
 
 	exports.extendAttrs = function(attrs, obj, options) {
 	  var key, objClass, style, value;
@@ -4192,14 +4108,11 @@
 
 /***/ },
 /* 28 */
-/*!*****************************************!*\
-  !*** ./src/core/property/events.coffee ***!
-  \*****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var config, extendEventValue;
 
-	config = __webpack_require__(/*! ../../config */ 8);
+	config = __webpack_require__(8);
 
 	exports.extendEventValue = extendEventValue = function(props, prop, value, before) {
 	  var oldValue;
@@ -4255,19 +4168,16 @@
 
 /***/ },
 /* 29 */
-/*!******************************************!*\
-  !*** ./src/core/property/classFn.coffee ***!
-  \******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var domField, isArray, react,
 	  __slice = [].slice;
 
-	react = __webpack_require__(/*! lazy-flow */ 3).react;
+	react = __webpack_require__(3).react;
 
-	domField = __webpack_require__(/*! ../../dom-util */ 7).domField;
+	domField = __webpack_require__(7).domField;
 
-	isArray = __webpack_require__(/*! dc-util */ 4).isArray;
+	isArray = __webpack_require__(4).isArray;
 
 	module.exports = function() {
 	  var classMap, extendClassMap, items, method, processClassValue;
@@ -4382,14 +4292,11 @@
 
 /***/ },
 /* 30 */
-/*!****************************************!*\
-  !*** ./src/core/property/style.coffee ***!
-  \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var cloneObject, styleFrom;
 
-	cloneObject = __webpack_require__(/*! dc-util */ 4).cloneObject;
+	cloneObject = __webpack_require__(4).cloneObject;
 
 	exports.styleFrom = styleFrom = function(value) {
 	  var item, key, result, v, _i, _j, _len, _len1, _ref, _ref1;
@@ -4432,22 +4339,19 @@
 
 /***/ },
 /* 31 */
-/*!**************************************!*\
-  !*** ./src/core/base/Comment.coffee ***!
-  \**************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Comment, Text, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(/*! ./BaseComponent */ 14);
+	BaseComponent = __webpack_require__(14);
 
-	Text = __webpack_require__(/*! ./Text */ 16);
+	Text = __webpack_require__(16);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	domValue = __webpack_require__(/*! ../../dom-util */ 7).domValue;
+	domValue = __webpack_require__(7).domValue;
 
 	module.exports = Comment = (function(_super) {
 	  __extends(Comment, _super);
@@ -4499,20 +4403,17 @@
 
 /***/ },
 /* 32 */
-/*!***********************************!*\
-  !*** ./src/core/base/Html.coffee ***!
-  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Html, ListMixin, Tag, domField, domValue, funcString, method, newLine, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	Tag = __webpack_require__(/*! ./Tag */ 25);
+	Tag = __webpack_require__(25);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	_ref1 = __webpack_require__(/*! ../../dom-util */ 7), domValue = _ref1.domValue, domField = _ref1.domField;
+	_ref1 = __webpack_require__(7), domValue = _ref1.domValue, domField = _ref1.domField;
 
 	module.exports = Html = (function(_super) {
 	  __extends(Html, _super);
@@ -4616,7 +4517,7 @@
 
 	})(Tag);
 
-	ListMixin = __webpack_require__(/*! ./ListMixin */ 22);
+	ListMixin = __webpack_require__(22);
 
 	for (method in ListMixin) {
 	  Html.prototype[method] = function() {
@@ -4629,24 +4530,21 @@
 
 /***/ },
 /* 33 */
-/*!*********************************!*\
-  !*** ./src/core/base/If.coffee ***!
-  \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var If, TransformComponent, funcString, intersect, mergeIf, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+	toComponent = __webpack_require__(19);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+	TransformComponent = __webpack_require__(18);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
-	renew = __webpack_require__(/*! lazy-flow */ 3).renew;
+	renew = __webpack_require__(3).renew;
 
-	mergeIf = __webpack_require__(/*! ../mergeIf */ 34);
+	mergeIf = __webpack_require__(34);
 
 	module.exports = If = (function(_super) {
 	  __extends(If, _super);
@@ -4711,30 +4609,27 @@
 
 /***/ },
 /* 34 */
-/*!*********************************!*\
-  !*** ./src/core/mergeIf.coffee ***!
-  \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var List, Nothing, Tag, emptyEventCallback, eventHandlerFromArray, exports, extend, flow, flowIf, mergeIf, mergeIfChild, mergeIfChildren, mergeIfClassFn, mergeIfEvents, mergeIfProps;
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
-	Tag = __webpack_require__(/*! ./base/Tag */ 25);
+	Tag = __webpack_require__(25);
 
-	List = __webpack_require__(/*! ./base/List */ 21);
+	List = __webpack_require__(21);
 
-	Nothing = __webpack_require__(/*! ./base/Nothing */ 20);
+	Nothing = __webpack_require__(20);
 
-	eventHandlerFromArray = __webpack_require__(/*! ./property */ 26).eventHandlerFromArray;
+	eventHandlerFromArray = __webpack_require__(26).eventHandlerFromArray;
 
-	flow = __webpack_require__(/*! lazy-flow/addon */ 35);
+	flow = __webpack_require__(35);
 
 	flowIf = flow.if_;
 
 	exports = module.exports = mergeIf = function(test, then_, else_, recursive) {
 	  var If, children, className, component, elseTransform, events, props, style, thenTransform, transform;
-	  If = __webpack_require__(/*! ./base/If */ 33);
+	  If = __webpack_require__(33);
 	  if (then_ === else_) {
 	    return then_;
 	  } else if (then_.constructor === Tag && else_.constructor === Tag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
@@ -4854,14 +4749,11 @@
 
 /***/ },
 /* 35 */
-/*!*********************************!*\
-  !*** ../lazy-flow/addon.coffee ***!
-  \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var binary, bind, duplex, flow, see, unary, _ref;
 
-	_ref = __webpack_require__(/*! ./index */ 36), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
+	_ref = __webpack_require__(36), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
 
 	module.exports = flow;
 
@@ -5097,15 +4989,12 @@
 
 /***/ },
 /* 36 */
-/*!*********************************!*\
-  !*** ../lazy-flow/index.coffee ***!
-  \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var dependent, flow, funcString, newLine, react, renew, see, _ref,
 	  __slice = [].slice;
 
-	_ref = __webpack_require__(/*! dc-util */ 4), newLine = _ref.newLine, funcString = _ref.funcString;
+	_ref = __webpack_require__(4), newLine = _ref.newLine, funcString = _ref.funcString;
 
 	react = function(method) {
 	  if (method.invalidate) {
@@ -5527,22 +5416,19 @@
 
 /***/ },
 /* 37 */
-/*!***********************************!*\
-  !*** ./src/core/base/Case.coffee ***!
-  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Case, TransformComponent, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+	toComponent = __webpack_require__(19);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+	TransformComponent = __webpack_require__(18);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
-	renew = __webpack_require__(/*! lazy-flow */ 3).renew;
+	renew = __webpack_require__(3).renew;
 
 	module.exports = Case = (function(_super) {
 	  __extends(Case, _super);
@@ -5620,22 +5506,19 @@
 
 /***/ },
 /* 38 */
-/*!***********************************!*\
-  !*** ./src/core/base/Pick.coffee ***!
-  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Pick, TransformComponent, extend, newLine, toComponent,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+	toComponent = __webpack_require__(19);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+	TransformComponent = __webpack_require__(18);
 
-	newLine = __webpack_require__(/*! dc-util */ 4).newLine;
+	newLine = __webpack_require__(4).newLine;
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
 	module.exports = Pick = (function(_super) {
 	  __extends(Pick, _super);
@@ -5714,32 +5597,29 @@
 
 /***/ },
 /* 39 */
-/*!***********************************!*\
-  !*** ./src/core/base/Each.coffee ***!
-  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Each, Func, List, Nothing, Text, TransformComponent, flow, funcString, isArray, newLine, react, renew, toComponent, watchEachList, watchEachObject, _ref, _ref1, _ref2,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+	toComponent = __webpack_require__(19);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+	TransformComponent = __webpack_require__(18);
 
-	List = __webpack_require__(/*! ./List */ 21);
+	List = __webpack_require__(21);
 
-	Func = __webpack_require__(/*! ./Func */ 24);
+	Func = __webpack_require__(24);
 
-	Text = __webpack_require__(/*! ./Text */ 16);
+	Text = __webpack_require__(16);
 
-	Nothing = __webpack_require__(/*! ./Nothing */ 20);
+	Nothing = __webpack_require__(20);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), isArray = _ref.isArray, funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(4), isArray = _ref.isArray, funcString = _ref.funcString, newLine = _ref.newLine;
 
-	_ref1 = __webpack_require__(/*! lazy-flow */ 3), react = _ref1.react, renew = _ref1.renew, flow = _ref1.flow;
+	_ref1 = __webpack_require__(3), react = _ref1.react, renew = _ref1.renew, flow = _ref1.flow;
 
-	_ref2 = __webpack_require__(/*! dc-watch-list */ 2), watchEachList = _ref2.watchEachList, watchEachObject = _ref2.watchEachObject;
+	_ref2 = __webpack_require__(2), watchEachList = _ref2.watchEachList, watchEachObject = _ref2.watchEachObject;
 
 	module.exports = Each = (function(_super) {
 	  __extends(Each, _super);
@@ -5937,24 +5817,21 @@
 
 /***/ },
 /* 40 */
-/*!************************************!*\
-  !*** ./src/core/base/Defer.coffee ***!
-  \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Defer, FULFILL, INIT, REJECT, TransformComponent, extend, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(/*! ./toComponent */ 19);
+	toComponent = __webpack_require__(19);
 
-	TransformComponent = __webpack_require__(/*! ./TransformComponent */ 18);
+	TransformComponent = __webpack_require__(18);
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
-	_ref = __webpack_require__(/*! dc-util */ 4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
-	renew = __webpack_require__(/*! lazy-flow */ 3).renew;
+	renew = __webpack_require__(3).renew;
 
 	INIT = 0;
 
@@ -6029,19 +5906,16 @@
 
 /***/ },
 /* 41 */
-/*!*************************************!*\
-  !*** ./src/core/instantiate.coffee ***!
-  \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Case, Comment, Component, Defer, Each, Func, Html, If, List, Nothing, Pick, Tag, Text, attrsChildren, every, isAttrs, isComponent, isEven, list, numbers, tag, toComponent, toTagChildren, _ref, _ref1,
 	  __slice = [].slice;
 
-	_ref = __webpack_require__(/*! ./base */ 12), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, Pick = _ref.Pick, Nothing = _ref.Nothing, Defer = _ref.Defer;
+	_ref = __webpack_require__(12), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Each = _ref.Each, Pick = _ref.Pick, Nothing = _ref.Nothing, Defer = _ref.Defer;
 
-	_ref1 = __webpack_require__(/*! dc-util */ 4), isEven = _ref1.isEven, numbers = _ref1.numbers;
+	_ref1 = __webpack_require__(4), isEven = _ref1.isEven, numbers = _ref1.numbers;
 
-	isAttrs = __webpack_require__(/*! ./util */ 42).isAttrs;
+	isAttrs = __webpack_require__(42).isAttrs;
 
 	attrsChildren = function(args) {
 	  var attrs;
@@ -6282,22 +6156,19 @@
 
 /***/ },
 /* 42 */
-/*!******************************!*\
-  !*** ./src/core/util.coffee ***!
-  \******************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Comment, Func, Html, Text, isComponent, mergeThenElseValue, toComponent, _ref;
 
-	_ref = __webpack_require__(/*! ./base */ 12), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
+	_ref = __webpack_require__(12), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
 
-	Func = __webpack_require__(/*! ./base/Func */ 24);
+	Func = __webpack_require__(24);
 
-	Text = __webpack_require__(/*! ./base/Text */ 16);
+	Text = __webpack_require__(16);
 
-	Html = __webpack_require__(/*! ./base/Html */ 32);
+	Html = __webpack_require__(32);
 
-	Comment = __webpack_require__(/*! ./base/Comment */ 31);
+	Comment = __webpack_require__(31);
 
 	exports.isAttrs = function(item) {
 	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
@@ -6348,19 +6219,16 @@
 
 /***/ },
 /* 43 */
-/*!*****************************!*\
-  !*** ./src/core/tag.coffee ***!
-  \*****************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var extend, getBindProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,
 	  __slice = [].slice;
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
-	tag = __webpack_require__(/*! ./instantiate */ 41).tag;
+	tag = __webpack_require__(41).tag;
 
-	getBindProp = __webpack_require__(/*! ../dom-util */ 7).getBindProp;
+	getBindProp = __webpack_require__(7).getBindProp;
 
 	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section" + " svg iframe";
 
@@ -6462,9 +6330,6 @@
 
 /***/ },
 /* 44 */
-/*!*****************************!*\
-  !*** ./src/dc-error.coffee ***!
-  \*****************************/
 /***/ function(module, exports) {
 
 	var DomcomError, dcError, slice, stackReg, stackReg2, stacktraceMessage,
@@ -6557,22 +6422,19 @@
 
 /***/ },
 /* 45 */
-/*!*********************************!*\
-  !*** ./src/domcom-addon.coffee ***!
-  \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var dc, extend, flow;
 
-	extend = (dc = __webpack_require__(/*! ./domcom-basic */ 1)).extend;
+	extend = (dc = __webpack_require__(1)).extend;
 
-	dc.builtinDirectives = __webpack_require__(/*! ./directives/index */ 46);
+	dc.builtinDirectives = __webpack_require__(46);
 
-	extend(dc, dc.builtinDirectives, __webpack_require__(/*! ./builtins/index */ 54), __webpack_require__(/*! ./core/property/delegate-event */ 60), __webpack_require__(/*! ./core/property/css-arith */ 61));
+	extend(dc, dc.builtinDirectives, __webpack_require__(54), __webpack_require__(60), __webpack_require__(61));
 
 	flow = dc.flow;
 
-	extend(flow, __webpack_require__(/*! lazy-flow/addon */ 35), __webpack_require__(/*! dc-watch-list */ 2));
+	extend(flow, __webpack_require__(35), __webpack_require__(2));
 
 	dc.bindings = flow.bindings;
 
@@ -6581,40 +6443,34 @@
 
 /***/ },
 /* 46 */
-/*!*************************************!*\
-  !*** ./src/directives/index.coffee ***!
-  \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var $hide, $show, _ref;
 
-	exports.$model = __webpack_require__(/*! ./model */ 48);
+	exports.$model = __webpack_require__(48);
 
-	exports.$bind = __webpack_require__(/*! ./bind */ 49);
+	exports.$bind = __webpack_require__(49);
 
-	_ref = __webpack_require__(/*! ./show-hide */ 50), $show = _ref.$show, $hide = _ref.$hide;
+	_ref = __webpack_require__(50), $show = _ref.$show, $hide = _ref.$hide;
 
 	exports.$show = $show;
 
 	exports.$hide = $hide;
 
-	exports.$blink = __webpack_require__(/*! ./blink */ 47);
+	exports.$blink = __webpack_require__(47);
 
-	exports.$splitter = __webpack_require__(/*! ./splitter */ 51);
+	exports.$splitter = __webpack_require__(51);
 
-	exports.$options = __webpack_require__(/*! ./options */ 53);
+	exports.$options = __webpack_require__(53);
 
 
 /***/ },
 /* 47 */
-/*!*************************************!*\
-  !*** ./src/directives/blink.coffee ***!
-  \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var flow, see, _ref;
 
-	_ref = __webpack_require__(/*! lazy-flow */ 3), see = _ref.see, flow = _ref.flow;
+	_ref = __webpack_require__(3), see = _ref.see, flow = _ref.flow;
 
 	module.exports = function(interval) {
 	  return function(comp) {
@@ -6651,14 +6507,11 @@
 
 /***/ },
 /* 48 */
-/*!*************************************!*\
-  !*** ./src/directives/model.coffee ***!
-  \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var getBindProp;
 
-	getBindProp = __webpack_require__(/*! ../dom-util */ 7).getBindProp;
+	getBindProp = __webpack_require__(7).getBindProp;
 
 	module.exports = function(binding, eventName) {
 	  return function(comp) {
@@ -6676,14 +6529,11 @@
 
 /***/ },
 /* 49 */
-/*!************************************!*\
-  !*** ./src/directives/bind.coffee ***!
-  \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var domField, getBindProp, _ref;
 
-	_ref = __webpack_require__(/*! ../dom-util */ 7), getBindProp = _ref.getBindProp, domField = _ref.domField;
+	_ref = __webpack_require__(7), getBindProp = _ref.getBindProp, domField = _ref.domField;
 
 	module.exports = function(binding) {
 	  return function(comp) {
@@ -6695,9 +6545,6 @@
 
 /***/ },
 /* 50 */
-/*!*****************************************!*\
-  !*** ./src/directives/show-hide.coffee ***!
-  \*****************************************/
 /***/ function(module, exports) {
 
 	
@@ -6721,20 +6568,17 @@
 
 /***/ },
 /* 51 */
-/*!****************************************!*\
-  !*** ./src/directives/splitter.coffee ***!
-  \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, classFn, div, option, pairListDict, span, _ref;
 
-	pairListDict = __webpack_require__(/*! dc-util */ 4).pairListDict;
+	pairListDict = __webpack_require__(4).pairListDict;
 
-	classFn = __webpack_require__(/*! ../core/property */ 26).classFn;
+	classFn = __webpack_require__(26).classFn;
 
-	_ref = __webpack_require__(/*! ../core/tag */ 43), div = _ref.div, span = _ref.span, option = _ref.option;
+	_ref = __webpack_require__(43), div = _ref.div, span = _ref.span, option = _ref.option;
 
-	Component = __webpack_require__(/*! ../core/base/Component */ 52);
+	Component = __webpack_require__(52);
 
 	module.exports = function(direction) {
 	  return function(comp) {
@@ -6897,23 +6741,20 @@
 
 /***/ },
 /* 52 */
-/*!****************************************!*\
-  !*** ./src/core/base/Component.coffee ***!
-  \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, componentId, dc, extend, isComponent, mountList, newDcid, normalizeDomElement,
 	  __slice = [].slice;
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
-	normalizeDomElement = __webpack_require__(/*! ../../dom-util */ 7).normalizeDomElement;
+	normalizeDomElement = __webpack_require__(7).normalizeDomElement;
 
-	newDcid = __webpack_require__(/*! dc-util */ 4).newDcid;
+	newDcid = __webpack_require__(4).newDcid;
 
-	isComponent = __webpack_require__(/*! ./isComponent */ 9);
+	isComponent = __webpack_require__(9);
 
-	dc = __webpack_require__(/*! ../../dc */ 5);
+	dc = __webpack_require__(5);
 
 	componentId = 1;
 
@@ -7164,18 +7005,15 @@
 
 /***/ },
 /* 53 */
-/*!***************************************!*\
-  !*** ./src/directives/options.coffee ***!
-  \***************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Tag, every, option, txt, _ref;
 
-	_ref = __webpack_require__(/*! ../core/instantiate */ 41), every = _ref.every, txt = _ref.txt;
+	_ref = __webpack_require__(41), every = _ref.every, txt = _ref.txt;
 
-	option = __webpack_require__(/*! ../core/tag */ 43).option;
+	option = __webpack_require__(43).option;
 
-	Tag = __webpack_require__(/*! ../core/base/Tag */ 25);
+	Tag = __webpack_require__(25);
 
 	module.exports = function(items, attrs) {
 	  return function(comp) {
@@ -7192,42 +7030,36 @@
 
 /***/ },
 /* 54 */
-/*!***********************************!*\
-  !*** ./src/builtins/index.coffee ***!
-  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var extend;
 
-	extend = __webpack_require__(/*! extend */ 10);
+	extend = __webpack_require__(10);
 
-	extend(exports, __webpack_require__(/*! ./accordion */ 56));
+	extend(exports, __webpack_require__(56));
 
-	exports.triangle = __webpack_require__(/*! ./triangle */ 57);
+	exports.triangle = __webpack_require__(57);
 
-	exports.dialog = __webpack_require__(/*! ./dialog */ 55);
+	exports.dialog = __webpack_require__(55);
 
-	extend(exports, __webpack_require__(/*! ./combo */ 58));
+	extend(exports, __webpack_require__(58));
 
-	extend(exports, __webpack_require__(/*! ./autoWidthEdit */ 59));
+	extend(exports, __webpack_require__(59));
 
 
 /***/ },
 /* 55 */
-/*!************************************!*\
-  !*** ./src/builtins/dialog.coffee ***!
-  \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, div, globalID, if_, list, see, _ref;
 
-	see = __webpack_require__(/*! lazy-flow */ 3).see;
+	see = __webpack_require__(3).see;
 
-	_ref = __webpack_require__(/*! ../core/instantiate */ 41), list = _ref.list, if_ = _ref.if_;
+	_ref = __webpack_require__(41), list = _ref.list, if_ = _ref.if_;
 
-	div = __webpack_require__(/*! ../core/tag */ 43).div;
+	div = __webpack_require__(43).div;
 
-	Component = __webpack_require__(/*! ../core/base/Component */ 52).Component;
+	Component = __webpack_require__(52).Component;
 
 	globalID = 0;
 
@@ -7313,9 +7145,6 @@
 
 /***/ },
 /* 56 */
-/*!***************************************!*\
-  !*** ./src/builtins/accordion.coffee ***!
-  \***************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -7324,15 +7153,15 @@
 	 */
 	var Component, a, accordion, accordionGroup, div, each, exports, extend, extendAttrs, h4, img, span, _ref;
 
-	extend = __webpack_require__(/*! extend */ 10).extend;
+	extend = __webpack_require__(10).extend;
 
-	each = __webpack_require__(/*! ../core/instantiate */ 41).each;
+	each = __webpack_require__(41).each;
 
-	_ref = __webpack_require__(/*! ../core/tag */ 43), div = _ref.div, h4 = _ref.h4, a = _ref.a, span = _ref.span, img = _ref.img;
+	_ref = __webpack_require__(43), div = _ref.div, h4 = _ref.h4, a = _ref.a, span = _ref.span, img = _ref.img;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
+	extendAttrs = __webpack_require__(26).extendAttrs;
 
-	Component = __webpack_require__(/*! ../core/base/Component */ 52).Component;
+	Component = __webpack_require__(52).Component;
 
 	module.exports = exports = accordion = function(attrs, accordionGroupList, options) {
 	  var accordionOptions, comp;
@@ -7402,16 +7231,13 @@
 
 /***/ },
 /* 57 */
-/*!**************************************!*\
-  !*** ./src/builtins/triangle.coffee ***!
-  \**************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var arrowStyle, div, extendAttrs, reverseSide;
 
-	div = __webpack_require__(/*! ../core/tag */ 43).div;
+	div = __webpack_require__(43).div;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
+	extendAttrs = __webpack_require__(26).extendAttrs;
 
 	reverseSide = {
 	  left: 'right',
@@ -7446,18 +7272,15 @@
 
 /***/ },
 /* 58 */
-/*!***********************************!*\
-  !*** ./src/builtins/combo.coffee ***!
-  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var combobox, div, extendAttrs, input, list, see, span, _ref;
 
-	see = __webpack_require__(/*! lazy-flow */ 3).see;
+	see = __webpack_require__(3).see;
 
-	_ref = __webpack_require__(/*! ../core/tag */ 43), list = _ref.list, input = _ref.input, span = _ref.span, div = _ref.div;
+	_ref = __webpack_require__(43), list = _ref.list, input = _ref.input, span = _ref.span, div = _ref.div;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
+	extendAttrs = __webpack_require__(26).extendAttrs;
 
 	exports.combobox = combobox = function(attrs, modelValue, valueList, direction) {
 	  var comp, disp, item, opts, showingItems;
@@ -7521,20 +7344,17 @@
 
 /***/ },
 /* 59 */
-/*!*******************************************!*\
-  !*** ./src/builtins/autoWidthEdit.coffee ***!
-  \*******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var div, extend, extendAttrs, pipe, see, setAutoWidth, text, _ref, _ref1;
 
-	_ref = __webpack_require__(/*! lazy-flow */ 3), see = _ref.see, pipe = _ref.pipe;
+	_ref = __webpack_require__(3), see = _ref.see, pipe = _ref.pipe;
 
-	extend = __webpack_require__(/*! extend */ 10).extend;
+	extend = __webpack_require__(10).extend;
 
-	_ref1 = __webpack_require__(/*! ../core/tag */ 43), text = _ref1.text, div = _ref1.div;
+	_ref1 = __webpack_require__(43), text = _ref1.text, div = _ref1.div;
 
-	extendAttrs = __webpack_require__(/*! ../core/property */ 26).extendAttrs;
+	extendAttrs = __webpack_require__(26).extendAttrs;
 
 	exports.setAutoWidth = setAutoWidth = function(container, options) {
 	  var initialWidth, inputAttrs, inputComponent, inputEventHandler, inputEvents, inputText$, inputTextWidth$, spaceWidth, testSubject, testSubjectStyle;
@@ -7604,9 +7424,6 @@
 
 /***/ },
 /* 60 */
-/*!*************************************************!*\
-  !*** ./src/core/property/delegate-event.coffee ***!
-  \*************************************************/
 /***/ function(module, exports) {
 
 	var DomNode, Tag, makeComponentDelegationHandler, makeDelegationHandler, makeHolderDelegationHandler;
@@ -7674,9 +7491,6 @@
 
 /***/ },
 /* 61 */
-/*!********************************************!*\
-  !*** ./src/core/property/css-arith.coffee ***!
-  \********************************************/
 /***/ function(module, exports) {
 
 	var Tag, reNonUnit, unitAdd, unitDiv, unitMul, unitSub;

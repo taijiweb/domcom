@@ -2,7 +2,7 @@ _ = require 'lodash'
 path = require('path')
 webpack = require("webpack")
 
-exports.makeConfig = makeConfig = (entry, filename, options={}) ->
+exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
   plugins = options.plugins or [ new webpack.NoErrorsPlugin() ]
 
   config =
@@ -11,7 +11,7 @@ exports.makeConfig = makeConfig = (entry, filename, options={}) ->
     output:
       path: path.join(__dirname, options.path or '../public'),
       filename: filename
-      pathinfo: options.pathinfo or true
+      pathinfo: if options.pathinfo? then options.pathinfo else true
       publicPath: options.publicPath or "/assets/",
 
     resolve: {extensions: ['', '.coffee', '.js']}
@@ -35,12 +35,13 @@ exports.makeConfig = makeConfig = (entry, filename, options={}) ->
     quiet:true
     silent:false
 
-    devServer:
+  if makingServer
+    config.devServer =
       contentBase: "http://localhost/",
       noInfo: false,
       hot: true,
       inline: true
-
+  config
 
 WebpackDevServer = require("webpack-dev-server")
 exports.makeWebpackDevServer = (entry, filename, options={}) ->
