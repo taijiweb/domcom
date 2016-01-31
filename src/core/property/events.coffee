@@ -17,13 +17,13 @@ exports.extendEventValue = extendEventValue = (props, prop, value, before) ->
   else
     props[prop] = oldValue.concat(value)
 
-exports.eventHandlerFromArray = (callbackList, eventName, component) ->
+exports.eventHandlerFromArray = (callbackList, eventName) ->
   (event) ->
-    node = component.node
+    component = this.component
 
     for fn in callbackList
       if fn
-        fn.call(node, event, component)
+        fn.call(this, event, component)
 
     updateList = component.eventUpdateConfig[eventName]
     if updateList

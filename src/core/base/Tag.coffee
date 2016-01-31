@@ -52,7 +52,7 @@ module.exports = class Tag extends BaseComponent
     @['invalidateStyle'] = {}
 
     @hasActiveEvents = false
-    @events = events = {}
+    @events = {}
     @eventUpdateConfig = {}
 
   extendAttrs: (attrs)->

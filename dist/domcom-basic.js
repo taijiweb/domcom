@@ -3484,7 +3484,7 @@
 	  }
 
 	  Tag.prototype.initAttrs = function() {
-	    var className, events, me;
+	    var className, me;
 	    me = this;
 	    this.hasActiveProperties = false;
 	    this.cacheClassName = "";
@@ -3506,7 +3506,7 @@
 	    this.boundStyle = {};
 	    this['invalidateStyle'] = {};
 	    this.hasActiveEvents = false;
-	    this.events = events = {};
+	    this.events = {};
 	    return this.eventUpdateConfig = {};
 	  };
 
@@ -4159,14 +4159,14 @@
 	  }
 	};
 
-	exports.eventHandlerFromArray = function(callbackList, eventName, component) {
+	exports.eventHandlerFromArray = function(callbackList, eventName) {
 	  return function(event) {
-	    var comp, fn, node, options, updateList, _i, _j, _len, _len1, _ref;
-	    node = component.node;
+	    var comp, component, fn, options, updateList, _i, _j, _len, _len1, _ref;
+	    component = this.component;
 	    for (_i = 0, _len = callbackList.length; _i < _len; _i++) {
 	      fn = callbackList[_i];
 	      if (fn) {
-	        fn.call(node, event, component);
+	        fn.call(this, event, component);
 	      }
 	    }
 	    updateList = component.eventUpdateConfig[eventName];
