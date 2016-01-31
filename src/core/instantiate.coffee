@@ -2,10 +2,10 @@
 Tag, Text, Comment, Html
 If, Case, Func, List, Each,
 Pick
-Nothing, Defer} = require './base'
-{isEven, numbers} = require 'dc-util'
+Nothing, Defer} = require('./base')
+{isEven, numbers} = require('dc-util')
 
-{isAttrs} = require './util'
+{isAttrs} = require('./util')
 
 attrsChildren = (args) ->
   attrs = args[0]

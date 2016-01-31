@@ -2,11 +2,11 @@
  * @directive accordion
 ###
 
-{extend} = require 'extend'
-{each} = require '../core/instantiate'
-{div, h4, a, span, img} = require '../core/tag'
-{extendAttrs} = require '../core/property'
-{Component} = require '../core/base/Component'
+{extend} = require('extend')
+{each} = require('../core/instantiate')
+{div, h4, a, span, img} = require('../core/tag')
+{extendAttrs} = require('../core/property')
+{Component} = require('../core/base/Component')
 
 module.exports = exports = accordion = (attrs, accordionGroupList, options) ->
   attrs = extendAttrs {class:"panel-group"}, attrs  or {}

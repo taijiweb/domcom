@@ -1,7 +1,7 @@
-isComponent = require './isComponent'
-Nothing = require './Nothing'
-Text = require './Text'
-{react} = require 'lazy-flow'
+isComponent = require('./isComponent')
+Nothing = require('./Nothing')
+Text = require('./Text')
+{react} = require('lazy-flow')
 
 module.exports = toComponent = (item) ->
   if isComponent(item) then item
@@ -9,13 +9,13 @@ module.exports = toComponent = (item) ->
   else if typeof item == 'function' then new Text(item)
 
   else if item instanceof Array
-    List = require './List' # avoid loop require
+    List = require('./List') # avoid loop require
     new List(for e in item then toComponent(e))
 
   else if !item? then new Nothing()
 
   else if item.then and item.catch
-    Func = require './Func' # avoid loop require
+    Func = require('./Func') # avoid loop require
     component = new Func react -> component.promiseResult
 
     item

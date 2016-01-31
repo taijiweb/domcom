@@ -1,7 +1,7 @@
-{see, pipe} = require 'lazy-flow'
-{extend} = require 'extend'
-{text, div} = require '../core/tag'
-{extendAttrs} = require '../core/property'
+{see, pipe} = require('lazy-flow')
+{extend} = require('extend')
+{text, div} = require('../core/tag')
+{extendAttrs} = require('../core/property')
 
 #  options.inputComponent is not given, container.children[0] will be used as inputComponent <input type="text">
 # options.inputEvents can be like "onkeydown onkeyup ...", the default value is "onkeydown"

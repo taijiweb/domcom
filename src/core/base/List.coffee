@@ -1,6 +1,6 @@
-BaseComponent = require './BaseComponent'
+BaseComponent = require('./BaseComponent')
 
-{newLine} = require 'dc-util'
+{newLine} = require('dc-util')
 
 module.exports = exports = class List extends BaseComponent
   constructor: (children) ->
@@ -73,11 +73,12 @@ module.exports = exports = class List extends BaseComponent
     return
 
   removeDom: ->
-    if @removing
+    if @removing && @attached
       @removing = false
+      @attached = false
       @holder = null
       @node.parentNode = null
-      @emit('removeDom')
+      @emit('detach')
       for child in @children
         child.removeDom()
     @
@@ -94,6 +95,10 @@ module.exports = exports = class List extends BaseComponent
   attachNode: () ->
 
     {children, parentNode, nextNode, node} = @
+
+    if !@attached
+      @attached = true
+      @emit('attach')
 
     # different parentNode, it was removeDom before !
     # attach it again

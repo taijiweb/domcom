@@ -1,10 +1,10 @@
-isComponent = require './isComponent'
-toComponent = require './toComponent'
-toComponentList = require './toComponentList'
-Nothing = require './Nothing'
+isComponent = require('./isComponent')
+toComponent = require('./toComponent')
+toComponentList = require('./toComponentList')
+Nothing = require('./Nothing')
 
-{binarySearch, binaryInsert, substractSet} = require 'dc-util'
-{extendChildFamily} = require '../../dom-util'
+{binarySearch, binaryInsert, substractSet} = require('dc-util')
+{extendChildFamily} = require('../../dom-util')
 
 # todo: to simplify, use sort to replace binaryInsert and binarySearch
 # tried once, but it seems to be not simple enough

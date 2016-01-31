@@ -1,4 +1,4 @@
-Component = require './component'
+Component = require('./component')
 
 module.exports = class TransformComponent extends Component
   constructor: ->
@@ -20,28 +20,39 @@ module.exports = class TransformComponent extends Component
     @invalidate()
 
   renderDom: (oldBaseComponent) ->
+    if !@attached
+      @emit('attach')
     if @valid
       if oldBaseComponent==@baseComponent
-        return @
+        if @attached
+          return @
+        else
+          @attached = true
+          @baseComponent.attachNode(@parentNode, @nextNode)
       else
+        @attached = true
         baseComponent = @baseComponent
         baseComponent.renderDom(oldBaseComponent)
         @node = baseComponent.node
         @firstNode = baseComponent.firstNode
     else
       @valid = true
+      @attached = true
       if !@transformValid
         @transformValid = true
         oldContent = @content
         @content = content = @getContentComponent()
-        if oldContent and oldContent.holder == @
-          oldContent.holder = null
+        if oldContent and oldContent != content and oldContent.holder == @ and oldContent != oldBaseComponent
+          needRemoveOld = true
+          oldContent.markRemovingDom(true)
         content.holder = @
       else
         content = @content
       content.parentNode = @parentNode
       content.nextNode = @nextNode
       content.renderDom(oldBaseComponent)
+      if needRemoveOld
+        oldContent.removeDom()
       @baseComponent = baseComponent = content.baseComponent
       @node = baseComponent.node
       @firstNode = baseComponent.firstNode
@@ -61,9 +72,14 @@ module.exports = class TransformComponent extends Component
   getNode: -> @content and @content.getNode()
 
   markRemovingDom: (removing) ->
+    @holder = null
     @baseComponent and @baseComponent.markRemovingDom(removing)
 
   removeDom: ->
+    if !@attached
+      return
     @baseComponent.removeDom()
+    @emit('detach')
+    @attached = false
     @
 

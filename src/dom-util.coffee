@@ -40,7 +40,7 @@ if typeof window != 'undefined'
     if typeof HTMLElement == "object" then item instanceof HTMLElement
     else item and typeof item == "object" and item != null && item.nodeType == 1 && typeof item.nodeName=="string"
 
-{renew} = require 'lazy-flow'
+{renew} = require('lazy-flow')
 
 exports.domField = (value) ->
 

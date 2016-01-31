@@ -1,7 +1,7 @@
-{see} = require 'lazy-flow'
-{list, if_} = require '../core/instantiate'
-{div} = require '../core/tag'
-{Component} = require '../core/base/Component'
+{see} = require('lazy-flow')
+{list, if_} = require('../core/instantiate')
+{div} = require('../core/tag')
+{Component} = require('../core/base/Component')
 
 globalID = 0
 

@@ -1,4 +1,4 @@
-{expect, iit, idescribe, nit, ndescribe} = require('bdd-test-helper')
+{expect, iit, idescribe, nit, ndescribe, ddescribe} = require('bdd-test-helper')
 
 {bindings, duplex, flow, see
 classFn, styleFrom, extendAttrs
@@ -7,7 +7,7 @@ Component, list, func, if_, txt
 a, p, span, text, li, div, button, input
 each} = dc
 
-controls = require 'domcom/demo/demo-controls'
+controls = require('domcom/demo/demo-controls')
 
 describe 'demo', ->
   describe 'sum', ->

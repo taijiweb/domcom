@@ -1,11 +1,11 @@
-extend = require 'extend'
-dc = require '../../dc'
+extend = require('extend')
+dc = require('../../dc')
 {domField, domValue} = require('../../dom-util')
-{classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require '../property'
-BaseComponent = require './BaseComponent'
-{funcString, newLine, cloneObject} = require 'dc-util'
-{directiveRegistry} = require '../../config'
-{flow, react} = require 'lazy-flow'
+{classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require('../property')
+BaseComponent = require('./BaseComponent')
+{funcString, newLine, cloneObject} = require('dc-util')
+{directiveRegistry} = require('../../config')
+{flow, react} = require('lazy-flow')
 
 module.exports = class Tag extends BaseComponent
   constructor: (tagName, attrs={}, children) ->

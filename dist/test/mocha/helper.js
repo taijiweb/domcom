@@ -1,3 +1,7 @@
+var extend;
+
+extend = require('extend');
+
 exports.newDemoNode = function(id) {
   var node;
   node = document.createElement('div');
@@ -6,14 +10,24 @@ exports.newDemoNode = function(id) {
   return node;
 };
 
-exports.fakeEvent = function(targetNode, type) {
+exports.fakeEvent = function(targetNode, type, keyCodeOrOptions) {
   if (type == null) {
     type = 'click';
   }
-  return {
-    target: targetNode,
-    type: type,
-    preventDefault: function() {},
-    stopPropagation: function() {}
-  };
+  if (typeof keyCodeOrOptions === 'number') {
+    return {
+      target: targetNode,
+      type: type,
+      keyCode: keyCodeOrOptions,
+      preventDefault: function() {},
+      stopPropagation: function() {}
+    };
+  } else {
+    return extend({
+      target: targetNode,
+      type: type,
+      preventDefault: function() {},
+      stopPropagation: function() {}
+    }, keyCodeOrOptions);
+  }
 };

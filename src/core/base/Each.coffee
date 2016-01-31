@@ -1,12 +1,12 @@
-toComponent = require './toComponent'
-TransformComponent = require './TransformComponent'
-List = require './List'
-Func = require './Func'
-Text = require './Text'
-Nothing = require './Nothing'
-{isArray, funcString, newLine} = require 'dc-util'
-{react, renew, flow} = require 'lazy-flow'
-{watchEachList, watchEachObject} = require 'dc-watch-list'
+toComponent = require('./toComponent')
+TransformComponent = require('./TransformComponent')
+List = require('./List')
+Func = require('./Func')
+Text = require('./Text')
+Nothing = require('./Nothing')
+{isArray, funcString, newLine} = require('dc-util')
+{react, renew, flow} = require('lazy-flow')
+{watchEachList, watchEachObject} = require('dc-watch-list')
 
 # itemFn:
 # (item, index, items, component) -> Component

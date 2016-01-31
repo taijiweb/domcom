@@ -1,3 +1,3 @@
-dc = require './domcom-basic'
-require './domcom-addon'
+dc = require('./domcom-basic')
+require('./domcom-addon')
 module.exports = dc

@@ -1,10 +1,11 @@
-Component = require './component'
-{cloneObject} = require 'dc-util'
+Component = require('./component')
+{cloneObject} = require('dc-util')
 
 module.exports = class BaseComponent extends Component
   constructor: ->
     super()
     @isBaseComponent = true
+    @removing = false
     @baseComponent = @
 
   renderDom: (oldBaseComponent) ->
@@ -14,7 +15,6 @@ module.exports = class BaseComponent extends Component
 
     if !@node
       @valid = true
-      @emit('attach')
       @createDom()
     else
       @removing = false
@@ -40,11 +40,12 @@ module.exports = class BaseComponent extends Component
     return
 
   removeDom: ->
-    if @removing
+    if @removing && @attached
       @removing = false
       @holder = null
-      @emit('removeDom')
       @removeNode()
+      @emit('detach')
+      @attached = false
     @
 
   removeNode: ->
@@ -53,6 +54,10 @@ module.exports = class BaseComponent extends Component
 
   attachNode: ->
     {node, parentNode, nextNode} = @
+
+    if !@attached
+      @attached = true
+      @emit('attach')
 
     @removing = false
 

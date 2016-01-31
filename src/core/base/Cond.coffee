@@ -1,7 +1,7 @@
-toComponent = require './toComponent'
-TransformComponent = require './TransformComponent'
-{funcString, newLine} = require 'dc-util'
-{renew} = require 'lazy-flow'
+toComponent = require('./toComponent')
+TransformComponent = require('./TransformComponent')
+{funcString, newLine} = require('dc-util')
+{renew} = require('lazy-flow')
 
 module.exports = class Cond extends TransformComponent
   constructor: (testComponentPairs, else_) ->

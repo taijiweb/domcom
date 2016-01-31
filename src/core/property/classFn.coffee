@@ -1,6 +1,6 @@
 {react} = require('lazy-flow')
-{domField} = require '../../dom-util'
-{isArray} = require 'dc-util'
+{domField} = require('../../dom-util')
+{isArray} = require('dc-util')
 
 module.exports = (items...) ->
   classMap = {}

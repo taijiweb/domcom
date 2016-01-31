@@ -1,6 +1,6 @@
-var Component, List, Tag, Text, a, bindings, button, classFn, div, duplex, expect, flow, func, idescribe, if_, iit, input, li, list, ndescribe, newDemoNode, nit, p, span, styleFrom, text, txt, _ref;
+var Component, List, Tag, Text, a, bindings, button, classFn, ddescribe, div, duplex, expect, flow, func, idescribe, if_, iit, input, li, list, ndescribe, newDemoNode, nit, p, span, styleFrom, text, txt, _ref;
 
-_ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe;
+_ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, ddescribe = _ref.ddescribe;
 
 newDemoNode = require('./helper').newDemoNode;
 

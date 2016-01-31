@@ -1,7 +1,7 @@
-extend = require 'extend'
+extend = require('extend')
 
 {tag} = require('./instantiate')
-{getBindProp} = require '../dom-util'
+{getBindProp} = require('../dom-util')
 
 tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl"+
     " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object"+

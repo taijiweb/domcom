@@ -1,4 +1,4 @@
-toComponent = require './toComponent'
+toComponent = require('./toComponent')
 
 module.exports = toComponentList = (item) ->
   if !item then []

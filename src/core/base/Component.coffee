@@ -1,9 +1,9 @@
-extend = require 'extend'
+extend = require('extend')
 
-{normalizeDomElement} = require '../../dom-util'
-{newDcid} = require 'dc-util'
-isComponent = require './isComponent'
-dc = require '../../dc'
+{normalizeDomElement} = require('../../dom-util')
+{newDcid} = require('dc-util')
+isComponent = require('./isComponent')
+dc = require('../../dc')
 
 componentId = 1
 mountList = []
@@ -14,6 +14,8 @@ module.exports = class Component
     @baseComponent = null
     @parentNode = null
     @node = null
+    @attached = false
+    @holder = null
     @dcid = newDcid()
 
   on: (event, callback) ->
@@ -59,12 +61,19 @@ module.exports = class Component
     for callback in callbacks then callback.apply(@, args)
     @
 
-  ### if mountNode is given, it should not the node of any Component
+  ### if mountNode is given, it should not be the node of any Component
   only use beforeNode if mountNode is given
   ###
   mount: (mountNode, beforeNode) ->
     @emit('mount')
-    @parentNode = normalizeDomElement(mountNode) or @parentNode or document.getElementsByTagName('body')[0]
+    @parentNode = normalizeDomElement(mountNode) or @parentNode or document.body
+    if beforeNode
+      @nextNode = beforeNode
+# try to add this lines below, so that let to mount before script
+# but more trouble is followed: reverse order mounting
+#    else
+#      if @parentNode == document.body && (firstBodyChild = document.body.childNodes[0])
+#        @nextNode = firstBodyChild
     @render()
     @
 
@@ -77,6 +86,8 @@ module.exports = class Component
     @
 
   unmount: ->
+    if !this.attached
+      return
     if !@node or !@node.parentNode
       # pass
     else
@@ -94,6 +105,10 @@ module.exports = class Component
         component.markRemovingDom(true)
         component.removeDom()
     @emit('unmount')
+    # this is not necessary
+    # it will be set in holder.update(): call removeDom indirectly
+    # or component.removeDom()
+    #this.attached = false
     @
 
   remove: ->

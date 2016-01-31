@@ -1,6 +1,6 @@
-BaseComponent = require './BaseComponent'
-{funcString, newLine, value, dynamic} = require 'dc-util'
-{domField, domValue} = require '../../dom-util'
+BaseComponent = require('./BaseComponent')
+{funcString, newLine, value, dynamic} = require('dc-util')
+{domField, domValue} = require('../../dom-util')
 
 if 'textContent' of document.documentElement
   hasTextContent = true

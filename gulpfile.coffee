@@ -1,4 +1,4 @@
-{task} = require 'gulp-task-helper'
+{task} = require('gulp-task-helper')
 
 for tsk in 'clean coffee webpack build-tasks'.split(/\s+/)
   require('./scripts/gulp-tasks/' + tsk)

@@ -1,10 +1,10 @@
-toComponent = require './toComponent'
+toComponent = require('./toComponent')
 
-TransformComponent = require './TransformComponent'
+TransformComponent = require('./TransformComponent')
 
-{newLine} = require 'dc-util'
+{newLine} = require('dc-util')
 
-extend = require 'extend'
+extend = require('extend')
 
 module.exports = class Pick extends TransformComponent
   constructor: (@host, field, initialContent) ->

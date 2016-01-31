@@ -1,7 +1,7 @@
 ###*test-directive
 ###
 
-{expect, iit, idescribe, nit, ndescribe} = require('bdd-test-helper')
+{expect, iit, idescribe, nit, ndescribe, ddescribe} = require('bdd-test-helper')
 
 {
 Component, list, func, if_, each

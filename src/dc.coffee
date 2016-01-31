@@ -1,8 +1,8 @@
-DomNode = require './DomNode'
-{requestAnimationFrame, raf, isElement, addEventListener} = require  './dom-util'
-{newDcid, isEven} = require 'dc-util'
-{domNodeCache, readyFnList, directiveRegistry, renderCallbackList} = require './config'
-isComponent = require './core/base/isComponent'
+DomNode = require('./DomNode')
+{requestAnimationFrame, raf, isElement, addEventListener} = require('./dom-util')
+{newDcid, isEven} = require('dc-util')
+{domNodeCache, readyFnList, directiveRegistry, renderCallbackList} = require('./config')
+isComponent = require('./core/base/isComponent')
 
 
 ###* @api dc(element) - dc component constructor

@@ -1,4 +1,4 @@
-config = require '../../config'
+config = require('../../config')
 
 exports.extendEventValue = extendEventValue = (props, prop, value, before) ->
   oldValue = props[prop]

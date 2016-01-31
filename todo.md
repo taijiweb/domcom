@@ -1,4 +1,6 @@
 ### todo
+* flatten the render hierachy, skip the call to inactive component level
+* more utilties for flow, to help convert normal function to reactive, reduce appended computation in reactive function, or directly invalidate the component from the changing
 
 #### done
 * delegation to events

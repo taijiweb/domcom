@@ -1,6 +1,6 @@
-{newLine} = require 'dc-util'
+{newLine} = require('dc-util')
 
-{addEventListener, removeEventListener} = require './dom-util'
+{addEventListener, removeEventListener} = require('./dom-util')
 
 processProp = (props, cache, prop, value) ->
   if !prop? then return props

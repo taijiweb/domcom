@@ -1,4 +1,4 @@
-_ = require 'lodash'
+_ = require('lodash')
 path = require('path')
 webpack = require("webpack")
 

@@ -1,6 +1,6 @@
 # this module is not finished yet!!!
 
-{isComponent, toComponent} = require './base'
+{isComponent, toComponent} = require('./base')
 
 Func = require "./base/Func"
 Text = require "./base/Text"

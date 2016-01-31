@@ -4,9 +4,9 @@
 dc.directives $options: dc.$options,  $model: dc.$model
 
 {eachDemo1, eachDemo2, eachDemo3, eachDemo4} = require('./demo-each')
-{demoTriangle, demoCombo, demoModelOnMultipleInput} = require './demo-builtins'
-splitterDemo = require './demo-splitter'
-accordion = require './demo-accordion'
+{demoTriangle, demoCombo, demoModelOnMultipleInput} = require('./demo-builtins')
+splitterDemo = require('./demo-splitter')
+accordion = require('./demo-accordion')
 chooseFramework = require('./demo-choose-web-framework')
 
 {demoEachPush, demoIfEach, demoModelOnMultipleInput} = require('./demo-debug')

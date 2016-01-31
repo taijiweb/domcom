@@ -1,6 +1,8 @@
-Tag = require './Tag'
-{funcString, newLine} = require 'dc-util'
-{domValue, domField} = require '../../dom-util'
+extend = require('extend')
+
+Tag = require('./Tag')
+{funcString, newLine} = require('dc-util')
+{domValue, domField} = require('../../dom-util')
 
 # !!! Warning:
 # By default, Html does not escape to safe the html.
@@ -12,24 +14,38 @@ Tag = require './Tag'
 # for <html> ... </html>, please use tagHtml instead
 
 module.exports = class Html extends Tag
+
   constructor: (attrs, text, transform) ->
     if typeof attrs == 'string' || typeof attrs == 'function'
-      @transform = text
+      transform = text
       text = attrs
       attrs = {}
     else
       attrs = attrs || {}
-      @transform = transform
 
+    if attrs.tagName
+      tagName = attrs.tagName
+      delete attrs.tagName
+    else tagName = 'div'
+
+    this.initHtmlComponent(text, transform)
+
+    super(tagName, attrs, [])
+
+  toString: (indent=2, addNewLine) ->
+    newLine("<Html #{funcString(@_text)}/>", indent, addNewLine)
+
+Html.HtmlMixin = HtmlMixin = {
+
+  initHtmlComponent: (text, transform) ->
     @_text = text = domField(text)
+    @transform = transform
 
     me = @
     if typeof text == 'function'
       text.onInvalidate ->
         me.textValid = false
         me.invalidate()
-
-    super('div', attrs, [])
 
     if Object.defineProperty
 
@@ -41,11 +57,13 @@ module.exports = class Html extends Tag
 
       Object.defineProperty(this, 'text', {set})
 
-    this
+  # initChildren is called by the constructor of Tag class
+  # so put a empty definition here
+  initChildren: ->
 
   createDom: ->
     @textValid = true
-    @node = @firstNode = node = document.createElement('div')
+    @node = @firstNode = node = document.createElement(this.tagName)
     node.component = this
     this.updateProperties()
     this.cacheText = node.innerHTML = @transform and @transform(domValue(@_text)) or domValue(@_text)
@@ -92,15 +110,11 @@ module.exports = class Html extends Tag
         me.invalidate()
     @invalidate()
     @
-
-  toString: (indent=2, addNewLine) ->
-    newLine("<Html #{funcString(@_text)}/>", indent, addNewLine)
+}
 
 ListMixin = require('./ListMixin')
 for method of ListMixin
   Html.prototype[method] = ->
-    dc.error('Html component has no children components, do not call ListMixin method on it')
+    dc.error("Html component has no children components, do not call ListMixin method(#{method} on it")
 
-# initChildren is called by the constructor of Tag class
-# so put a empty definition here
-Html.prototype.initChildren = ->
+extend(Html.prototype, HtmlMixin)

@@ -1,9 +1,9 @@
-BaseComponent = require './BaseComponent'
-Text = require './Text'
+BaseComponent = require('./BaseComponent')
+Text = require('./Text')
 
-{funcString, newLine} = require 'dc-util'
+{funcString, newLine} = require('dc-util')
 
-{domValue} = require '../../dom-util'
+{domValue} = require('../../dom-util')
 
 module.exports = class Cdata extends Text
   constructor: (text) ->

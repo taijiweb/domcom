@@ -1775,6 +1775,7 @@
 	  function BaseComponent() {
 	    BaseComponent.__super__.constructor.call(this);
 	    this.isBaseComponent = true;
+	    this.removing = false;
 	    this.baseComponent = this;
 	  }
 
@@ -1784,7 +1785,6 @@
 	    }
 	    if (!this.node) {
 	      this.valid = true;
-	      this.emit('attach');
 	      this.createDom();
 	    } else {
 	      this.removing = false;
@@ -1815,11 +1815,12 @@
 	  };
 
 	  BaseComponent.prototype.removeDom = function() {
-	    if (this.removing) {
+	    if (this.removing && this.attached) {
 	      this.removing = false;
 	      this.holder = null;
-	      this.emit('removeDom');
 	      this.removeNode();
+	      this.emit('detach');
+	      this.attached = false;
 	    }
 	    return this;
 	  };
@@ -1833,6 +1834,10 @@
 	  BaseComponent.prototype.attachNode = function() {
 	    var e, nextNode, node, parentNode;
 	    node = this.node, parentNode = this.parentNode, nextNode = this.nextNode;
+	    if (!this.attached) {
+	      this.attached = true;
+	      this.emit('attach');
+	    }
 	    this.removing = false;
 	    if (parentNode === node.parentNode && nextNode === node.nextNode) {
 	      return node;
@@ -1891,6 +1896,8 @@
 	    this.baseComponent = null;
 	    this.parentNode = null;
 	    this.node = null;
+	    this.attached = false;
+	    this.holder = null;
 	    this.dcid = newDcid();
 	  }
 
@@ -1967,13 +1974,16 @@
 	  };
 
 
-	  /* if mountNode is given, it should not the node of any Component
+	  /* if mountNode is given, it should not be the node of any Component
 	  only use beforeNode if mountNode is given
 	   */
 
 	  Component.prototype.mount = function(mountNode, beforeNode) {
 	    this.emit('mount');
-	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.getElementsByTagName('body')[0];
+	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.body;
+	    if (beforeNode) {
+	      this.nextNode = beforeNode;
+	    }
 	    this.render();
 	    return this;
 	  };
@@ -1990,6 +2000,9 @@
 
 	  Component.prototype.unmount = function() {
 	    var component, holder;
+	    if (!this.attached) {
+	      return;
+	    }
 	    if (!this.node || !this.node.parentNode) {
 
 	    } else {
@@ -2663,11 +2676,20 @@
 	  };
 
 	  TransformComponent.prototype.renderDom = function(oldBaseComponent) {
-	    var baseComponent, content, oldContent;
+	    var baseComponent, content, needRemoveOld, oldContent;
+	    if (!this.attached) {
+	      this.emit('attach');
+	    }
 	    if (this.valid) {
 	      if (oldBaseComponent === this.baseComponent) {
-	        return this;
+	        if (this.attached) {
+	          return this;
+	        } else {
+	          this.attached = true;
+	          this.baseComponent.attachNode(this.parentNode, this.nextNode);
+	        }
 	      } else {
+	        this.attached = true;
 	        baseComponent = this.baseComponent;
 	        baseComponent.renderDom(oldBaseComponent);
 	        this.node = baseComponent.node;
@@ -2675,12 +2697,14 @@
 	      }
 	    } else {
 	      this.valid = true;
+	      this.attached = true;
 	      if (!this.transformValid) {
 	        this.transformValid = true;
 	        oldContent = this.content;
 	        this.content = content = this.getContentComponent();
-	        if (oldContent && oldContent.holder === this) {
-	          oldContent.holder = null;
+	        if (oldContent && oldContent !== content && oldContent.holder === this && oldContent !== oldBaseComponent) {
+	          needRemoveOld = true;
+	          oldContent.markRemovingDom(true);
 	        }
 	        content.holder = this;
 	      } else {
@@ -2689,6 +2713,9 @@
 	      content.parentNode = this.parentNode;
 	      content.nextNode = this.nextNode;
 	      content.renderDom(oldBaseComponent);
+	      if (needRemoveOld) {
+	        oldContent.removeDom();
+	      }
 	      this.baseComponent = baseComponent = content.baseComponent;
 	      this.node = baseComponent.node;
 	      this.firstNode = baseComponent.firstNode;
@@ -2713,11 +2740,17 @@
 	  };
 
 	  TransformComponent.prototype.markRemovingDom = function(removing) {
+	    this.holder = null;
 	    return this.baseComponent && this.baseComponent.markRemovingDom(removing);
 	  };
 
 	  TransformComponent.prototype.removeDom = function() {
+	    if (!this.attached) {
+	      return;
+	    }
 	    this.baseComponent.removeDom();
+	    this.emit('detach');
+	    this.attached = false;
 	    return this;
 	  };
 
@@ -2926,11 +2959,12 @@
 
 	  List.prototype.removeDom = function() {
 	    var child, _i, _len, _ref;
-	    if (this.removing) {
+	    if (this.removing && this.attached) {
 	      this.removing = false;
+	      this.attached = false;
 	      this.holder = null;
 	      this.node.parentNode = null;
-	      this.emit('removeDom');
+	      this.emit('detach');
 	      _ref = this.children;
 	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
 	        child = _ref[_i];
@@ -2953,6 +2987,10 @@
 	  List.prototype.attachNode = function() {
 	    var baseComponent, child, children, index, nextNode, node, parentNode;
 	    children = this.children, parentNode = this.parentNode, nextNode = this.nextNode, node = this.node;
+	    if (!this.attached) {
+	      this.attached = true;
+	      this.emit('attach');
+	    }
 	    if (parentNode !== this.node.parentNode || nextNode !== node.nextNode) {
 	      node.parentNode = parentNode;
 	      node.nextNode = nextNode;
@@ -4392,9 +4430,11 @@
 /* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Html, ListMixin, Tag, domField, domValue, funcString, method, newLine, _ref, _ref1,
+	var Html, HtmlMixin, ListMixin, Tag, domField, domValue, extend, funcString, method, newLine, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	extend = __webpack_require__(9);
 
 	Tag = __webpack_require__(24);
 
@@ -4406,16 +4446,40 @@
 	  __extends(Html, _super);
 
 	  function Html(attrs, text, transform) {
-	    var me, set;
+	    var tagName;
 	    if (typeof attrs === 'string' || typeof attrs === 'function') {
-	      this.transform = text;
+	      transform = text;
 	      text = attrs;
 	      attrs = {};
 	    } else {
 	      attrs = attrs || {};
-	      this.transform = transform;
 	    }
+	    if (attrs.tagName) {
+	      tagName = attrs.tagName;
+	      delete attrs.tagName;
+	    } else {
+	      tagName = 'div';
+	    }
+	    this.initHtmlComponent(text, transform);
+	    Html.__super__.constructor.call(this, tagName, attrs, []);
+	  }
+
+	  Html.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 2;
+	    }
+	    return newLine("<Html " + (funcString(this._text)) + "/>", indent, addNewLine);
+	  };
+
+	  return Html;
+
+	})(Tag);
+
+	Html.HtmlMixin = HtmlMixin = {
+	  initHtmlComponent: function(text, transform) {
+	    var me, set;
 	    this._text = text = domField(text);
+	    this.transform = transform;
 	    me = this;
 	    if (typeof text === 'function') {
 	      text.onInvalidate(function() {
@@ -4423,7 +4487,6 @@
 	        return me.invalidate();
 	      });
 	    }
-	    Html.__super__.constructor.call(this, 'div', attrs, []);
 	    if (Object.defineProperty) {
 	      ({
 	        get: function() {
@@ -4434,24 +4497,22 @@
 	        me.setText(text);
 	        return text;
 	      };
-	      Object.defineProperty(this, 'text', {
+	      return Object.defineProperty(this, 'text', {
 	        set: set
 	      });
 	    }
-	    this;
-	  }
-
-	  Html.prototype.createDom = function() {
+	  },
+	  initChildren: function() {},
+	  createDom: function() {
 	    var node;
 	    this.textValid = true;
-	    this.node = this.firstNode = node = document.createElement('div');
+	    this.node = this.firstNode = node = document.createElement(this.tagName);
 	    node.component = this;
 	    this.updateProperties();
 	    this.cacheText = node.innerHTML = this.transform && this.transform(domValue(this._text)) || domValue(this._text);
 	    return this;
-	  };
-
-	  Html.prototype.updateDom = function() {
+	  },
+	  updateDom: function() {
 	    var node, text;
 	    if (this.textValid) {
 	      return this;
@@ -4472,9 +4533,8 @@
 	    }
 	    this.updateProperties();
 	    return this;
-	  };
-
-	  Html.prototype.setText = function(text) {
+	  },
+	  setText: function(text) {
 	    var me;
 	    text = domField(text);
 	    if (this._text === text) {
@@ -4491,28 +4551,18 @@
 	    }
 	    this.invalidate();
 	    return this;
-	  };
-
-	  Html.prototype.toString = function(indent, addNewLine) {
-	    if (indent == null) {
-	      indent = 2;
-	    }
-	    return newLine("<Html " + (funcString(this._text)) + "/>", indent, addNewLine);
-	  };
-
-	  return Html;
-
-	})(Tag);
+	  }
+	};
 
 	ListMixin = __webpack_require__(21);
 
 	for (method in ListMixin) {
 	  Html.prototype[method] = function() {
-	    return dc.error('Html component has no children components, do not call ListMixin method on it');
+	    return dc.error("Html component has no children components, do not call ListMixin method(" + method + " on it");
 	  };
 	}
 
-	Html.prototype.initChildren = function() {};
+	extend(Html.prototype, HtmlMixin);
 
 
 /***/ },

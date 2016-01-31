@@ -1,8 +1,8 @@
 {task, logTime} = require("gulp-task-helper")
 
-webpack = require 'webpack'
+webpack = require('webpack')
 
-{makeConfig, makeWebpackDevServer} = require '../webpack-config'
+{makeConfig, makeWebpackDevServer} = require('../webpack-config')
 
 onTaskDone = -> (err, stats) ->
   if err then console.log('Error', err)

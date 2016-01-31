@@ -1,5 +1,5 @@
-extend = require 'extend'
-{isComponent} = require '../base/isComponent'
+extend = require('extend')
+{isComponent} = require('../base/isComponent')
 {extendEventValue} = require('./events')
 classFn = require('./classFn')
 {styleFrom} = require('./style')

@@ -1,7 +1,7 @@
-toComponent = require './toComponent'
-TransformComponent = require './TransformComponent'
-{funcString, newLine, intersect} = require 'dc-util'
-{renew} = require 'lazy-flow'
+toComponent = require('./toComponent')
+TransformComponent = require('./TransformComponent')
+{funcString, newLine, intersect} = require('dc-util')
+{renew} = require('lazy-flow')
 mergeIf = require('../mergeIf')
 
 module.exports = class If extends TransformComponent
