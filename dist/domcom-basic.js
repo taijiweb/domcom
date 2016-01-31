@@ -2072,7 +2072,7 @@
 	    this.remove();
 	    this.listeners = null;
 	    if (this.node) {
-	      delete this.node.component;
+	      this.node.component = null;
 	      this.node = null;
 	    }
 	    this.baseComponent = null;

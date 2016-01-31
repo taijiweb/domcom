@@ -1,3 +1,8 @@
+### 2016-1-31: v0.1.6 on github, npm
+* fix a bug in webpack.config, remove the file path in .min.js file
+* stop pass component as the parameter to eventHandlerFromArray, just use "node.component"
+* always emit "attach" event while component to the tree, and "detach" event while removing the component from the tree
+
 ### 2016-1-16: v0.1.5 on github, npm
 * api(new): new api for delegating event: Tag.delegateByHolder, Tag.delegateByComponent, Tag.delegate
 * api(new): dc.error, dc.onerror
