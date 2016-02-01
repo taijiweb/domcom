@@ -770,10 +770,10 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var dupStr, globalDcid,
+	var dupStr, globalDcid, isArray,
 	  __slice = [].slice;
 
-	exports.isArray = function(item) {
+	exports.isArray = isArray = function(item) {
 	  return Object.prototype.toString.call(item) === '[object Array]';
 	};
 
@@ -1035,6 +1035,27 @@
 	    }
 	    return result;
 	  }
+	};
+
+	exports.foreach = function(items, callback) {
+	  var i, item, key, result, _i, _len;
+	  if (!items) {
+	    return;
+	  }
+	  if (isArray(items)) {
+	    result = [];
+	    for (i = _i = 0, _len = items.length; _i < _len; i = ++_i) {
+	      item = items[i];
+	      result.push(callback(item, i));
+	    }
+	  } else {
+	    result = {};
+	    for (key in items) {
+	      item = items[key];
+	      result[key] = callback(item, key);
+	    }
+	  }
+	  return result;
 	};
 
 
@@ -5579,7 +5600,7 @@
 /* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Case, TestComponent, funcString, intersect, newLine, renew, toComponent, _ref,
+	var Case, TestComponent, foreach, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -5587,7 +5608,7 @@
 
 	TestComponent = __webpack_require__(33);
 
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
+	_ref = __webpack_require__(4), foreach = _ref.foreach, funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
 	renew = __webpack_require__(3).renew;
 
@@ -5595,7 +5616,7 @@
 	  __extends(Case, _super);
 
 	  function Case(test, map, else_, forceCase) {
-	    var families, family, key, value, _;
+	    var families, family;
 	    this.map = map;
 	    if (forceCase == null) {
 	      forceCase = false;
@@ -5607,21 +5628,14 @@
 	        return toComponent(else_);
 	      }
 	    }
-	    for (key in map) {
-	      value = map[key];
-	      map[key] = toComponent(value);
-	    }
+	    foreach(map, function(value, index) {
+	      return map[index] = toComponent(value);
+	    });
 	    this.else_ = toComponent(else_);
-	    families = (function() {
-	      var _ref1, _results;
-	      _ref1 = this.map;
-	      _results = [];
-	      for (_ in _ref1) {
-	        value = _ref1[_];
-	        _results.push(value.family);
-	      }
-	      return _results;
-	    }).call(this);
+	    families = [];
+	    foreach(map, function(value) {
+	      return families.push(value.family);
+	    });
 	    families.push(this.else_.family);
 	    this.family = family = intersect(families);
 	    family[this.dcid] = true;
@@ -5633,27 +5647,22 @@
 	  };
 
 	  Case.prototype.clone = function() {
-	    var cloneMap, key, value, _ref1;
-	    cloneMap = {};
-	    _ref1 = this.map;
-	    for (key in _ref1) {
-	      value = _ref1[key];
-	      cloneMap[key] = value.clone();
-	    }
+	    var cloneMap;
+	    cloneMap = foreach(this.map, function(value) {
+	      return value.clone();
+	    });
 	    return (new Case(this.test, cloneMap, this["else"].clone())).copyEventListeners(this);
 	  };
 
 	  Case.prototype.toString = function(indent, addNewLine) {
-	    var comp, key, s, _ref1;
+	    var s;
 	    if (indent == null) {
 	      indent = 0;
 	    }
 	    s = newLine('', indent, addNewLine) + '<Case ' + funcString(this.test) + '>';
-	    _ref1 = this.map;
-	    for (key in _ref1) {
-	      comp = _ref1[key];
-	      s += newLine(key + ': ' + comp.toString(indent + 2, false), indent + 2, true);
-	    }
+	    foreach(this.map, function(value, index) {
+	      return s += newLine(index + ': ' + value.toString(indent + 2, false), indent + 2, true);
+	    });
 	    return s += this.else_.toString(indent + 2, true) + newLine('</Case>', indent, true);
 	  };
 

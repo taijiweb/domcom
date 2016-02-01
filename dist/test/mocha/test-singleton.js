@@ -304,30 +304,41 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       var comp, x;
       x = see(0);
       comp = case_(x, {
-        1: p(1),
-        2: p(2),
-        3: p(3)
+        1: p('a'),
+        2: p('b'),
+        3: p('c')
       }, 'others');
       comp.mount();
       expect(comp.node).to.be["instanceof"](window.Text);
       expect(comp.node.textContent).to.equal('others');
       x(1);
       comp.update();
-      return expect(comp.node.innerHTML).to.equal('1');
+      return expect(comp.node.innerHTML).to.equal('a');
     });
-    return it('should create and render forceCase', function() {
+    it('should create and render forceCase', function() {
       var comp;
       comp = forceCase(0, {
-        1: p(1),
-        2: p(2),
-        3: p(3)
+        1: p('a'),
+        2: p('b'),
+        3: p('c')
       }, 'others');
       comp.mount();
       expect(comp.node).to.be["instanceof"](window.Text);
       expect(comp.node.textContent).to.equal('others');
       comp.test = 1;
       comp.update();
-      return expect(comp.node.innerHTML).to.equal('1');
+      return expect(comp.node.innerHTML).to.equal('a');
+    });
+    return it('should create and render array case_', function() {
+      var comp, x;
+      x = see(3);
+      comp = case_(x, [p('a'), p('b'), p('c')], 'others');
+      comp.mount();
+      expect(comp.node).to.be["instanceof"](window.Text);
+      expect(comp.node.textContent).to.equal('others');
+      x(1);
+      comp.update();
+      return expect(comp.node.innerHTML).to.equal('b');
     });
   });
   describe('Func', function() {

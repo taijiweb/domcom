@@ -265,22 +265,32 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
   describe 'Case', ->
     it 'should create and render case_', ->
       x = see 0
-      comp = case_(x, {1:p(1), 2:p(2), 3:p(3)}, 'others')
+      comp = case_(x, {1:p('a'), 2:p('b'), 3:p('c')}, 'others')
       comp.mount()
       expect(comp.node).to.be.instanceof window.Text
       expect(comp.node.textContent).to.equal 'others'
       x 1
       comp.update()
-      expect(comp.node.innerHTML).to.equal '1'
+      expect(comp.node.innerHTML).to.equal 'a'
 
     it 'should create and render forceCase', ->
-      comp = forceCase(0, {1:p(1), 2:p(2), 3:p(3)}, 'others')
+      comp = forceCase(0, {1:p('a'), 2:p('b'), 3:p('c')}, 'others')
       comp.mount()
       expect(comp.node).to.be.instanceof window.Text
       expect(comp.node.textContent).to.equal 'others'
       comp.test = 1
       comp.update()
-      expect(comp.node.innerHTML).to.equal '1'
+      expect(comp.node.innerHTML).to.equal 'a'
+
+    it 'should create and render array case_', ->
+      x = see 3
+      comp = case_(x, [p('a'), p('b'), p('c')], 'others')
+      comp.mount()
+      expect(comp.node).to.be.instanceof window.Text
+      expect(comp.node.textContent).to.equal 'others'
+      x 1
+      comp.update()
+      expect(comp.node.innerHTML).to.equal 'b'
 
   describe 'Func', ->
     it 'func(->12) ', ->

@@ -1,6 +1,6 @@
 toComponent = require('./toComponent')
 TestComponent = require('./TestComponent')
-{funcString, newLine, intersect} = require('dc-util')
+{foreach, funcString, newLine, intersect} = require('dc-util')
 {renew} = require('lazy-flow')
 
 module.exports = class Case extends TestComponent
@@ -12,11 +12,12 @@ module.exports = class Case extends TestComponent
       else
         return toComponent(else_)
 
-    for key, value of map
-      map[key] = toComponent(value)
+    foreach map, (value, index) ->
+      map[index] = toComponent(value)
     @else_ = toComponent(else_)
 
-    families = for _, value of @map then value.family
+    families = []
+    foreach map, (value) -> families.push(value.family)
     families.push @else_.family
     @family = family = intersect(families)
     family[@dcid] = true
@@ -27,14 +28,12 @@ module.exports = class Case extends TestComponent
     @map[@getTestValue()] or @else_
 
   clone: ->
-    cloneMap = {}
-    for key, value of @map
-      cloneMap[key] = value.clone()
+    cloneMap = foreach @map, (value) -> value.clone()
     (new Case(@test, cloneMap, @else.clone())).copyEventListeners(@)
 
   toString: (indent=0, addNewLine) ->
     s = newLine('', indent, addNewLine)+'<Case '+funcString(@test)+'>'
-    for key, comp of @map
-      s += newLine(key+': '+comp.toString(indent+2, false), indent+2, true)
+    foreach @map, (value, index) ->
+      s += newLine(index+': '+value.toString(indent+2, false), indent+2, true)
     s += @else_.toString(indent+2, true)+newLine('</Case>', indent, true)
 
