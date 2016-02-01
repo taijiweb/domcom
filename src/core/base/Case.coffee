@@ -1,23 +1,19 @@
 toComponent = require('./toComponent')
-TransformComponent = require('./TransformComponent')
+TestComponent = require('./TestComponent')
 {funcString, newLine, intersect} = require('dc-util')
 {renew} = require('lazy-flow')
 
-module.exports = class Case extends TransformComponent
-  constructor: (test, @map, else_) ->
+module.exports = class Case extends TestComponent
+  constructor: (test, @map, else_, forceCase=false) ->
 
-    if typeof test != 'function'
-      if map.hasOwnPoperty(test) then return toComponent(map[key])
-      else return toComponent(else_)
-
-    super()
-
-    if !test.invalidate then @test = renew(test)
-    else @test = test
-    @test.onInvalidate(@invalidateTransform.bind(@))
+    if !forceCase and typeof test != 'function'
+      if map.hasOwnPoperty(test)
+        return toComponent(map[key])
+      else
+        return toComponent(else_)
 
     for key, value of map
-      map[key] = toComponent(value) #comp =
+      map[key] = toComponent(value)
     @else_ = toComponent(else_)
 
     families = for _, value of @map then value.family
@@ -25,7 +21,10 @@ module.exports = class Case extends TransformComponent
     @family = family = intersect(families)
     family[@dcid] = true
 
-  getContentComponent: -> @map[@test()] or @else_
+    super(test)
+
+  getContentComponent: ->
+    @map[@getTestValue()] or @else_
 
   clone: ->
     cloneMap = {}

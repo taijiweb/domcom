@@ -10,10 +10,11 @@ module.exports = class Cond extends TransformComponent
     i = 0; length = testComponentPairs.length
     while i<length
       test = testComponentPairs[i]
-      if !test.invalidate then test = renew test
+      if !test.invalidate
+        test = renew test
       test.onInvalidate @invalidateTransform.bind(@)
       testComponentPairs[i] = test
-      testComponentPairs[i+1] = toComponent(testComponentPairs[i+1])  #comp =
+      testComponentPairs[i+1] = toComponent(testComponentPairs[i+1])
       i += 2
     else_ = toComponent else_
 
@@ -24,13 +25,14 @@ module.exports = class Cond extends TransformComponent
       families.push  testComponentPairs[i].family
       i += 2
     families.push else_.family
-    @family = family = intersect(families)
+    @family = intersect(families)
 
     this
 
   getContentComponent: ->
     for [test, component] in @testComponentPairs
-      if test() then return component
+      if test()
+        return component
     @else_
 
   clone: ->
@@ -39,8 +41,7 @@ module.exports = class Cond extends TransformComponent
     while i<length
       newCondComponentList[i+1] = newCondComponentList[i+1].clone()
       i+=2
-    newElse = @else_.clone()
-    new Cond(newCondComponentList, else_).copyEventListeners(@)
+    new Cond(newCondComponentList, @else_.clone()).copyEventListeners(@)
 
   toString: (indent=0, addNewLine) ->
     s = newLine('', indent, addNewLine)+'<Cond '+funcString(test)+'>'

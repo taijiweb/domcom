@@ -61,12 +61,13 @@ exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
     return new List(mergeIfChildren(test, then_, else_, recursive))
 
   else
-     new If(test, then_, else_)
+     new If(test, then_, else_, false, false, true)  # merge, recursive, forceIf
 
 mergeIfChild = (test, then_, else_, recursive) ->
   if !recursive and (then_.isList or else_.isList)
     # whether another is List or not, then_ and else_ should or could not be merged
-    if_(test, then_, else_)
+    If = require('./base/If')
+    new If(test, then_, else_, false, false, true) # merge, recursive, forceIf
   else
     mergeIf(test, then_, else_, recursive)
 

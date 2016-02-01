@@ -3,7 +3,7 @@
 
 {see, flow
 Component, TransformComponent, Tag, Text,
-txt, list, func, if_, case_, func,
+txt, list, func, if_, forceIf, If, case_, forceCase, func,
 pick
 a, p, span, text, div} = dc
 
@@ -17,6 +17,12 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
       expect(if_(0, 1, t)).to.equal t
       expect(if_(1, t, 0)).to.equal t
 
+    it 'should NOT optimize forceIf', ->
+      t = txt(1)
+      comp = forceIf(0, 1, t)
+      expect(comp).to.not.equal t
+      expect(comp.else_).to.equal t
+
     it 'should compute if_((-> x), p(t), t).family', ->
       t = txt(1)
       x = 0
@@ -25,7 +31,7 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
     it 'should construct if_(x, p(t1), list(p(t2), t1))', ->
       x = see 0
       t1 = txt 1; t2 = txt 2
-      comp = if_(x, p(t1), list(t2, p(t1)))
+      if_(x, p(t1), list(t2, p(t1)))
 
     it 'should render if_(see something, txt(1), txt(2))', ->
       x = see 0
@@ -38,6 +44,19 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
       comp.update()
       expect(comp.node.textContent).to.equal '1', 'update x 1'
       x 0
+      comp.update()
+      expect(comp.node.textContent).to.equal '2', 'update x 0'
+
+    it 'should render forceIf(0, txt(1), txt(2))', ->
+      comp = forceIf(0, txt(1), txt(2))
+      comp.mount()
+      expect(comp.node.textContent).to.equal '2', 'mount'
+      comp.update()
+      expect(comp.node.textContent).to.equal '2', 'update'
+      comp.test = 1
+      comp.update()
+      expect(comp.node.textContent).to.equal '1', 'update x 1'
+      comp.test = 0
       comp.update()
       expect(comp.node.textContent).to.equal '2', 'update x 0'
 
@@ -251,6 +270,15 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
       expect(comp.node).to.be.instanceof window.Text
       expect(comp.node.textContent).to.equal 'others'
       x 1
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '1'
+
+    it 'should create and render forceCase', ->
+      comp = forceCase(0, {1:p(1), 2:p(2), 3:p(3)}, 'others')
+      comp.mount()
+      expect(comp.node).to.be.instanceof window.Text
+      expect(comp.node.textContent).to.equal 'others'
+      comp.test = 1
       comp.update()
       expect(comp.node.innerHTML).to.equal '1'
 

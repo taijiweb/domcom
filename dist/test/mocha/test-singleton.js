@@ -1,10 +1,10 @@
-var Component, Tag, Text, TransformComponent, a, case_, div, expect, flow, func, idescribe, if_, iit, list, ndescribe, newDemoNode, nit, p, pick, see, span, text, txt, _ref;
+var Component, If, Tag, Text, TransformComponent, a, case_, div, expect, flow, forceCase, forceIf, func, idescribe, if_, iit, list, ndescribe, newDemoNode, nit, p, pick, see, span, text, txt, _ref;
 
 _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
 newDemoNode = require('./helper').newDemoNode;
 
-see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, pick = dc.pick, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
+see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, forceIf = dc.forceIf, If = dc.If, case_ = dc.case_, forceCase = dc.forceCase, func = dc.func, pick = dc.pick, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
 describe('singleton component: If, Case, Func, Pick, ...', function() {
   describe('If', function() {
@@ -18,6 +18,13 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(if_(0, 1, t)).to.equal(t);
       return expect(if_(1, t, 0)).to.equal(t);
     });
+    it('should NOT optimize forceIf', function() {
+      var comp, t;
+      t = txt(1);
+      comp = forceIf(0, 1, t);
+      expect(comp).to.not.equal(t);
+      return expect(comp.else_).to.equal(t);
+    });
     it('should compute if_((-> x), p(t), t).family', function() {
       var t, x;
       t = txt(1);
@@ -27,11 +34,11 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       }), p(t), t).family[t.dcid]).to.equal(true);
     });
     it('should construct if_(x, p(t1), list(p(t2), t1))', function() {
-      var comp, t1, t2, x;
+      var t1, t2, x;
       x = see(0);
       t1 = txt(1);
       t2 = txt(2);
-      return comp = if_(x, p(t1), list(t2, p(t1)));
+      return if_(x, p(t1), list(t2, p(t1)));
     });
     it('should render if_(see something, txt(1), txt(2))', function() {
       var comp, x;
@@ -45,6 +52,20 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.update();
       expect(comp.node.textContent).to.equal('1', 'update x 1');
       x(0);
+      comp.update();
+      return expect(comp.node.textContent).to.equal('2', 'update x 0');
+    });
+    it('should render forceIf(0, txt(1), txt(2))', function() {
+      var comp;
+      comp = forceIf(0, txt(1), txt(2));
+      comp.mount();
+      expect(comp.node.textContent).to.equal('2', 'mount');
+      comp.update();
+      expect(comp.node.textContent).to.equal('2', 'update');
+      comp.test = 1;
+      comp.update();
+      expect(comp.node.textContent).to.equal('1', 'update x 1');
+      comp.test = 0;
       comp.update();
       return expect(comp.node.textContent).to.equal('2', 'update x 0');
     });
@@ -279,7 +300,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
     });
   });
   describe('Case', function() {
-    return it('should create and render case_', function() {
+    it('should create and render case_', function() {
       var comp, x;
       x = see(0);
       comp = case_(x, {
@@ -291,6 +312,20 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node).to.be["instanceof"](window.Text);
       expect(comp.node.textContent).to.equal('others');
       x(1);
+      comp.update();
+      return expect(comp.node.innerHTML).to.equal('1');
+    });
+    return it('should create and render forceCase', function() {
+      var comp;
+      comp = forceCase(0, {
+        1: p(1),
+        2: p(2),
+        3: p(3)
+      }, 'others');
+      comp.mount();
+      expect(comp.node).to.be["instanceof"](window.Text);
+      expect(comp.node.textContent).to.equal('others');
+      comp.test = 1;
       comp.update();
       return expect(comp.node.innerHTML).to.equal('1');
     });

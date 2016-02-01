@@ -13,6 +13,7 @@ module.exports =
   Html: require('./Html')
   Nothing: require('./Nothing')
   TransformComponent: require('./TransformComponent')
+  TestComponent: require('./TestComponent')
   If: require('./If')
   Case: require('./Case')
   Func: require('./Func')

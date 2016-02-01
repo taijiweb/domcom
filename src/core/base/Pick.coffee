@@ -51,7 +51,8 @@ module.exports = class Pick extends TransformComponent
   getContentComponent: -> @_content
 
   # this probably should be overloaded by the subclass
-  clone: -> (new @constructor(@host, @field)).copyEventListeners(@)
+  clone: ->
+    (new @constructor(@host, @field)).copyEventListeners(@)
 
   toString: (indent=0, addNewLine='') ->
       newLine('', indent, addNewLine)+'<Pick:'+@field+': '+@_content.toString(indent+2, true)+'>'
