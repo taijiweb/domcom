@@ -10,13 +10,14 @@ mountList = []
 
 module.exports = class Component
   constructor: ->
-    @listeners = {}
-    @baseComponent = null
-    @parentNode = null
-    @node = null
-    @attached = false
-    @holder = null
-    @dcid = newDcid()
+    this.listeners = {}
+    this.baseComponent = null
+    this.parentNode = null
+    this.node = null
+    this.attached = false
+    this.destroyed = false
+    this.holder = null
+    this.dcid = newDcid()
 
   on: (event, callback) ->
     if !arguments.length
@@ -57,7 +58,10 @@ module.exports = class Component
     @
 
   emit:(event, args...) ->
-    if !(callbacks = @listeners[event]) then return
+    if this.destroyed
+      return @
+    if !(callbacks = @listeners[event])
+      return @
     for callback in callbacks then callback.apply(@, args)
     @
 
@@ -78,9 +82,13 @@ module.exports = class Component
     @
 
   render: ->
+    if this.destroyed
+      return @
     @renderDom(@baseComponent)
 
   update: ->
+    if this.destroyed
+      return @
     @emit('update')
     @render()
     @
@@ -112,9 +120,9 @@ module.exports = class Component
     @
 
   remove: ->
-    @emit('remove')
+    this.emit('remove')
 
-    if !@node or !@node.parentNode
+    if !this.node or !this.node.parentNode
       return @
     else
       component = @
@@ -132,6 +140,8 @@ module.exports = class Component
       this
 
   replace: (oldComponent) ->
+    if this.destroyed
+      return
     holder = oldComponent.holder
     if  holder
       if holder.isTransformComponent
@@ -149,6 +159,7 @@ module.exports = class Component
     this
 
   destroy: ->
+    this.destroyed = true
     this.remove()
     this.listeners = null
     if this.node

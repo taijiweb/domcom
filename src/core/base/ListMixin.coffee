@@ -9,7 +9,7 @@ Nothing = require('./Nothing')
 # todo: to simplify, use sort to replace binaryInsert and binarySearch
 # tried once, but it seems to be not simple enough
 
-module.exports =
+module.exports = exports =
 
   initChildren: (children) ->
     children = toComponentList(children)
@@ -118,18 +118,22 @@ module.exports =
     @insertChild(0, child)
 
   insertChild: (index, child) ->
-    {children} = @
+    {children} = this
+    if isComponent(index)
+      index = children.indexOf(index)
+      if index < 0
+        index = children.length
     if index >= children.length
-      return @setChildren(index, child)
+      return this.setChildren(index, child)
 
-    @invalidate()
+    this.invalidate()
     child = toComponent(child)
     children.splice(index, 0, child)
-    @dcidIndexMap[child.dcid] = index
+    this.dcidIndexMap[child.dcid] = index
 
-    if @node
+    if this.node
 
-      {invalidIndexes} = @
+      {invalidIndexes} = this
       insertLocation = binaryInsert(index, invalidIndexes)
 
       # increment the indexes in the invalidInexes after insertLocation
@@ -139,7 +143,19 @@ module.exports =
         invalidIndexes[insertLocation]++
         insertLocation++
 
-    @
+    this
+
+  insertChildBefore: (child, ref) ->
+    this.insert(ref, child)
+
+  insertChildAfter: (child, ref) ->
+    {children} = this
+    if isComponent(ref)
+      ref = children.indexOf(ref)
+      if ref < 0
+        ref = children.length
+
+    this.insertChild(ref+1, child)
 
   removeChild: (indexOrComponent) ->
     if isComponent(indexOrComponent)
@@ -284,4 +300,3 @@ module.exports =
       @removeChild(last)
       last--
     @
-

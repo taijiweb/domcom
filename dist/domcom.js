@@ -2304,6 +2304,7 @@
 	    this.parentNode = null;
 	    this.node = null;
 	    this.attached = false;
+	    this.destroyed = false;
 	    this.holder = null;
 	    this.dcid = newDcid();
 	  }
@@ -2370,8 +2371,11 @@
 	  Component.prototype.emit = function() {
 	    var args, callback, callbacks, event, _i, _len;
 	    event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+	    if (this.destroyed) {
+	      return this;
+	    }
 	    if (!(callbacks = this.listeners[event])) {
-	      return;
+	      return this;
 	    }
 	    for (_i = 0, _len = callbacks.length; _i < _len; _i++) {
 	      callback = callbacks[_i];
@@ -2396,10 +2400,16 @@
 	  };
 
 	  Component.prototype.render = function() {
+	    if (this.destroyed) {
+	      return this;
+	    }
 	    return this.renderDom(this.baseComponent);
 	  };
 
 	  Component.prototype.update = function() {
+	    if (this.destroyed) {
+	      return this;
+	    }
 	    this.emit('update');
 	    this.render();
 	    return this;
@@ -2457,6 +2467,9 @@
 
 	  Component.prototype.replace = function(oldComponent) {
 	    var holder;
+	    if (this.destroyed) {
+	      return;
+	    }
 	    holder = oldComponent.holder;
 	    if (holder) {
 	      if (holder.isTransformComponent) {
@@ -2476,6 +2489,7 @@
 	  };
 
 	  Component.prototype.destroy = function() {
+	    this.destroyed = true;
 	    this.remove();
 	    this.listeners = null;
 	    if (this.node) {
@@ -3050,7 +3064,7 @@
 /* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Nothing, binaryInsert, binarySearch, extendChildFamily, isComponent, substractSet, toComponent, toComponentList, _ref,
+	var Nothing, binaryInsert, binarySearch, exports, extendChildFamily, isComponent, substractSet, toComponent, toComponentList, _ref,
 	  __slice = [].slice;
 
 	isComponent = __webpack_require__(9);
@@ -3065,7 +3079,7 @@
 
 	extendChildFamily = __webpack_require__(7).extendChildFamily;
 
-	module.exports = {
+	module.exports = exports = {
 	  initChildren: function(children) {
 	    var child, dcidIndexMap, family, i, _i, _len;
 	    children = toComponentList(children);
@@ -3170,6 +3184,12 @@
 	  insertChild: function(index, child) {
 	    var children, insertLocation, invalidIndexes, length;
 	    children = this.children;
+	    if (isComponent(index)) {
+	      index = children.indexOf(index);
+	      if (index < 0) {
+	        index = children.length;
+	      }
+	    }
 	    if (index >= children.length) {
 	      return this.setChildren(index, child);
 	    }
@@ -3188,6 +3208,20 @@
 	      }
 	    }
 	    return this;
+	  },
+	  insertChildBefore: function(child, ref) {
+	    return this.insert(ref, child);
+	  },
+	  insertChildAfter: function(child, ref) {
+	    var children;
+	    children = this.children;
+	    if (isComponent(ref)) {
+	      ref = children.indexOf(ref);
+	      if (ref < 0) {
+	        ref = children.length;
+	      }
+	    }
+	    return this.insertChild(ref + 1, child);
 	  },
 	  removeChild: function(indexOrComponent) {
 	    var child, children, index, invalidIndex, invalidIndexes, prevIndex;
@@ -3489,11 +3523,16 @@
 	        return me.invalidate();
 	      }
 	    });
-	    this.hasActiveProps = false;
 	    this.cacheProps = {};
 	    this.props = {};
 	    this.boundProps = {};
 	    this['invalidateProps'] = {};
+	    this.nodeProps = {};
+	    this.hasActiveNodeAttrs = false;
+	    this.cacheNodeAttrs = {};
+	    this.nodeAttrs = {};
+	    this.boundNodeAttrs = {};
+	    this['invalidateNodeAttrs'] = {};
 	    this.hasActiveStyle = false;
 	    this.cacheStyle = {};
 	    this.style = {};
@@ -3505,8 +3544,8 @@
 	  };
 
 	  Tag.prototype.extendAttrs = function(attrs) {
-	    var className, generator, handler, key, props, style, styles, v, v0, value, _i, _j, _len, _len1, _ref4;
-	    className = this.className, style = this.style, props = this.props;
+	    var className, generator, handler, key, nodeAttrs, props, style, styles, v, v0, value, _i, _j, _len, _len1, _ref4;
+	    className = this.className, style = this.style, props = this.props, nodeAttrs = this.nodeAttrs;
 	    for (key in attrs) {
 	      value = attrs[key];
 	      if (key === 'style') {
@@ -3545,6 +3584,8 @@
 	          handler = generator.apply(null, [value]);
 	        }
 	        handler(this);
+	      } else if (key.slice(0, 5) === 'attr_') {
+	        this.setProp(key.slice(5), value, nodeAttrs, 'NodeAttrs');
 	      } else {
 	        this.setProp(key, value, props, 'Props');
 	      }
@@ -3569,7 +3610,17 @@
 	  };
 
 	  Tag.prototype.cssBind = function(prop) {
-	    return this._propBind([prop], this.style, 'Style');
+	    return this._propBind(prop, this.style, 'Style');
+	  };
+
+	  Tag.prototype.attr = function() {
+	    var args;
+	    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return this._prop(args, this.nodeAttrs, 'NodeAttrs');
+	  };
+
+	  Tag.prototype.attrBind = function(prop) {
+	    return this._propBind(prop, this.nodeAttrs, 'NodeAttrs');
 	  };
 
 	  Tag.prototype._propBind = function(prop, props, type) {
@@ -3610,7 +3661,11 @@
 	        }
 	      }
 	    } else if (args.length === 2) {
-	      this.setProp(args[0], args[1], props, type);
+	      if (type === 'NodeAttrs') {
+	        this.setProp(args[0], args[1], props, type);
+	      } else {
+	        this.setProp(args[0], args[1], props, type);
+	      }
 	    }
 	    return this;
 	  };
@@ -3892,7 +3947,7 @@
 	  };
 
 	  Tag.prototype.updateProperties = function() {
-	    var cacheProps, cacheStyle, callbackList, className, classValue, elementStyle, eventName, events, node, prop, props, style, value;
+	    var cacheNodeAttrs, cacheProps, cacheStyle, callbackList, className, classValue, elementStyle, eventName, events, node, nodeAttrs, prop, props, style, value;
 	    this.hasActiveProperties = false;
 	    node = this.node, className = this.className;
 	    if (!className.valid) {
@@ -3901,18 +3956,24 @@
 	        this.cacheClassName = node.className = classValue;
 	      }
 	    }
+	    if (this.hasActiveNodeAttrs) {
+	      nodeAttrs = this.nodeAttrs, cacheNodeAttrs = this.cacheNodeAttrs;
+	      this.hasActiveNodeAttrs = false;
+	      for (prop in nodeAttrs) {
+	        value = nodeAttrs[prop];
+	        delete nodeAttrs[prop];
+	        value = domValue(value);
+	        cacheNodeAttrs[prop] = node[prop] = value;
+	        node.setAttribute(prop, value);
+	      }
+	    }
 	    if (this.hasActiveProps) {
 	      props = this.props, cacheProps = this.cacheProps;
 	      this.hasActiveProps = false;
 	      for (prop in props) {
 	        value = props[prop];
 	        delete props[prop];
-	        if (typeof value === 'function') {
-	          value = value();
-	        }
-	        if (value == null) {
-	          value = '';
-	        }
+	        value = domValue(value);
 	        cacheProps[prop] = node[prop] = value;
 	      }
 	    }
@@ -3923,12 +3984,7 @@
 	      for (prop in style) {
 	        value = style[prop];
 	        delete style[prop];
-	        if (typeof value === 'function') {
-	          value = value();
-	        }
-	        if (value == null) {
-	          value = '';
-	        }
+	        value = domValue(value);
 	        cacheStyle[prop] = elementStyle[prop] = value;
 	      }
 	    }
@@ -6950,6 +7006,7 @@
 	    this.parentNode = null;
 	    this.node = null;
 	    this.attached = false;
+	    this.destroyed = false;
 	    this.holder = null;
 	    this.dcid = newDcid();
 	  }
@@ -7016,8 +7073,11 @@
 	  Component.prototype.emit = function() {
 	    var args, callback, callbacks, event, _i, _len;
 	    event = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+	    if (this.destroyed) {
+	      return this;
+	    }
 	    if (!(callbacks = this.listeners[event])) {
-	      return;
+	      return this;
 	    }
 	    for (_i = 0, _len = callbacks.length; _i < _len; _i++) {
 	      callback = callbacks[_i];
@@ -7042,10 +7102,16 @@
 	  };
 
 	  Component.prototype.render = function() {
+	    if (this.destroyed) {
+	      return this;
+	    }
 	    return this.renderDom(this.baseComponent);
 	  };
 
 	  Component.prototype.update = function() {
+	    if (this.destroyed) {
+	      return this;
+	    }
 	    this.emit('update');
 	    this.render();
 	    return this;
@@ -7103,6 +7169,9 @@
 
 	  Component.prototype.replace = function(oldComponent) {
 	    var holder;
+	    if (this.destroyed) {
+	      return;
+	    }
 	    holder = oldComponent.holder;
 	    if (holder) {
 	      if (holder.isTransformComponent) {
@@ -7122,6 +7191,7 @@
 	  };
 
 	  Component.prototype.destroy = function() {
+	    this.destroyed = true;
 	    this.remove();
 	    this.listeners = null;
 	    if (this.node) {

@@ -39,11 +39,17 @@ module.exports = class Tag extends BaseComponent
         me.hasActiveProperties = true
         me.invalidate()
 
-    @hasActiveProps = false
     @cacheProps = {}
     @props = {}
     @boundProps = {}
     @['invalidateProps'] = {}
+    @nodeProps = {}
+
+    @hasActiveNodeAttrs = false
+    @cacheNodeAttrs = {}
+    @nodeAttrs = {}
+    @boundNodeAttrs = {}
+    @['invalidateNodeAttrs'] = {}
 
     @hasActiveStyle = false
     @cacheStyle = {}
@@ -57,7 +63,7 @@ module.exports = class Tag extends BaseComponent
 
   extendAttrs: (attrs)->
 
-    {className, style, props} = @
+    {className, style, props, nodeAttrs} = @
 
     for key, value of attrs
 
@@ -93,6 +99,9 @@ module.exports = class Tag extends BaseComponent
         else handler = generator.apply(null, [value])
         handler(@)
 
+      else if key[..4] == 'attr_'
+        @setProp(key[5...], value, nodeAttrs, 'NodeAttrs')
+
       else @setProp(key, value, props, 'Props')
 
     @
@@ -103,7 +112,11 @@ module.exports = class Tag extends BaseComponent
 
   css: (args...) -> @_prop(args, @style, 'Style')
 
-  cssBind: (prop) ->  @_propBind([prop], @style, 'Style')
+  cssBind: (prop) ->  @_propBind(prop, @style, 'Style')
+
+  attr: (args...) -> @_prop(args, @nodeAttrs, 'NodeAttrs')
+
+  attrBind: (prop) ->  @_propBind(prop, @nodeAttrs, 'NodeAttrs')
 
   _propBind: (prop, props, type) ->
     boundProps = this['bound'+type]
@@ -134,7 +147,9 @@ module.exports = class Tag extends BaseComponent
           @setProp(key, v, props, type)
 
     else if args.length==2
-      @setProp(args[0], args[1], props, type)
+      if type=='NodeAttrs'
+        this.setProp(args[0], args[1], props, type)
+      else @setProp(args[0], args[1], props, type)
 
     this
 
@@ -352,13 +367,21 @@ module.exports = class Tag extends BaseComponent
       if classValue!=@cacheClassName
         @cacheClassName = node.className = classValue
 
+    if @hasActiveNodeAttrs
+      {nodeAttrs, cacheNodeAttrs} = @
+      @hasActiveNodeAttrs = false
+      for prop, value of nodeAttrs
+        delete nodeAttrs[prop]
+        value = domValue(value)
+        cacheNodeAttrs[prop] = node[prop] = value
+        node.setAttribute(prop, value)
+
     if @hasActiveProps
       {props, cacheProps} = @
       @hasActiveProps = false
       for prop, value of props
         delete props[prop]
-        if typeof value == 'function' then value = value()
-        if !value? then value = ''
+        value = domValue(value)
         cacheProps[prop] = node[prop] = value
 
     if @hasActiveStyle
@@ -367,8 +390,7 @@ module.exports = class Tag extends BaseComponent
       elementStyle = node.style
       for prop, value of style
         delete style[prop]
-        if typeof value == 'function' then value = value()
-        if !value? then value = ''
+        value = domValue(value)
         cacheStyle[prop] = elementStyle[prop] = value
 
     if @hasActiveEvents

@@ -75,6 +75,15 @@ describe("test base component", function() {
       p.mount();
       return expect(p.node.tagName).to.equal('P');
     });
+    it('should mount pre with property', function() {
+      var comp;
+      comp = new Tag('pre', {
+        attr_space: ''
+      }, []);
+      comp.mount();
+      expect(comp.node.tagName).to.equal('PRE');
+      return expect(comp.node.getAttribute('space')).to.equal('');
+    });
     it('should mount  tag with attribute', function() {
       p = new Tag('p', {
         className: classFn('some class'),

@@ -61,8 +61,14 @@ describe "test base component", ->
 
     it 'should mount tag',  ->
       p = new Tag('p', {}, [])
-      p.mount() 
+      p.mount()
       expect(p.node.tagName).to.equal 'P'
+
+    it 'should mount pre with property',  ->
+      comp = new Tag('pre', {attr_space: ''}, [])
+      comp.mount()
+      expect(comp.node.tagName).to.equal 'PRE'
+      expect(comp.node.getAttribute('space')).to.equal('')
 
     it 'should mount  tag with attribute', ->
       p = new Tag('p', {className:classFn('some class'), style:styleFrom("width:1px;")}, [])
