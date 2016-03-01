@@ -1,7 +1,5 @@
-extend = require('extend')
-
 Tag = require('./Tag')
-{funcString, newLine} = require('dc-util')
+{funcString, newLine, mixin} = require('dc-util')
 {domValue, domField} = require('../../dom-util')
 
 # !!! Warning:
@@ -116,5 +114,7 @@ ListMixin = require('./ListMixin')
 for method of ListMixin
   Html.prototype[method] = ->
     dc.error("Html component has no children components, do not call ListMixin method(#{method} on it")
+
+extend = require('extend')
 
 extend(Html.prototype, HtmlMixin)

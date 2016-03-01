@@ -22,7 +22,7 @@ exports.eachDemo3 = function() {
   comp = each(lst3, function(item) {
     return p(item);
   });
-  comp.on('attach', function() {
+  comp.on('willAttach', function() {
     setTimeout((function() {
       lst3.push(7);
       return comp.update();
@@ -41,7 +41,7 @@ exports.eachDemo4 = function() {
   comp = each(lst4, function(item) {
     return txt(item);
   });
-  comp.on('attach', function() {
+  comp.on('willAttach', function() {
     setTimeout((function() {
       lst4.push(7);
       return comp.update();

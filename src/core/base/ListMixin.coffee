@@ -9,7 +9,7 @@ Nothing = require('./Nothing')
 # todo: to simplify, use sort to replace binaryInsert and binarySearch
 # tried once, but it seems to be not simple enough
 
-module.exports = exports =
+module.exports =
 
   initChildren: (children) ->
     children = toComponentList(children)

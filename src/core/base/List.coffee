@@ -78,9 +78,10 @@ module.exports = exports = class List extends BaseComponent
       @attached = false
       @holder = null
       @node.parentNode = null
-      @emit('detach')
+      @emit('willDetach')
       for child in @children
         child.removeDom()
+      @emit('didDetach')
     @
 
   removeNode: ->
@@ -96,9 +97,9 @@ module.exports = exports = class List extends BaseComponent
 
     {children, parentNode, nextNode, node} = @
 
-    if !@attached
+    if !(attached=@attached)
       @attached = true
-      @emit('attach')
+      @emit('willAttach')
 
     # different parentNode, it was removeDom before !
     # attach it again
@@ -129,7 +130,8 @@ module.exports = exports = class List extends BaseComponent
       # else null # no children, do nothing
 
     # else null # both parentNode and nextNode does not change, do nothing
-
+    if !attached
+      @emit('didAttach')
     @node
 
   clone: -> (new List((for child in @children then child.clone()))).copyEventListeners(@)
@@ -142,6 +144,6 @@ module.exports = exports = class List extends BaseComponent
         s += child.toString(indent+2, true)
       s += newLine('</List>', indent, true)
 
-extend = require('extend')
+{mixin} = require('dc-util')
 ListMixin = require('./ListMixin')
-extend(List.prototype, ListMixin)
+mixin(List.prototype, ListMixin)

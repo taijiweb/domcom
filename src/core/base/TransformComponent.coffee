@@ -20,11 +20,11 @@ module.exports = class TransformComponent extends Component
     @invalidate()
 
   renderDom: (oldBaseComponent) ->
-    if !@attached
-      @emit('attach')
+    if !(attached=@attached)
+      @emit('willAttach')
     if @valid
       if oldBaseComponent==@baseComponent
-        if @attached
+        if attached
           return @
         else
           @attached = true
@@ -56,6 +56,8 @@ module.exports = class TransformComponent extends Component
       @baseComponent = baseComponent = content.baseComponent
       @node = baseComponent.node
       @firstNode = baseComponent.firstNode
+    if !attached
+      @emit('didAttach')
     @
 
   setParentNode: (parentNode) ->
@@ -78,8 +80,8 @@ module.exports = class TransformComponent extends Component
   removeDom: ->
     if !@attached
       return
+    @emit('willDetach')
     @baseComponent.removeDom()
-    @emit('detach')
+    @emit('didDetach')
     @attached = false
     @
-

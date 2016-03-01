@@ -11,7 +11,7 @@ describe("component event", function() {
     var comp, x;
     x = 0;
     comp = p();
-    comp.on('mount', function() {
+    comp.on('willMount', function() {
       return x = 1;
     });
     comp.mount();
@@ -21,7 +21,7 @@ describe("component event", function() {
     var comp, x;
     x = 0;
     comp = if_(1, 2, 3);
-    comp.on('mount', function() {
+    comp.on('willMount', function() {
       return x = 1;
     });
     comp.mount();
@@ -31,7 +31,7 @@ describe("component event", function() {
     var comp, t, x;
     x = see(0);
     comp = if_(x, t = txt(1), txt(2));
-    t.on('mount', function() {
+    t.on('willMount', function() {
       return x(1);
     });
     comp.mount();
@@ -44,7 +44,7 @@ describe("component event", function() {
     var comp, t, x;
     x = see(0);
     comp = if_(x, p(t = txt(1)), txt(2));
-    t.on('mount', function() {
+    t.on('willMount', function() {
       return x(1);
     });
     comp.mount();
@@ -57,10 +57,10 @@ describe("component event", function() {
     var comp, x;
     x = see(0);
     comp = p();
-    comp.on('mount', function() {
+    comp.on('willMount', function() {
       return x(1);
     });
-    comp.on('unmount', function() {
+    comp.on('willUnmount', function() {
       return x(2);
     });
     comp.mount();
@@ -73,10 +73,10 @@ describe("component event", function() {
     x = 0;
     y = 0;
     comp = if_(1, 2, 3);
-    comp.on('mount', function() {
+    comp.on('willMount', function() {
       return x = 1;
     });
-    comp.on('unmount', function() {
+    comp.on('willUnmount', function() {
       return y = 2;
     });
     comp.mount();
@@ -89,10 +89,10 @@ describe("component event", function() {
     x = see(0);
     y = 0;
     comp = if_(x, t = txt(1), t2 = txt(2));
-    t.on('mount', function() {
+    t.on('willMount', function() {
       return x(1);
     });
-    t2.on('unmount', function() {
+    t2.on('willUnmount', function() {
       return y = 2;
     });
     comp.mount();
@@ -107,7 +107,7 @@ describe("component event", function() {
     x = see(0);
     y = 0;
     comp = if_(x, p(t = txt(1)), p(t2 = txt(2)));
-    t.on('mount', function() {
+    t.on('willMount', function() {
       return x(1);
     });
     comp.mount();

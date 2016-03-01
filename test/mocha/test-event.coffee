@@ -13,21 +13,21 @@ describe "component event", ->
   it 'component shoud call listeners before mounting', ->
     x = 0
     comp = p()
-    comp.on('mount', -> x=1)
+    comp.on('willMount', -> x=1)
     comp.mount()
     expect(x).to.equal 1
 
   it 'component shoud call listeners before mounting if_', ->
     x = 0
     comp = if_(1, 2, 3)
-    comp.on('mount', -> x=1)
+    comp.on('willMount', -> x=1)
     comp.mount()
     expect(x).to.equal 1
 
   it 'component shoud call then_.listeners before updating if_', ->
     x = see 0
     comp = if_(x, t=txt(1), txt(2))
-    t.on('mount', -> x 1)
+    t.on('willMount', -> x 1)
     comp.mount()
     expect(x()).to.equal 0
     x 1
@@ -37,7 +37,7 @@ describe "component event", ->
   it 'component shoud not call embeded listeners before updating if_', ->
     x = see 0
     comp = if_(x, p(t=txt(1)), txt(2))
-    t.on('mount', -> x 1)
+    t.on('willMount', -> x 1)
     comp.mount()
     expect(x()).to.equal 0
     x 1
@@ -47,8 +47,8 @@ describe "component event", ->
   it 'component shoud call listeners after mounting', ->
     x = see 0
     comp = p()
-    comp.on('mount', -> x 1)
-    comp.on('unmount', -> x 2)
+    comp.on('willMount', -> x 1)
+    comp.on('willUnmount', -> x 2)
     comp.mount()
     expect(x()).to.equal 1
     comp.unmount()
@@ -58,8 +58,8 @@ describe "component event", ->
     x = 0
     y = 0
     comp = if_(1, 2, 3)
-    comp.on('mount', -> x=1)
-    comp.on('unmount', -> y=2)
+    comp.on('willMount', -> x=1)
+    comp.on('willUnmount', -> y=2)
     comp.mount()
     expect(x).to.equal 1
     comp.unmount()
@@ -69,8 +69,8 @@ describe "component event", ->
     x = see 0
     y = 0
     comp = if_(x, t=txt(1), t2=txt(2))
-    t.on('mount', -> x 1)
-    t2.on('unmount', -> y=2)
+    t.on('willMount', -> x 1)
+    t2.on('willUnmount', -> y=2)
     comp.mount()
     expect(x()).to.equal 0, 'mount'
     x 1
@@ -82,7 +82,7 @@ describe "component event", ->
     x = see 0
     y = 0
     comp = if_(x, p(t=txt(1)), p(t2=txt(2)))
-    t.on('mount', -> x 1)
+    t.on('willMount', -> x 1)
     comp.mount()
     expect(x()).to.equal 0
     x 1

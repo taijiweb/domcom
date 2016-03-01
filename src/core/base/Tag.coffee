@@ -14,56 +14,57 @@ module.exports = class Tag extends BaseComponent
       throw 'should use new SubclassComponent(...) with the subclass of Tag'
 
     super()
-    @initChildren(children)
+    this.initChildren(children)
 
-    @isTag = true
+    this.isTag = true
 
     tagName = tagName or 'div'
-    @tagName = tagName.toLowerCase()
-    @namespace = attrs.namespace
+    this.tagName = tagName.toLowerCase()
+    this.namespace = attrs.namespace
 
-    @initAttrs()
-    @extendAttrs(attrs)
+    this.initAttrs()
+    this.extendAttrs(attrs)
 
     return
 
   initAttrs: ->
-    me = @
+    me = this
 
-    @hasActiveProperties = false
+    this.hasActiveProperties = false
 
-    @cacheClassName = ""
-    @className = className = classFn()
-    @className.onInvalidate ->
+    this.cacheClassName = ""
+    this.className = className = classFn()
+    this.className.onInvalidate ->
       if className.valid
         me.hasActiveProperties = true
         me.invalidate()
 
-    @cacheProps = {}
-    @props = {}
-    @boundProps = {}
-    @['invalidateProps'] = {}
-    @nodeProps = {}
+    this.cacheProps = {}
+    this.props = {}
+    this.boundProps = {}
+    this['invalidateProps'] = {}
+    this.nodeProps = {}
 
-    @hasActiveNodeAttrs = false
-    @cacheNodeAttrs = {}
-    @nodeAttrs = {}
-    @boundNodeAttrs = {}
-    @['invalidateNodeAttrs'] = {}
+    this.hasActiveNodeAttrs = false
+    this.cacheNodeAttrs = {}
+    this.nodeAttrs = {}
+    this.boundNodeAttrs = {}
+    this['invalidateNodeAttrs'] = {}
 
-    @hasActiveStyle = false
-    @cacheStyle = {}
-    @style = {}
-    @boundStyle = {}
-    @['invalidateStyle'] = {}
+    this.hasActiveStyle = false
+    this.cacheStyle = {}
+    this.style = {}
+    this.boundStyle = {}
+    this['invalidateStyle'] = {}
 
-    @hasActiveEvents = false
-    @events = {}
-    @eventUpdateConfig = {}
+    this.hasActiveEvents = false
+    # maybe this.events is be set in sub class's tag.bind(...) call
+    this.events = this.events || {}
+    this.eventUpdateConfig = {}
 
   extendAttrs: (attrs)->
 
-    {className, style, props, nodeAttrs} = @
+    {className, style, props, nodeAttrs} = this
 
     for key, value of attrs
 
@@ -71,7 +72,7 @@ module.exports = class Tag extends BaseComponent
         # style is this.style
         styles = styleFrom(value)
         for key, value of styles
-          @setProp(key, value, style, 'Style')
+          this.setProp(key, value, style, 'Style')
 
       else if key=='class' or key=='className'
         className.extend(value)
@@ -80,17 +81,17 @@ module.exports = class Tag extends BaseComponent
       else if key[..1]=='on'
         if !value then continue
         else if typeof value == 'function'
-          @bindOne(key, value)
+          this.bindOne(key, value)
         else
           v0 = value[0]
           if v0=='before' or v0=='after'
             for v in value[1...]
               # value is an array of handlers
-              @bindOne(key, v, v0=='before')
+              this.bindOne(key, v, v0=='before')
           else
             for v in value
               # value is an array of handlers
-              @bindOne(key, v)
+              this.bindOne(key, v)
 
       else if key[0]=='$'
         # $directiveName: generator arguments list
@@ -214,6 +215,8 @@ module.exports = class Tag extends BaseComponent
       for eventName, handler of eventNames
         @bindOne(eventName, handler)
     else
+      if !this.events
+        this.events = {}
       eventNames = eventNames.split('\s+')
       for eventName in eventNames
         @bindOne(eventName, handler, before)
@@ -434,5 +437,6 @@ module.exports = class Tag extends BaseComponent
         s += children[0].toString(indent+2)
       s += newLine("</#{@tagName}>", indent+2)
 
+{mixin} = require('dc-util')
 ListMixin = require('./ListMixin')
-extend(Tag.prototype, ListMixin)
+mixin(Tag.prototype, ListMixin)

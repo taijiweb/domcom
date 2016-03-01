@@ -10,7 +10,8 @@ mountList = []
 
 module.exports = class Component
   constructor: ->
-    this.listeners = {}
+    # maybe this.listeners is be set in sub class's component.on(...) call
+    this.listeners = this.listeners || {}
     this.baseComponent = null
     this.parentNode = null
     this.node = null
@@ -29,7 +30,8 @@ module.exports = class Component
         for eventName, callback of event
           @on(eventName, callback)
     else
-      {listeners} = @
+      if !(listeners = this.listeners)
+        this.listeners = listeners = {}
       for event in event.split(/\s*,\s*|\s+/)
         if callbacks = listeners[event]
           if callbacks.indexOf(callback) < 0
@@ -69,7 +71,7 @@ module.exports = class Component
   only use beforeNode if mountNode is given
   ###
   mount: (mountNode, beforeNode) ->
-    @emit('mount')
+    @emit('willMount')
     @parentNode = normalizeDomElement(mountNode) or @parentNode or document.body
     if beforeNode
       @nextNode = beforeNode
@@ -79,6 +81,7 @@ module.exports = class Component
 #      if @parentNode == document.body && (firstBodyChild = document.body.childNodes[0])
 #        @nextNode = firstBodyChild
     @render()
+    @emit('didMount')
     @
 
   render: ->
@@ -87,13 +90,14 @@ module.exports = class Component
     @renderDom(@baseComponent)
 
   update: ->
-    if this.destroyed
-      return @
-    @emit('update')
-    @render()
-    @
+    this.emit('willUpdate')
+    if !this.destroyed
+      this.render()
+    this.emit('didUpdate')
+    this
 
   unmount: ->
+    @emit('willUnmount')
     if !this.attached
       return
     if !@node or !@node.parentNode
@@ -112,7 +116,7 @@ module.exports = class Component
       else
         component.markRemovingDom(true)
         component.removeDom()
-    @emit('unmount')
+    @emit('didUnmount')
     # this is not necessary
     # it will be set in holder.update(): call removeDom indirectly
     # or component.removeDom()
@@ -120,10 +124,10 @@ module.exports = class Component
     @
 
   remove: ->
-    this.emit('remove')
+    this.emit('willRemove')
 
     if !this.node or !this.node.parentNode
-      return @
+      this.emit('didRemove')
     else
       component = @
       holder = @holder
@@ -137,7 +141,7 @@ module.exports = class Component
       else
         component.markRemovingDom(true)
         component.removeDom()
-      this
+      this.emit('didRemove')
 
   replace: (oldComponent) ->
     if this.destroyed

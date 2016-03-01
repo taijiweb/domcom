@@ -770,7 +770,7 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var dupStr, globalDcid, isArray,
+	var dupStr, globalDcid, hasOwn, isArray,
 	  __slice = [].slice;
 
 	exports.isArray = isArray = function(item) {
@@ -1056,6 +1056,21 @@
 	    }
 	  }
 	  return result;
+	};
+
+	hasOwn = Object.hasOwnProperty;
+
+	exports.mixin = function(proto, mix) {
+	  var key, value;
+	  for (key in mix) {
+	    value = mix[key];
+	    if (hasOwn.call(proto, key)) {
+	      continue;
+	    } else {
+	      proto[key] = value;
+	    }
+	  }
+	  return proto;
 	};
 
 
@@ -2193,13 +2208,13 @@
 	  };
 
 	  TransformComponent.prototype.renderDom = function(oldBaseComponent) {
-	    var baseComponent, content, needRemoveOld, oldContent;
-	    if (!this.attached) {
-	      this.emit('attach');
+	    var attached, baseComponent, content, needRemoveOld, oldContent;
+	    if (!(attached = this.attached)) {
+	      this.emit('willAttach');
 	    }
 	    if (this.valid) {
 	      if (oldBaseComponent === this.baseComponent) {
-	        if (this.attached) {
+	        if (attached) {
 	          return this;
 	        } else {
 	          this.attached = true;
@@ -2237,6 +2252,9 @@
 	      this.node = baseComponent.node;
 	      this.firstNode = baseComponent.firstNode;
 	    }
+	    if (!attached) {
+	      this.emit('didAttach');
+	    }
 	    return this;
 	  };
 
@@ -2265,8 +2283,9 @@
 	    if (!this.attached) {
 	      return;
 	    }
+	    this.emit('willDetach');
 	    this.baseComponent.removeDom();
-	    this.emit('detach');
+	    this.emit('didDetach');
 	    this.attached = false;
 	    return this;
 	  };
@@ -2299,7 +2318,7 @@
 
 	module.exports = Component = (function() {
 	  function Component() {
-	    this.listeners = {};
+	    this.listeners = this.listeners || {};
 	    this.baseComponent = null;
 	    this.parentNode = null;
 	    this.node = null;
@@ -2324,7 +2343,9 @@
 	        }
 	      }
 	    } else {
-	      listeners = this.listeners;
+	      if (!(listeners = this.listeners)) {
+	        this.listeners = listeners = {};
+	      }
 	      _ref = event.split(/\s*,\s*|\s+/);
 	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
 	        event = _ref[_i];
@@ -2390,12 +2411,13 @@
 	   */
 
 	  Component.prototype.mount = function(mountNode, beforeNode) {
-	    this.emit('mount');
+	    this.emit('willMount');
 	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.body;
 	    if (beforeNode) {
 	      this.nextNode = beforeNode;
 	    }
 	    this.render();
+	    this.emit('didMount');
 	    return this;
 	  };
 
@@ -2407,16 +2429,17 @@
 	  };
 
 	  Component.prototype.update = function() {
-	    if (this.destroyed) {
-	      return this;
+	    this.emit('willUpdate');
+	    if (!this.destroyed) {
+	      this.render();
 	    }
-	    this.emit('update');
-	    this.render();
+	    this.emit('didUpdate');
 	    return this;
 	  };
 
 	  Component.prototype.unmount = function() {
 	    var component, holder;
+	    this.emit('willUnmount');
 	    if (!this.attached) {
 	      return;
 	    }
@@ -2438,15 +2461,15 @@
 	        component.removeDom();
 	      }
 	    }
-	    this.emit('unmount');
+	    this.emit('didUnmount');
 	    return this;
 	  };
 
 	  Component.prototype.remove = function() {
 	    var component, holder;
-	    this.emit('remove');
+	    this.emit('willRemove');
 	    if (!this.node || !this.node.parentNode) {
-	      return this;
+	      return this.emit('didRemove');
 	    } else {
 	      component = this;
 	      holder = this.holder;
@@ -2461,7 +2484,7 @@
 	        component.markRemovingDom(true);
 	        component.removeDom();
 	      }
-	      return this;
+	      return this.emit('didRemove');
 	    }
 	  };
 
@@ -2732,8 +2755,9 @@
 	    if (this.removing && this.attached) {
 	      this.removing = false;
 	      this.holder = null;
+	      this.emit('willDetach');
 	      this.removeNode();
-	      this.emit('detach');
+	      this.emit('didDetach');
 	      this.attached = false;
 	    }
 	    return this;
@@ -2746,11 +2770,11 @@
 	  };
 
 	  BaseComponent.prototype.attachNode = function() {
-	    var e, nextNode, node, parentNode;
+	    var attached, e, nextNode, node, parentNode;
 	    node = this.node, parentNode = this.parentNode, nextNode = this.nextNode;
-	    if (!this.attached) {
+	    if (!(attached = this.attached)) {
 	      this.attached = true;
-	      this.emit('attach');
+	      this.emit('willAttach');
 	    }
 	    this.removing = false;
 	    if (parentNode === node.parentNode && nextNode === node.nextNode) {
@@ -2763,6 +2787,9 @@
 	      dc.error(e);
 	    }
 	    node.nextNode = nextNode;
+	    if (!attached) {
+	      this.emit('didAttach');
+	    }
 	    return node;
 	  };
 
@@ -2874,7 +2901,7 @@
 /* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, List, ListMixin, exports, extend, newLine,
+	var BaseComponent, List, ListMixin, exports, mixin, newLine,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -2966,12 +2993,13 @@
 	      this.attached = false;
 	      this.holder = null;
 	      this.node.parentNode = null;
-	      this.emit('detach');
+	      this.emit('willDetach');
 	      _ref = this.children;
 	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
 	        child = _ref[_i];
 	        child.removeDom();
 	      }
+	      this.emit('didDetach');
 	    }
 	    return this;
 	  };
@@ -2987,11 +3015,11 @@
 	  };
 
 	  List.prototype.attachNode = function() {
-	    var baseComponent, child, children, index, nextNode, node, parentNode;
+	    var attached, baseComponent, child, children, index, nextNode, node, parentNode;
 	    children = this.children, parentNode = this.parentNode, nextNode = this.nextNode, node = this.node;
-	    if (!this.attached) {
+	    if (!(attached = this.attached)) {
 	      this.attached = true;
-	      this.emit('attach');
+	      this.emit('willAttach');
 	    }
 	    if (parentNode !== this.node.parentNode || nextNode !== node.nextNode) {
 	      node.parentNode = parentNode;
@@ -3013,6 +3041,9 @@
 	          index--;
 	        }
 	      }
+	    }
+	    if (!attached) {
+	      this.emit('didAttach');
 	    }
 	    return this.node;
 	  };
@@ -3053,18 +3084,18 @@
 
 	})(BaseComponent);
 
-	extend = __webpack_require__(10);
+	mixin = __webpack_require__(4).mixin;
 
 	ListMixin = __webpack_require__(21);
 
-	extend(List.prototype, ListMixin);
+	mixin(List.prototype, ListMixin);
 
 
 /***/ },
 /* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Nothing, binaryInsert, binarySearch, exports, extendChildFamily, isComponent, substractSet, toComponent, toComponentList, _ref,
+	var Nothing, binaryInsert, binarySearch, extendChildFamily, isComponent, substractSet, toComponent, toComponentList, _ref,
 	  __slice = [].slice;
 
 	isComponent = __webpack_require__(9);
@@ -3079,7 +3110,7 @@
 
 	extendChildFamily = __webpack_require__(7).extendChildFamily;
 
-	module.exports = exports = {
+	module.exports = {
 	  initChildren: function(children) {
 	    var child, dcidIndexMap, family, i, _i, _len;
 	    children = toComponentList(children);
@@ -3469,7 +3500,7 @@
 /* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, ListMixin, Tag, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, domValue, eventHandlerFromArray, extend, flow, funcString, newLine, react, styleFrom, updating, _ref, _ref1, _ref2, _ref3,
+	var BaseComponent, ListMixin, Tag, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, domValue, eventHandlerFromArray, extend, flow, funcString, mixin, newLine, react, styleFrom, updating, _ref, _ref1, _ref2, _ref3,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
@@ -3539,7 +3570,7 @@
 	    this.boundStyle = {};
 	    this['invalidateStyle'] = {};
 	    this.hasActiveEvents = false;
-	    this.events = {};
+	    this.events = this.events || {};
 	    return this.eventUpdateConfig = {};
 	  };
 
@@ -3738,6 +3769,9 @@
 	        this.bindOne(eventName, handler);
 	      }
 	    } else {
+	      if (!this.events) {
+	        this.events = {};
+	      }
 	      eventNames = eventNames.split('\s+');
 	      for (_i = 0, _len = eventNames.length; _i < _len; _i++) {
 	        eventName = eventNames[_i];
@@ -4057,9 +4091,11 @@
 
 	})(BaseComponent);
 
+	mixin = __webpack_require__(4).mixin;
+
 	ListMixin = __webpack_require__(21);
 
-	extend(Tag.prototype, ListMixin);
+	mixin(Tag.prototype, ListMixin);
 
 
 /***/ },
@@ -4530,15 +4566,13 @@
 /* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Html, HtmlMixin, ListMixin, Tag, domField, domValue, extend, funcString, method, newLine, _ref, _ref1,
+	var Html, HtmlMixin, ListMixin, Tag, domField, domValue, extend, funcString, method, mixin, newLine, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	extend = __webpack_require__(10);
-
 	Tag = __webpack_require__(24);
 
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, mixin = _ref.mixin;
 
 	_ref1 = __webpack_require__(7), domValue = _ref1.domValue, domField = _ref1.domField;
 
@@ -4661,6 +4695,8 @@
 	    return dc.error("Html component has no children components, do not call ListMixin method(" + method + " on it");
 	  };
 	}
+
+	extend = __webpack_require__(10);
 
 	extend(Html.prototype, HtmlMixin);
 
@@ -6718,7 +6754,7 @@
 	      interval = 500;
 	    }
 	    timer = null;
-	    comp.on('mount', function(baseComponent) {
+	    comp.on('willMount', function(baseComponent) {
 	      return function() {
 	        return timer = setInterval((function() {
 	          visible(!visible());
@@ -7001,7 +7037,7 @@
 
 	module.exports = Component = (function() {
 	  function Component() {
-	    this.listeners = {};
+	    this.listeners = this.listeners || {};
 	    this.baseComponent = null;
 	    this.parentNode = null;
 	    this.node = null;
@@ -7026,7 +7062,9 @@
 	        }
 	      }
 	    } else {
-	      listeners = this.listeners;
+	      if (!(listeners = this.listeners)) {
+	        this.listeners = listeners = {};
+	      }
 	      _ref = event.split(/\s*,\s*|\s+/);
 	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
 	        event = _ref[_i];
@@ -7092,12 +7130,13 @@
 	   */
 
 	  Component.prototype.mount = function(mountNode, beforeNode) {
-	    this.emit('mount');
+	    this.emit('willMount');
 	    this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.body;
 	    if (beforeNode) {
 	      this.nextNode = beforeNode;
 	    }
 	    this.render();
+	    this.emit('didMount');
 	    return this;
 	  };
 
@@ -7109,16 +7148,17 @@
 	  };
 
 	  Component.prototype.update = function() {
-	    if (this.destroyed) {
-	      return this;
+	    this.emit('willUpdate');
+	    if (!this.destroyed) {
+	      this.render();
 	    }
-	    this.emit('update');
-	    this.render();
+	    this.emit('didUpdate');
 	    return this;
 	  };
 
 	  Component.prototype.unmount = function() {
 	    var component, holder;
+	    this.emit('willUnmount');
 	    if (!this.attached) {
 	      return;
 	    }
@@ -7140,15 +7180,15 @@
 	        component.removeDom();
 	      }
 	    }
-	    this.emit('unmount');
+	    this.emit('didUnmount');
 	    return this;
 	  };
 
 	  Component.prototype.remove = function() {
 	    var component, holder;
-	    this.emit('remove');
+	    this.emit('willRemove');
 	    if (!this.node || !this.node.parentNode) {
-	      return this;
+	      return this.emit('didRemove');
 	    } else {
 	      component = this;
 	      holder = this.holder;
@@ -7163,7 +7203,7 @@
 	        component.markRemovingDom(true);
 	        component.removeDom();
 	      }
-	      return this;
+	      return this.emit('didRemove');
 	    }
 	  };
 

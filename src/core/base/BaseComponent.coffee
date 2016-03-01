@@ -40,12 +40,13 @@ module.exports = class BaseComponent extends Component
     return
 
   removeDom: ->
-    if @removing && @attached
-      @removing = false
-      @holder = null
-      @removeNode()
-      @emit('detach')
-      @attached = false
+    if this.removing && this.attached
+      this.removing = false
+      this.holder = null
+      this.emit('willDetach')
+      this.removeNode()
+      this.emit('didDetach')
+      this.attached = false
     @
 
   removeNode: ->
@@ -55,9 +56,9 @@ module.exports = class BaseComponent extends Component
   attachNode: ->
     {node, parentNode, nextNode} = @
 
-    if !@attached
+    if !(attached=@attached)
       @attached = true
-      @emit('attach')
+      @emit('willAttach')
 
     @removing = false
 
@@ -70,6 +71,9 @@ module.exports = class BaseComponent extends Component
       dc.error(e)
     # since dom have no nextNode field, so let domcom save it
     node.nextNode = nextNode
+
+    if !attached
+      @emit('didAttach')
 
     node
 
