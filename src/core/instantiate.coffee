@@ -9,7 +9,7 @@ Nothing, Defer} = require('./base')
 
 {isArray, isObject} = require('dc-util')
 
-{watchItems} = require('dc-watch-list')
+{watchItems, isEachObjectSystemKey} = require('dc-watch-list')
 
 {renew} = require('lazy-flow')
 
@@ -199,6 +199,45 @@ exports.funcEach = (attrs, listFunc, itemFunc, separatorFunc) ->
   listComponent.on 'didRender', ->
     if isRenew
       listComponent.holder.invalidateOffspring(listComponent)
+  listComponent
+
+exports.mapEach = (attrs, mapFunc, itemFunc, separatorFunc) ->
+  if typeof attrs == 'function'
+    separatorFunc = itemFunc
+    itemFunc = mapFunc
+    mapFunc = attrs
+    attrs = null
+
+  if !listFunc.invalidate
+    isRenew = true
+    listFunc = renew(listFunc)
+
+  map = {}
+  listComponent = each(attrs, map, itemFunc, separatorFunc)
+
+  listFunc.onInvalidate ->
+    listComponent.invalidate()
+
+  listComponent.on 'willRender', ->
+    newMap = listFunc()
+    deleteKeys = []
+    for key of map
+      if newMap.hasOwnProperty(key)
+        if isEachObjectSystemKey()
+          continue
+        else
+          map.setItem(key, newMap[key])
+      else
+        deleteKeys.push(key)
+    map.deleteItem(keys...)
+    for key of newMap
+      if !map.hasOwnProperty(key)
+        map.setItem(key, newMap[key])
+
+  listComponent.on 'didRender', ->
+    if isRenew
+      listComponent.holder.invalidateOffspring(listComponent)
+
   listComponent
 
 # promise is a promise, which have .then and .catch the two method
