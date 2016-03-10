@@ -29,7 +29,7 @@ module.exports = exports = class List extends BaseComponent
     this.valid = true
 
     children = this.children
-    this.nextNodes = nextNodes = []
+    nextNodes = this.nextNodes
     this.node = this.childNodes = node = []
     this.childParentNode = this.parentNode
     this.childNextNode = this.nextNode

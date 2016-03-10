@@ -42,6 +42,8 @@ module.exports =
     this.renderingMap = {}
     this.removingMap = {}
 
+    this.nextNodes = nextNodes = []
+
     this.family = family = {}
     family[this.dcid] = true
 

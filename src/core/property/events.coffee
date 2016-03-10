@@ -31,7 +31,7 @@ exports.eventHandlerFromArray = (callbackList, eventName) ->
         # the comp is in updateList, so it need to be updated
         # if config.useSystemUpdating then update this component in dc's system update scheme
         if options.alwaysUpdating or !config.useSystemUpdating
-          comp[options.method]()
+          dc.update()
 
     if !event
       return

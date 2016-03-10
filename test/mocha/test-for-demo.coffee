@@ -9,6 +9,14 @@ each, funcEach} = dc
 
 controls = require('domcom/demo/demo-controls')
 
+makeDomComponentTest = require('../makeDomComponentTest')
+
+{demoMap} = require('domcom/demo/util')
+
+makeDomComponentTest(demoMap, "domcom/demoMap")
+#, 'auto width edit', false
+#, 'splitter', false
+
 describe 'demo', ->
   afterEach ->
     dc.clear()

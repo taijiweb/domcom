@@ -337,7 +337,7 @@ module.exports = class Tag extends BaseComponent
 
     children = this.children
     this.childNodes = childNodes = []
-    this.nextNodes = nextNodes = []
+    nextNodes = this.nextNodes
     childNodes.length = nextNodes.length = length = children.length
     this.childParentNode = this.node
     this.childNextNode = null
