@@ -5,7 +5,7 @@ exports.demoEachPush = ->
   comp = list each(lst, (item) -> p item), 'some other thing'
   comp.mount()
   lst.push 3
-  comp.render()
+  dc.update()
 
 exports.demoIfEach = ->
   showingEach$ = see true
@@ -13,9 +13,9 @@ exports.demoIfEach = ->
   comp = if_ showingEach$, each(lst4, (item) -> div item)
   comp.mount()
   showingEach$ false
-  comp.render()
+  dc.update()
   showingEach$ true
-  comp.render()
+  dc.update()
 
 exports.demoModelOnMultipleInput =  ->
   a = {}

@@ -1,6 +1,6 @@
 {bind,
 section, h1, header, form, text, checkbox, div, ul, li, p, a, label, button, footer, strong, span
-each, txt
+funcEach, txt
 extend} = dc
 
 dc.directives $show: dc.$show
@@ -46,7 +46,7 @@ pluralize = (test, item) ->
 toggleCompleted = (todo) ->
   todo.completed = !todo.completed
   save todos
-  view.update()
+  dc.update()
 
 markAll = ->
   if allChecked() then completed = false
@@ -60,22 +60,22 @@ markAll = ->
 
   if !valid
     save(todos)
-    view.update()
+    dc.update()
 
 editTodo = (todo) ->
   editingTodo = todo
   originalTodo = extend {}, todo
-  view.update()
+  dc.update()
 
 removeTodo = (todo) ->
   index = todos.indexOf todo
   todos.splice index, 1
   save todos
-  view.update()
+  dc.update()
 
 revertEdits = (todo) ->
   todos[todos.indexOf(todo)] = originalTodo
-  view.update()
+  dc.update()
 
 clearCompletedTodos = ->
   valid = true
@@ -89,11 +89,11 @@ clearCompletedTodos = ->
 
   if !valid
     save todos
-    view.update()
+    dc.update()
 
 setView = (locationHash) ->
   viewStatusHash = locationHash.split('/')[1] || ''
-  view.update()
+  dc.update()
 
 #######################################################################################################################
 # view
@@ -110,10 +110,10 @@ todoHeader = header id: "header",
         if !@value then return
         todos.push title: @value, completed: false
         save todos
-        view.update()
+        dc.update()
       autofocus:true }
 
-todoItems = each getTodos, (todo, index) ->
+todoItems = funcEach getTodos, (todo, index) ->
 
   li className: { completed: (-> todo.completed), editing: -> todo==editingTodo},
 
@@ -127,7 +127,7 @@ todoItems = each getTodos, (todo, index) ->
         className: "edit"
         trim: "false"
         value: bind todo, "title"
-        onblur: -> todo.title = @value; save(todos); editingTodo = null; view.update()
+        onblur: -> todo.title = @value; save(todos); editingTodo = null; dc.update()
         onfocus: -> todo == editingTodo
         onkeyup: onEscapeFn( -> revertEdits(todo) ) }
 

@@ -7,6 +7,9 @@ newDemoNode = require('./helper').newDemoNode;
 bindings = dc.bindings, duplex = dc.duplex, flow = dc.flow, classFn = dc.classFn, styleFrom = dc.styleFrom, Tag = dc.Tag, Text = dc.Text, List = dc.List, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, txt = dc.txt, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, button = dc.button, input = dc.input;
 
 describe("component  ", function() {
+  afterEach(function() {
+    return dc.clear();
+  });
   describe('construct component', function() {
     it('component shoud have children', function() {
       var comp;
@@ -32,15 +35,6 @@ describe("component  ", function() {
         style: styleFrom("width:1px;")
       }, [span1]);
       return expect(comp.children[0]).to.equal(span1);
-    });
-  });
-  describe('component.append', function() {
-    return nit('should append tag.children', function() {
-      var d, p1;
-      d = div();
-      p1 = p();
-      d.append(p1);
-      return expect(d.children).to.equal(p1);
     });
   });
   describe('component.create', function() {
@@ -216,11 +210,11 @@ describe("component  ", function() {
       comp.mount();
       expect(comp.node.innerHTML).to.equal('1');
       ++count;
-      comp.update();
-      expect(comp.node.innerHTML).to.equal('2');
+      dc.update();
+      expect(comp.node.innerHTML).to.equal('2', 'update 2');
       ++count;
-      comp.update();
-      return expect(comp.node.innerHTML).to.equal('3');
+      dc.update();
+      return expect(comp.node.innerHTML).to.equal('3', 'update 3');
     });
     it('should update bidirectional bind', function() {
       var a$, comp;
@@ -243,10 +237,10 @@ describe("component  ", function() {
       elm = comp.node;
       expect(elm.innerHTML).to.equal('1');
       ++count;
-      comp.update();
+      dc.update();
       expect(elm.innerHTML).to.equal('2');
       ++count;
-      comp.update();
+      dc.update();
       return expect(elm.innerHTML).to.equal('3');
     });
     it('should process text with bind', function() {
@@ -262,7 +256,7 @@ describe("component  ", function() {
       b_(4);
       expect(a_()).to.equal(3, 'a_');
       expect(b_()).to.equal(4, 'b_');
-      comp.update();
+      dc.update();
       return expect(comp.node.innerHTML).to.equal('7', 'update');
     });
     it('should process bidirectional bind', function() {
@@ -326,9 +320,9 @@ describe("component  ", function() {
       });
       comp.mount();
       expect(comp.node.innerHTML).to.equal('12');
-      comp.update();
+      dc.update();
       expect(comp.node.innerHTML).to.equal('12');
-      comp.update();
+      dc.update();
       return expect(comp.node.innerHTML).to.equal('12');
     });
   });

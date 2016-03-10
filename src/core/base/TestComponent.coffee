@@ -9,14 +9,14 @@ module.exports = class TestComponent extends TransformComponent
   constructor: (test) ->
     super
     this.__cacheTest = null
-    this.transformValid = false
-    this.invalidateHandler = => this.invalidateTransform()
+    me = this
+    this.invalidateHandler = -> me.invalidateTransform()
     if ObjectDefineProperty
 
-      get = => this._test
+      get = -> me._test
 
-      set = (test) =>
-        this.setTest(test)
+      set = (test) ->
+        me.setTest(test)
         test
 
       ObjectDefineProperty(this, 'test', {get, set})

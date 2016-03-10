@@ -1,11 +1,17 @@
 {Component, toComponent, isComponent,
 Tag, Text, Comment, Html
-If, Case, Func, List, Each,
+If, Case, Func, List,
 Pick
 Nothing, Defer} = require('./base')
-{isEven, numbers} = require('dc-util')
+{isEven} = require('dc-util')
 
 {isAttrs} = require('./util')
+
+{isArray, isObject} = require('dc-util')
+
+{watchItems} = require('dc-watch-list')
+
+{renew} = require('lazy-flow')
 
 attrsChildren = (args) ->
   attrs = args[0]
@@ -106,67 +112,107 @@ exports.list = list = (attrs, lst...) ->
     if lst.length==1 then toComponent(lst[0])
     else new List(lst)
 
-###*
-  @param
-    itemFn - function (item, index, list, component) { ... }
-    itemFn - function (value, key, index, hash, component) { ... }
-###
-exports.each = (attrs, list, itemFn) ->
-  if isAttrs(attrs) then new Tag('div', attrs, [new Each(list, itemFn)])
-  # attrs become list, list become itemFn
-  else new Each(attrs, list)
+defaultItemFunction = (item) -> new Text(item)
 
-exports.every = every = (attrs, list, itemFn) ->
-  if isAttrs(attrs)
-
-    if !list then return new Nothing()
-
-    children = []
-    for item, i in list
-      children.push itemFn(item, i, list)
-    new Tag('div', attrs, [new List(children)])
+# itemFunc:
+# (item, index, items, component) -> List component
+# (value, key, object, component) -> List component
+_each = (attrs, items, itemFunc = defaultItemFunction, separatorFunc, updateChildIndex) ->
+  if attrs
+    if attrs.tagName
+      tagName = attrs.tagName
+      delete attrs.tagName
+    else
+      tagName = 'div'
+    listComponent = new Tag(tagName, attrs, [])
   else
+    listComponent = new List([])
+  listComponent.itemFunc = itemFunc
+  listComponent.separatorFunc = separatorFunc
+  listComponent.updateChildIndex = updateChildIndex
+  listComponent.keyChildMap = keyChildMap = {}
+  if isArray(items)
+    listComponent.getItemComponent = getItemComponent = (item, i) ->
+      itemComponent = toComponent(listComponent.itemFunc(item, i, items, listComponent))
+      if listComponent.separatorFunc && i
+        separatorComponent = toComponent(listComponent.separatorFunc(i, item, items, listComponent))
+        new List([separatorComponent, itemComponent])
+      else
+        itemComponent
+  else
+    listComponent.getItemComponent = getItemComponent = (key, i) ->
+      value = items[key]
+      keyChildMap[key] = i
+      itemComponent = toComponent(listComponent.itemFunc(value, key, i, items, listComponent))
+      if listComponent.separatorFunc && i
+        separatorComponent = toComponent(listComponent.separatorFunc(i, value, key, items, listComponent))
+        itemComponent = new List([separatorComponent, itemComponent])
+      else
+        itemComponent
+      itemComponent.$watchingKey = key
+      itemComponent
 
-    if !attrs then return new Nothing()
-
-    # attrs become list, list become itemFn
-    children = []
-    for item, i in attrs
-      children.push list(item, i, attrs)
-    new List(children)
-
-# all can not use attrs directly
-exports.all = (hash, itemFn) ->
-    if !hash then return new Nothing()
-
-    children = []
+  children = listComponent.children
+  if isArray(items)
+    for item, i in items
+      children.push(getItemComponent(item, i))
+  else
     i = 0
-    for key, value of hash
-      if !hash.hasOwnProperty((key)) then break
-      children.push itemFn(key, value, i, hash)
+    for key of items
+      children.push(getItemComponent(key, i))
       i++
-    new List(children)
 
-# each(0...n , itemFn) if n is function
-# otherwise every(0...n, itemFn)
-exports.nItems = (attrs, n, itemFn) ->
-  if isAttrs(attrs)
-    if typeof n == 'function'
-      new Tag('div', attrs, [new Each(numbers(n), itemFn)])
-    else new Tag('div', every(numbers(n), itemFn))
+  listComponent
+
+exports.every = every = (attrs, items, itemFunc, separatorFunc, updateChildIndex) ->
+  if isObject(items)
+    _each(attrs, items, itemFunc, separatorFunc, updateChildIndex)
   else
-    if typeof attrs == 'function'
-      new Each(numbers(attrs), n)
-    else every(numbers(attrs), n)
+    # separatorFunc = itemFunc; itemFunc = items; items = attrs
+    _each(null, attrs, items, itemFunc, separatorFunc)
+
+exports.each = each = (attrs, items, itemFunc, separatorFunc, updateChildIndex) ->
+  listComponent = every(attrs, items, itemFunc, separatorFunc, updateChildIndex)
+  if !isObject(items)
+    items = attrs
+  watchItems(items, listComponent)
+
+exports.funcEach = (attrs, listFunc, itemFunc, separatorFunc) ->
+  if typeof attrs == 'function'
+    separatorFunc = itemFunc
+    itemFunc = listFunc
+    listFunc = attrs
+    attrs = null
+
+  if !listFunc.invalidate
+    isRenew = true
+    listFunc = renew(listFunc)
+
+  listItems = []
+  listComponent = each(attrs, listItems, itemFunc, separatorFunc)
+  listFunc.onInvalidate ->
+    listComponent.invalidate()
+  listComponent.on 'willRender', ->
+    newList = listFunc()
+    listItems.setItem(0, newList...)
+    listItems.setLength(newList.length)
+  listComponent.on 'didRender', ->
+    if isRenew
+      listComponent.holder.invalidateOffspring(listComponent)
+  listComponent
 
 # promise is a promise, which have .then and .catch the two method
 # fulfill: (value, promise, component) ->
 # reject: (reason, promise, component) ->
 # init: will be converted to component by toComponent
 exports.defer = (attrs, promise, fulfill, reject, init) ->
-  if isAttrs(attrs) then new Tag('div', attrs, [new Defer(promise, fulfill, reject, init)])
-  else new Defer(attrs, promise, fulfill, reject)
+  if isAttrs(attrs)
+    new Tag('div', attrs, [new Defer(promise, fulfill, reject, init)])
+  else
+    new Defer(attrs, promise, fulfill, reject)
 
 exports.clone = (attrs, src) ->
-  if isAttrs(attrs) then new Tag('div', attrs, [toComponent(src).clone()])
-  else toComponent(attrs).clone(src)
+  if isAttrs(attrs)
+    new Tag('div', attrs, [toComponent(src).clone()])
+  else
+    toComponent(attrs).clone(src)

@@ -20,6 +20,6 @@ exports.demoCombo =  ->
   combo2 = vcombo({style:{display:'inline-block'}}, a_x$, 'a b'.split(' '))
   #  comp.mount()
   comp = list(combo2, combo1)
-  combo1.on 'update', -> comp.update()
-  combo2.on 'update', -> comp.update()
+  combo1.on 'update', -> dc.update()
+  combo2.on 'update', -> dc.update()
   comp

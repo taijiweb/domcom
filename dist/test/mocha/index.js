@@ -1,3 +1,5 @@
+dc.alwaysUpdate = true;
+
 require('dc-util/test-util');
 
 require('lazy-flow/test-flow');

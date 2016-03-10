@@ -1,5 +1,5 @@
 extend = require('extend')
-dc = require('../../dc')
+{refreshComponents} = dc = require('../../dc')
 {domField, domValue} = require('../../dom-util')
 {classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require('../property')
 BaseComponent = require('./BaseComponent')
@@ -277,7 +277,7 @@ module.exports = class Tag extends BaseComponent
     if !display? then @setProp('display', 'block', @style, 'Style')
     else if display=='visible' then @setProp('visibility', 'visible', @style, 'Style')
     else @setProp('display', display, @style, 'Style')
-    @update()
+    dc.update()
     @
 
   hide: (display) ->
@@ -287,7 +287,7 @@ module.exports = class Tag extends BaseComponent
     if !display then @setProp('display', 'none', @style, 'Style')
     else if display=='hidden' then @setProp('visibility', 'hidden', @style, 'Style')
     else @setProp('display', display, @style, 'Style')
-    @update()
+    dc.update()
     @
 
   showHide: (status, test, display) ->
@@ -320,46 +320,39 @@ module.exports = class Tag extends BaseComponent
   showOn: (test, display) -> @showHide(true, test, display)
   hideOn: (test, display) -> @showHide(false, test, display)
 
+  # because dc, tag and List has different behaviour
+  # so getChildParentNode is a necessary method
+  getChildParentNode: (child) ->
+    this.node
+
   createDom: ->
-    node =
+    this.valid = true
+
+    this.node = node =
       if @namespace then document.createElementNS(@namespace, @tagName)
       else document.createElement(@tagName)
-
     node.component = this
 
-    @node = node
-    @firstNode = node
-
     @hasActiveProperties and @updateProperties()
 
-    {children} = @
-    for child in children then child.parentNode = node
-    if length=children.length then children[length-1].nextNode = null
-    @childNodes = []
+    children = this.children
+    this.childNodes = childNodes = []
+    this.nextNodes = nextNodes = []
+    childNodes.length = nextNodes.length = length = children.length
+    this.childParentNode = this.node
+    this.childNextNode = null
+    if length=children.length
+      nextNodes[length-1] = null
+      @createChildrenDom()
 
-    # do not explicit set, this is always true for Tag
-    # @childrenNextNode should be null
+    this.firstNode = node
 
-    @createChildrenDom()
-
-    node
-
-  updateDom: ->
-    @hasActiveProperties and @updateProperties()
-    {children, node, invalidIndexes} = @
-
-    for index in invalidIndexes
-      children[index].parentNode = node
-
-    # do not explicit set, this is always be true for Tag
-    # @childrenNextNode should be null
-
-    @updateChildrenDom()
-
-    # @node does not change
-    # so here do not need to call set node and firstNode for holder
-
-    node
+  refreshDom: ->
+    this.valid = true
+    if this.hasActiveProperties
+      this.updateProperties()
+    refreshComponents.call(this)
+    this.node
 
   updateProperties: ->
     @hasActiveProperties = false
@@ -403,6 +396,12 @@ module.exports = class Tag extends BaseComponent
     @hasActiveEvents = false
 
     return
+
+  getPrevChainComponentOf: (child) ->
+    children = this.children
+    if index = this.dcidIndexMap[child.dcid]
+      children[index - 1]
+    else  null
 
   clone: ->
     children = []

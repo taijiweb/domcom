@@ -7,6 +7,8 @@ clone
 a, p, span, text, div} = dc
 
 describe 'Component.refs, clone', ->
+  afterEach ->
+    dc.clear()
 
   describe 'refs', ->
     it 'should throw error while constucting conflicted component list(t, t))', ->
@@ -38,11 +40,11 @@ describe 'Component.refs, clone', ->
       x = 0
       expect(-> list(p(t), if_((-> x),  p(t), t))).to.throw Error
 
-    it 'should getBaseComponent of if_((-> x), t=txt(1), t)', ->
+    it 'should updateBaseComponent of if_((-> x), t=txt(1), t)', ->
       x = see 0
       comp = if_(x, t=txt(1), t)
       comp.mount()
-      comp.update()
+      dc.update()
 
   describe 'Clone', ->
     it 'should not clone node event handler',  ->
@@ -69,13 +71,13 @@ describe 'Component.refs, clone', ->
     it 'should process text clone component ', ->
       comp = list(t1=txt(1), clone(t1))
       comp.mount('#demo')
-      comp.update()
+      dc.update()
       expect(comp.node[1].textContent).to.equal '1'
 
     it 'should process tag clone component ', ->
       comp = list(c1=p(1), c2=clone(c1))
       comp.mount('#demo')
-      comp.update()
+      dc.update()
       expect(comp.node[1].innerHTML).to.equal '1'
 
     it 'should process if_ clone component ', ->
@@ -84,5 +86,5 @@ describe 'Component.refs, clone', ->
       comp = if_(x, c1=p(3), lstComp)
       comp.mount('#demo')
       x 1
-      comp.update()
+      dc.update()
       expect(comp.node.innerHTML).to.equal '3'

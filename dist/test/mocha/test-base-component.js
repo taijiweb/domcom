@@ -12,7 +12,10 @@ a_ = bindings({
 }).a_;
 
 describe("test base component", function() {
-  describe('getBaseComponent', function() {
+  afterEach(function() {
+    return dc.clear();
+  });
+  describe('update baseComponent', function() {
     it('should get baseComponent of List', function() {
       var comp;
       comp = list([1, 2]);
@@ -25,7 +28,7 @@ describe("test base component", function() {
     });
   });
   describe('process get baseComponent of Tag', function() {
-    it('should getBaseComponent of two tags', function() {
+    it('should get baseComponent of two tags', function() {
       var d, p1;
       p1 = new Tag('p', {}, []);
       d = new Tag('div', {}, [p1]);
@@ -186,10 +189,10 @@ describe("test base component", function() {
       comp.mount(demoNode = newDemoNode());
       expect(demoNode.innerHTML).to.equal('<div><div>1</div><p>2</p>a</div>');
       str('x');
-      comp.update();
-      expect(demoNode.innerHTML).to.equal('<div>xa</div>');
-      comp.update();
-      return expect(demoNode.innerHTML).to.equal('<div>xa</div>');
+      dc.update();
+      expect(demoNode.innerHTML).to.equal('<div>xa</div>', 'update 1');
+      dc.update();
+      return expect(demoNode.innerHTML).to.equal('<div>xa</div>', 'update 2');
     });
     it('should Html.bind', function() {
       var comp, demoNode, str, x;
@@ -209,7 +212,7 @@ describe("test base component", function() {
       comp = html(str);
       comp.mount();
       comp.text = 'x';
-      comp.update();
+      dc.update();
       return expect(comp.node.innerHTML).to.equal('x');
     });
   });

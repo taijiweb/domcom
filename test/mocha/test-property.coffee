@@ -73,19 +73,19 @@ describe "domcom/properties/classFn", ->
   it 'should get class property in component', ->
     active = see true
     comp = div({class:{a:1, b:active}})
-    expect(comp.className()).to.equal 'a b'
+    expect(comp.className()).to.equal('a b', 'first')
     comp.className = classFn {a:1, b:active} # need be assign again before the call before affected the className and its invalid
     expect(comp.className.valid).to.equal false, 'className.valid 1'
     expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties 1'
     comp.mount()
     expect(comp.className.valid).to.equal true, 'className.valid 2'
     expect(comp.hasActiveProperties).to.equal false, 'hasActiveProperties 2'
-    expect(comp.node.className).to.equal 'a b'
+    expect(comp.node.className).to.equal('a b', 'second')
     active false
     expect(comp.className.valid).to.equal false, 'className.valid 3'
     expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties 3'
-    comp.update()
-    expect(comp.node.className).to.equal 'a'
+    dc.update()
+    expect(comp.node.className).to.equal('a', '3')
 
 describe 'domcom/properties/create', ->
   it 'should create properties', ->
@@ -148,15 +148,15 @@ describe 'domcom/properties/style', ->
         hexStr = '0' + hexStr
       '#'+hexStr
     color = see "red"
-    i = see i0=0
-    comp = a({style: {borderWidth: (flow i, -> i()+"px"), borderStyle: "solid", borderColor: flow color, -> paddingColor(color().toString(16))}}, 'dynamic property')
+    i$ = see i=0
+    comp = a({style: {borderWidth: (flow i$, -> i$()+"px"), borderStyle: "solid", borderColor: flow color, -> paddingColor(color().toString(16))}}, 'dynamic property')
     comp.mount('#demo')
     color = 0
     styleFn = ->
       color += 0x111111
-      i i0++
+      i$ i++
       comp.render()
-      if i0==50
+      if i==50
         clearInterval handle
     handle = setInterval(styleFn, 5)
 

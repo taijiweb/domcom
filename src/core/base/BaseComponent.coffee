@@ -1,88 +1,121 @@
 Component = require('./component')
 {cloneObject} = require('dc-util')
+{refreshComponents} = require('../../dc')
 
 module.exports = class BaseComponent extends Component
   constructor: ->
     super()
-    @isBaseComponent = true
-    @removing = false
-    @baseComponent = @
-
-  renderDom: (oldBaseComponent) ->
-
-    if oldBaseComponent and oldBaseComponent!=@
-      oldBaseComponent.markRemovingDom(true)
-
-    if !@node
-      @valid = true
-      @createDom()
-    else
-      @removing = false
-      if !@valid
-        @valid = true
-        @updateDom()
-
-    @attachNode(@parentNode, @nextNode)
-
-    if oldBaseComponent and oldBaseComponent!=@
-      oldBaseComponent.removeDom()
-
-    @
+    this.isBaseComponent = true
+    this.removing = false
+    this.baseComponent = this
 
   invalidate: ->
-    if !@valid then return
-    @valid = false
-    @holder and @holder.invalidateContent(@)
+    if this.valid
+      this.valid = false
+      this.invalidateOffspring(this)
+    else
+      this
+
+  invalidateOffspring: (offspring) ->
+    holder = this.holder
+    if !holder
+      # while the component is not mounted, the holder may be undefined
+      this
+    else
+      if this.inWillRenderender
+        this.renderingMap[offspring.dcid] = [offspring, offspring.holder]
+      else if holder == dc
+        dc.invalidateOffspring(offspring)
+      else if !holder.isBaseComponent
+        this.renderingMap[offspring.dcid] = [offspring, offspring.holder]
+        holder.invalidate()
+      else
+        holder.invalidateOffspring(offspring)
+     this
 
   markRemovingDom: (removing) ->
-    if !removing || (@node and @node.parentNode)
-      @removing = removing
-    return
+    this.removing = removing
+    if removing && this.node
+      dc.valid = false
+      dc.removingMap[this.dcid] = this
+    this
+
+  updateBaseComponent: ->
+    this
+
+  renderContent: (oldBaseComponent) ->
+    this.renderDom(oldBaseComponent)
+    holder = this.holder
+    holder.raiseNode(this)
+    holder.raiseFirstNextNode(this)
+
+  renderDom: (oldBaseComponent) ->
+    this.rendering = true
+
+    # this is a special hack for funcEach
+    this.inWillRenderender = true
+    this.emit('willRender')
+    this.inWillRenderender = false
+
+    if oldBaseComponent and oldBaseComponent != this
+      oldBaseComponent.markRemovingDom(true)
+
+    if !this.node
+      this.valid = true
+      this.renderingMap = {}
+      this.createDom()
+    else
+      this.refreshDom()
+
+    this.attachNode(this.parentNode, this.nextNode)
+    this.rendering = false
+    this.emit('didRender')
+
+    this
 
   removeDom: ->
     if this.removing && this.attached
       this.removing = false
-      this.holder = null
       this.emit('willDetach')
       this.removeNode()
       this.emit('didDetach')
       this.attached = false
-    @
+    this
 
   removeNode: ->
-    {node} = @
+    node = this.node
     node.parentNode.removeChild(node)
 
   attachNode: ->
-    {node, parentNode, nextNode} = @
+    if !(attached=this.attached)
+      this.attached = true
+      this.emit('willAttach')
 
-    if !(attached=@attached)
-      @attached = true
-      @emit('willAttach')
+    this.removing = false
 
-    @removing = false
+    node = this.node
+    parentNode = this.parentNode
+    nextNode = this.nextNode
 
-    if parentNode == node.parentNode and nextNode == node.nextNode
-      return node
+    if parentNode != node.parentNode || nextNode != node.nextSibling
+      node = this.node
+      try
+        parentNode.insertBefore(node, nextNode)
+      catch e
+        dc.error(e)
 
-    try
-      parentNode.insertBefore(node, nextNode)
-    catch e
-      dc.error(e)
-    # since dom have no nextNode field, so let domcom save it
-    node.nextNode = nextNode
+      holder = this.holder
+      if holder.children
+        holder.node[holder.dcidIndexMap[this.dcid]] = node
 
     if !attached
-      @emit('didAttach')
+      this.emit('didAttach')
 
     node
 
   setParentNode: (parentNode) ->
-    @parentNode = parentNode
+    this.parentNode = parentNode
     return
 
-  setNextNode: (nextNode) ->
-    @nextNode = nextNode
-    return
-
-  getNode: -> @node
+  getPrevChainComponentOf: (child) ->
+    throw new Error('Atomic BaseComponent should not has child component.')

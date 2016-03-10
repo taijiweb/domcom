@@ -10,44 +10,60 @@ else
 exports = module.exports = class Text extends BaseComponent
   constructor: (text) ->
     super()
-    @text = text = domField(text)
+    this.text = text = domField(text)
 
-    me = @
+    me = this
     if typeof text == 'function'
       text.onInvalidate ->
         me.textValid = false
         me.invalidate()
 
-    @isText = true
+    this.isText = true
 
-    @family = {}
-    @family[@dcid] = true
-    @
+    this.family = {}
+    this.family[this.dcid] = true
+    this
+
+  invalidateOffspring: (offspring) ->
+    holder = this.holder
+    if !holder
+      # while the component is not mounted, the holder may be undefined
+      this
+    else
+      if holder == dc
+        dc.invalidateOffspring(offspring)
+      else
+        if holder.isBaseComponent
+          holder.invalidateOffspring(offspring)
+        else
+          holder.invalidate()
+    this
 
   createDom: ->
-    @textValid = true
-    text = domValue(@text)
+    this.textValid = true
+    text = domValue(this.text)
     node = document.createTextNode(text)
-    @node = node
-    @firstNode = node
-    @cacheText = text
+    this.node = node
+    this.firstNode = node
+    this.cacheText = text
     node
 
-  updateDom: ->
-    {node} = @
-    if @textValid
+  refreshDom: ->
+    this.valid = true
+    node = this.node
+    if this.textValid
       return node
     else
-      @textValid = true
-      text = domValue(@text)
-      if text!=@cacheText
+      this.textValid = true
+      text = domValue(this.text)
+      if text!=this.cacheText
         if hasTextContent
           node.textContent = text
         else
           node.innerText = text
-        @cacheText = text
+        this.cacheText = text
       node
 
-  clone: -> (new @constructor(@text)).copyEventListeners(@)
+  clone: -> (new this.constructor(this.text)).copyEventListeners(this)
 
-  toString: (indent=2, addNewLine) -> newLine(funcString(@text), indent, addNewLine)
+  toString: (indent=2, addNewLine) -> newLine(funcString(this.text), indent, addNewLine)

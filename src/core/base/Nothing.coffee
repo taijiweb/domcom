@@ -5,22 +5,30 @@ module.exports = class Nothing extends BaseComponent
   constructor: ->
     super
 
-    @firstNode = null
-    @family = {}
+    this.firstNode = null
+    this.family = {}
 
-    @isNothing = true
+    this.isNothing = true
 
-    @baseComponent = @
+    this.baseComponent = this
+
+  invalidateOffspring: -> this
+
+  invalidate: -> this
 
   createDom: -> @node = []
 
-  updateDom: -> @node
+  refreshDom: ->
+    this.valid = true
+    this.node
 
-  attachNode: -> @node
+  attachNode: ->
+    this.holder.raiseNode(this.node)
+    this.node
 
   markRemovingDom: (removing) ->
 
-  removeDom: -> @
+  removeDom: -> this
 
   clone: -> new Nothing()
 

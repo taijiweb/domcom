@@ -5,6 +5,9 @@ _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescri
 see = dc.see, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, clone = dc.clone, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
 describe('Component.refs, clone', function() {
+  afterEach(function() {
+    return dc.clear();
+  });
   describe('refs', function() {
     it('should throw error while constucting conflicted component list(t, t))', function() {
       var t;
@@ -54,12 +57,12 @@ describe('Component.refs, clone', function() {
         }), p(t), t));
       }).to["throw"](Error);
     });
-    return it('should getBaseComponent of if_((-> x), t=txt(1), t)', function() {
+    return it('should updateBaseComponent of if_((-> x), t=txt(1), t)', function() {
       var comp, t, x;
       x = see(0);
       comp = if_(x, t = txt(1), t);
       comp.mount();
-      return comp.update();
+      return dc.update();
     });
   });
   return describe('Clone', function() {
@@ -90,14 +93,14 @@ describe('Component.refs, clone', function() {
       var comp, t1;
       comp = list(t1 = txt(1), clone(t1));
       comp.mount('#demo');
-      comp.update();
+      dc.update();
       return expect(comp.node[1].textContent).to.equal('1');
     });
     it('should process tag clone component ', function() {
       var c1, c2, comp;
       comp = list(c1 = p(1), c2 = clone(c1));
       comp.mount('#demo');
-      comp.update();
+      dc.update();
       return expect(comp.node[1].innerHTML).to.equal('1');
     });
     return it('should process if_ clone component ', function() {
@@ -107,7 +110,7 @@ describe('Component.refs, clone', function() {
       comp = if_(x, c1 = p(3), lstComp);
       comp.mount('#demo');
       x(1);
-      comp.update();
+      dc.update();
       return expect(comp.node.innerHTML).to.equal('3');
     });
   });

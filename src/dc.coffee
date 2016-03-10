@@ -76,72 +76,71 @@ dc.renderLoop = renderLoop = ->
 # dc.updateWhen components, events, updateComponentList, options
 # dc.updateWhen setInterval, interval, components..., {clear: -> clearInterval test}
 dc.updateWhen =  (components, events, updateList, options) ->
-  dc._renderWhenBy('update', components, events, updateList, options)
-
-dc.renderWhen =  (components, events, updateList, options) ->
-  dc._renderWhenBy('render', components, events, updateList, options)
-
-dc._renderWhenBy = (method, components, events, updateList, options) ->
   if components instanceof Array
     if updateList not instanceof Array then updateList = [updateList]
     if events instanceof Array
       for component in components
         for event in events
-          _renderComponentWhenBy(method, component, event, updateList)
+          _renderComponentWhenBy(component, event, updateList)
     else
       for component in components
-        _renderComponentWhenBy(method, component, events, updateList)
+        _renderComponentWhenBy(component, events, updateList)
 
   else if components == setInterval
-    if isComponent(events) then addSetIntervalUpdate(method, events, updateList) # updateList is options
+    if isComponent(events) then addSetIntervalUpdate(events, updateList) # updateList is options
     else if events instanceof Array
-      for component in events then addSetIntervalUpdate(method, events, updateList)
+      for component in events then addSetIntervalUpdate(events, updateList)
     else if typeof events == 'number'
       options = options or {}
       options.interval = events
-      addSetIntervalUpdate(method, updateList, options)
+      addSetIntervalUpdate(updateList, options)
 
   else if components == render
-    if isComponent(events) then addRafUpdate(method, events, updateList) # updateList is options
+    if isComponent(events) then addRafUpdate(events, updateList) # updateList is options
     else if events instanceof Array
-      for component in events then addRafUpdate(method, events, updateList)
+      for component in events then addRafUpdate(events, updateList)
 
   else if events instanceof Array
     if updateList not instanceof Array then updateList = [updateList]
     for event in events
-      _renderComponentWhenBy(method, components, event, updateList)
+      _renderComponentWhenBy(components, event, updateList)
 
   else
     if updateList not instanceof Array then updateList = [updateList]
-    _renderComponentWhenBy(method, components, events, updateList)
+    _renderComponentWhenBy(components, events, updateList)
 
   return
 
 # mtehod: 'update' or 'render'
-_renderComponentWhenBy = (method, component, event, updateList, options) ->
+_renderComponentWhenBy = (component, event, updateList, options) ->
     if event[...2]!='on' then event = 'on'+event
     if options
-      options.method = method
       component.eventUpdateConfig[event] = for comp in updateList then [comp, options]
     else
       for item, i in updateList
-        updateList[i] = if isComponent(item) then [item, {method}] else item
+        updateList[i] = if isComponent(item) then [item, {}] else item
       component.eventUpdateConfig[event] = updateList
     return
 
-addSetIntervalUpdate = (method, component, options) ->
+addSetIntervalUpdate = (component, options) ->
   handler = null
   {test, interval, clear} = options
+
   callback = ->
-    if !test or test() then component[method]()
-    if clear and clear() then clearInterval handler
+    if !test or test()
+      dc.update()
+    if clear and clear()
+      clearInterval handler
+
   handler = setInterval(callback, interval or 16)
 
-addRenderUpdate = (method, component, options) ->
+addRenderUpdate = (component, options) ->
   {test, clear} = options
   callback = ->
-    if !test or test() then component[method]()
-    if clear and clear() then dc.offRender callback
+    if !test or test()
+      dc.update()
+    if clear and clear()
+      dc.offRender callback
   dc.onRender callback
 
 # register directive
@@ -154,3 +153,73 @@ dc.directives = (directiveName, directiveHandlerGenerator) ->
   else
     if directiveName[0]!='$' then directiveName = '$'+directiveName
     directiveRegistry[directiveName] = directiveHandlerGenerator
+
+dc.dcidIndexMap = dcidIndexMap = {}
+dc.parentNodes = parentNodes = []
+dc.nextNodes = nextNodes = []
+dc.listIndex = 0
+
+dc.getChildParentNode = (child) ->
+  parentNodes[dcidIndexMap[child.dcid]]
+
+dc.getChildNextNode = (child) ->
+  nextNodes[dcidIndexMap[child.dcid]]
+
+dc.renderingMap = {}
+dc.removingMap = {}
+
+dc.invalidate = ->
+  dc.valid = false
+
+dc.invalidateOffspring = (offspring) ->
+  dc.valid = false
+  dc.renderingMap[offspring.dcid] = [offspring, offspring.holder]
+
+dc.refreshComponents = refreshComponents = ->
+  this.valid = true
+  renderingMap = this.renderingMap
+  this.renderingMap = {}
+  for _, [component, holder] of renderingMap
+    if holder != component.holder
+      component.invalidate()
+      holder.updateChildHolder(component)
+    if component != this
+      component.renderDom(component.baseComponent)
+  this.valid = false
+  this
+
+dc.removeComponents = removeComponents = ->
+  removingMap = this.removingMap
+  this.removingMap = {}
+  for dcid of removingMap
+    removingMap[dcid].removeDom()
+  this
+
+renderComponents = ->
+  refreshComponents.call(this)
+  removeComponents.call(this)
+
+dc.update = (force) ->
+  if (force || dc.alwaysUpdate) && !dc.valid
+    renderComponents.call(this)
+
+dc.updateChildHolder = (component) ->
+  if component.holder != this
+    component.invalidate()
+    component.holder = this
+    component.setParentNode(this.getChildParentNode(component))
+    component.setNextNode(this.getChildNextNode(component))
+  return
+
+dc.raiseNode = ->
+
+dc.raiseFirstNextNode = ->
+
+dc.clear = ->
+  dc.dcidIndexMap = dcidIndexMap = {}
+  dc.parentNodes = parentNodes = []
+  dc.nextNodes = nextNodes = []
+  dc.listIndex = 0
+  dc.renderingMap = {}
+  dc.removingMap = {}
+

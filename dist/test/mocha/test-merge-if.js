@@ -7,6 +7,9 @@ newDemoNode = require('./helper').newDemoNode;
 see = dc.see, flow = dc.flow, Component = dc.Component, Tag = dc.Tag, Text = dc.Text, List = dc.List, If = dc.If, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, mergeIf = dc.mergeIf, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
 describe('domcom/mergeIf', function() {
+  afterEach(function() {
+    return dc.clear();
+  });
   it('should construct mergeIf(x, t1, t2)', function() {
     var comp, t1, t2, x;
     x = see(0);
@@ -17,7 +20,7 @@ describe('domcom/mergeIf', function() {
     comp.mount();
     expect(comp.node.textContent).to.equal('2');
     x(1);
-    comp.update();
+    dc.update();
     return expect(comp.node.textContent).to.equal('1');
   });
   it('should render mergeIf(x, list(t1, t2), list(t2, t1))', function() {
@@ -31,7 +34,7 @@ describe('domcom/mergeIf', function() {
     expect(comp.node[0].textContent).to.equal('2', 'mount');
     expect(demoNode.innerHTML).to.equal('21', 'mount');
     x(1);
-    comp.update();
+    dc.update();
     expect(comp.node[0].textContent).to.equal('1', 'update x 1');
     return expect(demoNode.innerHTML).to.equal('12', 'update');
   });
@@ -45,7 +48,7 @@ describe('domcom/mergeIf', function() {
     comp.mount(demoNode = newDemoNode('if-ref'));
     expect(demoNode.innerHTML).to.equal('21', 'mount');
     x(0);
-    comp.update();
+    dc.update();
     return expect(demoNode.innerHTML).to.equal('1');
   });
   it('should render mergeIf(x, new List([t1]), list(t2, t1))', function() {
@@ -58,7 +61,7 @@ describe('domcom/mergeIf', function() {
     comp.mount(demoNode = newDemoNode('if-ref'));
     expect(demoNode.innerHTML).to.equal('1', 'mount');
     x(0);
-    comp.update();
+    dc.update();
     return expect(demoNode.innerHTML).to.equal('21');
   });
   it('should render mergeIf(x, p(t1), p(t2))', function() {
@@ -71,7 +74,7 @@ describe('domcom/mergeIf', function() {
     comp.mount(demoNode = newDemoNode('if-ref'));
     expect(demoNode.innerHTML).to.equal('<p>2</p>', 'mount');
     x(1);
-    comp.update();
+    dc.update();
     return expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1');
   });
   it('should render mergeIf(x, p(t1), p(t2, t1))', function() {
@@ -84,13 +87,13 @@ describe('domcom/mergeIf', function() {
     comp.mount(demoNode = newDemoNode('if-ref'));
     expect(demoNode.innerHTML).to.equal('<p>21</p>', 'mount');
     x(1);
-    comp.update();
+    dc.update();
     expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1');
     x(0);
-    comp.update();
+    dc.update();
     expect(demoNode.innerHTML).to.equal('<p>21</p>', 'update x 0');
     x(1);
-    comp.update();
+    dc.update();
     return expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1 again');
   });
   it('should render mergeIf(x, p(t1), div(t2))', function() {
@@ -110,7 +113,7 @@ describe('domcom/mergeIf', function() {
     expect(comp.node.tagName).to.equal('DIV', 'tagName');
     expect(comp.node.innerHTML).to.equal('2', 'mount');
     x(1);
-    comp.update();
+    dc.update();
     return expect(comp.node.innerHTML).to.equal('1', 'first update');
   });
   it('should render mergeIf(x, div(1), div(p(2)))', function() {
@@ -135,7 +138,7 @@ describe('domcom/mergeIf', function() {
     expect(comp.isTag).to.equal(true);
     expect(comp.node.className).to.equal('b');
     x(1);
-    comp.update();
+    dc.update();
     return expect(comp.node.className).to.equal('a');
   });
   it('should render mergeIf(x, div({a:1}, 1), div({b:2}, 2))', function() {
@@ -151,7 +154,7 @@ describe('domcom/mergeIf', function() {
     expect(comp.node.a).to.equal('');
     expect(comp.node.b).to.equal(2);
     x(1);
-    comp.update();
+    dc.update();
     expect(comp.node.a).to.equal(1);
     return expect(comp.node.b).to.equal('', 'x 1');
   });
@@ -172,7 +175,7 @@ describe('domcom/mergeIf', function() {
     comp.node.onclick();
     expect(a).to.equal(2, 'first click');
     x(1);
-    comp.update();
+    dc.update();
     comp.node.onclick();
     return expect(a).to.equal(1, 'second click');
   });
@@ -192,7 +195,7 @@ describe('domcom/mergeIf', function() {
     comp.node.onclick();
     expect(a).to.equal(2, 'first click');
     comp.test = 1;
-    comp.update();
+    dc.update();
     comp.node.onclick();
     return expect(a).to.equal(1, 'second click');
   });
@@ -211,7 +214,7 @@ describe('domcom/mergeIf', function() {
     comp.mount();
     expect(comp.node.style.width).to.equal('200px');
     x(1);
-    comp.update();
+    dc.update();
     return expect(comp.node.style.width).to.equal('100px');
   });
 });

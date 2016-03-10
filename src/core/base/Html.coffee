@@ -67,7 +67,9 @@ Html.HtmlMixin = HtmlMixin = {
     this.cacheText = node.innerHTML = @transform and @transform(domValue(@_text)) or domValue(@_text)
     @
 
-  updateDom: ->
+  refreshDom: ->
+    this.valid = true
+
     if @textValid
       return @
 
@@ -81,6 +83,7 @@ Html.HtmlMixin = HtmlMixin = {
         if node.parentNode
           @removeNode()
         @node = @firstNode = node = node.cloneNode(false)
+        this.attachNode()
         node.component = this
       node.innerHTML =  text
 
@@ -108,12 +111,28 @@ Html.HtmlMixin = HtmlMixin = {
         me.invalidate()
     @invalidate()
     @
+
+  invalidateOffspring: (offspring) ->
+    holder = this.holder
+    if !holder
+      # while the component is not mounted, the holder may be undefined
+      this
+    else
+      if holder == dc
+        dc.invalidateOffspring(offspring)
+      else
+        if holder.isBaseComponent
+          holder.invalidateOffspring(offspring)
+        else
+          holder.invalidate()
+    this
 }
 
 ListMixin = require('./ListMixin')
 for method of ListMixin
-  Html.prototype[method] = ->
-    dc.error("Html component has no children components, do not call ListMixin method(#{method} on it")
+  do (method=method) ->
+    Html.prototype[method] = ->
+      dc.error("Html component has no children components, do not call ListMixin method(#{method}) on it")
 
 extend = require('extend')
 

@@ -14,7 +14,10 @@ Nothing
 {a_} = bindings({a: 1, b: 2})
 
 describe "test base component", ->
-  describe 'getBaseComponent', ->
+  afterEach ->
+    dc.clear()
+
+  describe 'update baseComponent', ->
     it 'should get baseComponent of List', ->
       comp = list([1, 2])
       expect(comp.baseComponent).to.equal comp
@@ -25,7 +28,7 @@ describe "test base component", ->
 
   describe 'process get baseComponent of Tag',  ->
 
-    it 'should getBaseComponent of two tags', ->
+    it 'should get baseComponent of two tags', ->
       p1 = new Tag('p', {}, [])
       d = new Tag('div', {}, [p1])
       expect(d.baseComponent).to.equal d
@@ -137,10 +140,10 @@ describe "test base component", ->
       comp.mount(demoNode=newDemoNode())
       expect(demoNode.innerHTML).to.equal '<div><div>1</div><p>2</p>a</div>'
       str 'x'
-      comp.update()
-      expect(demoNode.innerHTML).to.equal '<div>xa</div>'
-      comp.update()
-      expect(demoNode.innerHTML).to.equal '<div>xa</div>'
+      dc.update()
+      expect(demoNode.innerHTML).to.equal '<div>xa</div>', 'update 1'
+      dc.update()
+      expect(demoNode.innerHTML).to.equal '<div>xa</div>', 'update 2'
 
     it 'should Html.bind', ->
       str = see ''
@@ -156,5 +159,5 @@ describe "test base component", ->
       comp = html(str)
       comp.mount()
       comp.text = 'x'
-      comp.update()
+      dc.update()
       expect(comp.node.innerHTML).to.equal 'x'

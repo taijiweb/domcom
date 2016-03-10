@@ -18,12 +18,12 @@ module.exports = (options, template) ->
     openCallback and openCallback()
     # do not use Component.mount, it's not allowed to mount/unmount sub Component
     opened true
-    dlg.update()
+    dc.update()
   closeCallback = options.closeCallback
   dlg.close = ->
     # do not use Component.unmount, it's not allowed to mount/unmount sub Component
     opened false
-    dlg.update()
+    dc.update()
     closeCallback and closeCallback()
   if options.escClose
     dlg.on 'onMount', ->

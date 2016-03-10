@@ -7,6 +7,9 @@ slashs = /(?:\\\/)|(?:\\\()|(?:\\\))/
 {isComponent, route, txt, Nothing} = dc
 
 describe 'route', ->
+  afterEach ->
+    dc.clear()
+
   describe 'route regexp', ->
     it 'should match paramName pattern', ->
       params = {}

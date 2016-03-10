@@ -10,6 +10,9 @@ Component, list, func, if_, txt
 a, p, span, text, li, div, button, input} = dc
 
 describe "component event", ->
+  afterEach ->
+    dc.clear()
+
   it 'component shoud call listeners before mounting', ->
     x = 0
     comp = p()
@@ -31,7 +34,7 @@ describe "component event", ->
     comp.mount()
     expect(x()).to.equal 0
     x 1
-    comp.update()
+    dc.update()
     expect(x()).to.equal 1
 
   it 'component shoud not call embeded listeners before updating if_', ->
@@ -41,7 +44,7 @@ describe "component event", ->
     comp.mount()
     expect(x()).to.equal 0
     x 1
-    comp.update()
+    dc.update()
     expect(x()).to.equal 1
 
   it 'component shoud call listeners after mounting', ->
@@ -74,7 +77,7 @@ describe "component event", ->
     comp.mount()
     expect(x()).to.equal 0, 'mount'
     x 1
-    comp.update()
+    dc.update()
     expect(x()).to.equal 1
     expect(y).to.equal 0
 
@@ -86,7 +89,7 @@ describe "component event", ->
     comp.mount()
     expect(x()).to.equal 0
     x 1
-    comp.update()
+    dc.update()
     expect(x()).to.equal 1
     expect(y).to.equal 0
 

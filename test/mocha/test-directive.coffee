@@ -56,7 +56,7 @@ describe 'directives', ->
       expect(comp.node.style.display).to.equal 'block', 1
       showing false
       expect(comp.hasActiveStyle).to.equal true
-      comp.update()
+      dc.update()
       expect(comp.node.style.display).to.equal 'none', 2
 
     it 'should process hide directive', ->

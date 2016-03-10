@@ -9,6 +9,9 @@ Component, list, func, if_, txt
 a, p, span, text, li, div, button, input} = dc
 
 describe "component  ", ->
+  afterEach ->
+    dc.clear()
+
   describe 'construct component', ->
     it 'component shoud have children', ->
       comp = p({}, [1, 2])
@@ -27,14 +30,6 @@ describe "component  ", ->
       span1 = new Tag('span', {}, [new Text('adf')])
       comp = new Tag('div', {className:classFn('some class'), style:styleFrom("width:1px;")}, [span1])
       expect(comp.children[0]).to.equal span1
-
-  describe 'component.append', ->
-    # Now components have the api for appending, etc...
-    nit 'should append tag.children', ->
-      d = div()
-      p1 = p()
-      d.append(p1)
-      expect(d.children).to.equal p1
 
   describe 'component.create', ->
     it 'should create tag', ->
@@ -153,11 +148,11 @@ describe "component  ", ->
       comp.mount()
       expect(comp.node.innerHTML).to.equal '1'
       ++count
-      comp.update()
-      expect(comp.node.innerHTML).to.equal '2'
+      dc.update()
+      expect(comp.node.innerHTML).to.equal('2', 'update 2')
       ++count
-      comp.update()
-      expect(comp.node.innerHTML).to.equal '3'
+      dc.update()
+      expect(comp.node.innerHTML).to.equal('3', 'update 3')
 
     it 'should update bidirectional bind', ->
       {a$} = bindings({a: 1})
@@ -172,10 +167,10 @@ describe "component  ", ->
       elm = comp.node
       expect(elm.innerHTML).to.equal '1'
       ++count
-      comp.update()
+      dc.update()
       expect(elm.innerHTML).to.equal '2'
       ++count
-      comp.update()
+      dc.update()
       expect(elm.innerHTML).to.equal '3'
 
     it 'should process text with bind', ->
@@ -186,7 +181,7 @@ describe "component  ", ->
       a_ 3; b_ 4
       expect(a_()).to.equal(3, 'a_')
       expect(b_()).to.equal(4, 'b_')
-      comp.update()
+      dc.update()
       expect(comp.node.innerHTML).to.equal '7', 'update'
 
     it 'should process bidirectional bind', ->
@@ -238,7 +233,7 @@ describe "component  ", ->
       comp = p(->12)
       comp.mount()
       expect(comp.node.innerHTML).to.equal '12'
-      comp.update()
+      dc.update()
       expect(comp.node.innerHTML).to.equal '12'
-      comp.update()
+      dc.update()
       expect(comp.node.innerHTML).to.equal '12'

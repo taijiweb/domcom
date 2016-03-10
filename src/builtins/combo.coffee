@@ -8,15 +8,15 @@ exports.combobox = combobox = (attrs, modelValue, valueList, direction) ->
   comp = null # do NOT remove this line, because comp is referenced in attrs
   opts = for item in valueList then do(item=item) -> span({
     style:{display:disp, border:"1px solid blue", "min-width":"40px"}
-    onclick:(-> modelValue(item); comp.update())
+    onclick:(-> modelValue(item); dc.update())
   }, item)
   attrs = extendAttrs attrs, {
-    onmouseleave:(-> showingItems false; comp.update())
+    onmouseleave:(-> showingItems false; dc.update())
   }
   comp = div(attrs,
     input({
       $model:modelValue
-      onmouseenter:(-> showingItems true; comp.update())}),
+      onmouseenter:(-> showingItems true; dc.update())}),
     div({style:{display: -> if showingItems() then 'block' else 'none'}}, opts) #flow showingItems,
   )
 

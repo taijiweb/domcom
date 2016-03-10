@@ -122,7 +122,7 @@ describe("domcom/properties/classFn", function() {
         b: active
       }
     });
-    expect(comp.className()).to.equal('a b');
+    expect(comp.className()).to.equal('a b', 'first');
     comp.className = classFn({
       a: 1,
       b: active
@@ -132,12 +132,12 @@ describe("domcom/properties/classFn", function() {
     comp.mount();
     expect(comp.className.valid).to.equal(true, 'className.valid 2');
     expect(comp.hasActiveProperties).to.equal(false, 'hasActiveProperties 2');
-    expect(comp.node.className).to.equal('a b');
+    expect(comp.node.className).to.equal('a b', 'second');
     active(false);
     expect(comp.className.valid).to.equal(false, 'className.valid 3');
     expect(comp.hasActiveProperties).to.equal(true, 'hasActiveProperties 3');
-    comp.update();
-    return expect(comp.node.className).to.equal('a');
+    dc.update();
+    return expect(comp.node.className).to.equal('a', '3');
   });
 });
 
@@ -236,7 +236,7 @@ describe('domcom/properties/style', function() {
     return expect(comp.node.style.border).to.equal("1px solid red");
   });
   return nit('change style dynamically', function() {
-    var color, comp, handle, i, i0, paddingColor, styleFn;
+    var color, comp, handle, i, i$, paddingColor, styleFn;
     paddingColor = function(hexStr) {
       if (!(hexStr.match(/^\d/))) {
         return hexStr;
@@ -247,11 +247,11 @@ describe('domcom/properties/style', function() {
       return '#' + hexStr;
     };
     color = see("red");
-    i = see(i0 = 0);
+    i$ = see(i = 0);
     comp = a({
       style: {
-        borderWidth: flow(i, function() {
-          return i() + "px";
+        borderWidth: flow(i$, function() {
+          return i$() + "px";
         }),
         borderStyle: "solid",
         borderColor: flow(color, function() {
@@ -263,9 +263,9 @@ describe('domcom/properties/style', function() {
     color = 0;
     styleFn = function() {
       color += 0x111111;
-      i(i0++);
+      i$(i++);
       comp.render();
-      if (i0 === 50) {
+      if (i === 50) {
         return clearInterval(handle);
       }
     };

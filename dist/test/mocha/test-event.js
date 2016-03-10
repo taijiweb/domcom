@@ -7,6 +7,9 @@ fakeEvent = require('./helper').fakeEvent;
 duplex = dc.duplex, see = dc.see, classFn = dc.classFn, styleFrom = dc.styleFrom, model = dc.model, show = dc.show, Tag = dc.Tag, Text = dc.Text, List = dc.List, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, txt = dc.txt, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, button = dc.button, input = dc.input;
 
 describe("component event", function() {
+  afterEach(function() {
+    return dc.clear();
+  });
   it('component shoud call listeners before mounting', function() {
     var comp, x;
     x = 0;
@@ -37,7 +40,7 @@ describe("component event", function() {
     comp.mount();
     expect(x()).to.equal(0);
     x(1);
-    comp.update();
+    dc.update();
     return expect(x()).to.equal(1);
   });
   it('component shoud not call embeded listeners before updating if_', function() {
@@ -50,7 +53,7 @@ describe("component event", function() {
     comp.mount();
     expect(x()).to.equal(0);
     x(1);
-    comp.update();
+    dc.update();
     return expect(x()).to.equal(1);
   });
   it('component shoud call listeners after mounting', function() {
@@ -98,7 +101,7 @@ describe("component event", function() {
     comp.mount();
     expect(x()).to.equal(0, 'mount');
     x(1);
-    comp.update();
+    dc.update();
     expect(x()).to.equal(1);
     return expect(y).to.equal(0);
   });
@@ -113,7 +116,7 @@ describe("component event", function() {
     comp.mount();
     expect(x()).to.equal(0);
     x(1);
-    comp.update();
+    dc.update();
     expect(x()).to.equal(1);
     return expect(y).to.equal(0);
   });

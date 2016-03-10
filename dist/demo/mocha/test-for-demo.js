@@ -1,22 +1,25 @@
-var Component, List, Tag, Text, a, bindings, button, classFn, controls, ddescribe, div, duplex, each, expect, extendAttrs, flow, func, idescribe, if_, iit, input, li, list, ndescribe, nit, p, see, span, styleFrom, text, txt, _ref;
+var Component, List, Tag, Text, a, bindings, button, classFn, controls, ddescribe, div, duplex, each, expect, extendAttrs, flow, func, funcEach, idescribe, if_, iit, input, li, list, ndescribe, nit, p, see, span, styleFrom, text, txt, _ref;
 
 _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, ddescribe = _ref.ddescribe;
 
-bindings = dc.bindings, duplex = dc.duplex, flow = dc.flow, see = dc.see, classFn = dc.classFn, styleFrom = dc.styleFrom, extendAttrs = dc.extendAttrs, Tag = dc.Tag, Text = dc.Text, List = dc.List, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, txt = dc.txt, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, button = dc.button, input = dc.input, each = dc.each;
+bindings = dc.bindings, duplex = dc.duplex, flow = dc.flow, see = dc.see, classFn = dc.classFn, styleFrom = dc.styleFrom, extendAttrs = dc.extendAttrs, Tag = dc.Tag, Text = dc.Text, List = dc.List, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, txt = dc.txt, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, button = dc.button, input = dc.input, each = dc.each, funcEach = dc.funcEach;
 
 controls = require('domcom/demo/demo-controls');
 
 describe('demo', function() {
+  afterEach(function() {
+    return dc.clear();
+  });
   describe('sum', function() {
     return it('should construct and create components', function() {
-      var a$, a_, b$, b_, comp, sum, x, y, z, _ref1;
+      var a$, a_, b$, b_, comp, sum, t1, x, y, z, _ref1;
       _ref1 = bindings({
         a: 3,
         b: 2
       }), a$ = _ref1.a$, b$ = _ref1.b$, a_ = _ref1.a_, b_ = _ref1.b_;
       x = text(a$);
       y = text(b$);
-      z = p(txt(sum = flow.add(a_, b_)));
+      z = p(t1 = txt(sum = flow.add(a_, b_)));
       expect(sum()).to.equal(5, 'sum 1');
       a_(1);
       expect(sum()).to.equal(3, 'sum 2');
@@ -30,9 +33,10 @@ describe('demo', function() {
       expect(a_()).to.equal('3', 'a_');
       expect(b_()).to.equal('4', 'b_');
       expect(sum()).to.equal('34', 'sum');
-      expect(!!comp.valid).to.equal(false, 'comp.valid');
-      expect(!!z.valid).to.equal(false, 'z.valid');
-      comp.update();
+      expect(!!comp.valid).to.equal(true, 'comp.valid');
+      expect(!!z.valid).to.equal(true, 'z.valid');
+      expect(!!t1.valid).to.equal(false, 't1.valid');
+      dc.update();
       return expect(z.node.innerHTML).to.equal('34', 'update');
     });
   });
@@ -71,7 +75,7 @@ describe('demo', function() {
       }).a$;
       attrs = {
         onchange: function() {
-          return comp.update();
+          return dc.update();
         }
       };
       comp = list(text1 = text(attrs, a$), text2 = text(attrs, a$));
@@ -90,7 +94,7 @@ describe('demo', function() {
         value: a$,
         onchange: function() {
           a$(this.value);
-          return comp.update();
+          return dc.update();
         }
       };
       comp = list(text1 = text(attrs), text2 = text(attrs));
@@ -122,7 +126,7 @@ describe('demo', function() {
               },
               onclick: (function() {
                 value(item);
-                return comp.update();
+                return dc.update();
               })
             }, item);
           })(item));
@@ -132,14 +136,14 @@ describe('demo', function() {
       attrs = extendAttrs(attrs, {
         onmouseleave: (function() {
           showingItems(false);
-          return comp.update();
+          return dc.update();
         })
       });
       comp = div(attrs, input1 = input({
         $model: value,
         onmouseenter: (function() {
           showingItems(true);
-          return comp.update();
+          return dc.update();
         })
       }), items = div({
         style: {
@@ -192,7 +196,8 @@ describe('demo', function() {
     });
   });
   return describe('todomvc', function() {
-    var makeTodo;
+    var makeTodo, status;
+    status = null;
     it('should process class', function() {
       var comp;
       comp = a({
@@ -217,7 +222,7 @@ describe('demo', function() {
       return expect(comp.children[0].node.href).to.match(/:\/\//);
     });
     makeTodo = function(todos, status) {
-      var getTodos, todoItems;
+      var getTodos;
       status.hash = 'all';
       getTodos = function() {
         if (status.hash === 'active') {
@@ -232,7 +237,7 @@ describe('demo', function() {
           return todos;
         }
       };
-      return todoItems = each(getTodos, function(todo, index) {
+      return funcEach(getTodos, function(todo) {
         return p(txt(function() {
           return todo.title;
         }), ', ', txt(function() {
@@ -244,17 +249,17 @@ describe('demo', function() {
         }));
       });
     };
-    it('should mount getTodos and Each with empty todos correctly', function() {
-      var comp, status, todos;
+    it('should mount getTodos and each with empty todos correctly', function() {
+      var comp, todos;
       todos = [];
-      comp = makeTodo(todos, status = {
+      comp = makeTodo(todos, {
         hash: 'all'
       });
       comp.mount();
       return expect(comp.node.length).to.equal(0);
     });
     it('should invalidate children to listComponent', function() {
-      var child0, comp, status, todos;
+      var comp, todos;
       todos = [
         {
           title: 'do this'
@@ -263,18 +268,17 @@ describe('demo', function() {
       comp = makeTodo(todos, status = {
         hash: 'all'
       });
-      expect(comp.listComponent.invalidIndexes).to.be.undefined;
-      comp.getContentComponent();
-      child0 = comp.cacheChildren[0];
+      comp.mount();
+      expect(comp.children.length).to.equal(1, '1-1');
       status.hash = 'completed';
-      child0.transfornValid = true;
-      comp.getContentComponent();
-      child0.valid = true;
+      dc.update();
+      expect(comp.children.length).to.equal(0);
       status.hash = 'all';
-      return comp.getContentComponent();
+      dc.update();
+      return expect(comp.children.length).to.equal(1, '1-2');
     });
-    it('should process getTodos and Each correctly', function() {
-      var child0, comp, status, todos;
+    it('should process getTodos and each correctly', function() {
+      var comp, todos;
       todos = [
         {
           title: 'do this'
@@ -286,19 +290,17 @@ describe('demo', function() {
       comp.mount();
       expect(comp.node.length).to.equal(1);
       status.hash = 'completed';
-      comp.update();
+      dc.update();
       expect(comp.node.length).to.equal(0);
       status.hash = 'all';
-      comp.getContentComponent();
-      child0 = comp.listComponent.children[0];
-      comp.update();
+      dc.update();
       return expect(comp.node.length).to.equal(1);
     });
     return it('should todoEditArea', function() {
-      var comp, footer, section, todoEditArea, todoItems, ul;
+      var comp, footer, lst, section, todoEditArea, todoItems, ul;
       section = dc.section, ul = dc.ul, footer = dc.footer;
-      todoItems = each([1, 2], function(todo, index) {
-        return li(1);
+      todoItems = each(lst = [1, 2], function(todo, index) {
+        return li(todo);
       });
       comp = todoEditArea = section({
         id: "main"
@@ -308,7 +310,10 @@ describe('demo', function() {
         id: "footer"
       }));
       comp.mount();
-      return comp.update();
+      expect(todoItems.node.length).to.equal(2);
+      lst.push(3);
+      dc.update();
+      return expect(todoItems.node.length).to.equal(3);
     });
   });
 });

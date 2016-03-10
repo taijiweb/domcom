@@ -42,7 +42,7 @@ exports.setAutoWidth = setAutoWidth = (container, options={}) ->
     event.executeDefault = true
     inputText$ @value
     inputTextWidth$ testSubject.node.getBoundingClientRect().width
-    container.update()
+    dc.update()
     @focus()
 
   inputComponent.extendAttrs(inputAttrs)

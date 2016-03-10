@@ -19,7 +19,7 @@ module.exports = exports = accordion = (attrs, accordionGroupList, options) ->
         if accordionOptions.closeOthers and groupOptions.opened
           for group2, i in accordionGroupList
             if i!=index then group2[3].opened = false
-        comp.update()
+        dc.update()
       accordionGroup(groupAttrs, heading, content, groupOptions)
     )
   )

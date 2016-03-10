@@ -8,7 +8,7 @@ ObjectDefineProperty = Object.defineProperty
 
 module.exports = class If extends TestComponent
   constructor: (test, then_, else_, merge, recursive, forceIf=false) ->
-    if then_==else_
+    if then_ == else_
       return toComponent then_
 
     then_ = toComponent(then_)

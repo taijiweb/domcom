@@ -9,7 +9,7 @@ a, p, span, text, div} = dc
 describe 'toString', ->
   it 'should toString list of if(tag)', ->
     x = 0
-    comp = list(t1=text({onchange: -> x = parseInt(@value); comp.update()}, x), pIf=if_((->x), div(1), div(2)))
+    comp = list(t1=text({onchange: -> x = parseInt(@value); dc.update()}, x), pIf=if_((->x), div(1), div(2)))
     expect(comp.toString()).to.match /<List>\n  <input type="text" value=0>/
 
   it 'should toString  tag with props', ->

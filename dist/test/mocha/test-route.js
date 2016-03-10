@@ -11,6 +11,9 @@ slashs = /(?:\\\/)|(?:\\\()|(?:\\\))/;
 isComponent = dc.isComponent, route = dc.route, txt = dc.txt, Nothing = dc.Nothing;
 
 describe('route', function() {
+  afterEach(function() {
+    return dc.clear();
+  });
   describe('route regexp', function() {
     it('should match paramName pattern', function() {
       var params;

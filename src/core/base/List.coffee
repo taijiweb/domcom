@@ -1,116 +1,117 @@
 BaseComponent = require('./BaseComponent')
 
-{newLine} = require('dc-util')
+{newLine, isArray} = require('dc-util')
+
+{refreshComponents} = dc = require('../../dc')
+
+getFirstNodeFromArray = (nodes) ->
+  if !nodes.length
+    return null
+  else
+    for node in nodes
+      if !isArray(node) && node
+        return node
+      else if node = getFirstNodeFromArray(node)
+        return node
+    null
 
 module.exports = exports = class List extends BaseComponent
-  constructor: (children) ->
+  constructor: (children) ->    
     super()
-    @initChildren(children)
-    @isList = true
+    this.renderingMap = {}
+    this.removingMap = {}
+    this.initChildren(children)
+    this.isList = true
+
     return
 
   createDom: ->
-    if length=@children.length
-      {parentNode, children} = @
-      children[length-1].nextNode = @nextNode
-      for child, i in children
-        child.parentNode = parentNode
+    this.valid = true
 
-    node = []
-    @node = node
+    children = this.children
+    this.nextNodes = nextNodes = []
+    this.node = this.childNodes = node = []
+    this.childParentNode = this.parentNode
+    this.childNextNode = this.nextNode
+    nextNodes.length = length = children.length
+    if length
+      nextNodes[length-1] = this.nextNode
+      this.createChildrenDom()
+    this.firstNode = this.childFirstNode
+    node
 
-    @childNodes = node
+  # because dc, tag and List has different behaviour
+  # so getChildParentNode is a necessary method
+  getChildParentNode: (child) ->
+    this.parentNode
 
-    node.parentNode = @parentNode
+  updateChildHolder: (child, listIndex) ->
+    if child.holder != this
+      if child.node
+        child.invalidate()
+      child.setParentNode(this.parentNode)
+      child.holder = this
+    return
 
-    @createChildrenDom()
-
-    @firstNode = @childFirstNode
-
-    @childrenNextNode = @nextNode
-
-    @node
-
-  updateDom: ->
-    {children, parentNode, invalidIndexes} = @
-
-    for index in invalidIndexes
-      children[index].parentNode = parentNode
-
-    @childrenNextNode = @nextNode
-    @updateChildrenDom()
-
-    # do not worry about Tag component
-    # 1. it does not call List.updateDom
-    # 2. setFirstNode will affect BaseComponent holder (including Tag)
-    @firstNode = @childFirstNode
-
-    @node
+  refreshDom: ->
+    this.valid = true
+    refreshComponents.call(this)
+    this.node
 
   # set parentNode and nextNode field for transformComponent and its offspring, till baseComponent
   setParentNode: (parentNode) ->
-    if @parentNode != parentNode
-      @parentNode = parentNode
-      for child in @children
+    if this.parentNode != parentNode
+      this.parentNode = parentNode
+      for child in this.children
         child.setParentNode(parentNode)
     return
 
-  setNextNode: (nextNode) ->
-    @nextNode = nextNode
-
-    {children} = @
-    childrenLength = children.length
-    if childrenLength
-       children[childrenLength-1].setNextNode(nextNode)
-
-    return
-
   markRemovingDom: (removing) ->
-    if !removing || (@node and @node.parentNode)
-      @removing = removing
-      for child in @children
-        child.markRemovingDom(removing)
-    return
+    this.removing = removing
+    if removing
+      if (node=this.node) and node.parentNode
+        node.parentNode = null
+        for child in this.children
+          child.markRemovingDom(removing)
+    this
 
   removeDom: ->
-    if @removing && @attached
-      @removing = false
-      @attached = false
-      @holder = null
-      @node.parentNode = null
-      @emit('willDetach')
-      for child in @children
+    if this.removing && this.attached
+      this.removing = false
+      this.attached = false
+      this.emit('willDetach')
+      for child in this.children
         child.removeDom()
-      @emit('didDetach')
-    @
+      this.emit('didDetach')
+    this
 
   removeNode: ->
-    @node.parentNode = null
-    for child in @children
+    this.node.parentNode = null
+    for child in this.children
       child.baseComponent.removeNode()
     return
 
-  # Tag, Comment, Html, Text should have attached them self in advace
+  # Tag, Comment, Html, Text should have attached them self in advance
   # But if the children is valid, and the List Component has been removeDom before,
   # it must attachNode of all the children to the parentNode
-  attachNode: () ->
+  attachNode: ->
 
-    {children, parentNode, nextNode, node} = @
+    {children, parentNode, nextNode, node} = this
 
-    if !(attached=@attached)
-      @attached = true
-      @emit('willAttach')
+    if !(attached=this.attached)
+      this.attached = true
+      this.emit('willAttach')
 
     # different parentNode, it was removeDom before !
     # attach it again
-    if parentNode != @node.parentNode or  nextNode != node.nextNode
+    if parentNode != node.parentNode or  nextNode != node.nextSibling
       node.parentNode = parentNode
-      node.nextNode = nextNode
+      # nextSibling is just the thing
+      # node.nextNode = nextNode
+      length = children.length
+      if length
 
-      if children.length
-
-        {nextNode} = @
-        index = children.length - 1
+        index = length - 1
         children[index].nextNode = nextNode
 
         while index >= 0
@@ -129,18 +130,23 @@ module.exports = exports = class List extends BaseComponent
 
       # else null # no children, do nothing
 
+      holder = this.holder
+      if holder.children
+        holder.node[holder.dcidIndexMap[this.dcid]] = node
+
     # else null # both parentNode and nextNode does not change, do nothing
     if !attached
-      @emit('didAttach')
-    @node
+      this.emit('didAttach')
 
-  clone: -> (new List((for child in @children then child.clone()))).copyEventListeners(@)
+    this.node
+
+  clone: -> (new List((for child in this.children then child.clone()))).copyEventListeners(this)
 
   toString: (indent=0, addNewLine) ->
-    if !@children.length then newLine("<List/>", indent, addNewLine)
+    if !this.children.length then newLine("<List/>", indent, addNewLine)
     else
       s = newLine("<List>", indent, addNewLine)
-      for child in @children
+      for child in this.children
         s += child.toString(indent+2, true)
       s += newLine('</List>', indent, true)
 
