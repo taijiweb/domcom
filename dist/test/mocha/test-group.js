@@ -184,15 +184,19 @@ describe('group component: List, each', function() {
       return expect(comp.node.innerHTML).to.equal('a:1b:2');
     });
     return it('all key of object 3', function() {
-      var demoNode;
+      var demoNode, options;
+      options = {
+        itemFunc: function(value, key) {
+          return list(key, ':', value);
+        },
+        separatorFunc: function() {
+          return ', ';
+        }
+      };
       comp = every({}, {
         a: 1,
         b: 2
-      }, (function(value, key) {
-        return list(key, ':', value);
-      }), (function() {
-        return ', ';
-      }));
+      }, options);
       comp.mount(demoNode = newDemoNode('list'));
       dc.update();
       expect(comp.children.length).to.equal(2);
@@ -316,11 +320,13 @@ describe('group component: List, each', function() {
     });
     it('should process items in template function', function() {
       var lst;
-      comp = each(lst = ['a', 'b'], (function(item, i, items, eachComponent) {
-        return p(txt(function() {
-          return items[i];
-        }));
-      }));
+      comp = each(lst = ['a', 'b'], {
+        itemFunc: function(item, i, listComponent) {
+          return p(txt(function() {
+            return item;
+          }));
+        }
+      });
       comp.mount();
       lst.setItem(0, 'c');
       dc.update();
@@ -333,8 +339,10 @@ describe('group component: List, each', function() {
       x$ = see(1);
       text1 = null;
       comp = new Tag('div', {}, [
-        each1 = each([1], function(item) {
-          return text1 = txt(x$);
+        each1 = each([1], {
+          itemFunc: function(item) {
+            return text1 = txt(x$);
+          }
         })
       ]);
       comp.mount();
@@ -352,8 +360,10 @@ describe('group component: List, each', function() {
       x = 1;
       comp = funcEach((function() {
         return [x];
-      }), function(item) {
-        return txt(item);
+      }), {
+        itemFunc: function(item) {
+          return txt(item);
+        }
       });
       comp.mount(demo2Node);
       expect(comp.node[0].textContent).to.equal('1');
@@ -372,8 +382,10 @@ describe('group component: List, each', function() {
       var each1, listItems, span1, x;
       x = 1;
       comp = div({}, span1 = new Tag('span', {}, [
-        each1 = each(listItems = [x], function(item) {
-          return txt(item);
+        each1 = each(listItems = [x], {
+          itemFunc: function(item) {
+            return txt(item);
+          }
         })
       ]));
       comp.mount();
@@ -392,8 +404,10 @@ describe('group component: List, each', function() {
       comp = div({}, span1 = new Tag('span', {}, [
         each1 = funcEach((function() {
           return [x];
-        }), function(item) {
-          return txt(item);
+        }), {
+          itemFunc: function(item) {
+            return txt(item);
+          }
         })
       ]));
       comp.mount();
@@ -409,8 +423,10 @@ describe('group component: List, each', function() {
     it('should create and update each where item return a closure variable', function() {
       var x;
       x = see(1);
-      comp = each([1], function() {
-        return txt(x);
+      comp = each([1], {
+        itemFunc: function() {
+          return txt(x);
+        }
       });
       comp.mount();
       expect(comp.node[0].textContent).to.equal('1');
@@ -423,8 +439,10 @@ describe('group component: List, each', function() {
       var each1, x;
       x = see(1);
       comp = new Tag('span', {}, [
-        each1 = each([1], function(item) {
-          return txt(x);
+        each1 = each([1], {
+          itemFunc: function(item) {
+            return txt(x);
+          }
         })
       ]);
       comp.mount();
@@ -441,8 +459,10 @@ describe('group component: List, each', function() {
       var each1, span1, x;
       x = see(1);
       comp = div({}, div({}, span1 = new Tag('span', {}, [
-        each1 = each([1], function(item) {
-          return txt(x);
+        each1 = each([1], {
+          itemFunc: function(item) {
+            return txt(x);
+          }
         })
       ])));
       comp.mount();
@@ -461,8 +481,10 @@ describe('group component: List, each', function() {
       comp = div({}, div({}, span1 = new Tag('span', {}, [
         each1 = funcEach((function() {
           return [x];
-        }), function(item) {
-          return txt(item);
+        }), {
+          itemFunc: function(item) {
+            return txt(item);
+          }
         })
       ])));
       comp.mount();
@@ -480,8 +502,10 @@ describe('group component: List, each', function() {
       x = 1;
       comp = funcEach((function() {
         return [x];
-      }), function(item) {
-        return item;
+      }), {
+        itemFunc: function(item) {
+          return item;
+        }
       });
       comp.mount();
       expect(comp.node[0].textContent).to.equal('1');
@@ -497,8 +521,10 @@ describe('group component: List, each', function() {
       comp = each1 = each([1], function() {
         return each2 = funcEach((function() {
           return [x];
-        }), function(item) {
-          return txt(item);
+        }), {
+          itemFunc: function(item) {
+            return txt(item);
+          }
         });
       });
       comp.mount(demo2Node);

@@ -144,7 +144,11 @@ describe 'group component: List, each', ->
       expect(comp.node.innerHTML).to.equal('a:1b:2')
 
     it 'all key of object 3', ->
-      comp = every({}, {a:1, b:2}, ((value, key) -> list(key, ':', value)), (-> ', '))
+      options = {
+      itemFunc: (value, key) -> list(key, ':', value)
+      separatorFunc: -> ', '
+      }
+      comp = every({}, {a:1, b:2}, options)
       comp.mount(demoNode=newDemoNode('list'))
       dc.update()
       expect(comp.children.length).to.equal 2
@@ -240,7 +244,7 @@ describe 'group component: List, each', ->
       comp.unmount()
 
     it 'should process items in template function', ->
-      comp = each(lst = ['a', 'b'], ((item, i, items, eachComponent) -> p(txt(-> items[i]))))
+      comp = each(lst = ['a', 'b'], {itemFunc: (item, i, listComponent) -> p(txt(-> item))})
       comp.mount()
       lst.setItem 0, 'c'
       dc.update()
@@ -251,7 +255,7 @@ describe 'group component: List, each', ->
       dontUnmount = true
       x$ = see 1
       text1 = null
-      comp = new Tag('div', {}, [each1=each([1], (item) -> text1 = txt(x$))])
+      comp = new Tag('div', {}, [each1=each([1], {itemFunc: (item) -> text1 = txt(x$)})])
       comp.mount()
       expect(comp.node.innerHTML).to.equal '1'
       x$ 2
@@ -264,7 +268,7 @@ describe 'group component: List, each', ->
     it  'should create and update funcEach', ->
       dontUnmount = true
       x = 1
-      comp = funcEach((-> [x]), (item) -> txt(item))
+      comp = funcEach((-> [x]), {itemFunc: (item) -> txt(item)})
       comp.mount(demo2Node)
       expect(comp.node[0].textContent).to.equal '1'
       x = 2
@@ -280,7 +284,7 @@ describe 'group component: List, each', ->
 
     it  'should create and update deeper embedded each', ->
       x = 1
-      comp =  div({}, span1=new Tag('span', {}, [each1=each(listItems = [x], (item) -> txt(item))]))
+      comp =  div({}, span1=new Tag('span', {}, [each1=each(listItems = [x], {itemFunc: (item) -> txt(item)})]))
       comp.mount()
       expect(each1.parentNode).to.equal(span1.node)
       expect(each1.node[0].textContent).to.equal '1'
@@ -293,7 +297,7 @@ describe 'group component: List, each', ->
 
     it  'should create and update deeper embedded funcEach', ->
       x = 1
-      comp =  div({}, span1=new Tag('span', {}, [each1=funcEach((-> [x]), (item) -> txt(item))]))
+      comp =  div({}, span1=new Tag('span', {}, [each1=funcEach((-> [x]), {itemFunc: (item) -> txt(item)})]))
       comp.mount()
       expect(each1.parentNode).to.equal(span1.node)
       expect(each1.node[0].textContent).to.equal '1'
@@ -306,7 +310,7 @@ describe 'group component: List, each', ->
 
     it  'should create and update each where item return a closure variable', ->
       x = see 1
-      comp = each([1], -> txt(x))
+      comp = each([1], {itemFunc: -> txt(x)})
       comp.mount()
       expect(comp.node[0].textContent).to.equal '1'
       x 2
@@ -316,7 +320,7 @@ describe 'group component: List, each', ->
 
     it  'should create and update embedded each where item return a closure variable', ->
       x = see 1
-      comp = new Tag('span', {}, [each1=each([1], (item) -> txt(x))])
+      comp = new Tag('span', {}, [each1=each([1], {itemFunc: (item) -> txt(x)})])
       comp.mount()
       expect(each1.parentNode).to.equal(comp.node)
       expect(each1.node[0].textContent).to.equal '1'
@@ -329,7 +333,7 @@ describe 'group component: List, each', ->
 
     it  'should create and update embedded each in 3 layer', ->
       x = see 1
-      comp =  div({}, div({}, span1=new Tag('span', {}, [each1=each([1], (item) -> txt(x))])))
+      comp =  div({}, div({}, span1=new Tag('span', {}, [each1=each([1], {itemFunc: (item) -> txt(x)})])))
       comp.mount()
       expect(each1.parentNode).to.equal(span1.node)
       expect(each1.node[0].textContent).to.equal '1'
@@ -342,7 +346,7 @@ describe 'group component: List, each', ->
 
     it  'should create and update embedded each in 3 layer 2', ->
       x = 1
-      comp =  div({}, div({}, span1=new Tag('span', {}, [each1=funcEach((-> [x]), (item) -> txt(item))])))
+      comp =  div({}, div({}, span1=new Tag('span', {}, [each1=funcEach((-> [x]), {itemFunc: (item) -> txt(item)})])))
       comp.mount()
       expect(each1.parentNode).to.equal(span1.node)
       expect(each1.node[0].textContent).to.equal '1'
@@ -355,7 +359,7 @@ describe 'group component: List, each', ->
 
     it  'should process funcEach', ->
       x = 1
-      comp = funcEach((-> [x]), (item) -> item)
+      comp = funcEach((-> [x]), {itemFunc: (item) -> item})
       comp.mount()
       expect(comp.node[0].textContent).to.equal '1'
       x = 2
@@ -366,7 +370,7 @@ describe 'group component: List, each', ->
     it  'should process each under each and with function as items 0', ->
       x = 1
       each2 = null
-      comp = each1 = each([1], -> each2=funcEach((-> [x]), (item) -> txt(item)))
+      comp = each1 = each([1], -> each2=funcEach((-> [x]), {itemFunc: (item) -> txt(item)}))
       comp.mount(demo2Node)
       expect(demo2Node.innerHTML).to.equal('1')
       dontUnmount = true

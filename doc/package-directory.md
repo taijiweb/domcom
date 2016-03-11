@@ -67,15 +67,15 @@
     |  |
     |- doc    ...................................   // document folder
     |  |- api-referenc  .........................   // API references
-    |  |- class-hierachy.md   ...................   // class hierachy
-    |  |- package-directory.md   ................   // package directory hierachy
+    |  |- class-hierarchy.md   ...................   // class hierarchy
+    |  |- package-directory.md   ................   // package directory hierarchy
     |  \- Chinese    ............................   // Chinese document
     |     |- README.CN.md    .......................// README for github and npm, in Chinese
     |     |- 介绍和辅导教程.md    ................. // introduction and tutorial (Chinese)
     |     |- 概念和原理.md  .....................   // Concepts and theory (Chinese)
     |     |- API参考.md  ........................   // API references (Chinese)
-    |     |- 类层次参考.md  .....................   // class hierachy (Chinese)
-    |     |- 目录结构.md  .......................   // package directory hierachy (Chinese)
+    |     |- 类层次参考.md  .....................   // class hierarchy (Chinese)
+    |     |- 目录结构.md  .......................   // package directory hierarchy (Chinese)
     |     |- 文件夹和模块介绍.md  ...............   // introduction to folder and module (Chinese)
     |     |- 速查表.md  .........................   // cheatsheet (Chinese)
     |     |- 从React到Domcom.md  ................   // declaration to release (Chinese)

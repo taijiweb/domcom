@@ -112,12 +112,12 @@ exports.list = list = (attrs, lst...) ->
     if lst.length==1 then toComponent(lst[0])
     else new List(lst)
 
-defaultItemFunction = (item) -> new Text(item)
+defaultItemFunction = (item) -> item
 
 # itemFunc:
 # (item, index, items, component) -> List component
 # (value, key, object, component) -> List component
-_each = (attrs, items, itemFunc = defaultItemFunction, separatorFunc, updateChildIndex) ->
+_each = (attrs, items, options) ->
   if attrs
     if attrs.tagName
       tagName = attrs.tagName
@@ -128,9 +128,17 @@ _each = (attrs, items, itemFunc = defaultItemFunction, separatorFunc, updateChil
   else
     listComponent = new List([])
   listComponent.items = items
-  listComponent.itemFunc = itemFunc
-  listComponent.separatorFunc = separatorFunc
-  listComponent.updateChildIndex = updateChildIndex
+
+  if typeof options == 'function'
+    listComponent.itemFunc = options
+    options = {}
+  else
+    options = options || {}
+    listComponent.itemFunc = options.itemFunc || defaultItemFunction
+
+  listComponent.separatorFunc = options.separatorFunc
+  listComponent.updateSuccChild = options.updateSuccChild
+  listComponent.updateSuccIndex = options.updateSuccIndex
   listComponent.keyChildMap = keyChildMap = {}
   if isArray(items)
     listComponent.getItemComponent = getItemComponent = (item, itemIndex) ->
@@ -164,23 +172,45 @@ _each = (attrs, items, itemFunc = defaultItemFunction, separatorFunc, updateChil
 
   listComponent
 
-exports.every = every = (attrs, items, itemFunc, separatorFunc, updateChildIndex) ->
-  if isObject(items)
-    _each(attrs, items, itemFunc, separatorFunc, updateChildIndex)
+getEachArgs = (args) ->
+  [attrs, items, options] = args
+  if args.length == 1
+    [null, attrs, {}]
+  else if args.length == 3
+    [attrs, items, options]
   else
-    # separatorFunc = itemFunc; itemFunc = items; items = attrs
-    _each(null, attrs, items, itemFunc, separatorFunc)
+    if typeof items == 'function'
+      [null, attrs, {itemFunc:items}]
+    else if isArray(items)
+      [attrs, items, {}]
+    else if isArray(attrs)
+      [null, attrs, items]
+    else if !items
+      # options = items; items = attrs
+      [null, attrs, {}]
+    else if !isObject(items)
+      throw new Error('wrong parameter')
+    else
+      for key of items
+        if items.hasOwnProperty(key)
+          continue
+        else if key.test(/itemFunc|separatorFunc|updateSuccChild|updateSuccIndex/)
+          return [null, attrs, items]
+      [attrs, items, {}]
 
-exports.each = each = (attrs, items, itemFunc, separatorFunc, updateChildIndex) ->
-  listComponent = every(attrs, items, itemFunc, separatorFunc, updateChildIndex)
-  if !isObject(items)
-    items = attrs
+exports.every = every = (args...) ->
+  [attrs, items, options] = getEachArgs(args)
+  _each(attrs, items, options)
+      
+
+exports.each = each = (args...) ->
+  [attrs, items, options] = getEachArgs(args)
+  listComponent = every(attrs, items, options)
   watchItems(items, listComponent)
 
-exports.funcEach = (attrs, listFunc, itemFunc, separatorFunc) ->
+exports.funcEach = (attrs, listFunc, options) ->
   if typeof attrs == 'function'
-    separatorFunc = itemFunc
-    itemFunc = listFunc
+    options = listFunc
     listFunc = attrs
     attrs = null
 
@@ -189,7 +219,7 @@ exports.funcEach = (attrs, listFunc, itemFunc, separatorFunc) ->
     listFunc = renew(listFunc)
 
   listItems = []
-  listComponent = each(attrs, listItems, itemFunc, separatorFunc)
+  listComponent = each(attrs, listItems, options)
   listFunc.onInvalidate ->
     listComponent.invalidate()
   listComponent.on 'willRender', ->
@@ -201,7 +231,7 @@ exports.funcEach = (attrs, listFunc, itemFunc, separatorFunc) ->
       listComponent.holder.invalidateOffspring(listComponent)
   listComponent
 
-exports.mapEach = (attrs, mapFunc, itemFunc, separatorFunc) ->
+exports.mapEach = (attrs, mapFunc, options) ->
   if typeof attrs == 'function'
     separatorFunc = itemFunc
     itemFunc = mapFunc
