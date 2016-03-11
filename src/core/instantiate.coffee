@@ -127,29 +127,29 @@ _each = (attrs, items, itemFunc = defaultItemFunction, separatorFunc, updateChil
     listComponent = new Tag(tagName, attrs, [])
   else
     listComponent = new List([])
+  listComponent.items = items
   listComponent.itemFunc = itemFunc
   listComponent.separatorFunc = separatorFunc
   listComponent.updateChildIndex = updateChildIndex
   listComponent.keyChildMap = keyChildMap = {}
   if isArray(items)
-    listComponent.getItemComponent = getItemComponent = (item, i) ->
-      itemComponent = toComponent(listComponent.itemFunc(item, i, items, listComponent))
-      if listComponent.separatorFunc && i
-        separatorComponent = toComponent(listComponent.separatorFunc(i, item, items, listComponent))
-        new List([separatorComponent, itemComponent])
-      else
-        itemComponent
-  else
-    listComponent.getItemComponent = getItemComponent = (key, i) ->
-      value = items[key]
-      keyChildMap[key] = i
-      itemComponent = toComponent(listComponent.itemFunc(value, key, i, items, listComponent))
-      if listComponent.separatorFunc && i
-        separatorComponent = toComponent(listComponent.separatorFunc(i, value, key, items, listComponent))
+    listComponent.getItemComponent = getItemComponent = (item, itemIndex) ->
+      itemComponent = toComponent(listComponent.itemFunc(item, itemIndex, items, listComponent))
+      if listComponent.separatorFunc && itemIndex
+        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, item, items, listComponent))
         itemComponent = new List([separatorComponent, itemComponent])
-      else
-        itemComponent
+      itemComponent.itemIndex = itemIndex
+      itemComponent
+  else
+    listComponent.getItemComponent = getItemComponent = (key, itemIndex) ->
+      value = items[key]
+      keyChildMap[key] = itemIndex
+      itemComponent = toComponent(listComponent.itemFunc(value, key, itemIndex, listComponent))
+      if listComponent.separatorFunc && itemIndex
+        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, value, key, listComponent))
+        itemComponent = new List([separatorComponent, itemComponent])
       itemComponent.$watchingKey = key
+      itemComponent.itemIndex = itemIndex
       itemComponent
 
   children = listComponent.children

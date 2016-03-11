@@ -5,11 +5,13 @@ extend} = dc
 
 dc.directives $show: dc.$show
 
+dc.alwaysUpdate = true
+
 #######################################################################################################################
 # store
 
 fetch = -> JSON.parse localStorage.getItem('dc') || '[]'
-save = (todos) -> localStorage.setItem 'dc', JSON.stringify(todos)
+save = (todos) -> localStorage.setItem('dc', JSON.stringify(todos))
 
 #######################################################################################################################
 # model
