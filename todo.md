@@ -1,8 +1,8 @@
 ### todo
-* flatten the render hierarchy, skip the call to inactive component level
 * more utilties for flow, to help convert normal function to reactive, reduce appended computation in reactive function, or directly invalidate the component from the changing
 
 #### done
+* flatten the render hierarchy, skip the call to inactive component level
 * delegation to events
 * error processing: dc.onerror and dc.error
 * minify the removing and reinsert of node as possible
