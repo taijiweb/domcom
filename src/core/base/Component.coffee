@@ -124,10 +124,12 @@ module.exports = class Component
       this.markRemovingDom(true)
     else
       component = this
-      while holder != dc and !holder.isBaseComponent
+      while holder && holder != dc and !holder.isBaseComponent
         component = holder
         holder = holder.holder
-      if holder.children
+      if !holder
+        return this
+      else if holder.children
         holder.removeChild(component)
       else if holder != dc
         dc.error('Should not remove the content of TransformComponent')
@@ -145,7 +147,7 @@ module.exports = class Component
         holder.replaceChild(oldComponent, this)
     else
       this.setParentNode(oldComponent.parentNode)
-      this.setNextNode(oldComponent.nextNode)
+      this.sinkNextNode(oldComponent.nextNode)
       oldComponent.markRemovingDom(true)
       this.holder = holder
       this.invalidate()
@@ -179,47 +181,37 @@ module.exports = class Component
       dc.updateWhen(args[0], args[1], [this])
     this
 
-  setNextNode: (nextNode) ->
-    if nextNode != this.nextNode
-      this.nextNode = nextNode
-      if this.isList && (children = this.children) &&(length==children.length)
-        children[length-1].setNextNode(nextNode)
-      holder = this.holder
-      if holder = dc
-        this.nextNode = nextNode
-      else if holder.isList && (index = this.listIndex) && !this.firstNode
-        holder.children[index-1].setNextNode(nextNode)
-      else if holder.isTransformComponent
-        if !holder.isTag
-          holder.setNextNode(nextNode)
-        else
-          # this is a special case for  a nullable tag (tag with a nothing by some condition)
-          if holder.firstNode
-            holder.setNextNode(nextNode)
-    return
-
   raiseNode: (child) ->
     node = child.node
     if this.children
-      this.node[this.dcidIndexMap[child.dcid]] = node
+      try
+        this.childNodes[this.dcidIndexMap[child.dcid]] = node
+      catch e
+        throw e
     else
       this.node = node
-      this.holder.raiseNode(this)
+      if holder = this.holder
+        holder.raiseNode(this)
 
   raiseFirstNextNode: (child) ->
-    firstNode = child.firstNode
     children = this.children
+    firstNode = child.firstNode
     if children
       index = this.dcidIndexMap[child.dcid]
-      if index
-        this.nextNodes[index-1] = firstNode || this.nextNode
-        children[index-1].nextNode = firstNode || this.nextNode
-      else
+      while index
+        index--
+        node = firstNode || child.nextNode
+        this.nextNodes[index] = children[index].nextNode = node
+        child = children[index]
+        firstNode = child.firstNode
+      if !index && this.isList
+        if this.firstNode != firstNode
+          this.firstNode = firstNode
+          this.holder.raiseFirstNextNode(this)
+    else
+      if this.firstNode != firstNode
         this.firstNode = firstNode
         this.holder.raiseFirstNextNode(this)
-    else
-      this.firstNode = firstNode
-      this.holder.raiseFirstNextNode(this)
 
   copyEventListeners: (srcComponent) ->
     myListeners = this.listeners

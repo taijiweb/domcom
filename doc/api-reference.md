@@ -385,13 +385,19 @@ This is the base class of all components. It provides the common method for comp
 
   Insert a child component at the index location of List.children的index.
 
-  > function prototype: `component.indexChild index:Index, child:toComponent`
+  > function prototype: `component.insertChild refChild:Index|Component, child:toComponent`
 
 * **removeChild**
 
- Remove the child component at the index location of List.children
+ Remove the child component
 
-  > function prototype: `component.removeChild index:Index`
+  > function prototype: `component.removeChild child:Index|Component`
+
+* **replaceChild**
+
+  replace the refChild with the new child component.
+
+  > function prototype: `component.replaceChild oldChild:Index|Component, newChild:toComponent`
 
 * **setChildren**
 
@@ -764,6 +770,8 @@ This is the base class of all components. It provides the common method for comp
 ***********************************************************
 
 ### Each component
+
+update(2016-3-16): Each component is removed, use the functions "every", "each", "funcEach", "mapEach" instead.
 
 ##### module: Core/Base/Each
 
@@ -1177,6 +1185,8 @@ This is the base class of all components. It provides the common method for comp
 
 ##### binarySearch
 
+  update(2016-3-16): binarySearch, binaryInsert, numbers are removed
+
   Search item from the sorted items by using binary search. If the item exists, the index of the item is returned, otherwise the index to insert the item is returned.
 
 * function type
@@ -1381,11 +1391,6 @@ This is the base class of all components. It provides the common method for comp
   tag $hide: test
   tag $hide: [test, display]
 
-##### $splitter directive
-
-* module: src/directives/splitter
-* $splitter: direction
-
 ##### $options directive
 
 * module: src/directives/options
@@ -1394,7 +1399,14 @@ This is the base class of all components. It provides the common method for comp
 
 * usage: select $options: [items]
 
+##### $splitter directive
+  update(2016-3-16): $splitter is moved to another package: dc-controls
+
+* module: src/directives/splitter
+* $splitter: direction
+
 ##### $blink usage
+  update(2016-3-16): $blink is moved to another package: dc-controls
 
 * module: src/directives/blink
 * tag $blink: delay
@@ -1409,6 +1421,7 @@ This is the base class of all components. It provides the common method for comp
 ***********************************************************
 
 ### builtin components
+  update(2016-3-16): these are moved to another package: dc-controls
 
   Domcom predefined some builtin compnents, including combo, dialog, triangle, autoWidthEdit, accordion, etc. These components existed mainly to demonstrate extending domcom. From the samples we can find it is very simple to extend or combine the components under the domcom framework.
 

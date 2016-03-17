@@ -203,7 +203,7 @@ describe('group component: List, each', function() {
       return expect(comp.node.innerHTML).to.equal('a:1, b:2');
     });
   });
-  return describe('each', function() {
+  describe('each', function() {
     it('should create empty each component', function() {
       var lst;
       demo2Node = document.getElementById('demo2');
@@ -354,30 +354,6 @@ describe('group component: List, each', function() {
       expect(comp.node.innerHTML).to.equal('2');
       return comp.unmount();
     });
-    it('should create and update funcEach', function() {
-      var x;
-      dontUnmount = true;
-      x = 1;
-      comp = funcEach((function() {
-        return [x];
-      }), {
-        itemFunc: function(item) {
-          return txt(item);
-        }
-      });
-      comp.mount(demo2Node);
-      expect(comp.node[0].textContent).to.equal('1');
-      x = 2;
-      dc.update();
-      expect(comp.node[0].textContent).to.equal('2', 'update 2');
-      expect(comp.isList).to.equal(true);
-      expect(demo2Node.innerHTML).to.equal('2', 'innerHTML');
-      x = 3;
-      dc.update();
-      expect(comp.node[0].textContent).to.equal('3', 'update 3');
-      expect(demo2Node.innerHTML).to.equal('3', 'innerHTML');
-      return comp.unmount();
-    });
     it('should create and update deeper embedded each', function() {
       var each1, listItems, span1, x;
       x = 1;
@@ -392,28 +368,6 @@ describe('group component: List, each', function() {
       expect(each1.parentNode).to.equal(span1.node);
       expect(each1.node[0].textContent).to.equal('1');
       listItems.setItem(0, 2);
-      dc.update();
-      expect(each1.parentNode).to.equal(span1.node);
-      expect(each1.node[0].textContent).to.equal('2');
-      expect(comp.node.innerHTML).to.equal('<span>2</span>');
-      return comp.unmount();
-    });
-    it('should create and update deeper embedded funcEach', function() {
-      var each1, span1, x;
-      x = 1;
-      comp = div({}, span1 = new Tag('span', {}, [
-        each1 = funcEach((function() {
-          return [x];
-        }), {
-          itemFunc: function(item) {
-            return txt(item);
-          }
-        })
-      ]));
-      comp.mount();
-      expect(each1.parentNode).to.equal(span1.node);
-      expect(each1.node[0].textContent).to.equal('1');
-      x = 2;
       dc.update();
       expect(each1.parentNode).to.equal(span1.node);
       expect(each1.node[0].textContent).to.equal('2');
@@ -473,98 +427,6 @@ describe('group component: List, each', function() {
       expect(each1.parentNode).to.equal(span1.node);
       expect(each1.node[0].textContent).to.equal('2');
       expect(comp.node.innerHTML).to.equal('<div><span>2</span></div>');
-      return comp.unmount();
-    });
-    it('should create and update embedded each in 3 layer 2', function() {
-      var each1, span1, x;
-      x = 1;
-      comp = div({}, div({}, span1 = new Tag('span', {}, [
-        each1 = funcEach((function() {
-          return [x];
-        }), {
-          itemFunc: function(item) {
-            return txt(item);
-          }
-        })
-      ])));
-      comp.mount();
-      expect(each1.parentNode).to.equal(span1.node);
-      expect(each1.node[0].textContent).to.equal('1');
-      x = 2;
-      dc.update();
-      expect(each1.parentNode).to.equal(span1.node);
-      expect(each1.node[0].textContent).to.equal('2');
-      expect(comp.node.innerHTML).to.equal('<div><span>2</span></div>');
-      return comp.unmount();
-    });
-    it('should process funcEach', function() {
-      var x;
-      x = 1;
-      comp = funcEach((function() {
-        return [x];
-      }), {
-        itemFunc: function(item) {
-          return item;
-        }
-      });
-      comp.mount();
-      expect(comp.node[0].textContent).to.equal('1');
-      x = 2;
-      dc.update();
-      expect(comp.node[0].textContent).to.equal('2', 'after x = 2');
-      return comp.unmount();
-    });
-    it('should process each under each and with function as items 0', function() {
-      var each1, each2, x;
-      x = 1;
-      each2 = null;
-      comp = each1 = each([1], function() {
-        return each2 = funcEach((function() {
-          return [x];
-        }), {
-          itemFunc: function(item) {
-            return txt(item);
-          }
-        });
-      });
-      comp.mount(demo2Node);
-      expect(demo2Node.innerHTML).to.equal('1');
-      dontUnmount = true;
-      expect(each1.parentNode).to.equal(each1.parentNode);
-      expect(each1.parentNode).to.equal(demo2Node);
-      expect(each1.node[0][0].textContent).to.equal('1');
-      expect(each2.node[0].textContent).to.equal('1');
-      x = 2;
-      dc.update();
-      expect(demo2Node.innerHTML).to.equal('2');
-      expect(each1.parentNode).to.equal(each1.parentNode);
-      expect(each2.node[0].textContent).to.equal('2');
-      expect(demo2Node.innerHTML).to.equal('2', 'after x = 2');
-      return comp.unmount();
-    });
-    it('should process each under each and with function as items 1', function() {
-      var each1, each2, x;
-      x = 1;
-      each2 = null;
-      comp = div({}, each1 = each([1], function() {
-        return each2 = funcEach((function() {
-          return [x];
-        }), function(item) {
-          return item;
-        });
-      }));
-      comp.mount(demo2Node);
-      expect(demo2Node.innerHTML).to.equal('<div>1</div>');
-      dontUnmount = true;
-      expect(each1.parentNode).to.equal(comp.node);
-      expect(each1.node[0][0].textContent).to.equal('1');
-      expect(each2.node[0].textContent).to.equal('1');
-      x = 2;
-      dc.update();
-      expect(demo2Node.innerHTML).to.equal('<div>2</div>');
-      expect(each1.parentNode).to.equal(comp.node);
-      expect(each2.node[0].textContent).to.equal('2');
-      expect(comp.node.innerHTML).to.equal('2', 'after x = 2');
       return comp.unmount();
     });
     it('should mount and update each', function() {
@@ -691,6 +553,165 @@ describe('group component: List, each', function() {
       dc.update();
       expect(comp.node.parentNode).to.equal(void 0);
       return comp.unmount();
+    });
+  });
+  return describe('funcEach', function() {
+    it('should process funcEach', function() {
+      var x;
+      x = 1;
+      comp = funcEach((function() {
+        return [x];
+      }), {
+        itemFunc: function(item) {
+          return item;
+        }
+      });
+      comp.mount();
+      expect(comp.node[0].textContent).to.equal('1');
+      x = 2;
+      dc.update();
+      expect(comp.node[0].textContent).to.equal('2', 'after x = 2');
+      return comp.unmount();
+    });
+    it('should create and update funcEach', function() {
+      var x;
+      dontUnmount = true;
+      x = 1;
+      comp = funcEach((function() {
+        return [x];
+      }), {
+        itemFunc: function(item) {
+          return txt(item);
+        }
+      });
+      comp.mount(demo2Node);
+      expect(comp.node[0].textContent).to.equal('1');
+      x = 2;
+      dc.update();
+      expect(comp.node[0].textContent).to.equal('2', 'update 2');
+      expect(comp.isList).to.equal(true);
+      expect(demo2Node.innerHTML).to.equal('2', 'innerHTML');
+      x = 3;
+      dc.update();
+      expect(comp.node[0].textContent).to.equal('3', 'update 3');
+      expect(demo2Node.innerHTML).to.equal('3', 'innerHTML');
+      return comp.unmount();
+    });
+    it('should process each under each and with function as items 1', function() {
+      var each1, each2, x;
+      x = 1;
+      each2 = null;
+      comp = div({}, each1 = each([1], function() {
+        return each2 = funcEach((function() {
+          return [x];
+        }), function(item) {
+          return item;
+        });
+      }));
+      comp.mount(demo2Node);
+      expect(demo2Node.innerHTML).to.equal('<div>1</div>');
+      dontUnmount = true;
+      expect(each1.parentNode).to.equal(comp.node);
+      expect(each1.node[0][0].textContent).to.equal('1');
+      expect(each2.node[0].textContent).to.equal('1');
+      x = 2;
+      dc.update();
+      expect(demo2Node.innerHTML).to.equal('<div>2</div>');
+      expect(each1.parentNode).to.equal(comp.node);
+      expect(each2.node[0].textContent).to.equal('2');
+      expect(comp.node.innerHTML).to.equal('2', 'after x = 2');
+      return comp.unmount();
+    });
+    it('should process each under each and with function as items 0', function() {
+      var each1, each2, x;
+      x = 1;
+      each2 = null;
+      comp = each1 = each([1], function() {
+        return each2 = funcEach((function() {
+          return [x];
+        }), {
+          itemFunc: function(item) {
+            return txt(item);
+          }
+        });
+      });
+      comp.mount(demo2Node);
+      expect(demo2Node.innerHTML).to.equal('1');
+      dontUnmount = true;
+      expect(each1.parentNode).to.equal(each1.parentNode);
+      expect(each1.parentNode).to.equal(demo2Node);
+      expect(each1.node[0][0].textContent).to.equal('1');
+      expect(each2.node[0].textContent).to.equal('1');
+      x = 2;
+      dc.update();
+      expect(demo2Node.innerHTML).to.equal('2');
+      expect(each1.parentNode).to.equal(each1.parentNode);
+      expect(each2.node[0].textContent).to.equal('2');
+      expect(demo2Node.innerHTML).to.equal('2', 'after x = 2');
+      return comp.unmount();
+    });
+    it('should create and update embedded each in 3 layer 2', function() {
+      var each1, span1, x;
+      x = 1;
+      comp = div({}, div({}, span1 = new Tag('span', {}, [
+        each1 = funcEach((function() {
+          return [x];
+        }), {
+          itemFunc: function(item) {
+            return txt(item);
+          }
+        })
+      ])));
+      comp.mount();
+      expect(each1.parentNode).to.equal(span1.node);
+      expect(each1.node[0].textContent).to.equal('1');
+      x = 2;
+      dc.update();
+      expect(each1.parentNode).to.equal(span1.node);
+      expect(each1.node[0].textContent).to.equal('2');
+      expect(comp.node.innerHTML).to.equal('<div><span>2</span></div>');
+      return comp.unmount();
+    });
+    it('should create and update deeper embedded funcEach', function() {
+      var each1, span1, x;
+      x = 1;
+      comp = div({}, span1 = new Tag('span', {}, [
+        each1 = funcEach((function() {
+          return [x];
+        }), {
+          itemFunc: function(item) {
+            return txt(item);
+          }
+        })
+      ]));
+      comp.mount();
+      expect(each1.parentNode).to.equal(span1.node);
+      expect(each1.node[0].textContent).to.equal('1');
+      x = 2;
+      dc.update();
+      expect(each1.parentNode).to.equal(span1.node);
+      expect(each1.node[0].textContent).to.equal('2');
+      expect(comp.node.innerHTML).to.equal('<span>2</span>');
+      return comp.unmount();
+    });
+    return it('should create and update funcEach in list', function() {
+      var each1, items;
+      dontUnmount = true;
+      items = [1, 2];
+      comp = list(txt('text'), each1 = funcEach((function() {
+        return items;
+      }), {
+        itemFunc: function(item) {
+          return txt(' ' + item);
+        }
+      }));
+      comp.mount(demo2Node);
+      expect(demo2Node.innerHTML).to.equal('text 1 2');
+      items = [3];
+      dc.update();
+      expect(demo2Node.innerHTML).to.equal('text 3');
+      dc.update();
+      return expect(demo2Node.innerHTML).to.equal('text 3');
     });
   });
 });

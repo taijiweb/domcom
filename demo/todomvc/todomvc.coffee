@@ -10,13 +10,13 @@ dc.alwaysUpdate = true
 #######################################################################################################################
 # store
 
-fetch = -> JSON.parse localStorage.getItem('dc') || '[]'
-save = (todos) -> localStorage.setItem('dc', JSON.stringify(todos))
+window.fetch = -> JSON.parse localStorage.getItem('dc') || '[]'
+window.save = (todos) -> localStorage.setItem('dc', JSON.stringify(todos))
 
 #######################################################################################################################
 # model
 # [ { title: string, completed: boolean } ... ]
-todos = []
+window.todos = []
 
 #######################################################################################################################
 # controller
@@ -27,7 +27,7 @@ originalTodo = null
 reverted = null
 saving = false
 
-getTodos = ->
+window.getTodos = ->
   if viewStatusHash=='active'
     todos.filter (todo) -> todo and !todo.completed
   else if viewStatusHash=='completed'
@@ -93,27 +93,25 @@ clearCompletedTodos = ->
     save todos
     dc.update()
 
-setView = (locationHash) ->
-  viewStatusHash = locationHash.split('/')[1] || ''
-  dc.update()
-
 #######################################################################################################################
 # view
 
-todoHeader = header id: "header",
+text1 = text {
+  id: "new-todo"
+  placeholder: "What needs to be done?"
+  disable: -> saving
+  onchange: ->
+    if !@value then return
+    todos.push title: @value, completed: false
+    save todos
+    dc.update()
+  autofocus:true }
 
+todoHeader = header id: "header",
   h1 "todos"
-  form id: "todo-form",
-    text {
-      id: "new-todo"
-      placeholder: "What needs to be done?"
-      disable: -> saving
-      onchange: ->
-        if !@value then return
-        todos.push title: @value, completed: false
-        save todos
-        dc.update()
-      autofocus:true }
+  form id: "todo-form", text1
+
+#todoHeader = text1
 
 todoItems = funcEach getTodos, (todo, index) ->
 
@@ -133,6 +131,8 @@ todoItems = funcEach getTodos, (todo, index) ->
         onfocus: -> todo == editingTodo
         onkeyup: onEscapeFn( -> revertEdits(todo) ) }
 
+xxxtodoEditArea = funcEach getTodos, (todo) -> todo.title + ' '
+
 todoEditArea = section id: "main",
 
   checkbox {
@@ -148,8 +148,8 @@ todoEditArea = section id: "main",
     span { id:"todo-count" },  strong(remainingCount),   pluralize(remainingCount, ' item'),  ' left'
 
     ul id:"filters",
-      li a {className: {selected: -> viewStatusHash == ''}, href: "#/all"}, "All"
-      li a {className: {selected: -> viewStatusHash == 'active'}, href: "#/active"}, "Active"
+      li a {className: {selected: -> viewStatusHash != 'active' && viewStatusHash != 'completed'}, href: "#/all"}, "All"
+      li a {className: {selected: ->  viewStatusHash == 'active'}, href: "#/active"}, "Active"
       li a {className: {selected: -> viewStatusHash == 'completed'}, href: "#/completed"}, "Completed"
 
     button {id: "clear-completed", onclick: clearCompletedTodos, $show: completedCount },
@@ -169,16 +169,25 @@ view = section id:"todoapp",
   todoHeader
   todoEditArea
   todoFooter
+  button {id: "clear-completed", onclick: clearCompletedTodos, $show: completedCount },
+    txt -> "Clear completed: "+completedCount()
+
+
+window.updateHash = ->
+  locationHash = document.location.hash
+  if locationHash.indexOf('/') >= 0
+    viewStatusHash = locationHash.split('/')[1] || ''
+  else
+    viewStatusHash = locationHash
 
 #######################################################################################################################
 # run the app
 
 window.runTodoMvc = ->
-  todos = fetch()
-
-  view.mount '#todo-app'
-
-  setView document.location.hash
+  window.todos = fetch()
+  updateHash()
+  view.mount('#todo-app')
 
   window.addEventListener 'hashchange',  ->
-    setView document.location.hash
+    updateHash()
+    dc.update()

@@ -4,7 +4,7 @@ module.exports =
   isComponent: require('./isComponent')
   toComponent: require('./toComponent')
   toComponentList: require('./toComponentList')
-  Component: require('./component')
+  Component: require('./Component')
   BaseComponent: require('./BaseComponent')
   ListMixin: require('./ListMixin')
   List: require('./List')

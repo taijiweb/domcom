@@ -163,7 +163,7 @@ dc.getChildParentNode = (child) ->
   parentNodes[dcidIndexMap[child.dcid]]
 
 dc.getChildNextNode = (child) ->
-  nextNodes[dcidIndexMap[child.dcid]]
+  this.nextNodes[dcidIndexMap[child.dcid]]
 
 dc.renderingMap = {}
 dc.removingMap = {}
@@ -177,14 +177,11 @@ dc.invalidateOffspring = (offspring) ->
 
 dc.refreshComponents = refreshComponents = ->
   this.valid = true
-  renderingMap = this.renderingMap
+  renderingMap = this.oldRenderingMap = this.renderingMap
   this.renderingMap = {}
   for _, [component, holder] of renderingMap
-    if holder != component.holder
-      component.invalidate()
-      holder.updateChildHolder(component)
-    if component != this
-      component.renderDom(component.baseComponent)
+    holder.updateChildHolder(component)
+    component.renderDom(component.baseComponent)
   this.valid = false
   this
 
@@ -195,25 +192,24 @@ dc.removeComponents = removeComponents = ->
     removingMap[dcid].removeDom()
   this
 
-renderComponents = ->
-  refreshComponents.call(this)
-  removeComponents.call(this)
-
 dc.update = (force) ->
   if (force || dc.alwaysUpdate) && !dc.valid
-    renderComponents.call(this)
+    refreshComponents.call(this)
+    removeComponents.call(this)
 
 dc.updateChildHolder = (component) ->
   if component.holder != this
     component.invalidate()
     component.holder = this
     component.setParentNode(this.getChildParentNode(component))
-    component.setNextNode(this.getChildNextNode(component))
+    component.sinkNextNode(this.getChildNextNode(component))
   return
 
 dc.raiseNode = ->
 
 dc.raiseFirstNextNode = ->
+
+dc.linkNextNode = ->
 
 dc.clear = ->
   dc.dcidIndexMap = dcidIndexMap = {}
@@ -223,3 +219,4 @@ dc.clear = ->
   dc.renderingMap = {}
   dc.removingMap = {}
 
+dc.toString = -> 'domcom'

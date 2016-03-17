@@ -302,13 +302,13 @@ describe('demo', function() {
       dc.update();
       return expect(comp.node.length).to.equal(1);
     });
-    return it('should todoEditArea', function() {
-      var comp, footer, lst, section, todoEditArea, todoItems, ul;
+    it('should todoEditArea', function() {
+      var comp, footer, lst, section, todoItems, ul;
       section = dc.section, ul = dc.ul, footer = dc.footer;
       todoItems = each(lst = [1, 2], function(todo, index) {
         return li(todo);
       });
-      comp = todoEditArea = section({
+      comp = section({
         id: "main"
       }, ul({
         id: "todo-list"
@@ -320,6 +320,46 @@ describe('demo', function() {
       lst.push(3);
       dc.update();
       return expect(todoItems.node.length).to.equal(3);
+    });
+    return it('should switch todo by status', function() {
+      var comp, getTodos, state, todos;
+      state = 2;
+      todos = [1, 2, 3, 4, 5, 6];
+      getTodos = function() {
+        if (state === 0) {
+          return todos.filter(function(todo) {
+            return todo && todo % 2 === 0;
+          });
+        } else if (state === 1) {
+          return todos.filter(function(todo) {
+            return todo && todo % 2 === 1;
+          });
+        } else {
+          return todos.filter(function(todo) {
+            return todo;
+          });
+        }
+      };
+      comp = funcEach(getTodos, function(todo, index) {
+        return txt(' ' + todo);
+      });
+      comp.mount();
+      expect(comp.children.length).to.equal(6);
+      expect(comp.node.length).to.equal(6);
+      expect(comp.node[0].textContent).to.equal(' 1');
+      expect(comp.node[1].textContent).to.equal(' 2');
+      state = 0;
+      dc.update();
+      expect(comp.children.length).to.equal(3, 'children 2');
+      expect(comp.node.length).to.equal(3);
+      expect(comp.node[0].textContent).to.equal(' 2');
+      expect(comp.node[1].textContent).to.equal(' 4');
+      state = 1;
+      dc.update();
+      expect(comp.children.length).to.equal(3, 'children 3');
+      expect(comp.node.length).to.equal(3);
+      expect(comp.node[0].textContent).to.equal(' 1');
+      return expect(comp.node[1].textContent).to.equal(' 3');
     });
   });
 });

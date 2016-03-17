@@ -6,7 +6,7 @@ toComponentList = require('./toComponentList')
 Nothing = require('./Nothing')
 
 {extendChildFamily} = require('../../dom-util')
-{updateChildHolder} = require('../../dc')
+{updateChildHolder, getChildNextNode} = require('../../dc')
 
 updateDcidIndexMap = (dcidIndexMap, children, start) ->
   length = children.length
@@ -15,15 +15,6 @@ updateDcidIndexMap = (dcidIndexMap, children, start) ->
     dcidIndexMap[children[i].dcid] = i
     i++
   return
-
-getFirstNode = (node) ->
-  if isArray(node)
-    for n in node
-      if first = getFirstNode(n)
-        return first
-    null
-  else
-    node
 
 # todo: use double linked list as children???
 # {dcid: {next: dcid, prev: dcid, nextNode: theNode}}
@@ -55,14 +46,31 @@ module.exports =
 
     this.children = children
 
-  # because dc, ListMixin has different behaviour
+  # because dc.getChildNextNode, ListMixin.getChildNextNode have different behaviours
   # especially, dc.nextNodes is an array!!!
   # so getChildNextNode is a necessary method
-  getChildNextNode: (child) ->
-    this.nextNodes[this.dcidIndexMap[child.dcid]]
+  getChildNextNode: getChildNextNode
 
   updateChildHolder: updateChildHolder
-  
+
+# after Component.removeNode, the previousSibling component  will reset nextNode,
+# and then this method will be called
+  linkNextNode: (child) ->
+    nextNode = child.nextNode
+    children = this.children
+    nextNodes = this.nextNodes
+    length = children.length
+    i = this.dcidIndexMap[child.dcid]
+    nextNodes[i] = nextNode
+    i++
+    while i < length
+      child = children[i]
+      if !child.firstNode
+        child.sinkNextNode(nextNode)
+        nextNodes[i] = this.nextNodes
+      i++
+    i
+
   createChildrenDom: ->
     nextNodes = this.nextNodes
     children = this.children
@@ -86,7 +94,8 @@ module.exports =
       node[i] = child.node
       i--
       firstNode = child.firstNode
-      nextNodes[i] = nextNode = firstNode || nextNode
+      if i >= 0
+        nextNodes[i] = nextNode = firstNode || nextNode
     this.childFirstNode = firstNode
     node
 
@@ -98,7 +107,7 @@ module.exports =
     if isComponent(refChild)
       refChild = children.indexOf(refChild)
       if refChild < 0
-        refChild = children.length
+        refChild = 0
 
     this.insertChild(refChild+1, child)
 
@@ -132,12 +141,12 @@ module.exports =
       nextNode = this.nextNode
     else
       nextNode = refChild.firstNode || refChild.nextNode
-    child.setNextNode(nextNode)
+    child.sinkNextNode(nextNode)
     child.invalidate()
     dcidIndexMap[child.dcid] = index
-    children.splice(index, 1, child)
+    children.splice(index, 0, child)
     if this.childNodes
-      this.childNodes.splice(index, 1, null)
+      this.childNodes.splice(index, 0, null)
     updateDcidIndexMap(dcidIndexMap, children, index + 1, 0)
     this
 
@@ -210,7 +219,7 @@ module.exports =
 
     newChild.holder = this
     newChild.setParentNode(this.childParentNode)
-    newChild.setNextNode(oldChild.nextNode)
+    newChild.sinkNextNode(oldChild.nextNode)
     newChild.invalidate()
     oldChild.markRemovingDom(true)
 

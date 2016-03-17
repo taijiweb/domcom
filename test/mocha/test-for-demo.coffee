@@ -190,7 +190,7 @@ describe 'demo', ->
       todoItems = each(lst=[1,2], (todo, index) -> li(todo)
       )
 
-      comp = todoEditArea = section({id:"main"}
+      comp  = section({id:"main"}
         ul({id:"todo-list"}, todoItems)
         footer({id:"footer"}
         )
@@ -200,3 +200,33 @@ describe 'demo', ->
       lst.push(3)
       dc.update()
       expect(todoItems.node.length).to.equal(3)
+
+    it 'should switch todo by status', ->
+      state = 2
+      todos = [1, 2, 3, 4, 5, 6]
+      getTodos = ->
+        if state == 0
+          todos.filter (todo) -> todo and todo % 2 == 0
+        else if state == 1
+          todos.filter (todo) -> todo and todo % 2 == 1
+        else
+          todos.filter (todo) -> todo
+
+      comp = funcEach getTodos, (todo, index) -> txt(' '+ todo)
+      comp.mount()
+      expect(comp.children.length).to.equal(6)
+      expect(comp.node.length).to.equal(6)
+      expect(comp.node[0].textContent).to.equal(' 1')
+      expect(comp.node[1].textContent).to.equal(' 2')
+      state = 0
+      dc.update()
+      expect(comp.children.length).to.equal(3, 'children 2')
+      expect(comp.node.length).to.equal(3)
+      expect(comp.node[0].textContent).to.equal(' 2')
+      expect(comp.node[1].textContent).to.equal(' 4')
+      state = 1
+      dc.update()
+      expect(comp.children.length).to.equal(3, 'children 3')
+      expect(comp.node.length).to.equal(3)
+      expect(comp.node[0].textContent).to.equal(' 1')
+      expect(comp.node[1].textContent).to.equal(' 3')

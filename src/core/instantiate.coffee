@@ -233,8 +233,7 @@ exports.funcEach = (attrs, listFunc, options) ->
 
 exports.mapEach = (attrs, mapFunc, options) ->
   if typeof attrs == 'function'
-    separatorFunc = itemFunc
-    itemFunc = mapFunc
+    options = mapFunc
     mapFunc = attrs
     attrs = null
 
@@ -243,7 +242,7 @@ exports.mapEach = (attrs, mapFunc, options) ->
     listFunc = renew(listFunc)
 
   map = {}
-  listComponent = each(attrs, map, itemFunc, separatorFunc)
+  listComponent = each(attrs, map, options)
 
   listFunc.onInvalidate ->
     listComponent.invalidate()

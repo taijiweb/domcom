@@ -1,4 +1,4 @@
-Component = require('./component')
+Component = require('./Component')
 {cloneObject} = require('dc-util')
 {refreshComponents} = require('../../dc')
 
@@ -12,7 +12,7 @@ module.exports = class BaseComponent extends Component
   invalidate: ->
     if this.valid
       this.valid = false
-      this.invalidateOffspring(this)
+      this.holder && this.holder.invalidateOffspring(this)
     else
       this
 
@@ -20,24 +20,36 @@ module.exports = class BaseComponent extends Component
     holder = this.holder
     if !holder
       # while the component is not mounted, the holder may be undefined
+      this.renderingMap[offspring.dcid] = [offspring, offspring.holder]
       this
     else
       if this.inWillRenderender
         this.renderingMap[offspring.dcid] = [offspring, offspring.holder]
+        offspring.renderingHolder = this
       else if holder == dc
         dc.invalidateOffspring(offspring)
-      else if !holder.isBaseComponent
-        this.renderingMap[offspring.dcid] = [offspring, offspring.holder]
-        holder.invalidate()
       else
-        holder.invalidateOffspring(offspring)
-     this
+        if !holder.isBaseComponent
+          this.renderingMap[offspring.dcid] = [offspring, offspring.holder]
+          offspring.renderingHolder = this
+          holder.invalidate()
+        else
+          holder.invalidateOffspring(offspring)
+
+    this
 
   markRemovingDom: (removing) ->
     this.removing = removing
-    if removing && this.node
-      dc.valid = false
-      dc.removingMap[this.dcid] = this
+    if removing
+      if this.node && this.node.parentNode
+        dc.valid = false
+        dc.removingMap[this.dcid] = this
+        if this.renderHolder
+          this.renerHolder = null
+          delete this.renderHolder.renderingMap[this.dcid]
+        delete dc.renderingMap[this.dcid]
+        delete dc.oldRenderingMap[this.dcid]
+      this.holder = null
     this
 
   updateBaseComponent: ->
@@ -45,9 +57,9 @@ module.exports = class BaseComponent extends Component
 
   renderContent: (oldBaseComponent) ->
     this.renderDom(oldBaseComponent)
-    holder = this.holder
-    holder.raiseNode(this)
-    holder.raiseFirstNextNode(this)
+    if holder = this.holder
+      holder.raiseNode(this)
+      holder.raiseFirstNextNode(this)
 
   renderDom: (oldBaseComponent) ->
     this.rendering = true
@@ -84,7 +96,14 @@ module.exports = class BaseComponent extends Component
 
   removeNode: ->
     node = this.node
+    prevNode = node.previousSibling
+    nextNode = node.nextSibling
     node.parentNode.removeChild(node)
+    if prevNode && (component = prevNode.component)
+      component.nextNode = nextNode
+      if holder = component.holder
+        holder.linkNextNode(component)
+    return
 
   attachNode: ->
     if !(attached=this.attached)
@@ -104,9 +123,9 @@ module.exports = class BaseComponent extends Component
       catch e
         dc.error(e)
 
-      holder = this.holder
-      if holder.children
-        holder.node[holder.dcidIndexMap[this.dcid]] = node
+    if holder = this.holder
+      holder.raiseNode(this)
+      holder.raiseFirstNextNode(this)
 
     if !attached
       this.emit('didAttach')
@@ -116,6 +135,11 @@ module.exports = class BaseComponent extends Component
   setParentNode: (parentNode) ->
     this.parentNode = parentNode
     return
+
+  # push down the nextNode, but does not propagate to the prev component
+  sinkNextNode: (nextNode) ->
+    if nextNode != this.nextNode
+      this.nextNode = nextNode
 
   getPrevChainComponentOf: (child) ->
     throw new Error('Atomic BaseComponent should not has child component.')

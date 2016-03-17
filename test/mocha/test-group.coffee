@@ -265,23 +265,6 @@ describe 'group component: List, each', ->
       expect(comp.node.innerHTML).to.equal '2'
       comp.unmount()
 
-    it  'should create and update funcEach', ->
-      dontUnmount = true
-      x = 1
-      comp = funcEach((-> [x]), {itemFunc: (item) -> txt(item)})
-      comp.mount(demo2Node)
-      expect(comp.node[0].textContent).to.equal '1'
-      x = 2
-      dc.update()
-      expect(comp.node[0].textContent).to.equal('2', 'update 2')
-      expect(comp.isList).to.equal(true)
-      expect(demo2Node.innerHTML).to.equal('2', 'innerHTML')
-      x = 3
-      dc.update()
-      expect(comp.node[0].textContent).to.equal('3', 'update 3')
-      expect(demo2Node.innerHTML).to.equal('3', 'innerHTML')
-      comp.unmount()
-
     it  'should create and update deeper embedded each', ->
       x = 1
       comp =  div({}, span1=new Tag('span', {}, [each1=each(listItems = [x], {itemFunc: (item) -> txt(item)})]))
@@ -289,19 +272,6 @@ describe 'group component: List, each', ->
       expect(each1.parentNode).to.equal(span1.node)
       expect(each1.node[0].textContent).to.equal '1'
       listItems.setItem(0, 2)
-      dc.update()
-      expect(each1.parentNode).to.equal(span1.node)
-      expect(each1.node[0].textContent).to.equal('2')
-      expect(comp.node.innerHTML).to.equal '<span>2</span>'
-      comp.unmount()
-
-    it  'should create and update deeper embedded funcEach', ->
-      x = 1
-      comp =  div({}, span1=new Tag('span', {}, [each1=funcEach((-> [x]), {itemFunc: (item) -> txt(item)})]))
-      comp.mount()
-      expect(each1.parentNode).to.equal(span1.node)
-      expect(each1.node[0].textContent).to.equal '1'
-      x = 2
       dc.update()
       expect(each1.parentNode).to.equal(span1.node)
       expect(each1.node[0].textContent).to.equal('2')
@@ -342,66 +312,6 @@ describe 'group component: List, each', ->
       expect(each1.parentNode).to.equal(span1.node)
       expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<div><span>2</span></div>'
-      comp.unmount()
-
-    it  'should create and update embedded each in 3 layer 2', ->
-      x = 1
-      comp =  div({}, div({}, span1=new Tag('span', {}, [each1=funcEach((-> [x]), {itemFunc: (item) -> txt(item)})])))
-      comp.mount()
-      expect(each1.parentNode).to.equal(span1.node)
-      expect(each1.node[0].textContent).to.equal '1'
-      x = 2
-      dc.update()
-      expect(each1.parentNode).to.equal(span1.node)
-      expect(each1.node[0].textContent).to.equal('2')
-      expect(comp.node.innerHTML).to.equal '<div><span>2</span></div>'
-      comp.unmount()
-
-    it  'should process funcEach', ->
-      x = 1
-      comp = funcEach((-> [x]), {itemFunc: (item) -> item})
-      comp.mount()
-      expect(comp.node[0].textContent).to.equal '1'
-      x = 2
-      dc.update()
-      expect(comp.node[0].textContent).to.equal '2', 'after x = 2'
-      comp.unmount()
-
-    it  'should process each under each and with function as items 0', ->
-      x = 1
-      each2 = null
-      comp = each1 = each([1], -> each2=funcEach((-> [x]), {itemFunc: (item) -> txt(item)}))
-      comp.mount(demo2Node)
-      expect(demo2Node.innerHTML).to.equal('1')
-      dontUnmount = true
-      expect(each1.parentNode).to.equal(each1.parentNode)
-      expect(each1.parentNode).to.equal(demo2Node)
-      expect(each1.node[0][0].textContent).to.equal '1'
-      expect(each2.node[0].textContent).to.equal '1'
-      x = 2
-      dc.update()
-      expect(demo2Node.innerHTML).to.equal('2')
-      expect(each1.parentNode).to.equal(each1.parentNode)
-      expect(each2.node[0].textContent).to.equal('2')
-      expect(demo2Node.innerHTML).to.equal '2', 'after x = 2'
-      comp.unmount()
-
-    it  'should process each under each and with function as items 1', ->
-      x = 1
-      each2 = null
-      comp = div({}, each1=each([1], -> each2=funcEach((-> [x]), (item) -> item)))
-      comp.mount(demo2Node)
-      expect(demo2Node.innerHTML).to.equal('<div>1</div>')
-      dontUnmount = true
-      expect(each1.parentNode).to.equal(comp.node)
-      expect(each1.node[0][0].textContent).to.equal '1'
-      expect(each2.node[0].textContent).to.equal '1'
-      x = 2
-      dc.update()
-      expect(demo2Node.innerHTML).to.equal('<div>2</div>')
-      expect(each1.parentNode).to.equal(comp.node)
-      expect(each2.node[0].textContent).to.equal('2')
-      expect(comp.node.innerHTML).to.equal '2', 'after x = 2'
       comp.unmount()
 
     it  'should mount and update each', ->
@@ -505,3 +415,108 @@ describe 'group component: List, each', ->
       dc.update()
       expect(comp.node.parentNode).to.equal undefined
       comp.unmount()
+
+  describe 'funcEach', ->
+
+    it  'should process funcEach', ->
+      x = 1
+      comp = funcEach((-> [x]), {itemFunc: (item) -> item})
+      comp.mount()
+      expect(comp.node[0].textContent).to.equal '1'
+      x = 2
+      dc.update()
+      expect(comp.node[0].textContent).to.equal '2', 'after x = 2'
+      comp.unmount()
+
+    it  'should create and update funcEach', ->
+      dontUnmount = true
+      x = 1
+      comp = funcEach((-> [x]), {itemFunc: (item) -> txt(item)})
+      comp.mount(demo2Node)
+      expect(comp.node[0].textContent).to.equal '1'
+      x = 2
+      dc.update()
+      expect(comp.node[0].textContent).to.equal('2', 'update 2')
+      expect(comp.isList).to.equal(true)
+      expect(demo2Node.innerHTML).to.equal('2', 'innerHTML')
+      x = 3
+      dc.update()
+      expect(comp.node[0].textContent).to.equal('3', 'update 3')
+      expect(demo2Node.innerHTML).to.equal('3', 'innerHTML')
+      comp.unmount()
+
+    it  'should process each under each and with function as items 1', ->
+      x = 1
+      each2 = null
+      comp = div({}, each1=each([1], -> each2=funcEach((-> [x]), (item) -> item)))
+      comp.mount(demo2Node)
+      expect(demo2Node.innerHTML).to.equal('<div>1</div>')
+      dontUnmount = true
+      expect(each1.parentNode).to.equal(comp.node)
+      expect(each1.node[0][0].textContent).to.equal '1'
+      expect(each2.node[0].textContent).to.equal '1'
+      x = 2
+      dc.update()
+      expect(demo2Node.innerHTML).to.equal('<div>2</div>')
+      expect(each1.parentNode).to.equal(comp.node)
+      expect(each2.node[0].textContent).to.equal('2')
+      expect(comp.node.innerHTML).to.equal '2', 'after x = 2'
+      comp.unmount()
+
+    it  'should process each under each and with function as items 0', ->
+      x = 1
+      each2 = null
+      comp = each1 = each([1], -> each2=funcEach((-> [x]), {itemFunc: (item) -> txt(item)}))
+      comp.mount(demo2Node)
+      expect(demo2Node.innerHTML).to.equal('1')
+      dontUnmount = true
+      expect(each1.parentNode).to.equal(each1.parentNode)
+      expect(each1.parentNode).to.equal(demo2Node)
+      expect(each1.node[0][0].textContent).to.equal '1'
+      expect(each2.node[0].textContent).to.equal '1'
+      x = 2
+      dc.update()
+      expect(demo2Node.innerHTML).to.equal('2')
+      expect(each1.parentNode).to.equal(each1.parentNode)
+      expect(each2.node[0].textContent).to.equal('2')
+      expect(demo2Node.innerHTML).to.equal '2', 'after x = 2'
+      comp.unmount()
+
+    it  'should create and update embedded each in 3 layer 2', ->
+      x = 1
+      comp =  div({}, div({}, span1=new Tag('span', {}, [each1=funcEach((-> [x]), {itemFunc: (item) -> txt(item)})])))
+      comp.mount()
+      expect(each1.parentNode).to.equal(span1.node)
+      expect(each1.node[0].textContent).to.equal '1'
+      x = 2
+      dc.update()
+      expect(each1.parentNode).to.equal(span1.node)
+      expect(each1.node[0].textContent).to.equal('2')
+      expect(comp.node.innerHTML).to.equal '<div><span>2</span></div>'
+      comp.unmount()
+
+    it  'should create and update deeper embedded funcEach', ->
+      x = 1
+      comp =  div({}, span1=new Tag('span', {}, [each1=funcEach((-> [x]), {itemFunc: (item) -> txt(item)})]))
+      comp.mount()
+      expect(each1.parentNode).to.equal(span1.node)
+      expect(each1.node[0].textContent).to.equal '1'
+      x = 2
+      dc.update()
+      expect(each1.parentNode).to.equal(span1.node)
+      expect(each1.node[0].textContent).to.equal('2')
+      expect(comp.node.innerHTML).to.equal '<span>2</span>'
+      comp.unmount()
+
+    it  'should create and update funcEach in list', ->
+      dontUnmount = true
+      items = [1, 2]
+      comp = list(txt('text'), each1=funcEach((-> items), {itemFunc: (item) -> txt(' '+item)}))
+      comp.mount(demo2Node)
+      expect(demo2Node.innerHTML).to.equal('text 1 2')
+      items = [3]
+      dc.update()
+      expect(demo2Node.innerHTML).to.equal 'text 3'
+      dc.update()
+      expect(demo2Node.innerHTML).to.equal 'text 3'
+

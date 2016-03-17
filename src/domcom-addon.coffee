@@ -4,7 +4,6 @@ dc.builtinDirectives = require('./directives/index')
 
 extend(dc,
   dc.builtinDirectives
-  require('./builtins/index')
   require('./core/property/delegate-event')
   require('./core/property/css-arith')
 )

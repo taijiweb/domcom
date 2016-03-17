@@ -20,6 +20,7 @@ module.exports =
   markRemovingDom: (removing) ->
     if this.baseComponent
       this.baseComponent.markRemovingDom(removing)
+    this.holder = null
     this
 
   updateBaseComponent: ->
@@ -39,15 +40,19 @@ module.exports =
     this.emit('willRender')
 
     if this.node && this.valid && oldBaseComponent==this.baseComponent
-      this.baseComponent.attachNode(this.parentNode, this.nextNode)
+      this.baseComponent.attachNode()
     else
       this.valid = true
-      baseComponent = this.updateBaseComponent()
-      baseComponent.renderContent(oldBaseComponent)
+      this.updateBaseComponent()
+      this.renderContent(oldBaseComponent)
 
     this.rendering = false
     this.emit('didRender')
     this
+
+
+  renderContent: (oldBaseComponent) ->
+    this.baseComponent.renderDom(oldBaseComponent)
 
   getChildParentNode: (child) ->
     this.parentNode
@@ -57,3 +62,16 @@ module.exports =
       this.parentNode = parentNode
       this.content and this.content.setParentNode(parentNode)
     return
+
+  # after Component.removeNode, the previousSibling component  will reset nextNode,
+  # and then this method will be called
+  linkNextNode: (child) ->
+    if holder = this.holder
+      this.nextNode = child.nextNode
+      holder.linkNextNode(this)
+
+  # push down the nextNode, but does not propagate to the prev component
+  sinkNextNode: (nextNode) ->
+    if nextNode != this.nextNode
+      this.nextNode = nextNode
+      this.content.sinkNextNode(nextNode)

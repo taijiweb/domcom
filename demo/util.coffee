@@ -4,21 +4,14 @@
 dc.directives $options: dc.$options,  $model: dc.$model
 
 {eachDemo1, eachDemo2, eachDemo3, eachDemo4} = require('./demo-each')
-{demoTriangle, demoCombo, demoModelOnMultipleInput} = require('./demo-builtins')
-splitterDemo = require('./demo-splitter')
-accordion = require('./demo-accordion')
 chooseFramework = require('./demo-choose-web-framework')
 
 {demoEachPush, demoIfEach, demoModelOnMultipleInput} = require('./demo-debug')
 
 exports.demoMap =
   'choose web framework':chooseFramework
-  accordion: accordion
-  triangle: demoTriangle
-  combo: demoCombo
   "show hide":  require('./demo-show-hide')
   counter:  require('./demo-counter')
-  dialog:  require('./demo-dialog')
   event:  require('./demo-event')
   controls:  require('./demo-controls')
   if:  require('./demo-if-component')
@@ -27,19 +20,20 @@ exports.demoMap =
   each3:  eachDemo3
   each4:  eachDemo4
   'switch 1 2 3 4':  require('./demo-switch-1-2-3-4')
-  splitter:  splitterDemo
   sum:  require('./demo-sum')
   'text model':  require('./demo-text-model')
-  'auto width edit':  require('./demo-auto-width-edit')
   'mount/unmount':  require('./demo-mount-unmount')
 
 exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem) ->
   currentItem = see initItem
   componentsMap = {}
-  for key, func of demoMap
-    componentsMap[key] = func()
+  for key, comp of demoMap
+    if typeof comp == 'function'
+      componentsMap[key] = comp()
+    else
+      componentsMap[key] = comp
   list demoSelect = select($options: [Object.keys(demoMap)], $model:currentItem),
-    div case_(currentItem, componentsMap, else_=componentsMap[initItem]).updateWhen(demoSelect, 'change')
+  div case_(currentItem, componentsMap, else_=componentsMap[initItem]).updateWhen(demoSelect, 'change')
 
 exports.runDemo = (demoMap, initItem, element) ->
   comp = makeDemoComponent(demoMap, initItem)

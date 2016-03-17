@@ -92,9 +92,9 @@
 
   下载github发布版本： [Github releases](https://github.com/taijiweb/domcom/releases)
 
-  使用cdn: 感谢cdn.jsdelivr.net 提供cdn链接：
+  使用cdn: 感谢cdn.jsdelivr.net 提供cdn链接(替换x.y.z为实际版本号）：
 
-    http://cdn.jsdelivr.net/domcom/0.1/domcom.min.js
+    http://cdn.jsdelivr.net/domcom/x.y.z/domcom.min.js
 
 ### 在页面中设置Domcom
 
@@ -102,9 +102,9 @@
 
     `<script src="path/to/domcom.min.js"/>`
 
-  如果使用cdn.jsdelivr.net提供的cdn链接， 则应该添加如下的script标签
+  如果使用cdn.jsdelivr.net提供的cdn链接， 则应该添加如下的script标签(替换x.y.z为实际版本号）
 
-    `<script src="http://cdn.jsdelivr.net/domcom/0.1/domcom.min.js"/>`
+    `<script src="http://cdn.jsdelivr.net/domcom/x.y.z/domcom.min.js"/>`
 
   在domcom的script标签之后添加自己的js脚本：
 
@@ -154,7 +154,7 @@
 这是所有部件的基类，提供了部件类的公有方法，其中mount, unmount和remount方法管理部件的挂载与卸载, render和update方法管理部件的创建、绘制或更新，renderWhen和updateWhen方法设置重绘和更新时机，on，off和emit方法管理部件事件。
 
 ##### 部件方法
-* **mount，unmount，remount**
+* **mount，unmount**
 
   > 函数原型：`component.mount mountNode：Null|domNode, beforeNode：Null|domNode`
   
@@ -164,34 +164,12 @@
   
   移除挂载。将部件从Dom中移除。
 
-  > 函数原型：`component.remount()`
-
-  恢复挂载。将部件重新挂载到Dom，挂载位置保持不变。
-
-* **render，update**
-
-  > 函数原型：`component.render()`
-
-  绘制部件。如果部件的Dom节点还不存在，将创建Dom节点。如果Dom节点已经存在，而部件已失效，将执行合适的更新操作。如果部件有效，但是Dom节点的父节点`component.node.parentNode`不是部件的父节点`component.parentNode`，则会将部件的Dom节点挂载到部件父节点之下，`component.nextNode`代表的Dom节点之前。
-
-  > 函数原型：`component.update()`
-  
-  更新部件。本方法和render方法的区别是本方法将先调用`component.emit('update')`
-
-* **renderWhen，updateWhen**
+* **updateWhen**
 
   定制部件的更新时机：可以是其它某个或一组部件上发生的某些Dom事件，也可以采用window.setInterval或者dc.raf方法。以下是这两个函数的类型说明：
   
-  > 函数原型： `component.renderWhen components:[Component]|Component, events:[DomEventName], options`
-  
   > 函数原型： `component.updateWhen components:[Component]|Component, events:[DomEventName], options`
-    
-  当components的dom事件events发生时绘制或更新component。如果dc.config.useSystemUpdating为真，则这种方式配置的绘制或更新不会发生，除非在选项中设定options.alwaysUpdating = true 
 
-  > 函数原型： `component.renderWhen event:setInterval, interval:Int(ms), options`
-  
-  > 函数原型： `component.renderWhen event:setInterval, interval:Int(ms), options`
-  
   用window.setInterval函数设置每个interval毫秒绘制或更新一次部件。options可设置test函数在绘制或更新前进行测试。clear可以控制停止绘制或更新的时机。可以参考如下代码来帮助理解：
 	
 	addSetIntervalUpdate = (method, component, options) ->
@@ -201,11 +179,6 @@
 	    if !test or test() then component[method]()
 	    if clear and clear() then clearInterval handler
 	  handler = setInterval(callback, interval or 16)
-  
-
-  > 函数原型： `component.renderWhen event:dc.render, options`
-
-  > 函数原型： `component.renderWhen when:dc.render, options`  
 
   让dc.render函数绘制或更新部件component。options可设置test函数在绘制或更新前进行测试。clear可以控制停止绘制或更新的时机。可以参考如下代码来帮助理解：
 
@@ -352,17 +325,41 @@
 	    label "user name: ",
 	    text placeholder: "input here: ", value: username$
 
-##### 相关实例化函数: every, all, nItems
+##### 相关实例化函数: every, each, funcEach
 
-  every, all和nItems都返回列表部件的实例。
+  every, each和funcEach都返回列表部件的实例。
 
-  > 函数原型： `every arrayItems:[Any], itemFn:(item:Any, index:int, arrayItems:arrayItems!) -> toComponent`
+  > 函数原型： `every attrs, items:Array, options -> toComponent`
 
-  > 函数原型： `all objectItems:Hash, itemFn:(value, key, index:Index, objectItems!) -> toComponent`
+  > 函数原型： `every attrs, items:Object, options -> toComponent`
 
-  > 函数原型： `nItems n:Int|Function|Reactive, itemFn:(value, key, index:Index, objectItems!) -> toComponent`  
-  
-  itemFn称为部件模板函数，返回部件，如果返回值不是部件，将被toComponent函数转化为部件。
+  > 函数原型： `each attrs, objectItems:Array, options -> toComponent`
+
+  > 函数原型： `each attrs, objectItems:Object, options -> toComponent`
+
+  > 函数原型： `funcEach attrs, Function|Reactive, options -> toComponent`
+
+  > 函数原型： `mapEach attrs, Function|Reactive, options -> toComponent`
+
+  options:
+
+  部件模板函数
+
+  >  itemFn称为部件模板函数，返回部件，如果返回值不是部件，将被toComponent函数转化为部件。
+
+  >  itemFn:(item:Any, index:int, listComponent:List)，对应于数组列表
+
+  >  itemFn:(value, key, index:int, listComponent:List) ，对应于对象
+
+  可选的分隔符部件
+
+  >  separatorFn: (index, item, listComponent:List) ，对应于数组列表
+
+  > separatorFn: (index, value, key, listComponent:List) ，对应于对象
+
+  > updateSuccChild: true|false, 当列表部件与位置相关时，用该选项指示当插入、删除项目时更新所有后续部件。
+
+  >  updateSuccIndex: true|false, 当列表部件与位置相关时，用该选项指示当插入、删除项目时更新所有后续部件的索引。
 
 ##### List部件方法
 
@@ -740,6 +737,7 @@
 ***********************************************************
 
 ### Each部件
+update(2016-3-16)：通过一个采用更简化的实现，Each部件已经被废弃，利用every, each, funcEach, mapEach可以产生响应式的列表部件，具有与原Each部件同样的功能。
 
 ##### 模块: Core/Base/Each
 
@@ -1145,32 +1143,6 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
 
   > 函数原型: `substractSet whole：Set, part:Set`
 
-##### binarySearch
-
-  对排序的项进行二分搜索查找item。如果item已经存在，返回item已存在的位置的索引，否则返回适合插入item的位置的索引。
-
-* 类型定义
-
-  > 函数原型: `binarySearch item:Sortable, items[Sortable]`
-
-##### binaryInsert
-
-  将项item按序插入已经排序的数组中。如果项item已经存在，则不做插入。使用二分搜索算法。返回插入item的位置或item已存在的位置的索引。
-
-  Domcom通过binarySearch和binaryInsert提高更新List部件children的时间效率。
-
-* 类型定义
-
-  > 函数原型: `binaryInsert item:Sortable, items[Sortable]`
-
-##### numbers
-
-  如果n是整数(必须大于等于0），返回小于n的整数列表，如果n是函数，则返回一个响应依赖于n的响应函数，该响应函数返回小于n()的整数列表。
-
-* 类型定义
-
-  > 函数原型: `numbers n:Int|Function|Reactive`
-
 **********************************************
 
 #### dom-util工具函数
@@ -1356,6 +1328,8 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
 * 模块：src/directives/splitter
 * $splitter: direction
 
+update(2016-3-16)：已经从domcom中移出，放置到独立的dc-controls包。
+
 ##### $options指令
 
 * 模块：src/directives/options
@@ -1365,6 +1339,8 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
 * 用法：select $options: [items]
 
 ##### $blink指令
+
+update(2016-3-16)：已经从domcom中移出，放置到独立的dc-controls包。
 
 * 模块：src/directives/blink
 * tag $blink: delay
@@ -1383,3 +1359,5 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
   Domcom预定义了一组内置部件，包括combo, dialog, triangle, autoWidthEdit, accordion等。这些部件主要起演示作用，实际项目中请视情况选用。从这些实例可以看到，在Domcom框架下，要扩充新的部件是非常简单的。
 
 #### 子文件夹路径：domcom/src/builtins/
+
+update(2016-3-16)：已经从domcom中移出，放置到独立的dc-controls包。

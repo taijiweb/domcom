@@ -43,6 +43,7 @@ exports = module.exports = class Text extends BaseComponent
     this.textValid = true
     text = domValue(this.text)
     node = document.createTextNode(text)
+    node.component = this
     this.node = node
     this.firstNode = node
     this.cacheText = text
