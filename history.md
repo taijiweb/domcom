@@ -1,3 +1,13 @@
+### 2016-3-17: v0.2.0 on github, npm
+* a very big refactor: do not update from top to bottom, directly update the component in renderingMap instead
+* Each component is removed, in favor of the new every, each, funcEacn and mapEach function, which generate watched list component
+* Case component supports to use array as map
+* set attributes by using  attr_xxx
+* new api: ListMixin.insertChildBefore, insertAfter;
+* fix bug about Component.destroy
+* rename life time events to willXXXX/didXXXX,
+* make Component.listeners and Tag.events field always be available, avoid to add .on or .bind after component super(...)
+
 ### 2016-1-31: v0.1.6 on github, npm
 * fix a bug in webpack.config, remove the file path in .min.js file
 * stop pass component as the parameter to eventHandlerFromArray, just use "node.component"
