@@ -18,7 +18,7 @@ describe('group component: List, each', function() {
     return demo2Node.innerHTML = '';
   });
   afterEach(function() {
-    dc.clear();
+    dc.reset();
     if (comp && comp.node && !dontUnmount) {
       return comp.unmount();
     }

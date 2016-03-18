@@ -9,5 +9,5 @@ module.exports = ->
   texts = list((text1=text(a$)), (text2=text(a$)))
   a$(6)
   comp = list(checkboxes, texts)
-  dc.updateWhen([cbx1, cbx2, text1, text2], 'change', comp)
+  dc.updateWhen([cbx1, cbx2, text1, text2], 'change')
   comp

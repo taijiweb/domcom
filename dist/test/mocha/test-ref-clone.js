@@ -6,7 +6,7 @@ see = dc.see, Component = dc.Component, TransformComponent = dc.TransformCompone
 
 describe('Component.refs, clone', function() {
   afterEach(function() {
-    return dc.clear();
+    return dc.reset();
   });
   describe('refs', function() {
     it('should throw error while constucting conflicted component list(t, t))', function() {

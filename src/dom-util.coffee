@@ -1,10 +1,4 @@
 if typeof window != 'undefined'
-  _raf = window.requestAnimationFrame or window.webkitRequestAnimationFrame or window.mozRequestAnimationFrame
-
-  exports.requestAnimationFrame = exports.raf = _raf or (callback) ->
-    window.setInterval callback, 1000 / 60
-    return
-
   exports.normalizeDomElement = (domElement) ->
     if typeof domElement == 'string'
       domElement = document.querySelector(domElement)

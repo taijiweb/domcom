@@ -23,4 +23,6 @@ module.exports = ->
   #comp = list(number(x).bind('change', -> dc.update()), pane=func(flow x, -> v = x(); if v>=0 and v<=3 then div v))
   #  comp = list(number(x).bind('change', pane.update.bind(pane)), pane=func(flow x, -> v = x(); if v>=0 and v<=3 then div v))
   #list(num=number(x), func(flow x, -> v = x(); if v>=0 and v<=3 then div v)).updateWhen(num, 'change')
-  list(num=number(x), func(flow x, -> v = x(); if v>=0 and v<=3 then div v).updateWhen(num, 'change'))
+  comp = list(num=number(x), func(flow x, -> v = x(); if v>=0 and v<=3 then div v)
+  dc.updateWhen(num, 'change'))
+  comp

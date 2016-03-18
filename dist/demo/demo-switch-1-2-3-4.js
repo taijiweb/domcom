@@ -46,13 +46,14 @@ module.exports = function() {
 };
 
 module.exports = function() {
-  var num, x;
+  var comp, num, x;
   x = see(0);
-  return list(num = number(x), func(flow(x, function() {
+  comp = list(num = number(x), func(flow(x, function() {
     var v;
     v = x();
     if (v >= 0 && v <= 3) {
       return div(v);
     }
-  })).updateWhen(num, 'change'));
+  })), dc.updateWhen(num, 'change'));
+  return comp;
 };

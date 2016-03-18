@@ -10,7 +10,7 @@ a, p, span, text, li, div, button, input} = dc
 
 describe "component  ", ->
   afterEach ->
-    dc.clear()
+    dc.reset()
 
   describe 'construct component', ->
     it 'component shoud have children', ->

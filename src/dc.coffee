@@ -4,7 +4,6 @@ DomNode = require('./DomNode')
 {domNodeCache, readyFnList, directiveRegistry, renderCallbackList} = require('./config')
 isComponent = require('./core/base/isComponent')
 
-
 ###* @api dc(element) - dc component constructor
  *
  * @param element
@@ -34,114 +33,13 @@ if typeof window != 'undefined'
   dcid = document.dcid = newDcid()
   window.$document = dc.$document = domNodeCache[dcid] = new DomNode(document)
 
-dc.onReady = (callback) -> readyFnList.push callback
-
-dc.offReady = (callback) ->
-  readyFnList.indexOf(callback)>=0 and  readyFnList.splice(index, 1)
-
-dc.ready = ->
-  for callback in readyFnList
-    try
-      callback()
-    catch e
-      dc.onerror(e)
-  return
+dc.ready = -> dc.emit('ready')
 
 if typeof window != 'undefined'
   document.addEventListener 'DOMContentLoaded', dc.ready, false
   addEventListener document, 'DOMContentLoaded', ->
     dcid = document.body.dcid = newDcid()
     window.$body = dc.$body = domNodeCache[dcid] = new DomNode(document.body)
-
-
-dc.render = render = ->
-  for callback in renderCallbackList
-    try
-      callback()
-    catch e
-      dc.onerror(e)
-  return
-
-dc.onRender = (callback) ->
-  renderCallbackList.push callback
-
-dc.offRender = (callback) ->
-  renderCallbackList.indexOf(callback)>=0 and  renderCallbackList.splice(index, 1)
-
-dc.renderLoop = renderLoop = ->
-  requestAnimFrame renderLoop
-  render()
-  return
-
-# dc.updateWhen components, events, updateComponentList, options
-# dc.updateWhen setInterval, interval, components..., {clear: -> clearInterval test}
-dc.updateWhen =  (components, events, updateList, options) ->
-  if components instanceof Array
-    if updateList not instanceof Array then updateList = [updateList]
-    if events instanceof Array
-      for component in components
-        for event in events
-          _renderComponentWhenBy(component, event, updateList)
-    else
-      for component in components
-        _renderComponentWhenBy(component, events, updateList)
-
-  else if components == setInterval
-    if isComponent(events) then addSetIntervalUpdate(events, updateList) # updateList is options
-    else if events instanceof Array
-      for component in events then addSetIntervalUpdate(events, updateList)
-    else if typeof events == 'number'
-      options = options or {}
-      options.interval = events
-      addSetIntervalUpdate(updateList, options)
-
-  else if components == render
-    if isComponent(events) then addRafUpdate(events, updateList) # updateList is options
-    else if events instanceof Array
-      for component in events then addRafUpdate(events, updateList)
-
-  else if events instanceof Array
-    if updateList not instanceof Array then updateList = [updateList]
-    for event in events
-      _renderComponentWhenBy(components, event, updateList)
-
-  else
-    if updateList not instanceof Array then updateList = [updateList]
-    _renderComponentWhenBy(components, events, updateList)
-
-  return
-
-# mtehod: 'update' or 'render'
-_renderComponentWhenBy = (component, event, updateList, options) ->
-    if event[...2]!='on' then event = 'on'+event
-    if options
-      component.eventUpdateConfig[event] = for comp in updateList then [comp, options]
-    else
-      for item, i in updateList
-        updateList[i] = if isComponent(item) then [item, {}] else item
-      component.eventUpdateConfig[event] = updateList
-    return
-
-addSetIntervalUpdate = (component, options) ->
-  handler = null
-  {test, interval, clear} = options
-
-  callback = ->
-    if !test or test()
-      dc.update()
-    if clear and clear()
-      clearInterval handler
-
-  handler = setInterval(callback, interval or 16)
-
-addRenderUpdate = (component, options) ->
-  {test, clear} = options
-  callback = ->
-    if !test or test()
-      dc.update()
-    if clear and clear()
-      dc.offRender callback
-  dc.onRender callback
 
 # register directive
 # directiveHandlerGenerator: (...) -> (component) -> component
@@ -154,69 +52,9 @@ dc.directives = (directiveName, directiveHandlerGenerator) ->
     if directiveName[0]!='$' then directiveName = '$'+directiveName
     directiveRegistry[directiveName] = directiveHandlerGenerator
 
-dc.dcidIndexMap = dcidIndexMap = {}
-dc.parentNodes = parentNodes = []
-dc.nextNodes = nextNodes = []
-dc.listIndex = 0
-
-dc.getChildParentNode = (child) ->
-  parentNodes[dcidIndexMap[child.dcid]]
-
-dc.getChildNextNode = (child) ->
-  this.nextNodes[dcidIndexMap[child.dcid]]
-
-dc.renderingMap = {}
-dc.removingMap = {}
-
-dc.invalidate = ->
-  dc.valid = false
-
-dc.invalidateOffspring = (offspring) ->
-  dc.valid = false
-  dc.renderingMap[offspring.dcid] = [offspring, offspring.holder]
-
-dc.refreshComponents = refreshComponents = ->
-  this.valid = true
-  renderingMap = this.oldRenderingMap = this.renderingMap
-  this.renderingMap = {}
-  for _, [component, holder] of renderingMap
-    holder.updateChildHolder(component)
-    component.renderDom(component.baseComponent)
-  this.valid = false
-  this
-
-dc.removeComponents = removeComponents = ->
-  removingMap = this.removingMap
-  this.removingMap = {}
-  for dcid of removingMap
-    removingMap[dcid].removeDom()
-  this
-
-dc.update = (force) ->
-  if (force || dc.alwaysUpdate) && !dc.valid
-    refreshComponents.call(this)
-    removeComponents.call(this)
-
-dc.updateChildHolder = (component) ->
-  if component.holder != this
-    component.invalidate()
-    component.holder = this
-    component.setParentNode(this.getChildParentNode(component))
-    component.sinkNextNode(this.getChildNextNode(component))
-  return
-
-dc.raiseNode = ->
-
-dc.raiseFirstNextNode = ->
-
-dc.linkNextNode = ->
-
-dc.clear = ->
-  dc.dcidIndexMap = dcidIndexMap = {}
-  dc.parentNodes = parentNodes = []
-  dc.nextNodes = nextNodes = []
-  dc.listIndex = 0
-  dc.renderingMap = {}
-  dc.removingMap = {}
-
 dc.toString = -> 'domcom'
+
+dc.listeners = {}
+extend = require('extend')
+EventMixn = require('./dc-event')
+extend(dc, EventMixn)

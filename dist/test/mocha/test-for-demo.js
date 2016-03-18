@@ -14,7 +14,7 @@ makeDomComponentTest(demoMap, "domcom/demoMap");
 
 describe('demo', function() {
   afterEach(function() {
-    return dc.clear();
+    return dc.reset();
   });
   describe('sum', function() {
     return it('should construct and create components', function() {

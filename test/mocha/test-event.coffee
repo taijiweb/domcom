@@ -11,7 +11,7 @@ a, p, span, text, li, div, button, input} = dc
 
 describe "component event", ->
   afterEach ->
-    dc.clear()
+    dc.reset()
 
   it 'component shoud call listeners before mounting', ->
     x = 0

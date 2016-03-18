@@ -1,5 +1,7 @@
 module.exports = dc = require('./dc')
 
+dc.EventMixin = require('./dc-event')
+
 if typeof window != 'undefined'
   window.dc = dc
 
@@ -16,6 +18,7 @@ extend dc,
   require('dc-watch-list'),
   require('./dom-util'),
   require('dc-util'),
+  require('./dc-update'),
 
   # component
   require('./core/index'),

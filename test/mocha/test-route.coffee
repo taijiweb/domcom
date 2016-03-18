@@ -8,7 +8,7 @@ slashs = /(?:\\\/)|(?:\\\()|(?:\\\))/
 
 describe 'route', ->
   afterEach ->
-    dc.clear()
+    dc.reset()
 
   describe 'route regexp', ->
     it 'should match paramName pattern', ->

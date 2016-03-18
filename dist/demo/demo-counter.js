@@ -16,7 +16,7 @@ module.exports = function() {
     };
     return countHandle = setInterval(count, 1);
   });
-  dc.updateWhen(setInterval, txt1, {
+  dc.updateWhen(setInterval, {
     interval: 16,
     clear: function() {
       return counter >= 1000;

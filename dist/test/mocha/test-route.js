@@ -12,7 +12,7 @@ isComponent = dc.isComponent, route = dc.route, txt = dc.txt, Nothing = dc.Nothi
 
 describe('route', function() {
   afterEach(function() {
-    return dc.clear();
+    return dc.reset();
   });
   describe('route regexp', function() {
     it('should match paramName pattern', function() {

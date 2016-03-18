@@ -19,7 +19,7 @@ makeDomComponentTest(demoMap, "domcom/demoMap")
 
 describe 'demo', ->
   afterEach ->
-    dc.clear()
+    dc.reset()
 
   describe 'sum', ->
     it 'should construct and create components', ->

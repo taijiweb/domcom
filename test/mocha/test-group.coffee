@@ -18,7 +18,7 @@ describe 'group component: List, each', ->
     demo2Node.innerHTML = ''
 
   afterEach ->
-    dc.clear()
+    dc.reset()
     if comp && comp.node && !dontUnmount
       comp.unmount()
 

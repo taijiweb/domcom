@@ -8,7 +8,7 @@ a, p, span, text, div} = dc
 
 describe 'Component.refs, clone', ->
   afterEach ->
-    dc.clear()
+    dc.reset()
 
   describe 'refs', ->
     it 'should throw error while constucting conflicted component list(t, t))', ->

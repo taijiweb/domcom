@@ -15,7 +15,7 @@ Nothing
 
 describe "test base component", ->
   afterEach ->
-    dc.clear()
+    dc.reset()
 
   describe 'update baseComponent', ->
     it 'should get baseComponent of List', ->

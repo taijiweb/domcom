@@ -155,7 +155,7 @@ describe 'domcom/properties/style', ->
     styleFn = ->
       color += 0x111111
       i$ i++
-      comp.render()
+      dc.update()
       if i==50
         clearInterval handle
     handle = setInterval(styleFn, 5)

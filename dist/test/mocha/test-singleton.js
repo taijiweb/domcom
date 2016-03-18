@@ -8,7 +8,7 @@ see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.
 
 describe('singleton component: If, Case, Func, Pick, ...', function() {
   afterEach(function() {
-    return dc.clear();
+    return dc.reset();
   });
   describe('If', function() {
     it('should optimize if_', function() {

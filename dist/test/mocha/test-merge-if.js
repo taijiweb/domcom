@@ -8,7 +8,7 @@ see = dc.see, flow = dc.flow, Component = dc.Component, Tag = dc.Tag, Text = dc.
 
 describe('domcom/mergeIf', function() {
   afterEach(function() {
-    return dc.clear();
+    return dc.reset();
   });
   it('should construct mergeIf(x, t1, t2)', function() {
     var comp, t1, t2, x;

@@ -8,7 +8,7 @@ bindings = dc.bindings, duplex = dc.duplex, flow = dc.flow, classFn = dc.classFn
 
 describe("component  ", function() {
   afterEach(function() {
-    return dc.clear();
+    return dc.reset();
   });
   describe('construct component', function() {
     it('component shoud have children', function() {

@@ -13,7 +13,7 @@ a_ = bindings({
 
 describe("test base component", function() {
   afterEach(function() {
-    return dc.clear();
+    return dc.reset();
   });
   describe('update baseComponent', function() {
     it('should get baseComponent of List', function() {

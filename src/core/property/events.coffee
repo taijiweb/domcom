@@ -25,13 +25,8 @@ exports.eventHandlerFromArray = (callbackList, eventName) ->
       if fn
         fn.call(this, event, component)
 
-    updateList = component.eventUpdateConfig[eventName]
-    if updateList
-      for [comp, options] in updateList
-        # the comp is in updateList, so it need to be updated
-        # if config.useSystemUpdating then update this component in dc's system update scheme
-        if options.alwaysUpdating or !config.useSystemUpdating
-          dc.update()
+    if (updating = component.eventUpdateConfig[eventName])?
+      dc.update(updating)
 
     if !event
       return

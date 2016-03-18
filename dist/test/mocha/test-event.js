@@ -8,7 +8,7 @@ duplex = dc.duplex, see = dc.see, classFn = dc.classFn, styleFrom = dc.styleFrom
 
 describe("component event", function() {
   afterEach(function() {
-    return dc.clear();
+    return dc.reset();
   });
   it('component shoud call listeners before mounting', function() {
     var comp, x;

@@ -8,7 +8,7 @@ a, p, span, text, div} = dc
 
 describe 'domcom/mergeIf', ->
   afterEach ->
-    dc.clear()
+    dc.reset()
 
   it 'should construct mergeIf(x, t1, t2)', ->
     x = see 0

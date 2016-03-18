@@ -264,7 +264,7 @@ describe('domcom/properties/style', function() {
     styleFn = function() {
       color += 0x111111;
       i$(i++);
-      comp.render();
+      dc.update();
       if (i === 50) {
         return clearInterval(handle);
       }

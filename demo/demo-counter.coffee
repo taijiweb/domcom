@@ -8,5 +8,5 @@ module.exports = ->
       counter$(counter++)
       if counter==1000 then clearInterval countHandle
     countHandle = setInterval count, 1
-  dc.updateWhen(setInterval, txt1, {interval:16, clear: -> counter>=1000})
+  dc.updateWhen(setInterval, {interval:16, clear: -> counter>=1000})
   comp

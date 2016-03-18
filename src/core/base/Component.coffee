@@ -19,55 +19,6 @@ module.exports = class Component
     this.dcid = newDcid()
     this.valid = true
 
-  on: (event, callback) ->
-    if !arguments.length
-      dc.error('missing arguments for Component.on(event, callback)')
-    if arguments.length == 1
-      if !event or typeof event != 'object'
-        dc.error('wrong arguments for Component.on(event, callback)')
-      else
-        for eventName, callback of event
-          this.on(eventName, callback)
-    else
-      if !(listeners = this.listeners)
-        this.listeners = listeners = {}
-      for event in event.split(/\s*,\s*|\s+/)
-        if callbacks = listeners[event]
-          if callbacks.indexOf(callback) < 0
-            callbacks.push(callback)
-          # else null # do not repeat to add callback
-        else
-          listeners[event] = [callback]
-    this
-
-  off: (event, callback) ->
-    if this.argmuents.length
-      dc.error('missing arguments for Component.off(event, callback)')
-    else if arguments.length==1
-      {listeners} = this
-      for event in event.split(/\s*,\s*|\s+/)
-        listeners[event] = null
-    else
-      {listeners} = this
-      for event in event.split(/\s*,\s*|\s+/)
-        callbacks = listeners[event]
-        if callbacks and callbacks.indexOf(callback) >= 0
-          callbacks.splice(index, 1)
-          if !callbacks.length
-            listeners[event] = null
-        # else null # do nothing
-    this
-
-  emit:(event, args...) ->
-    if this.destroyed
-      return this
-    if callbacks = this.listeners[event]
-      for callback in callbacks then callback.apply(this, args)
-    else
-      if method=this[event]
-        method.apply(this, args)
-    this
-
   ### if mountNode is given, it should not be the node of any Component
   only use beforeNode if mountNode is given
   ###
@@ -154,6 +105,10 @@ module.exports = class Component
     dc.update(force)
     this
 
+  updateWhen: (component, event, options) ->
+    dc.updateWhen(component, event, options)
+    this
+
   destroy: ->
     this.destroyed = true
     this.remove()
@@ -163,23 +118,6 @@ module.exports = class Component
       this.node = null
     this.baseComponent = null
     this.parentNode = null
-
-  ###
-  component.updateWhen components, events
-  component.updateWhen setInterval, interval, options
-  component.updateWhen dc.raf, options
-  ###
-  updateWhen: (args...) ->
-    if args[0]==setInterval
-      if args[1]=='number'
-        dc.updateWhen(setInterval, args[1], [this], args[2])
-      else
-        dc.updateWhen(setInterval, [this], args[1])
-    else if args[1]==dc.raf
-      dc.updateWhen(dc.raf, [this], args[1])
-    else
-      dc.updateWhen(args[0], args[1], [this])
-    this
 
   raiseNode: (child) ->
     node = child.node
@@ -219,3 +157,6 @@ module.exports = class Component
     for event of srcListeners
       srcListeners[event] and myListeners[event] = srcListeners[event].splice()
     this
+
+dcEventMixin = require('../../dc-event')
+extend(Component.prototype, dcEventMixin)

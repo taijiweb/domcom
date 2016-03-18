@@ -28,7 +28,7 @@ exports.demoIfEach = function() {
 };
 
 exports.demoModelOnMultipleInput = function() {
-  var a, text1, text2;
+  var a, comp, text1, text2;
   a = {};
   text1 = text({
     $model: duplex(a, 'x')
@@ -36,5 +36,7 @@ exports.demoModelOnMultipleInput = function() {
   text2 = text({
     $model: duplex(a, 'x')
   });
-  return list(text1, text2).updateWhen([text1, text2], 'change').mount();
+  comp = list(text1, text2);
+  dc.updateWhen([text1, text2], 'change');
+  return comp.mount();
 };

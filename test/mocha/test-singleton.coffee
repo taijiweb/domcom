@@ -9,7 +9,7 @@ a, p, span, text, div} = dc
 
 describe 'singleton component: If, Case, Func, Pick, ...', ->
   afterEach ->
-    dc.clear()
+    dc.reset()
 
   describe 'If', ->
     it 'should optimize if_', ->

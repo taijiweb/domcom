@@ -17,7 +17,8 @@ module.exports = demoSum = function() {
       return b(this.value);
     }
   }), p1 = p(flow.add(a, b)));
-  return dc.updateWhen([t1, t2], 'change', p1);
+  dc.updateWhen([t1, t2], 'change');
+  return comp;
 };
 
 module.exports = demoSum = function() {
@@ -35,5 +36,6 @@ module.exports = demoSum = function() {
       return b(this.value * 1);
     })
   })), p1 = p(flow.add(a, b)));
-  return comp.updateWhen([t1, t2], 'change');
+  dc.updateWhen([t1, t2], 'change');
+  return comp;
 };
