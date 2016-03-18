@@ -33,7 +33,11 @@ if typeof window != 'undefined'
   dcid = document.dcid = newDcid()
   window.$document = dc.$document = domNodeCache[dcid] = new DomNode(document)
 
-dc.ready = -> dc.emit('ready')
+dc.ready = ->
+  # avoid dc.emit('ready') to call dc.ready
+  if dc.listeners['ready']
+    dc.emit('ready')
+  return
 
 if typeof window != 'undefined'
   document.addEventListener 'DOMContentLoaded', dc.ready, false

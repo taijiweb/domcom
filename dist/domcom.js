@@ -44,408 +44,275 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var dc;
+	var dc, extend;
 
-	dc = __webpack_require__(1);
+	module.exports = dc = __webpack_require__(4);
 
-	__webpack_require__(48);
+	if (typeof window !== 'undefined') {
+	  window.dc = dc;
+	}
 
-	module.exports = dc;
+	dc.DomNode = __webpack_require__(5);
+
+	dc.extend = extend = __webpack_require__(10);
+
+	dc.EventMixin = __webpack_require__(11);
+
+	dc.builtinDirectives = __webpack_require__(12);
+
+	extend(dc, __webpack_require__(3), __webpack_require__(8), __webpack_require__(7), __webpack_require__(1), __webpack_require__(47), __webpack_require__(6), __webpack_require__(49), __webpack_require__(50), __webpack_require__(51), __webpack_require__(52), __webpack_require__(53), dc.builtinDirectives);
+
+	dc.bindings = flow.bindings;
 
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var dc, extend;
+	var binary, bind, duplex, flow, see, unary, _ref;
 
-	module.exports = dc = __webpack_require__(5);
+	_ref = __webpack_require__(2), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
 
-	dc.EventMixin = __webpack_require__(11);
+	module.exports = flow;
 
-	if (typeof window !== 'undefined') {
-	  window.dc = dc;
-	}
+	flow.bindings = function(model, name) {
+	  var key, result;
+	  result = {};
+	  for (key in model) {
+	    result[key + '$'] = duplex(model, key, name);
+	    result[key + '_'] = bind(model, key, name);
+	  }
+	  return result;
+	};
 
-	dc.DomNode = __webpack_require__(6);
+	flow.seeAttrs = function(target, from) {
+	  var attr, key, value;
+	  for (key in from) {
+	    value = from[key];
+	    attr = target[key];
+	    if (typeof attr === 'function') {
+	      attr(value);
+	    } else {
+	      target[key] = see(value);
+	    }
+	  }
+	  return target;
+	};
 
-	dc.extend = extend = __webpack_require__(10);
+	flow.neg = function(x) {
+	  return unary(x, function(x) {
+	    return -x;
+	  });
+	};
 
-	extend(dc, __webpack_require__(8), __webpack_require__(3), __webpack_require__(2), __webpack_require__(7), __webpack_require__(4), __webpack_require__(12), __webpack_require__(13), __webpack_require__(47));
+	flow.no = flow.not = flow.not_ = function(x) {
+	  return unary(x, function(x) {
+	    return !x;
+	  });
+	};
+
+	flow.bitnot = function(x) {
+	  return unary(x, function(x) {
+	    return ~x;
+	  });
+	};
+
+	flow.reciprocal = function(x) {
+	  return unary(x, function(x) {
+	    return 1 / x;
+	  });
+	};
+
+	flow.abs = function(x) {
+	  return unary(x, Math.abs);
+	};
+
+	flow.floor = function(x) {
+	  return unary(x, Math.floor);
+	};
+
+	flow.ceil = function(x) {
+	  return unary(x, Math.ceil);
+	};
+
+	flow.round = function(x) {
+	  return unary(x, Math.round);
+	};
+
+	flow.add = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x + y;
+	  });
+	};
+
+	flow.sub = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x - y;
+	  });
+	};
+
+	flow.mul = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x * y;
+	  });
+	};
+
+	flow.div = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x / y;
+	  });
+	};
+
+	flow.min = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return Math.min(x, y);
+	  });
+	};
+
+	flow.and = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x && y;
+	  });
+	};
+
+	flow.or = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return x || y;
+	  });
+	};
+
+	flow.funcAttr = function(obj, attr) {
+	  return flow(obj, attr, function(value) {
+	    var objValue;
+	    objValue = obj();
+	    if (objValue == null) {
+	      return objValue;
+	    }
+	    if (!arguments.length) {
+	      return objValue[attr];
+	    } else {
+	      return objValue[attr] = value;
+	    }
+	  });
+	};
+
+	flow.toggle = function(x) {
+	  return x(!x());
+	};
+
+	flow.if_ = function(test, then_, else_) {
+	  if (typeof test !== 'function') {
+	    if (test) {
+	      return then_;
+	    } else {
+	      return else_;
+	    }
+	  } else if (!test.invalidate) {
+	    if (typeof then_ === 'function' && typeof else_ === 'function') {
+	      return function() {
+	        if (test()) {
+	          return then_();
+	        } else {
+	          return else_();
+	        }
+	      };
+	    } else if (then_ === 'function') {
+	      return function() {
+	        if (test()) {
+	          return then_();
+	        } else {
+	          return else_;
+	        }
+	      };
+	    } else if (else_ === 'function') {
+	      return function() {
+	        if (test()) {
+	          return then_;
+	        } else {
+	          return else_();
+	        }
+	      };
+	    } else if (test()) {
+	      return then_;
+	    } else {
+	      return else_;
+	    }
+	  } else {
+	    if (typeof then_ === 'function' && typeof else_ === 'function') {
+	      if (then_.invalidate && else_.invalidate) {
+	        return flow(test, then_, else_, function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_();
+	          }
+	        });
+	      } else {
+	        return function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_();
+	          }
+	        };
+	      }
+	    } else if (typeof then_ === 'function') {
+	      if (then_.invalidate) {
+	        return flow(test, then_, (function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_;
+	          }
+	        }));
+	      } else {
+	        return function() {
+	          if (test()) {
+	            return then_();
+	          } else {
+	            return else_;
+	          }
+	        };
+	      }
+	    } else if (typeof else_ === 'function') {
+	      if (else_.invalidate) {
+	        return flow(else_, (function() {
+	          if (test()) {
+	            return then_;
+	          } else {
+	            return else_();
+	          }
+	        }));
+	      } else {
+	        return function() {
+	          if (test()) {
+	            return then_;
+	          } else {
+	            return else_();
+	          }
+	        };
+	      }
+	    } else {
+	      return flow(test, function() {
+	        if (test()) {
+	          return then_;
+	        } else {
+	          return else_;
+	        }
+	      });
+	    }
+	  }
+	};
 
 
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListWatchMixin, ObjectWatchMixin, flow, isArray, isEachObjectSystemKey, react, slice, watchList, watchObject,
-	  __slice = [].slice;
-
-	react = (flow = __webpack_require__(3)).react;
-
-	isArray = __webpack_require__(4).isArray;
-
-	module.exports = flow;
-
-	slice = Array.prototype.slice;
-
-	flow.watchList = watchList = function(listItems, listComponent) {
-	  var watchingListComponents;
-	  watchingListComponents = listItems.watchingListComponents || (listItems.watchingListComponents = {});
-	  watchingListComponents[listComponent.dcid] = listComponent;
-	  if (listItems.eachWatching) {
-	    return;
-	  }
-	  listItems.eachWatching = true;
-	  listItems._shift = listItems.shift;
-	  listItems._pop = listItems.pop;
-	  listItems._push = listItems.push;
-	  listItems._reverse = listItems.reverse;
-	  listItems._sort = listItems.sort;
-	  listItems._splice = listItems.splice;
-	  listItems._unshift = listItems.unshift;
-	  listItems.shift = ListWatchMixin.shift;
-	  listItems.pop = ListWatchMixin.pop;
-	  listItems.push = ListWatchMixin.push;
-	  listItems.reverse = ListWatchMixin.reverse;
-	  listItems.sort = ListWatchMixin.sort;
-	  listItems.splice = ListWatchMixin.splice;
-	  listItems.unshift = ListWatchMixin.unshift;
-	  listItems.setItem = ListWatchMixin.setItem;
-	  listItems.setLength = ListWatchMixin.setLength;
-	  listItems.updateComponents = ListWatchMixin.updateComponents;
-	  listItems.updateComponent = ListWatchMixin.updateComponent;
-	  return listItems.getListChildren = ListWatchMixin.getListChildren;
-	};
-
-	ListWatchMixin = {};
-
-	ListWatchMixin.getListChildren = function(listComponent, start, stop) {
-	  var children, i, itemComponent;
-	  children = [];
-	  i = start;
-	  while (i < stop) {
-	    itemComponent = listComponent.getItemComponent(this[i], start + i);
-	    itemComponent.valid = true;
-	    children.push(itemComponent);
-	    i++;
-	  }
-	  return children;
-	};
-
-	ListWatchMixin.updateComponent = function(listComponent, start, stop) {
-	  var children;
-	  children = this.getListChildren(listComponent, start, stop);
-	  listComponent.setChildren.apply(listComponent, [start].concat(__slice.call(children)));
-	  return this;
-	};
-
-	ListWatchMixin.updateComponents = function(start, stop) {
-	  var listComponent, watchingListComponents, _;
-	  watchingListComponents = this.watchingListComponents;
-	  for (_ in watchingListComponents) {
-	    listComponent = watchingListComponents[_];
-	    this.updateComponent(listComponent, start, stop);
-	  }
-	  return this;
-	};
-
-	ListWatchMixin.setItem = function() {
-	  var i, start, value, values, _i, _len;
-	  start = arguments[0], values = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-	  start = start >>> 0;
-	  if (start < 0) {
-	    start = 0;
-	  }
-	  for (i = _i = 0, _len = values.length; _i < _len; i = ++_i) {
-	    value = values[i];
-	    this[start + i] = values[i];
-	  }
-	  this.updateComponents(start, start + values.length);
-	  return this;
-	};
-
-	ListWatchMixin.pop = function() {
-	  var listComponent, result, watchingListComponents, _;
-	  if (!this.length) {
-
-	  } else {
-	    watchingListComponents = this.watchingListComponents;
-	    result = this._pop();
-	    for (_ in watchingListComponents) {
-	      listComponent = watchingListComponents[_];
-	      listComponent.popChild();
-	    }
-	    return result;
-	  }
-	};
-
-	ListWatchMixin.push = function() {
-	  var args, child, length, listComponent, result, watchingListComponents, _;
-	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	  watchingListComponents = this.watchingListComponents;
-	  length = this.length;
-	  result = this._push.apply(this, arguments);
-	  for (_ in watchingListComponents) {
-	    listComponent = watchingListComponents[_];
-	    child = listComponent.getItemComponent(this[length], length);
-	    listComponent.pushChild(child);
-	  }
-	  return result;
-	};
-
-	ListWatchMixin.shift = function() {
-	  var args, length, listComponent, watchingListComponents, _;
-	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	  if (!this.length) {
-	    return this;
-	  } else {
-	    watchingListComponents = this.watchingListComponents;
-	    this._shift();
-	    length = this.length;
-	    for (_ in watchingListComponents) {
-	      listComponent = watchingListComponents[_];
-	      if (!listComponent.updateSuccChild) {
-	        listComponent.shiftChild();
-	      } else {
-	        this.updateComponent(listComponent, length);
-	      }
-	    }
-	    return this;
-	  }
-	};
-
-	ListWatchMixin.unshift = function(child) {
-	  var listComponent, watchingListComponents, _, _results;
-	  this._unshift(child);
-	  watchingListComponents = this.watchingListComponents;
-	  _results = [];
-	  for (_ in watchingListComponents) {
-	    listComponent = watchingListComponents[_];
-	    if (!listComponent.updateSuccChild) {
-	      child = listComponent.getItemComponent(this[0], 0);
-	      _results.push(listComponent.unshiftChild(child));
-	    } else {
-	      _results.push(this.updateComponent(listComponent, this.length));
-	    }
-	  }
-	  return _results;
-	};
-
-	ListWatchMixin.reverse = function() {
-	  var listLength;
-	  listLength = this.length;
-	  if (listLength <= 1) {
-	    return this;
-	  } else {
-	    this._reverse();
-	    return this.updateComponents(0, listLength);
-	  }
-	};
-
-	ListWatchMixin.sort = function() {
-	  var listLength;
-	  listLength = this.length;
-	  if (listLength <= 1) {
-	    return this;
-	  } else {
-	    this._sort();
-	    return this.updateComponents(0, listLength);
-	  }
-	};
-
-	ListWatchMixin.splice = function(start, deleteCount) {
-	  var child, i, inserted, insertedLength, listComponent, newLength, oldListLength, result, _;
-	  inserted = slice.call(arguments, 2);
-	  insertedLength = inserted.length;
-	  if (deleteCount === 0 && insertedLength === 0) {
-	    return this;
-	  } else {
-	    oldListLength = this.length;
-	    start = start >>> 0;
-	    if (start < 0) {
-	      start = 0;
-	    } else if (start > oldListLength) {
-	      start = oldListLength;
-	    }
-	    result = this._splice.apply(this, [start, deleteCount].concat(inserted));
-	    newLength = result.length;
-	    if (newLength === oldListLength) {
-	      this.updateComponents(start, start + insertedLength);
-	    } else {
-	      for (_ in watchingListComponents) {
-	        listComponent = watchingListComponents[_];
-	        if (!listComponent.updateSuccChild) {
-	          if (insertedLength > deleteCount) {
-	            i = start;
-	            while (i < deleteCount) {
-	              child = listComponent.getItemComponent(this[i], i);
-	              listComponent.replaceChild(i, child);
-	              i++;
-	            }
-	            while (i < insertedLength) {
-	              child = listComponent.getItemComponent(this[i], i);
-	              listComponent.insertChild(i, child);
-	              i++;
-	            }
-	          } else {
-	            i = start;
-	            while (i < insertedLength) {
-	              child = listComponent.getItemComponent(this[i], i);
-	              listComponent.replaceChild(i, child);
-	              i++;
-	            }
-	            while (i < deleteCount) {
-	              listComponent.removeChild(start + insertedLength);
-	              i++;
-	            }
-	          }
-	        } else {
-	          this.updateComponent(listComponent, start, newLength);
-	        }
-	      }
-	    }
-	    return result;
-	  }
-	};
-
-	ListWatchMixin.setLength = function(length) {
-	  var listComponent, oldListLength, watchingListComponents, _;
-	  oldListLength = this.length;
-	  if (length === oldListLength) {
-	    return this;
-	  } else if (length <= oldListLength) {
-	    watchingListComponents = this.watchingListComponents;
-	    this.length = length;
-	    for (_ in watchingListComponents) {
-	      listComponent = watchingListComponents[_];
-	      listComponent.setLength(length);
-	    }
-	    return this;
-	  } else {
-	    this.updateComponents(oldListLength, length);
-	    return this;
-	  }
-	};
-
-	flow.watchObject = watchObject = function(objectItems, listComponent, itemFn) {
-	  var watchingListComponents;
-	  watchingListComponents = objectItems.watchingListComponents || (objectItems.watchingListComponents = {});
-	  watchingListComponents[listComponent.dcid] = listComponent;
-	  if (objectItems.eachWatching) {
-	    return;
-	  }
-	  objectItems.eachWatching = true;
-	  objectItems.deleteItem = ObjectWatchMixin.deleteItem;
-	  objectItems.setItem = ObjectWatchMixin.setItem;
-	  return objectItems.extendItems = ObjectWatchMixin.extendItems;
-	};
-
-	ObjectWatchMixin = {};
-
-	ObjectWatchMixin.deleteItem = function() {
-	  var children, i, index, key, keyChildMap, keys, length, listComponent, newChild, oldChild, watchingListComponents, _, _i, _len;
-	  keys = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	  watchingListComponents = this.watchingListComponents;
-	  if (!watchingListComponents.length) {
-	    return this;
-	  }
-	  for (_i = 0, _len = keys.length; _i < _len; _i++) {
-	    key = keys[_i];
-	    if (this.hasOwnProperty(key)) {
-	      if (key.slice(0, 3) === '$dc') {
-	        throw new Error('do not remove the key: ' + key + ', which is used by "each component" of dc');
-	      }
-	      delete this[key];
-	      for (_ in watchingListComponents) {
-	        listComponent = watchingListComponents[_];
-	        keyChildMap = listComponent.keyChildMap;
-	        index = keyChildMap[key];
-	        children = listComponent.children;
-	        length = children.length;
-	        break;
-	      }
-	      for (_ in watchingListComponents) {
-	        listComponent = watchingListComponents[_];
-	        if (!listComponent.updateSuccChild) {
-	          listComponent.removeChild(index);
-	        } else {
-	          i = index + 1;
-	          children = listComponent.children;
-	          while (i < length) {
-	            oldChild = children[i];
-	            newChild = listComponent.getItemComponent(oldChild.$watchingKey, i, this, listComponent);
-	            listComponent.replaceChild(oldChild, newChild);
-	            i++;
-	          }
-	          listComponent.removeChild(index);
-	        }
-	        delete keyChildMap[key];
-	      }
-	    }
-	  }
-	  return this;
-	};
-
-	ObjectWatchMixin.setItem = function(key, value) {
-	  var length, listComponent, newChild, oldChildIndex, watchingListComponents, _;
-	  if (isEachObjectSystemKey(key)) {
-	    throw new Error('do not use the key: ' + key + ', which is used by "each component" of dc');
-	  }
-	  watchingListComponents = this.watchingListComponents;
-	  if (this.hasOwnProperty(key)) {
-	    this[key] = value;
-	    for (_ in watchingListComponents) {
-	      listComponent = watchingListComponents[_];
-	      oldChildIndex = listComponent.keyChildMap[key];
-	      newChild = listComponent.getItemComponent(key, oldChildIndex, this, listComponent);
-	      listComponent.replaceChild(oldChild, newChild);
-	    }
-	  } else {
-	    length = listComponent.children.length;
-	    for (_ in watchingListComponents) {
-	      listComponent = watchingListComponents[_];
-	      newChild = listComponent.getItemComponent(key, length, this, listComponent);
-	      listComponent.pushChild(newChild);
-	    }
-	  }
-	  return this;
-	};
-
-	ObjectWatchMixin.extendItems = function(obj) {
-	  var key, value;
-	  for (key in obj) {
-	    value = obj[key];
-	    this.setItem(key, value);
-	  }
-	  return this;
-	};
-
-	flow.isEachObjectSystemKey = isEachObjectSystemKey = function(key) {
-	  return /setItem|deleteItem|extendItems|watchingListComponents|eachWatching/.test(key);
-	};
-
-	flow.watchItems = function(items, listComponent) {
-	  if (!items) {
-	    throw new Error('items to be watched should be an array or object.');
-	  }
-	  if (isArray(items)) {
-	    watchList(items, listComponent);
-	  } else {
-	    watchObject(items, listComponent);
-	  }
-	  return listComponent;
-	};
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var dependent, flow, funcString, newLine, react, renew, see, _ref,
 	  __slice = [].slice;
 
-	_ref = __webpack_require__(4), newLine = _ref.newLine, funcString = _ref.funcString;
+	_ref = __webpack_require__(3), newLine = _ref.newLine, funcString = _ref.funcString;
 
 	react = function(method) {
 	  if (method.invalidate) {
@@ -869,7 +736,7 @@
 
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports) {
 
 	var dupStr, globalDcid, hasOwn, isArray,
@@ -1068,16 +935,16 @@
 
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var DomNode, EventMixn, addEventListener, dc, dcid, directiveRegistry, domNodeCache, extend, isComponent, isElement, isEven, newDcid, querySelector, raf, readyFnList, renderCallbackList, requestAnimationFrame, _ref, _ref1, _ref2;
 
-	DomNode = __webpack_require__(6);
+	DomNode = __webpack_require__(5);
 
-	_ref = __webpack_require__(7), requestAnimationFrame = _ref.requestAnimationFrame, raf = _ref.raf, isElement = _ref.isElement, addEventListener = _ref.addEventListener;
+	_ref = __webpack_require__(6), requestAnimationFrame = _ref.requestAnimationFrame, raf = _ref.raf, isElement = _ref.isElement, addEventListener = _ref.addEventListener;
 
-	_ref1 = __webpack_require__(4), newDcid = _ref1.newDcid, isEven = _ref1.isEven;
+	_ref1 = __webpack_require__(3), newDcid = _ref1.newDcid, isEven = _ref1.isEven;
 
 	_ref2 = __webpack_require__(8), domNodeCache = _ref2.domNodeCache, readyFnList = _ref2.readyFnList, directiveRegistry = _ref2.directiveRegistry, renderCallbackList = _ref2.renderCallbackList;
 
@@ -1175,14 +1042,14 @@
 
 
 /***/ },
-/* 6 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var DomNode, addEventListener, newLine, processProp, removeEventListener, _ref;
 
-	newLine = __webpack_require__(4).newLine;
+	newLine = __webpack_require__(3).newLine;
 
-	_ref = __webpack_require__(7), addEventListener = _ref.addEventListener, removeEventListener = _ref.removeEventListener;
+	_ref = __webpack_require__(6), addEventListener = _ref.addEventListener, removeEventListener = _ref.removeEventListener;
 
 	processProp = function(props, cache, prop, value) {
 	  var p, _i, _len, _results;
@@ -1323,7 +1190,7 @@
 
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var renew;
@@ -1376,7 +1243,7 @@
 	  };
 	}
 
-	renew = __webpack_require__(3).renew;
+	renew = __webpack_require__(7).renew;
 
 	exports.domField = function(value) {
 	  var fn;
@@ -1428,6 +1295,436 @@
 	      throw new Error('do not allow to have the same component to be referenced in different location of one List');
 	    }
 	    family[dcid] = true;
+	  }
+	};
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var dependent, flow, funcString, newLine, react, renew, see, _ref,
+	  __slice = [].slice;
+
+	_ref = __webpack_require__(3), newLine = _ref.newLine, funcString = _ref.funcString;
+
+	react = function(method) {
+	  if (method.invalidate) {
+	    return method;
+	  }
+	  method.valid = false;
+	  method.invalidateCallbacks = [];
+	  method.onInvalidate = function(callback) {
+	    var invalidateCallbacks;
+	    if (typeof callback !== 'function') {
+	      throw new Error("call back should be a function");
+	    }
+	    invalidateCallbacks = method.invalidateCallbacks || (method.invalidateCallbacks = []);
+	    return invalidateCallbacks.push(callback);
+	  };
+	  method.offInvalidate = function(callback) {
+	    var index, invalidateCallbacks;
+	    invalidateCallbacks = method.invalidateCallbacks;
+	    if (!invalidateCallbacks) {
+	      return;
+	    }
+	    index = invalidateCallbacks.indexOf(callback);
+	    if (index < 0) {
+	      return;
+	    }
+	    invalidateCallbacks.splice(index, 1);
+	    if (!invalidateCallbacks.length) {
+	      return method.invalidateCallbacks = null;
+	    }
+	  };
+	  method.invalidate = function() {
+	    var callback, _i, _len, _ref1;
+	    if (!method.valid) {
+	      return;
+	    }
+	    if (!method.invalidateCallbacks) {
+	      return;
+	    }
+	    _ref1 = method.invalidateCallbacks;
+	    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+	      callback = _ref1[_i];
+	      callback();
+	    }
+	    method.valid = false;
+	  };
+	  return method;
+	};
+
+	renew = function(computation) {
+	  var method;
+	  method = function() {
+	    var value;
+	    if (!arguments.length) {
+	      value = computation();
+	      method.valid = true;
+	      method.invalidate();
+	      return value;
+	    } else {
+	      throw new Error('flow.renew is not allowed to accept arguments');
+	    }
+	  };
+	  method.toString = function() {
+	    return "renew: " + (funcString(computation));
+	  };
+	  return react(method);
+	};
+
+	dependent = function(computation) {
+	  var cacheValue, method;
+	  cacheValue = null;
+	  method = function() {
+	    if (!arguments.length) {
+	      if (!method.valid) {
+	        method.valid = true;
+	        return cacheValue = computation();
+	      } else {
+	        return cacheValue;
+	      }
+	    } else {
+	      throw new Error('flow.dependent is not allowed to accept arguments');
+	    }
+	  };
+	  method.toString = function() {
+	    return "dependent: " + (funcString(computation));
+	  };
+	  return react(method);
+	};
+
+	module.exports = flow = function() {
+	  var cacheValue, computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
+	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
+	  if (!deps.length) {
+	    return react(computation);
+	  }
+	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
+	    dep = deps[_j];
+	    if (typeof dep === 'function' && !dep.invalidate) {
+	      reactive = react(function() {
+	        reactive.invalidate();
+	        return computation();
+	      });
+	      return reactive;
+	    }
+	  }
+	  cacheValue = null;
+	  reactive = react(function(value) {
+	    if (!arguments.length) {
+	      if (!reactive.valid) {
+	        reactive.valid = true;
+	        return cacheValue = computation();
+	      } else {
+	        return cacheValue;
+	      }
+	    } else {
+	      if (value === cacheValue) {
+	        return value;
+	      } else {
+	        cacheValue = computation(value);
+	        reactive.invalidate();
+	        return cacheValue;
+	      }
+	    }
+	  });
+	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	    dep = deps[_k];
+	    if (dep && dep.onInvalidate) {
+	      dep.onInvalidate(reactive.invalidate);
+	    }
+	  }
+	  reactive.toString = function() {
+	    return "flow: [" + (((function() {
+	      var _l, _len2, _results;
+	      _results = [];
+	      for (_l = 0, _len2 = deps.length; _l < _len2; _l++) {
+	        dep = deps[_l];
+	        _results.push(dep.toString());
+	      }
+	      return _results;
+	    })()).join(',')) + "] --> " + (funcString(computation));
+	  };
+	  return reactive;
+	};
+
+	flow.pipe = function() {
+	  var computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
+	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
+	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
+	    dep = deps[_j];
+	    if (typeof dep === 'function' && !dep.invalidate) {
+	      reactive = react(function() {
+	        var args, _k, _len1;
+	        if (argumnets.length) {
+	          throw new Error("flow.pipe is not allow to have arguments");
+	        }
+	        reactive.invalidate();
+	        args = [];
+	        for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	          dep = deps[_k];
+	          if (typeof dep === 'function') {
+	            args.push(dep());
+	          } else {
+	            args.push(dep);
+	          }
+	        }
+	        return computation.apply(null, args);
+	      });
+	      return reactive;
+	    }
+	  }
+	  reactive = react(function() {
+	    var args, _k, _len1;
+	    args = [];
+	    for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	      dep = deps[_k];
+	      if (typeof dep === 'function') {
+	        args.push(dep());
+	      } else {
+	        args.push(dep);
+	      }
+	    }
+	    return computation.apply(null, args);
+	  });
+	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
+	    dep = deps[_k];
+	    if (dep && dep.onInvalidate) {
+	      dep.onInvalidate(reactive.invalidate);
+	    }
+	  }
+	  return reactive;
+	};
+
+	flow.react = react;
+
+	flow.renew = renew;
+
+	flow.dependent = dependent;
+
+	flow.flow = flow;
+
+	flow.see = see = function(value, transform) {
+	  var cacheValue, method;
+	  cacheValue = value;
+	  method = function(value) {
+	    if (!arguments.length) {
+	      method.valid = true;
+	      return cacheValue;
+	    } else {
+	      value = transform ? transform(value) : value;
+	      if (value !== cacheValue) {
+	        cacheValue = value;
+	        method.invalidate();
+	      }
+	      return value;
+	    }
+	  };
+	  method.isDuplex = true;
+	  method.toString = function() {
+	    return "see: " + value;
+	  };
+	  return react(method);
+	};
+
+	flow.seeN = function() {
+	  var computation, computations, _i, _len, _results;
+	  computations = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	  _results = [];
+	  for (_i = 0, _len = computations.length; _i < _len; _i++) {
+	    computation = computations[_i];
+	    _results.push(see(computation));
+	  }
+	  return _results;
+	};
+
+	if (Object.defineProperty) {
+	  flow.bind = function(obj, attr, debugName) {
+	    var d, getter, set, setter;
+	    d = Object.getOwnPropertyDescriptor(obj, attr);
+	    if (d) {
+	      getter = d.get;
+	      set = d.set;
+	    }
+	    if (!getter || !getter.invalidate) {
+	      getter = function() {
+	        if (arguments.length) {
+	          throw new Error('should not set value on flow.bind');
+	        }
+	        getter.valid = true;
+	        return getter.cacheValue;
+	      };
+	      getter.cacheValue = obj[attr];
+	      setter = function(value) {
+	        if (value !== obj[attr]) {
+	          if (set) {
+	            set(value);
+	          }
+	          getter.invalidate();
+	          return getter.cacheValue = value;
+	        }
+	      };
+	      react(getter);
+	      getter.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
+	      Object.defineProperty(obj, attr, {
+	        get: getter,
+	        set: setter
+	      });
+	    }
+	    return getter;
+	  };
+	  flow.duplex = function(obj, attr, debugName) {
+	    var d, get, method, set;
+	    d = Object.getOwnPropertyDescriptor(obj, attr);
+	    if (d) {
+	      get = d.get, set = d.set;
+	    }
+	    if (!set || !set.invalidate) {
+	      method = function(value) {
+	        if (!arguments.length) {
+	          method.valid = true;
+	          return method.cacheValue;
+	        }
+	        if (value !== obj[attr]) {
+	          if (set) {
+	            set(value);
+	          }
+	          get && get.invalidate && get.invalidate();
+	          method.invalidate();
+	          return method.cacheValue = value;
+	        }
+	      };
+	      method.cacheValue = obj[attr];
+	      react(method);
+	      method.isDuplex = true;
+	      method.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
+	      Object.defineProperty(obj, attr, {
+	        get: method,
+	        set: method
+	      });
+	      return method;
+	    } else {
+	      return set;
+	    }
+	  };
+	} else {
+	  flow.bind = function(obj, attr, debugName) {
+	    var method, _dcBindMethodMap;
+	    _dcBindMethodMap = obj._dcBindMethodMap;
+	    if (!_dcBindMethodMap) {
+	      _dcBindMethodMap = obj._dcBindMethodMap = {};
+	    }
+	    if (!obj.dcSet$) {
+	      obj.dcSet$ = function(attr, value) {
+	        var _dcDuplexMethodMap;
+	        if (value !== obj[attr]) {
+	          _dcBindMethodMap && _dcBindMethodMap[attr] && _dcBindMethodMap[attr].invalidate();
+	          return (_dcDuplexMethodMap = this._dcDuplexMethodMap) && _dcDuplexMethodMap[attr] && _dcDuplexMethodMap[attr].invalidate();
+	        }
+	      };
+	    }
+	    method = _dcBindMethodMap[attr];
+	    if (!method) {
+	      method = _dcBindMethodMap[attr] = function() {
+	        method.valid = true;
+	        return obj[attr];
+	      };
+	      method.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
+	      react(method);
+	    }
+	    return method;
+	  };
+	  flow.duplex = function(obj, attr, debugName) {
+	    var method, _dcDuplexMethodMap;
+	    _dcDuplexMethodMap = obj._dcDuplexMethodMap;
+	    if (!_dcDuplexMethodMap) {
+	      _dcDuplexMethodMap = obj._dcDuplexMethodMap = {};
+	    }
+	    if (!obj.dcSet$) {
+	      obj.dcSet$ = function(attr, value) {
+	        var _dcBindMethodMap;
+	        if (value !== obj[attr]) {
+	          (_dcBindMethodMap = this._dcBindMethodMap) && _dcBindMethodMap[attr] && _dcBindMethodMap[attr].invalidate();
+	          _dcDuplexMethodMap && _dcDuplexMethodMap[attr] && _dcDuplexMethodMap[attr].invalidate();
+	        }
+	        return value;
+	      };
+	    }
+	    method = _dcDuplexMethodMap[attr];
+	    if (!method) {
+	      method = _dcDuplexMethodMap[attr] = function(value) {
+	        if (!arguments.length) {
+	          method.valid = true;
+	          return obj[attr];
+	        } else {
+	          return obj.dcSet$(attr, value);
+	        }
+	      };
+	      method.isDuplex = true;
+	      method.toString = function() {
+	        return "" + (debugName || 'm') + "[" + attr + "]";
+	      };
+	      react(method);
+	    }
+	    return method;
+	  };
+	}
+
+	flow.unary = function(x, unaryFn) {
+	  if (typeof x !== 'function') {
+	    return unaryFn(x);
+	  } else if (x.invalidate) {
+	    return flow(x, function() {
+	      return unaryFn(x());
+	    });
+	  } else {
+	    return function() {
+	      return unaryFn(x());
+	    };
+	  }
+	};
+
+	flow.binary = function(x, y, binaryFn) {
+	  if (typeof x === 'function' && typeof y === 'function') {
+	    if (x.invalidate && y.invalidate) {
+	      return flow(x, y, function() {
+	        return binaryFn(x(), y());
+	      });
+	    } else {
+	      return function() {
+	        return binaryFn(x(), y());
+	      };
+	    }
+	  } else if (typeof x === 'function') {
+	    if (x.invalidate) {
+	      return flow(x, function() {
+	        return binaryFn(x(), y);
+	      });
+	    } else {
+	      return function() {
+	        return binaryFn(x(), y);
+	      };
+	    }
+	  } else if (typeof y === 'function') {
+	    if (y.invalidate) {
+	      return flow(y, function() {
+	        return binaryFn(x, y());
+	      });
+	    } else {
+	      return function() {
+	        return binaryFn(x, y());
+	      };
+	    }
+	  } else {
+	    return binaryFn(x, y);
 	  }
 	};
 
@@ -1641,251 +1938,556 @@
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var dcidIndexMap, isArray, isComponent, lastTime, nextNodes, parentNodes, rafUpdate, refreshComponents, removeComponents, updateWhenComponentEvent, vendor, _i, _len, _ref;
+	var $hide, $show, _ref;
 
-	isArray = __webpack_require__(4).isArray;
+	exports.$model = __webpack_require__(13);
 
-	isComponent = __webpack_require__(9);
+	exports.$bind = __webpack_require__(14);
 
-	if (typeof window !== 'undefined') {
-	  _ref = ['ms', 'moz', 'webkit', 'o'];
-	  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	    vendor = _ref[_i];
-	    if (window.requestAnimationFrame = window[vendor + 'RequestAnimationFrame']) {
-	      window.cancelAnimationFrame = window[vendor + 'CancelAnimationFrame'] || window[vendor + 'CancelRequestAnimationFrame'];
-	      break;
-	    }
-	  }
-	  if (!window.requestAnimationFrame) {
-	    lastTime = 0;
-	    window.requestAnimationFrame = function(callback) {
-	      var currTime, id, timeToCall;
-	      currTime = (new Date).getTime();
-	      timeToCall = Math.max(0, 16 - (currTime - lastTime));
-	      id = window.setTimeout((function() {
-	        callback(currTime + timeToCall);
-	      }), timeToCall);
-	      lastTime = currTime + timeToCall;
-	      return id;
-	    };
-	  }
-	  if (!window.cancelAnimationFrame) {
-	    window.cancelAnimationFrame = function(id) {
-	      clearTimeout(id);
-	    };
-	  }
-	}
+	_ref = __webpack_require__(15), $show = _ref.$show, $hide = _ref.$hide;
 
-	dc.dcidIndexMap = dcidIndexMap = {};
+	exports.$show = $show;
 
-	dc.parentNodes = parentNodes = [];
+	exports.$hide = $hide;
 
-	dc.nextNodes = nextNodes = [];
-
-	dc.listIndex = 0;
-
-	dc.renderingMap = {};
-
-	dc.removingMap = {};
-
-	dc.reset = function() {
-	  dc.listeners = {};
-	  dc.dcidIndexMap = {};
-	  dc.parentNodes = [];
-	  dc.nextNodes = [];
-	  dc.listIndex = 0;
-	  dc.renderingMap = {};
-	  return dc.removingMap = {};
-	};
-
-	dc.getChildParentNode = function(child) {
-	  return parentNodes[dcidIndexMap[child.dcid]];
-	};
-
-	dc.getChildNextNode = function(child) {
-	  return this.nextNodes[dcidIndexMap[child.dcid]];
-	};
-
-	dc.invalidate = function() {
-	  return dc.valid = false;
-	};
-
-	dc.invalidateOffspring = function(offspring) {
-	  dc.valid = false;
-	  return dc.renderingMap[offspring.dcid] = [offspring, offspring.holder];
-	};
-
-	dc.refreshComponents = refreshComponents = function() {
-	  var component, holder, renderingMap, _, _ref1;
-	  this.valid = true;
-	  renderingMap = this.oldRenderingMap = this.renderingMap;
-	  this.renderingMap = {};
-	  for (_ in renderingMap) {
-	    _ref1 = renderingMap[_], component = _ref1[0], holder = _ref1[1];
-	    holder.updateChildHolder(component);
-	    component.renderDom(component.baseComponent);
-	  }
-	  this.valid = false;
-	  return this;
-	};
-
-	removeComponents = function() {
-	  var dcid, removingMap;
-	  removingMap = this.removingMap;
-	  this.removingMap = {};
-	  for (dcid in removingMap) {
-	    removingMap[dcid].removeDom();
-	  }
-	  return this;
-	};
-
-	dc.update = function(force) {
-	  dc.emit('willUpdate');
-	  if ((force || dc.alwaysUpdate) && !dc.valid) {
-	    refreshComponents.call(this);
-	    removeComponents.call(this);
-	  }
-	  return dc.emit('didUpdate');
-	};
-
-	dc.updateChildHolder = function(child) {
-	  if (child.holder !== this) {
-	    child.invalidate();
-	    child.holder = this;
-	    child.setParentNode(this.getChildParentNode(child));
-	    child.sinkNextNode(this.getChildNextNode(child));
-	  }
-	};
-
-	dc.raiseNode = function() {};
-
-	dc.raiseFirstNextNode = function() {};
-
-	dc.linkNextNode = function() {};
-
-	dc.rafUpdate = rafUpdate = function() {
-	  if (!dc.rafUpdateStop || !dc.rafUpdateStop()) {
-	    requestAnimFrame(rafUpdate);
-	    dc.update(true);
-	  }
-	};
-
-	dc.updateWhen = function(component, events, options) {
-	  var callback, clear, comp, event, handler, interval, test, _j, _k, _l, _len1, _len2, _len3;
-	  if (component instanceof Array) {
-	    for (_j = 0, _len1 = component.length; _j < _len1; _j++) {
-	      comp = component[_j];
-	      if (isArray(events)) {
-	        for (_k = 0, _len2 = events.length; _k < _len2; _k++) {
-	          event = events[_k];
-	          updateWhenComponentEvent(comp, event, options);
-	        }
-	      } else {
-	        updateWhenComponentEvent(comp, events, options);
-	      }
-	    }
-	  } else if (isComponent(component)) {
-	    if (isArray(events)) {
-	      for (_l = 0, _len3 = events.length; _l < _len3; _l++) {
-	        event = events[_l];
-	        updateWhenComponentEvent(component, event, options);
-	      }
-	    } else {
-	      updateWhenComponentEvent(component, events, options);
-	    }
-	  } else if (component === setInterval) {
-	    if (typeof events === 'number') {
-	      options = options || {};
-	      options.interval = events;
-	    } else {
-	      options = events || {};
-	    }
-	    test = options.test, interval = options.interval, clear = options.clear;
-	    handler = null;
-	    callback = function() {
-	      if (!test || test()) {
-	        dc.update();
-	      }
-	      if (clear && clear()) {
-	        return clearInterval(handler);
-	      }
-	    };
-	    handler = setInterval(callback, interval || 16);
-	  } else if (component === dc.rafUpdate) {
-	    dc.rafUpdateStop = events;
-	    dc.rafUpdate();
-	  }
-	};
-
-	updateWhenComponentEvent = function(component, event, alwaysUpdate) {
-	  if (event.slice(0, 2) !== 'on') {
-	    event = 'on' + event;
-	  }
-	  return component.eventUpdateConfig[event] = alwaysUpdate;
-	};
+	exports.$options = __webpack_require__(16);
 
 
 /***/ },
 /* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var exports, extend;
+	var getBindProp;
 
-	extend = __webpack_require__(10);
+	getBindProp = __webpack_require__(6).getBindProp;
 
-	module.exports = exports = extend({}, __webpack_require__(14), __webpack_require__(44), __webpack_require__(46), __webpack_require__(29));
+	module.exports = function(binding, eventName) {
+	  return function(comp) {
+	    var bindProp, props;
+	    props = comp.props;
+	    bindProp = getBindProp(comp);
+	    comp.setProp(bindProp, binding, props, 'Props');
+	    comp.bind(eventName || 'onchange', (function() {
+	      return binding(this[bindProp]);
+	    }), 'before');
+	    return comp;
+	  };
+	};
 
 
 /***/ },
 /* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var domField, getBindProp, _ref;
+
+	_ref = __webpack_require__(6), getBindProp = _ref.getBindProp, domField = _ref.domField;
+
+	module.exports = function(binding) {
+	  return function(comp) {
+	    comp.setProp(getBindProp(comp), binding, props, 'Props');
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	
+	/* @param test - paramenter expression for directive
+	 */
+	var showHide;
+
+	showHide = function(showing) {
+	  return function(test, display) {
+	    return function(comp) {
+	      comp.showHide(showing, test, display);
+	      return comp;
+	    };
+	  };
+	};
+
+	exports.$show = showHide(true);
+
+	exports.$hide = showHide(false);
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Tag, every, option, txt, _ref;
+
+	_ref = __webpack_require__(17), every = _ref.every, txt = _ref.txt;
+
+	option = __webpack_require__(48).option;
+
+	Tag = __webpack_require__(32);
+
+	module.exports = function(items, attrs) {
+	  return function(comp) {
+	    if (!(comp instanceof Tag) || comp.tagName !== 'select') {
+	      throw new Error('options should be only used in select tag');
+	    }
+	    comp.setChildren(0, every(items, function(item) {
+	      return option(attrs, [txt(item)]);
+	    }));
+	    return comp;
+	  };
+	};
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Case, Comment, Component, Defer, Func, Html, If, List, Nothing, Pick, Tag, Text, attrsChildren, defaultItemFunction, each, every, getEachArgs, isArray, isAttrs, isComponent, isEachObjectSystemKey, isEven, isObject, list, renew, tag, toComponent, toTagChildren, watchItems, _each, _ref, _ref1, _ref2,
+	  __slice = [].slice;
+
+	_ref = __webpack_require__(18), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Pick = _ref.Pick, Nothing = _ref.Nothing, Defer = _ref.Defer;
+
+	isEven = __webpack_require__(3).isEven;
+
+	isAttrs = __webpack_require__(46).isAttrs;
+
+	_ref1 = __webpack_require__(3), isArray = _ref1.isArray, isObject = _ref1.isObject;
+
+	_ref2 = __webpack_require__(47), watchItems = _ref2.watchItems, isEachObjectSystemKey = _ref2.isEachObjectSystemKey;
+
+	renew = __webpack_require__(7).renew;
+
+	attrsChildren = function(args) {
+	  var attrs;
+	  attrs = args[0];
+	  if (!args.length) {
+	    return [{}, []];
+	  } else if (attrs==null) {
+	    return [{}, args.slice(1)];
+	  } else if (attrs instanceof Array) {
+	    return [{}, args];
+	  } else if (typeof attrs === 'function') {
+	    return [{}, args];
+	  } else if (typeof attrs === 'object') {
+	    if (isComponent(attrs)) {
+	      return [{}, args];
+	    } else {
+	      return [attrs, args.slice(1)];
+	    }
+	  } else {
+	    return [{}, args];
+	  }
+	};
+
+	toTagChildren = function(args) {
+	  if (!(args instanceof Array)) {
+	    return [args];
+	  } else if (!args.length) {
+	    return [];
+	  } else if (args.length === 1) {
+	    return toTagChildren(args[0]);
+	  } else {
+	    return args;
+	  }
+	};
+
+	tag = exports.tag = function() {
+	  var args, attrs, children, tagName, _ref3;
+	  tagName = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+	  _ref3 = attrsChildren(args), attrs = _ref3[0], children = _ref3[1];
+	  return new Tag(tagName, attrs, toTagChildren(children));
+	};
+
+	exports.nstag = function() {
+	  var args, attrs, children, namespace, tagName, _ref3;
+	  tagName = arguments[0], namespace = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+	  _ref3 = attrsChildren(args), attrs = _ref3[0], children = _ref3[1];
+	  return new Tag(tagName, attrs, toTagChildren(children), namespace);
+	};
+
+	exports.txt = function(attrs, text) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Text(text)]);
+	  } else {
+	    return new Text(attrs);
+	  }
+	};
+
+	exports.comment = function(attrs, text) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Comment(text)]);
+	  } else {
+	    return new Comment(attrs);
+	  }
+	};
+
+	exports.html = function(attrs, text, transform) {
+	  return new Html(attrs, text, transform);
+	};
+
+	exports.if_ = function(attrs, test, then_, else_, merge, recursive) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new If(test, then_, else_, merge, recursive)]);
+	  } else {
+	    return new If(attrs, test, then_, merge, recursive);
+	  }
+	};
+
+	exports.forceIf = function(attrs, test, then_, else_) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new If(test, then_, else_, true, false, true)]);
+	  } else {
+	    return new If(attrs, test, then_, true, false, true);
+	  }
+	};
+
+	exports.mergeIf = function(attrs, test, then_, else_, recursive) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new If(test, then_, else_, true, recursive)]);
+	  } else {
+	    return new If(attrs, test, then_, true, recursive);
+	  }
+	};
+
+	exports.recursiveIf = function(attrs, test, then_, else_) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new If(test, then_, else_, true, true)]);
+	  } else {
+	    return new If(attrs, test, then_, true, true);
+	  }
+	};
+
+	exports.case_ = function(attrs, test, map, else_) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Case(test, map, else_)]);
+	  } else {
+	    return new Case(attrs, test, map);
+	  }
+	};
+
+	exports.forceCase = function(attrs, test, map, else_) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Case(test, map, else_, true)]);
+	  } else {
+	    return new Case(attrs, test, map, true);
+	  }
+	};
+
+	exports.cond = function() {
+	  var attrs, condComponents, else_, _i;
+	  attrs = arguments[0], condComponents = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), else_ = arguments[_i++];
+	  if (isAttrs(attrs)) {
+	    if (!isEven(condComponents)) {
+	      condComponents.push(else_);
+	      else_ = null;
+	    }
+	    return new Tag('div', attrs, [new Cond(condComponents, else_)]);
+	  } else {
+	    condComponents.unshift(attrs);
+	    if (!isEven(condComponents)) {
+	      condComponents.push(else_);
+	      else_ = null;
+	    }
+	    return new Cond(condComponents, else_);
+	  }
+	};
+
+	exports.func = function(attrs, fn) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Func(fn)]);
+	  } else {
+	    return new Func(attrs);
+	  }
+	};
+
+	exports.pick = function(host, field, initialContent) {
+	  return new Pick(host, field, initialContent);
+	};
+
+	exports.list = list = function() {
+	  var attrs, lst;
+	  attrs = arguments[0], lst = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new List(lst)]);
+	  } else {
+	    lst.unshift(attrs);
+	    if (lst.length === 1) {
+	      return toComponent(lst[0]);
+	    } else {
+	      return new List(lst);
+	    }
+	  }
+	};
+
+	defaultItemFunction = function(item) {
+	  return item;
+	};
+
+	_each = function(attrs, items, options) {
+	  var children, getItemComponent, i, item, key, keyChildMap, listComponent, tagName, _i, _len;
+	  if (attrs) {
+	    if (attrs.tagName) {
+	      tagName = attrs.tagName;
+	      delete attrs.tagName;
+	    } else {
+	      tagName = 'div';
+	    }
+	    listComponent = new Tag(tagName, attrs, []);
+	  } else {
+	    listComponent = new List([]);
+	  }
+	  listComponent.items = items;
+	  if (typeof options === 'function') {
+	    listComponent.itemFunc = options;
+	    options = {};
+	  } else {
+	    options = options || {};
+	    listComponent.itemFunc = options.itemFunc || defaultItemFunction;
+	  }
+	  listComponent.separatorFunc = options.separatorFunc;
+	  listComponent.updateSuccChild = options.updateSuccChild;
+	  listComponent.updateSuccIndex = options.updateSuccIndex;
+	  listComponent.keyChildMap = keyChildMap = {};
+	  if (isArray(items)) {
+	    listComponent.getItemComponent = getItemComponent = function(item, itemIndex) {
+	      var itemComponent, separatorComponent;
+	      itemComponent = toComponent(listComponent.itemFunc(item, itemIndex, items, listComponent));
+	      if (listComponent.separatorFunc && itemIndex) {
+	        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, item, items, listComponent));
+	        itemComponent = new List([separatorComponent, itemComponent]);
+	      }
+	      itemComponent.itemIndex = itemIndex;
+	      return itemComponent;
+	    };
+	  } else {
+	    listComponent.getItemComponent = getItemComponent = function(key, itemIndex) {
+	      var itemComponent, separatorComponent, value;
+	      value = items[key];
+	      keyChildMap[key] = itemIndex;
+	      itemComponent = toComponent(listComponent.itemFunc(value, key, itemIndex, listComponent));
+	      if (listComponent.separatorFunc && itemIndex) {
+	        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, value, key, listComponent));
+	        itemComponent = new List([separatorComponent, itemComponent]);
+	      }
+	      itemComponent.$watchingKey = key;
+	      itemComponent.itemIndex = itemIndex;
+	      return itemComponent;
+	    };
+	  }
+	  children = listComponent.children;
+	  if (isArray(items)) {
+	    for (i = _i = 0, _len = items.length; _i < _len; i = ++_i) {
+	      item = items[i];
+	      children.push(getItemComponent(item, i));
+	    }
+	  } else {
+	    i = 0;
+	    for (key in items) {
+	      children.push(getItemComponent(key, i));
+	      i++;
+	    }
+	  }
+	  return listComponent;
+	};
+
+	getEachArgs = function(args) {
+	  var attrs, items, key, options;
+	  attrs = args[0], items = args[1], options = args[2];
+	  if (args.length === 1) {
+	    return [null, attrs, {}];
+	  } else if (args.length === 3) {
+	    return [attrs, items, options];
+	  } else {
+	    if (typeof items === 'function') {
+	      return [
+	        null, attrs, {
+	          itemFunc: items
+	        }
+	      ];
+	    } else if (isArray(items)) {
+	      return [attrs, items, {}];
+	    } else if (isArray(attrs)) {
+	      return [null, attrs, items];
+	    } else if (!items) {
+	      return [null, attrs, {}];
+	    } else if (!isObject(items)) {
+	      throw new Error('wrong parameter');
+	    } else {
+	      for (key in items) {
+	        if (items.hasOwnProperty(key)) {
+	          continue;
+	        } else if (key.test(/itemFunc|separatorFunc|updateSuccChild|updateSuccIndex/)) {
+	          return [null, attrs, items];
+	        }
+	      }
+	      return [attrs, items, {}];
+	    }
+	  }
+	};
+
+	exports.every = every = function() {
+	  var args, attrs, items, options, _ref3;
+	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	  _ref3 = getEachArgs(args), attrs = _ref3[0], items = _ref3[1], options = _ref3[2];
+	  return _each(attrs, items, options);
+	};
+
+	exports.each = each = function() {
+	  var args, attrs, items, listComponent, options, _ref3;
+	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	  _ref3 = getEachArgs(args), attrs = _ref3[0], items = _ref3[1], options = _ref3[2];
+	  listComponent = every(attrs, items, options);
+	  return watchItems(items, listComponent);
+	};
+
+	exports.funcEach = function(attrs, listFunc, options) {
+	  var isRenew, listComponent, listItems;
+	  if (typeof attrs === 'function') {
+	    options = listFunc;
+	    listFunc = attrs;
+	    attrs = null;
+	  }
+	  if (!listFunc.invalidate) {
+	    isRenew = true;
+	    listFunc = renew(listFunc);
+	  }
+	  listItems = [];
+	  listComponent = each(attrs, listItems, options);
+	  listFunc.onInvalidate(function() {
+	    return listComponent.invalidate();
+	  });
+	  listComponent.on('willRender', function() {
+	    var newList;
+	    newList = listFunc();
+	    listItems.setItem.apply(listItems, [0].concat(__slice.call(newList)));
+	    return listItems.setLength(newList.length);
+	  });
+	  listComponent.on('didRender', function() {
+	    if (isRenew) {
+	      return listComponent.holder.invalidateOffspring(listComponent);
+	    }
+	  });
+	  return listComponent;
+	};
+
+	exports.mapEach = function(attrs, mapFunc, options) {
+	  var isRenew, listComponent, listFunc, map;
+	  if (typeof attrs === 'function') {
+	    options = mapFunc;
+	    mapFunc = attrs;
+	    attrs = null;
+	  }
+	  if (!listFunc.invalidate) {
+	    isRenew = true;
+	    listFunc = renew(listFunc);
+	  }
+	  map = {};
+	  listComponent = each(attrs, map, options);
+	  listFunc.onInvalidate(function() {
+	    return listComponent.invalidate();
+	  });
+	  listComponent.on('willRender', function() {
+	    var deleteKeys, key, newMap, _results;
+	    newMap = listFunc();
+	    deleteKeys = [];
+	    for (key in map) {
+	      if (newMap.hasOwnProperty(key)) {
+	        if (isEachObjectSystemKey()) {
+	          continue;
+	        } else {
+	          map.setItem(key, newMap[key]);
+	        }
+	      } else {
+	        deleteKeys.push(key);
+	      }
+	    }
+	    map.deleteItem.apply(map, keys);
+	    _results = [];
+	    for (key in newMap) {
+	      if (!map.hasOwnProperty(key)) {
+	        _results.push(map.setItem(key, newMap[key]));
+	      } else {
+	        _results.push(void 0);
+	      }
+	    }
+	    return _results;
+	  });
+	  listComponent.on('didRender', function() {
+	    if (isRenew) {
+	      return listComponent.holder.invalidateOffspring(listComponent);
+	    }
+	  });
+	  return listComponent;
+	};
+
+	exports.defer = function(attrs, promise, fulfill, reject, init) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [new Defer(promise, fulfill, reject, init)]);
+	  } else {
+	    return new Defer(attrs, promise, fulfill, reject);
+	  }
+	};
+
+	exports.clone = function(attrs, src) {
+	  if (isAttrs(attrs)) {
+	    return new Tag('div', attrs, [toComponent(src).clone()]);
+	  } else {
+	    return toComponent(attrs).clone(src);
+	  }
+	};
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var route;
 
-	route = __webpack_require__(19);
+	route = __webpack_require__(23);
 
 	module.exports = {
 	  isComponent: __webpack_require__(9),
-	  toComponent: __webpack_require__(22),
-	  toComponentList: __webpack_require__(26),
-	  Component: __webpack_require__(17),
-	  BaseComponent: __webpack_require__(16),
-	  ListMixin: __webpack_require__(25),
-	  List: __webpack_require__(24),
-	  Tag: __webpack_require__(28),
-	  Text: __webpack_require__(18),
-	  Comment: __webpack_require__(34),
-	  Cdata: __webpack_require__(15),
-	  Html: __webpack_require__(35),
-	  Nothing: __webpack_require__(23),
-	  TransformComponentMixin: __webpack_require__(21),
-	  TransformComponent: __webpack_require__(20),
-	  TestComponent: __webpack_require__(36),
-	  If: __webpack_require__(37),
-	  Case: __webpack_require__(41),
-	  Func: __webpack_require__(27),
-	  Pick: __webpack_require__(42),
-	  Defer: __webpack_require__(43),
+	  toComponent: __webpack_require__(26),
+	  toComponentList: __webpack_require__(30),
+	  Component: __webpack_require__(21),
+	  BaseComponent: __webpack_require__(20),
+	  ListMixin: __webpack_require__(29),
+	  List: __webpack_require__(28),
+	  Tag: __webpack_require__(32),
+	  Text: __webpack_require__(22),
+	  Comment: __webpack_require__(38),
+	  Cdata: __webpack_require__(19),
+	  Html: __webpack_require__(39),
+	  Nothing: __webpack_require__(27),
+	  TransformComponentMixin: __webpack_require__(25),
+	  TransformComponent: __webpack_require__(24),
+	  TestComponent: __webpack_require__(40),
+	  If: __webpack_require__(41),
+	  Case: __webpack_require__(43),
+	  Func: __webpack_require__(31),
+	  Pick: __webpack_require__(44),
+	  Defer: __webpack_require__(45),
 	  Route: route.Route,
 	  route: route
 	};
 
 
 /***/ },
-/* 15 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Cdata, Text, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(16);
+	BaseComponent = __webpack_require__(20);
 
-	Text = __webpack_require__(18);
+	Text = __webpack_require__(22);
 
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(3), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	domValue = __webpack_require__(7).domValue;
+	domValue = __webpack_require__(6).domValue;
 
 	module.exports = Cdata = (function(_super) {
 	  __extends(Cdata, _super);
@@ -1922,18 +2524,18 @@
 
 
 /***/ },
-/* 16 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Component, cloneObject, refreshComponents,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	Component = __webpack_require__(17);
+	Component = __webpack_require__(21);
 
-	cloneObject = __webpack_require__(4).cloneObject;
+	cloneObject = __webpack_require__(3).cloneObject;
 
-	refreshComponents = __webpack_require__(5).refreshComponents;
+	refreshComponents = __webpack_require__(4).refreshComponents;
 
 	module.exports = BaseComponent = (function(_super) {
 	  __extends(BaseComponent, _super);
@@ -2105,20 +2707,20 @@
 
 
 /***/ },
-/* 17 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, dc, dcEventMixin, extend, isComponent, newDcid, normalizeDomElement;
 
 	extend = __webpack_require__(10);
 
-	normalizeDomElement = __webpack_require__(7).normalizeDomElement;
+	normalizeDomElement = __webpack_require__(6).normalizeDomElement;
 
-	newDcid = __webpack_require__(4).newDcid;
+	newDcid = __webpack_require__(3).newDcid;
 
 	isComponent = __webpack_require__(9);
 
-	dc = __webpack_require__(5);
+	dc = __webpack_require__(4);
 
 	module.exports = Component = (function() {
 	  function Component() {
@@ -2324,18 +2926,18 @@
 
 
 /***/ },
-/* 18 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Text, domField, domValue, dynamic, exports, funcString, hasTextContent, newLine, value, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(16);
+	BaseComponent = __webpack_require__(20);
 
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
+	_ref = __webpack_require__(3), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
 
-	_ref1 = __webpack_require__(7), domField = _ref1.domField, domValue = _ref1.domValue;
+	_ref1 = __webpack_require__(6), domField = _ref1.domField, domValue = _ref1.domValue;
 
 	if ('textContent' in document.documentElement) {
 	  hasTextContent = true;
@@ -2432,7 +3034,7 @@
 
 
 /***/ },
-/* 19 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -2462,13 +3064,13 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	TransformComponent = __webpack_require__(20);
+	TransformComponent = __webpack_require__(24);
 
 	isComponent = __webpack_require__(9);
 
-	toComponent = __webpack_require__(22);
+	toComponent = __webpack_require__(26);
 
-	_ref = __webpack_require__(4), isEven = _ref.isEven, matchCurvedString = _ref.matchCurvedString;
+	_ref = __webpack_require__(3), isEven = _ref.isEven, matchCurvedString = _ref.matchCurvedString;
 
 	module.exports = route = function() {
 	  var baseIndex, otherwise, routeList, _i;
@@ -2842,7 +3444,7 @@
 
 
 /***/ },
-/* 20 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Component, TransformComponent, TransformComponentMixin, extend,
@@ -2851,9 +3453,9 @@
 
 	extend = __webpack_require__(10);
 
-	Component = __webpack_require__(17);
+	Component = __webpack_require__(21);
 
-	TransformComponentMixin = __webpack_require__(21);
+	TransformComponentMixin = __webpack_require__(25);
 
 	module.exports = TransformComponent = (function(_super) {
 	  __extends(TransformComponent, _super);
@@ -2871,7 +3473,7 @@
 
 
 /***/ },
-/* 21 */
+/* 25 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -2959,18 +3561,18 @@
 
 
 /***/ },
-/* 22 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Nothing, Text, isComponent, react, toComponent;
 
 	isComponent = __webpack_require__(9);
 
-	Nothing = __webpack_require__(23);
+	Nothing = __webpack_require__(27);
 
-	Text = __webpack_require__(18);
+	Text = __webpack_require__(22);
 
-	react = __webpack_require__(3).react;
+	react = __webpack_require__(7).react;
 
 	module.exports = toComponent = function(item) {
 	  var Func, List, component, e;
@@ -2979,7 +3581,7 @@
 	  } else if (typeof item === 'function') {
 	    return new Text(item);
 	  } else if (item instanceof Array) {
-	    List = __webpack_require__(24);
+	    List = __webpack_require__(28);
 	    return new List((function() {
 	      var _i, _len, _results;
 	      _results = [];
@@ -2992,7 +3594,7 @@
 	  } else if (item == null) {
 	    return new Nothing();
 	  } else if (item.then && item["catch"]) {
-	    Func = __webpack_require__(27);
+	    Func = __webpack_require__(31);
 	    component = new Func(react(function() {
 	      return component.promiseResult;
 	    }));
@@ -3011,16 +3613,16 @@
 
 
 /***/ },
-/* 23 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Nothing, newLine,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(16);
+	BaseComponent = __webpack_require__(20);
 
-	newLine = __webpack_require__(4).newLine;
+	newLine = __webpack_require__(3).newLine;
 
 	module.exports = Nothing = (function(_super) {
 	  __extends(Nothing, _super);
@@ -3100,18 +3702,18 @@
 
 
 /***/ },
-/* 24 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, List, ListMixin, ListMixinLinkNextNode, dc, exports, getFirstNodeFromArray, isArray, mixin, newLine, refreshComponents, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(16);
+	BaseComponent = __webpack_require__(20);
 
-	_ref = __webpack_require__(4), newLine = _ref.newLine, isArray = _ref.isArray;
+	_ref = __webpack_require__(3), newLine = _ref.newLine, isArray = _ref.isArray;
 
-	refreshComponents = (dc = __webpack_require__(5)).refreshComponents;
+	refreshComponents = (dc = __webpack_require__(4)).refreshComponents;
 
 	getFirstNodeFromArray = function(nodes) {
 	  var node, _i, _len;
@@ -3355,9 +3957,9 @@
 
 	})(BaseComponent);
 
-	mixin = __webpack_require__(4).mixin;
+	mixin = __webpack_require__(3).mixin;
 
-	ListMixin = __webpack_require__(25);
+	ListMixin = __webpack_require__(29);
 
 	mixin(List.prototype, ListMixin);
 
@@ -3365,25 +3967,25 @@
 
 
 /***/ },
-/* 25 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Nothing, extendChildFamily, getChildNextNode, isArray, isComponent, substractSet, toComponent, toComponentList, updateChildHolder, updateDcidIndexMap, _ref, _ref1,
 	  __slice = [].slice;
 
-	_ref = __webpack_require__(4), isArray = _ref.isArray, substractSet = _ref.substractSet;
+	_ref = __webpack_require__(3), isArray = _ref.isArray, substractSet = _ref.substractSet;
 
 	isComponent = __webpack_require__(9);
 
-	toComponent = __webpack_require__(22);
+	toComponent = __webpack_require__(26);
 
-	toComponentList = __webpack_require__(26);
+	toComponentList = __webpack_require__(30);
 
-	Nothing = __webpack_require__(23);
+	Nothing = __webpack_require__(27);
 
-	extendChildFamily = __webpack_require__(7).extendChildFamily;
+	extendChildFamily = __webpack_require__(6).extendChildFamily;
 
-	_ref1 = __webpack_require__(5), updateChildHolder = _ref1.updateChildHolder, getChildNextNode = _ref1.getChildNextNode;
+	_ref1 = __webpack_require__(4), updateChildHolder = _ref1.updateChildHolder, getChildNextNode = _ref1.getChildNextNode;
 
 	updateDcidIndexMap = function(dcidIndexMap, children, start) {
 	  var i, length;
@@ -3668,12 +4270,12 @@
 
 
 /***/ },
-/* 26 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var toComponent, toComponentList;
 
-	toComponent = __webpack_require__(22);
+	toComponent = __webpack_require__(26);
 
 	module.exports = toComponentList = function(item) {
 	  var e, _i, _len, _results;
@@ -3693,20 +4295,20 @@
 
 
 /***/ },
-/* 27 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Func, TransformComponent, funcString, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(22);
+	toComponent = __webpack_require__(26);
 
-	TransformComponent = __webpack_require__(20);
+	TransformComponent = __webpack_require__(24);
 
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(3), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	renew = __webpack_require__(3).renew;
+	renew = __webpack_require__(7).renew;
 
 	module.exports = Func = (function(_super) {
 	  __extends(Func, _super);
@@ -3751,7 +4353,7 @@
 
 
 /***/ },
-/* 28 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, ListMixin, Tag, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domField, domValue, eventHandlerFromArray, extend, flow, funcString, mixin, newLine, react, refreshComponents, styleFrom, updating, _ref, _ref1, _ref2, _ref3,
@@ -3761,19 +4363,19 @@
 
 	extend = __webpack_require__(10);
 
-	refreshComponents = (dc = __webpack_require__(5)).refreshComponents;
+	refreshComponents = (dc = __webpack_require__(4)).refreshComponents;
 
-	_ref = __webpack_require__(7), domField = _ref.domField, domValue = _ref.domValue;
+	_ref = __webpack_require__(6), domField = _ref.domField, domValue = _ref.domValue;
 
-	_ref1 = __webpack_require__(29), classFn = _ref1.classFn, styleFrom = _ref1.styleFrom, eventHandlerFromArray = _ref1.eventHandlerFromArray, attrToPropName = _ref1.attrToPropName, updating = _ref1.updating;
+	_ref1 = __webpack_require__(33), classFn = _ref1.classFn, styleFrom = _ref1.styleFrom, eventHandlerFromArray = _ref1.eventHandlerFromArray, attrToPropName = _ref1.attrToPropName, updating = _ref1.updating;
 
-	BaseComponent = __webpack_require__(16);
+	BaseComponent = __webpack_require__(20);
 
-	_ref2 = __webpack_require__(4), funcString = _ref2.funcString, newLine = _ref2.newLine, cloneObject = _ref2.cloneObject;
+	_ref2 = __webpack_require__(3), funcString = _ref2.funcString, newLine = _ref2.newLine, cloneObject = _ref2.cloneObject;
 
 	directiveRegistry = __webpack_require__(8).directiveRegistry;
 
-	_ref3 = __webpack_require__(3), flow = _ref3.flow, react = _ref3.react;
+	_ref3 = __webpack_require__(7), flow = _ref3.flow, react = _ref3.react;
 
 	module.exports = Tag = (function(_super) {
 	  __extends(Tag, _super);
@@ -4355,28 +4957,28 @@
 
 	})(BaseComponent);
 
-	mixin = __webpack_require__(4).mixin;
+	mixin = __webpack_require__(3).mixin;
 
-	ListMixin = __webpack_require__(25);
+	ListMixin = __webpack_require__(29);
 
 	mixin(Tag.prototype, ListMixin);
 
 
 /***/ },
-/* 29 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports, extend;
 
 	extend = __webpack_require__(10);
 
-	module.exports = exports = extend({}, __webpack_require__(30), __webpack_require__(31), __webpack_require__(33));
+	module.exports = exports = extend({}, __webpack_require__(34), __webpack_require__(35), __webpack_require__(37));
 
-	exports.classFn = __webpack_require__(32);
+	exports.classFn = __webpack_require__(36);
 
 
 /***/ },
-/* 30 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var attrPropNameMap, classFn, extend, extendEventValue, isComponent, overAttrs, styleFrom;
@@ -4385,11 +4987,11 @@
 
 	isComponent = __webpack_require__(9).isComponent;
 
-	extendEventValue = __webpack_require__(31).extendEventValue;
+	extendEventValue = __webpack_require__(35).extendEventValue;
 
-	classFn = __webpack_require__(32);
+	classFn = __webpack_require__(36);
 
-	styleFrom = __webpack_require__(33).styleFrom;
+	styleFrom = __webpack_require__(37).styleFrom;
 
 	exports.extendAttrs = function(attrs, obj, options) {
 	  var key, objClass, style, value;
@@ -4482,7 +5084,7 @@
 
 
 /***/ },
-/* 31 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var config, extendEventValue;
@@ -4536,17 +5138,17 @@
 
 
 /***/ },
-/* 32 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var domField, isArray, react,
 	  __slice = [].slice;
 
-	react = __webpack_require__(3).react;
+	react = __webpack_require__(7).react;
 
-	domField = __webpack_require__(7).domField;
+	domField = __webpack_require__(6).domField;
 
-	isArray = __webpack_require__(4).isArray;
+	isArray = __webpack_require__(3).isArray;
 
 	module.exports = function() {
 	  var classMap, extendClassMap, items, method, processClassValue;
@@ -4660,12 +5262,12 @@
 
 
 /***/ },
-/* 33 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var cloneObject, styleFrom;
 
-	cloneObject = __webpack_require__(4).cloneObject;
+	cloneObject = __webpack_require__(3).cloneObject;
 
 	exports.styleFrom = styleFrom = function(value) {
 	  var item, key, result, v, _i, _j, _len, _len1, _ref, _ref1;
@@ -4707,20 +5309,20 @@
 
 
 /***/ },
-/* 34 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Comment, Text, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(16);
+	BaseComponent = __webpack_require__(20);
 
-	Text = __webpack_require__(18);
+	Text = __webpack_require__(22);
 
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
+	_ref = __webpack_require__(3), funcString = _ref.funcString, newLine = _ref.newLine;
 
-	domValue = __webpack_require__(7).domValue;
+	domValue = __webpack_require__(6).domValue;
 
 	module.exports = Comment = (function(_super) {
 	  __extends(Comment, _super);
@@ -4771,18 +5373,18 @@
 
 
 /***/ },
-/* 35 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Html, HtmlMixin, ListMixin, Tag, domField, domValue, extend, funcString, method, mixin, newLine, _fn, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	Tag = __webpack_require__(28);
+	Tag = __webpack_require__(32);
 
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, mixin = _ref.mixin;
+	_ref = __webpack_require__(3), funcString = _ref.funcString, newLine = _ref.newLine, mixin = _ref.mixin;
 
-	_ref1 = __webpack_require__(7), domValue = _ref1.domValue, domField = _ref1.domField;
+	_ref1 = __webpack_require__(6), domValue = _ref1.domValue, domField = _ref1.domField;
 
 	module.exports = Html = (function(_super) {
 	  __extends(Html, _super);
@@ -4916,7 +5518,7 @@
 	  }
 	};
 
-	ListMixin = __webpack_require__(25);
+	ListMixin = __webpack_require__(29);
 
 	_fn = function(method) {
 	  return Html.prototype[method] = function() {
@@ -4933,18 +5535,18 @@
 
 
 /***/ },
-/* 36 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var ObjectDefineProperty, TestComponent, TransformComponent, funcString, intersect, newLine, renew, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	TransformComponent = __webpack_require__(20);
+	TransformComponent = __webpack_require__(24);
 
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
+	_ref = __webpack_require__(3), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
-	renew = __webpack_require__(3).renew;
+	renew = __webpack_require__(7).renew;
 
 	ObjectDefineProperty = Object.defineProperty;
 
@@ -5023,22 +5625,22 @@
 
 
 /***/ },
-/* 37 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var If, ObjectDefineProperty, TestComponent, funcString, intersect, mergeIf, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(22);
+	toComponent = __webpack_require__(26);
 
-	TestComponent = __webpack_require__(36);
+	TestComponent = __webpack_require__(40);
 
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
+	_ref = __webpack_require__(3), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
-	renew = __webpack_require__(3).renew;
+	renew = __webpack_require__(7).renew;
 
-	mergeIf = __webpack_require__(38);
+	mergeIf = __webpack_require__(42);
 
 	ObjectDefineProperty = Object.defineProperty;
 
@@ -5102,28 +5704,28 @@
 
 
 /***/ },
-/* 38 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var List, Nothing, Tag, emptyEventCallback, eventHandlerFromArray, exports, extend, flow, flowIf, mergeIf, mergeIfChild, mergeIfChildren, mergeIfClassFn, mergeIfEvents, mergeIfProps;
 
 	extend = __webpack_require__(10);
 
-	Tag = __webpack_require__(28);
+	Tag = __webpack_require__(32);
 
-	List = __webpack_require__(24);
+	List = __webpack_require__(28);
 
-	Nothing = __webpack_require__(23);
+	Nothing = __webpack_require__(27);
 
-	eventHandlerFromArray = __webpack_require__(29).eventHandlerFromArray;
+	eventHandlerFromArray = __webpack_require__(33).eventHandlerFromArray;
 
-	flow = __webpack_require__(39);
+	flow = __webpack_require__(1);
 
 	flowIf = flow.if_;
 
 	exports = module.exports = mergeIf = function(test, then_, else_, recursive) {
 	  var If, children, className, component, elseTransform, events, props, style, thenTransform, transform;
-	  If = __webpack_require__(37);
+	  If = __webpack_require__(41);
 	  if (then_ === else_) {
 	    return then_;
 	  } else if (then_.constructor === Tag && else_.constructor === Tag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
@@ -5159,7 +5761,7 @@
 	mergeIfChild = function(test, then_, else_, recursive) {
 	  var If;
 	  if (!recursive && (then_.isList || else_.isList)) {
-	    If = __webpack_require__(37);
+	    If = __webpack_require__(41);
 	    return new If(test, then_, else_, false, false, true);
 	  } else {
 	    return mergeIf(test, then_, else_, recursive);
@@ -5244,690 +5846,20 @@
 
 
 /***/ },
-/* 39 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var binary, bind, duplex, flow, see, unary, _ref;
-
-	_ref = __webpack_require__(40), see = _ref.see, bind = _ref.bind, duplex = _ref.duplex, flow = _ref.flow, unary = _ref.unary, binary = _ref.binary;
-
-	module.exports = flow;
-
-	flow.bindings = function(model, name) {
-	  var key, result;
-	  result = {};
-	  for (key in model) {
-	    result[key + '$'] = duplex(model, key, name);
-	    result[key + '_'] = bind(model, key, name);
-	  }
-	  return result;
-	};
-
-	flow.seeAttrs = function(target, from) {
-	  var attr, key, value;
-	  for (key in from) {
-	    value = from[key];
-	    attr = target[key];
-	    if (typeof attr === 'function') {
-	      attr(value);
-	    } else {
-	      target[key] = see(value);
-	    }
-	  }
-	  return target;
-	};
-
-	flow.neg = function(x) {
-	  return unary(x, function(x) {
-	    return -x;
-	  });
-	};
-
-	flow.no = flow.not = flow.not_ = function(x) {
-	  return unary(x, function(x) {
-	    return !x;
-	  });
-	};
-
-	flow.bitnot = function(x) {
-	  return unary(x, function(x) {
-	    return ~x;
-	  });
-	};
-
-	flow.reciprocal = function(x) {
-	  return unary(x, function(x) {
-	    return 1 / x;
-	  });
-	};
-
-	flow.abs = function(x) {
-	  return unary(x, Math.abs);
-	};
-
-	flow.floor = function(x) {
-	  return unary(x, Math.floor);
-	};
-
-	flow.ceil = function(x) {
-	  return unary(x, Math.ceil);
-	};
-
-	flow.round = function(x) {
-	  return unary(x, Math.round);
-	};
-
-	flow.add = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return x + y;
-	  });
-	};
-
-	flow.sub = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return x - y;
-	  });
-	};
-
-	flow.mul = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return x * y;
-	  });
-	};
-
-	flow.div = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return x / y;
-	  });
-	};
-
-	flow.min = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return Math.min(x, y);
-	  });
-	};
-
-	flow.and = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return x && y;
-	  });
-	};
-
-	flow.or = function(x, y) {
-	  return binary(x, y, function(x, y) {
-	    return x || y;
-	  });
-	};
-
-	flow.funcAttr = function(obj, attr) {
-	  return flow(obj, attr, function(value) {
-	    var objValue;
-	    objValue = obj();
-	    if (objValue == null) {
-	      return objValue;
-	    }
-	    if (!arguments.length) {
-	      return objValue[attr];
-	    } else {
-	      return objValue[attr] = value;
-	    }
-	  });
-	};
-
-	flow.toggle = function(x) {
-	  return x(!x());
-	};
-
-	flow.if_ = function(test, then_, else_) {
-	  if (typeof test !== 'function') {
-	    if (test) {
-	      return then_;
-	    } else {
-	      return else_;
-	    }
-	  } else if (!test.invalidate) {
-	    if (typeof then_ === 'function' && typeof else_ === 'function') {
-	      return function() {
-	        if (test()) {
-	          return then_();
-	        } else {
-	          return else_();
-	        }
-	      };
-	    } else if (then_ === 'function') {
-	      return function() {
-	        if (test()) {
-	          return then_();
-	        } else {
-	          return else_;
-	        }
-	      };
-	    } else if (else_ === 'function') {
-	      return function() {
-	        if (test()) {
-	          return then_;
-	        } else {
-	          return else_();
-	        }
-	      };
-	    } else if (test()) {
-	      return then_;
-	    } else {
-	      return else_;
-	    }
-	  } else {
-	    if (typeof then_ === 'function' && typeof else_ === 'function') {
-	      if (then_.invalidate && else_.invalidate) {
-	        return flow(test, then_, else_, function() {
-	          if (test()) {
-	            return then_();
-	          } else {
-	            return else_();
-	          }
-	        });
-	      } else {
-	        return function() {
-	          if (test()) {
-	            return then_();
-	          } else {
-	            return else_();
-	          }
-	        };
-	      }
-	    } else if (typeof then_ === 'function') {
-	      if (then_.invalidate) {
-	        return flow(test, then_, (function() {
-	          if (test()) {
-	            return then_();
-	          } else {
-	            return else_;
-	          }
-	        }));
-	      } else {
-	        return function() {
-	          if (test()) {
-	            return then_();
-	          } else {
-	            return else_;
-	          }
-	        };
-	      }
-	    } else if (typeof else_ === 'function') {
-	      if (else_.invalidate) {
-	        return flow(else_, (function() {
-	          if (test()) {
-	            return then_;
-	          } else {
-	            return else_();
-	          }
-	        }));
-	      } else {
-	        return function() {
-	          if (test()) {
-	            return then_;
-	          } else {
-	            return else_();
-	          }
-	        };
-	      }
-	    } else {
-	      return flow(test, function() {
-	        if (test()) {
-	          return then_;
-	        } else {
-	          return else_;
-	        }
-	      });
-	    }
-	  }
-	};
-
-
-/***/ },
-/* 40 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var dependent, flow, funcString, newLine, react, renew, see, _ref,
-	  __slice = [].slice;
-
-	_ref = __webpack_require__(4), newLine = _ref.newLine, funcString = _ref.funcString;
-
-	react = function(method) {
-	  if (method.invalidate) {
-	    return method;
-	  }
-	  method.valid = false;
-	  method.invalidateCallbacks = [];
-	  method.onInvalidate = function(callback) {
-	    var invalidateCallbacks;
-	    if (typeof callback !== 'function') {
-	      throw new Error("call back should be a function");
-	    }
-	    invalidateCallbacks = method.invalidateCallbacks || (method.invalidateCallbacks = []);
-	    return invalidateCallbacks.push(callback);
-	  };
-	  method.offInvalidate = function(callback) {
-	    var index, invalidateCallbacks;
-	    invalidateCallbacks = method.invalidateCallbacks;
-	    if (!invalidateCallbacks) {
-	      return;
-	    }
-	    index = invalidateCallbacks.indexOf(callback);
-	    if (index < 0) {
-	      return;
-	    }
-	    invalidateCallbacks.splice(index, 1);
-	    if (!invalidateCallbacks.length) {
-	      return method.invalidateCallbacks = null;
-	    }
-	  };
-	  method.invalidate = function() {
-	    var callback, _i, _len, _ref1;
-	    if (!method.valid) {
-	      return;
-	    }
-	    if (!method.invalidateCallbacks) {
-	      return;
-	    }
-	    _ref1 = method.invalidateCallbacks;
-	    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	      callback = _ref1[_i];
-	      callback();
-	    }
-	    method.valid = false;
-	  };
-	  return method;
-	};
-
-	renew = function(computation) {
-	  var method;
-	  method = function() {
-	    var value;
-	    if (!arguments.length) {
-	      value = computation();
-	      method.valid = true;
-	      method.invalidate();
-	      return value;
-	    } else {
-	      throw new Error('flow.renew is not allowed to accept arguments');
-	    }
-	  };
-	  method.toString = function() {
-	    return "renew: " + (funcString(computation));
-	  };
-	  return react(method);
-	};
-
-	dependent = function(computation) {
-	  var cacheValue, method;
-	  cacheValue = null;
-	  method = function() {
-	    if (!arguments.length) {
-	      if (!method.valid) {
-	        method.valid = true;
-	        return cacheValue = computation();
-	      } else {
-	        return cacheValue;
-	      }
-	    } else {
-	      throw new Error('flow.dependent is not allowed to accept arguments');
-	    }
-	  };
-	  method.toString = function() {
-	    return "dependent: " + (funcString(computation));
-	  };
-	  return react(method);
-	};
-
-	module.exports = flow = function() {
-	  var cacheValue, computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
-	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
-	  if (!deps.length) {
-	    return react(computation);
-	  }
-	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
-	    dep = deps[_j];
-	    if (typeof dep === 'function' && !dep.invalidate) {
-	      reactive = react(function() {
-	        reactive.invalidate();
-	        return computation();
-	      });
-	      return reactive;
-	    }
-	  }
-	  cacheValue = null;
-	  reactive = react(function(value) {
-	    if (!arguments.length) {
-	      if (!reactive.valid) {
-	        reactive.valid = true;
-	        return cacheValue = computation();
-	      } else {
-	        return cacheValue;
-	      }
-	    } else {
-	      if (value === cacheValue) {
-	        return value;
-	      } else {
-	        cacheValue = computation(value);
-	        reactive.invalidate();
-	        return cacheValue;
-	      }
-	    }
-	  });
-	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
-	    dep = deps[_k];
-	    if (dep && dep.onInvalidate) {
-	      dep.onInvalidate(reactive.invalidate);
-	    }
-	  }
-	  reactive.toString = function() {
-	    return "flow: [" + (((function() {
-	      var _l, _len2, _results;
-	      _results = [];
-	      for (_l = 0, _len2 = deps.length; _l < _len2; _l++) {
-	        dep = deps[_l];
-	        _results.push(dep.toString());
-	      }
-	      return _results;
-	    })()).join(',')) + "] --> " + (funcString(computation));
-	  };
-	  return reactive;
-	};
-
-	flow.pipe = function() {
-	  var computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
-	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
-	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
-	    dep = deps[_j];
-	    if (typeof dep === 'function' && !dep.invalidate) {
-	      reactive = react(function() {
-	        var args, _k, _len1;
-	        if (argumnets.length) {
-	          throw new Error("flow.pipe is not allow to have arguments");
-	        }
-	        reactive.invalidate();
-	        args = [];
-	        for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
-	          dep = deps[_k];
-	          if (typeof dep === 'function') {
-	            args.push(dep());
-	          } else {
-	            args.push(dep);
-	          }
-	        }
-	        return computation.apply(null, args);
-	      });
-	      return reactive;
-	    }
-	  }
-	  reactive = react(function() {
-	    var args, _k, _len1;
-	    args = [];
-	    for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
-	      dep = deps[_k];
-	      if (typeof dep === 'function') {
-	        args.push(dep());
-	      } else {
-	        args.push(dep);
-	      }
-	    }
-	    return computation.apply(null, args);
-	  });
-	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
-	    dep = deps[_k];
-	    if (dep && dep.onInvalidate) {
-	      dep.onInvalidate(reactive.invalidate);
-	    }
-	  }
-	  return reactive;
-	};
-
-	flow.react = react;
-
-	flow.renew = renew;
-
-	flow.dependent = dependent;
-
-	flow.flow = flow;
-
-	flow.see = see = function(value, transform) {
-	  var cacheValue, method;
-	  cacheValue = value;
-	  method = function(value) {
-	    if (!arguments.length) {
-	      method.valid = true;
-	      return cacheValue;
-	    } else {
-	      value = transform ? transform(value) : value;
-	      if (value !== cacheValue) {
-	        cacheValue = value;
-	        method.invalidate();
-	      }
-	      return value;
-	    }
-	  };
-	  method.isDuplex = true;
-	  method.toString = function() {
-	    return "see: " + value;
-	  };
-	  return react(method);
-	};
-
-	flow.seeN = function() {
-	  var computation, computations, _i, _len, _results;
-	  computations = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	  _results = [];
-	  for (_i = 0, _len = computations.length; _i < _len; _i++) {
-	    computation = computations[_i];
-	    _results.push(see(computation));
-	  }
-	  return _results;
-	};
-
-	if (Object.defineProperty) {
-	  flow.bind = function(obj, attr, debugName) {
-	    var d, getter, set, setter;
-	    d = Object.getOwnPropertyDescriptor(obj, attr);
-	    if (d) {
-	      getter = d.get;
-	      set = d.set;
-	    }
-	    if (!getter || !getter.invalidate) {
-	      getter = function() {
-	        if (arguments.length) {
-	          throw new Error('should not set value on flow.bind');
-	        }
-	        getter.valid = true;
-	        return getter.cacheValue;
-	      };
-	      getter.cacheValue = obj[attr];
-	      setter = function(value) {
-	        if (value !== obj[attr]) {
-	          if (set) {
-	            set(value);
-	          }
-	          getter.invalidate();
-	          return getter.cacheValue = value;
-	        }
-	      };
-	      react(getter);
-	      getter.toString = function() {
-	        return "" + (debugName || 'm') + "[" + attr + "]";
-	      };
-	      Object.defineProperty(obj, attr, {
-	        get: getter,
-	        set: setter
-	      });
-	    }
-	    return getter;
-	  };
-	  flow.duplex = function(obj, attr, debugName) {
-	    var d, get, method, set;
-	    d = Object.getOwnPropertyDescriptor(obj, attr);
-	    if (d) {
-	      get = d.get, set = d.set;
-	    }
-	    if (!set || !set.invalidate) {
-	      method = function(value) {
-	        if (!arguments.length) {
-	          method.valid = true;
-	          return method.cacheValue;
-	        }
-	        if (value !== obj[attr]) {
-	          if (set) {
-	            set(value);
-	          }
-	          get && get.invalidate && get.invalidate();
-	          method.invalidate();
-	          return method.cacheValue = value;
-	        }
-	      };
-	      method.cacheValue = obj[attr];
-	      react(method);
-	      method.isDuplex = true;
-	      method.toString = function() {
-	        return "" + (debugName || 'm') + "[" + attr + "]";
-	      };
-	      Object.defineProperty(obj, attr, {
-	        get: method,
-	        set: method
-	      });
-	      return method;
-	    } else {
-	      return set;
-	    }
-	  };
-	} else {
-	  flow.bind = function(obj, attr, debugName) {
-	    var method, _dcBindMethodMap;
-	    _dcBindMethodMap = obj._dcBindMethodMap;
-	    if (!_dcBindMethodMap) {
-	      _dcBindMethodMap = obj._dcBindMethodMap = {};
-	    }
-	    if (!obj.dcSet$) {
-	      obj.dcSet$ = function(attr, value) {
-	        var _dcDuplexMethodMap;
-	        if (value !== obj[attr]) {
-	          _dcBindMethodMap && _dcBindMethodMap[attr] && _dcBindMethodMap[attr].invalidate();
-	          return (_dcDuplexMethodMap = this._dcDuplexMethodMap) && _dcDuplexMethodMap[attr] && _dcDuplexMethodMap[attr].invalidate();
-	        }
-	      };
-	    }
-	    method = _dcBindMethodMap[attr];
-	    if (!method) {
-	      method = _dcBindMethodMap[attr] = function() {
-	        method.valid = true;
-	        return obj[attr];
-	      };
-	      method.toString = function() {
-	        return "" + (debugName || 'm') + "[" + attr + "]";
-	      };
-	      react(method);
-	    }
-	    return method;
-	  };
-	  flow.duplex = function(obj, attr, debugName) {
-	    var method, _dcDuplexMethodMap;
-	    _dcDuplexMethodMap = obj._dcDuplexMethodMap;
-	    if (!_dcDuplexMethodMap) {
-	      _dcDuplexMethodMap = obj._dcDuplexMethodMap = {};
-	    }
-	    if (!obj.dcSet$) {
-	      obj.dcSet$ = function(attr, value) {
-	        var _dcBindMethodMap;
-	        if (value !== obj[attr]) {
-	          (_dcBindMethodMap = this._dcBindMethodMap) && _dcBindMethodMap[attr] && _dcBindMethodMap[attr].invalidate();
-	          _dcDuplexMethodMap && _dcDuplexMethodMap[attr] && _dcDuplexMethodMap[attr].invalidate();
-	        }
-	        return value;
-	      };
-	    }
-	    method = _dcDuplexMethodMap[attr];
-	    if (!method) {
-	      method = _dcDuplexMethodMap[attr] = function(value) {
-	        if (!arguments.length) {
-	          method.valid = true;
-	          return obj[attr];
-	        } else {
-	          return obj.dcSet$(attr, value);
-	        }
-	      };
-	      method.isDuplex = true;
-	      method.toString = function() {
-	        return "" + (debugName || 'm') + "[" + attr + "]";
-	      };
-	      react(method);
-	    }
-	    return method;
-	  };
-	}
-
-	flow.unary = function(x, unaryFn) {
-	  if (typeof x !== 'function') {
-	    return unaryFn(x);
-	  } else if (x.invalidate) {
-	    return flow(x, function() {
-	      return unaryFn(x());
-	    });
-	  } else {
-	    return function() {
-	      return unaryFn(x());
-	    };
-	  }
-	};
-
-	flow.binary = function(x, y, binaryFn) {
-	  if (typeof x === 'function' && typeof y === 'function') {
-	    if (x.invalidate && y.invalidate) {
-	      return flow(x, y, function() {
-	        return binaryFn(x(), y());
-	      });
-	    } else {
-	      return function() {
-	        return binaryFn(x(), y());
-	      };
-	    }
-	  } else if (typeof x === 'function') {
-	    if (x.invalidate) {
-	      return flow(x, function() {
-	        return binaryFn(x(), y);
-	      });
-	    } else {
-	      return function() {
-	        return binaryFn(x(), y);
-	      };
-	    }
-	  } else if (typeof y === 'function') {
-	    if (y.invalidate) {
-	      return flow(y, function() {
-	        return binaryFn(x, y());
-	      });
-	    } else {
-	      return function() {
-	        return binaryFn(x, y());
-	      };
-	    }
-	  } else {
-	    return binaryFn(x, y);
-	  }
-	};
-
-
-/***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Case, TestComponent, foreach, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(22);
+	toComponent = __webpack_require__(26);
 
-	TestComponent = __webpack_require__(36);
+	TestComponent = __webpack_require__(40);
 
-	_ref = __webpack_require__(4), foreach = _ref.foreach, funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
+	_ref = __webpack_require__(3), foreach = _ref.foreach, funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
-	renew = __webpack_require__(3).renew;
+	renew = __webpack_require__(7).renew;
 
 	module.exports = Case = (function(_super) {
 	  __extends(Case, _super);
@@ -5989,18 +5921,18 @@
 
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Pick, TransformComponent, extend, newLine, toComponent,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(22);
+	toComponent = __webpack_require__(26);
 
-	TransformComponent = __webpack_require__(20);
+	TransformComponent = __webpack_require__(24);
 
-	newLine = __webpack_require__(4).newLine;
+	newLine = __webpack_require__(3).newLine;
 
 	extend = __webpack_require__(10);
 
@@ -6080,22 +6012,22 @@
 
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Defer, FULFILL, INIT, REJECT, TransformComponent, extend, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(22);
+	toComponent = __webpack_require__(26);
 
-	TransformComponent = __webpack_require__(20);
+	TransformComponent = __webpack_require__(24);
 
 	extend = __webpack_require__(10);
 
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
+	_ref = __webpack_require__(3), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
-	renew = __webpack_require__(3).renew;
+	renew = __webpack_require__(7).renew;
 
 	INIT = 0;
 
@@ -6169,419 +6101,20 @@
 
 
 /***/ },
-/* 44 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Case, Comment, Component, Defer, Func, Html, If, List, Nothing, Pick, Tag, Text, attrsChildren, defaultItemFunction, each, every, getEachArgs, isArray, isAttrs, isComponent, isEachObjectSystemKey, isEven, isObject, list, renew, tag, toComponent, toTagChildren, watchItems, _each, _ref, _ref1, _ref2,
-	  __slice = [].slice;
-
-	_ref = __webpack_require__(14), Component = _ref.Component, toComponent = _ref.toComponent, isComponent = _ref.isComponent, Tag = _ref.Tag, Text = _ref.Text, Comment = _ref.Comment, Html = _ref.Html, If = _ref.If, Case = _ref.Case, Func = _ref.Func, List = _ref.List, Pick = _ref.Pick, Nothing = _ref.Nothing, Defer = _ref.Defer;
-
-	isEven = __webpack_require__(4).isEven;
-
-	isAttrs = __webpack_require__(45).isAttrs;
-
-	_ref1 = __webpack_require__(4), isArray = _ref1.isArray, isObject = _ref1.isObject;
-
-	_ref2 = __webpack_require__(2), watchItems = _ref2.watchItems, isEachObjectSystemKey = _ref2.isEachObjectSystemKey;
-
-	renew = __webpack_require__(3).renew;
-
-	attrsChildren = function(args) {
-	  var attrs;
-	  attrs = args[0];
-	  if (!args.length) {
-	    return [{}, []];
-	  } else if (attrs==null) {
-	    return [{}, args.slice(1)];
-	  } else if (attrs instanceof Array) {
-	    return [{}, args];
-	  } else if (typeof attrs === 'function') {
-	    return [{}, args];
-	  } else if (typeof attrs === 'object') {
-	    if (isComponent(attrs)) {
-	      return [{}, args];
-	    } else {
-	      return [attrs, args.slice(1)];
-	    }
-	  } else {
-	    return [{}, args];
-	  }
-	};
-
-	toTagChildren = function(args) {
-	  if (!(args instanceof Array)) {
-	    return [args];
-	  } else if (!args.length) {
-	    return [];
-	  } else if (args.length === 1) {
-	    return toTagChildren(args[0]);
-	  } else {
-	    return args;
-	  }
-	};
-
-	tag = exports.tag = function() {
-	  var args, attrs, children, tagName, _ref3;
-	  tagName = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-	  _ref3 = attrsChildren(args), attrs = _ref3[0], children = _ref3[1];
-	  return new Tag(tagName, attrs, toTagChildren(children));
-	};
-
-	exports.nstag = function() {
-	  var args, attrs, children, namespace, tagName, _ref3;
-	  tagName = arguments[0], namespace = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
-	  _ref3 = attrsChildren(args), attrs = _ref3[0], children = _ref3[1];
-	  return new Tag(tagName, attrs, toTagChildren(children), namespace);
-	};
-
-	exports.txt = function(attrs, text) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Text(text)]);
-	  } else {
-	    return new Text(attrs);
-	  }
-	};
-
-	exports.comment = function(attrs, text) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Comment(text)]);
-	  } else {
-	    return new Comment(attrs);
-	  }
-	};
-
-	exports.html = function(attrs, text, transform) {
-	  return new Html(attrs, text, transform);
-	};
-
-	exports.if_ = function(attrs, test, then_, else_, merge, recursive) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new If(test, then_, else_, merge, recursive)]);
-	  } else {
-	    return new If(attrs, test, then_, merge, recursive);
-	  }
-	};
-
-	exports.forceIf = function(attrs, test, then_, else_) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new If(test, then_, else_, true, false, true)]);
-	  } else {
-	    return new If(attrs, test, then_, true, false, true);
-	  }
-	};
-
-	exports.mergeIf = function(attrs, test, then_, else_, recursive) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new If(test, then_, else_, true, recursive)]);
-	  } else {
-	    return new If(attrs, test, then_, true, recursive);
-	  }
-	};
-
-	exports.recursiveIf = function(attrs, test, then_, else_) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new If(test, then_, else_, true, true)]);
-	  } else {
-	    return new If(attrs, test, then_, true, true);
-	  }
-	};
-
-	exports.case_ = function(attrs, test, map, else_) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Case(test, map, else_)]);
-	  } else {
-	    return new Case(attrs, test, map);
-	  }
-	};
-
-	exports.forceCase = function(attrs, test, map, else_) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Case(test, map, else_, true)]);
-	  } else {
-	    return new Case(attrs, test, map, true);
-	  }
-	};
-
-	exports.cond = function() {
-	  var attrs, condComponents, else_, _i;
-	  attrs = arguments[0], condComponents = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), else_ = arguments[_i++];
-	  if (isAttrs(attrs)) {
-	    if (!isEven(condComponents)) {
-	      condComponents.push(else_);
-	      else_ = null;
-	    }
-	    return new Tag('div', attrs, [new Cond(condComponents, else_)]);
-	  } else {
-	    condComponents.unshift(attrs);
-	    if (!isEven(condComponents)) {
-	      condComponents.push(else_);
-	      else_ = null;
-	    }
-	    return new Cond(condComponents, else_);
-	  }
-	};
-
-	exports.func = function(attrs, fn) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Func(fn)]);
-	  } else {
-	    return new Func(attrs);
-	  }
-	};
-
-	exports.pick = function(host, field, initialContent) {
-	  return new Pick(host, field, initialContent);
-	};
-
-	exports.list = list = function() {
-	  var attrs, lst;
-	  attrs = arguments[0], lst = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new List(lst)]);
-	  } else {
-	    lst.unshift(attrs);
-	    if (lst.length === 1) {
-	      return toComponent(lst[0]);
-	    } else {
-	      return new List(lst);
-	    }
-	  }
-	};
-
-	defaultItemFunction = function(item) {
-	  return item;
-	};
-
-	_each = function(attrs, items, options) {
-	  var children, getItemComponent, i, item, key, keyChildMap, listComponent, tagName, _i, _len;
-	  if (attrs) {
-	    if (attrs.tagName) {
-	      tagName = attrs.tagName;
-	      delete attrs.tagName;
-	    } else {
-	      tagName = 'div';
-	    }
-	    listComponent = new Tag(tagName, attrs, []);
-	  } else {
-	    listComponent = new List([]);
-	  }
-	  listComponent.items = items;
-	  if (typeof options === 'function') {
-	    listComponent.itemFunc = options;
-	    options = {};
-	  } else {
-	    options = options || {};
-	    listComponent.itemFunc = options.itemFunc || defaultItemFunction;
-	  }
-	  listComponent.separatorFunc = options.separatorFunc;
-	  listComponent.updateSuccChild = options.updateSuccChild;
-	  listComponent.updateSuccIndex = options.updateSuccIndex;
-	  listComponent.keyChildMap = keyChildMap = {};
-	  if (isArray(items)) {
-	    listComponent.getItemComponent = getItemComponent = function(item, itemIndex) {
-	      var itemComponent, separatorComponent;
-	      itemComponent = toComponent(listComponent.itemFunc(item, itemIndex, items, listComponent));
-	      if (listComponent.separatorFunc && itemIndex) {
-	        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, item, items, listComponent));
-	        itemComponent = new List([separatorComponent, itemComponent]);
-	      }
-	      itemComponent.itemIndex = itemIndex;
-	      return itemComponent;
-	    };
-	  } else {
-	    listComponent.getItemComponent = getItemComponent = function(key, itemIndex) {
-	      var itemComponent, separatorComponent, value;
-	      value = items[key];
-	      keyChildMap[key] = itemIndex;
-	      itemComponent = toComponent(listComponent.itemFunc(value, key, itemIndex, listComponent));
-	      if (listComponent.separatorFunc && itemIndex) {
-	        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, value, key, listComponent));
-	        itemComponent = new List([separatorComponent, itemComponent]);
-	      }
-	      itemComponent.$watchingKey = key;
-	      itemComponent.itemIndex = itemIndex;
-	      return itemComponent;
-	    };
-	  }
-	  children = listComponent.children;
-	  if (isArray(items)) {
-	    for (i = _i = 0, _len = items.length; _i < _len; i = ++_i) {
-	      item = items[i];
-	      children.push(getItemComponent(item, i));
-	    }
-	  } else {
-	    i = 0;
-	    for (key in items) {
-	      children.push(getItemComponent(key, i));
-	      i++;
-	    }
-	  }
-	  return listComponent;
-	};
-
-	getEachArgs = function(args) {
-	  var attrs, items, key, options;
-	  attrs = args[0], items = args[1], options = args[2];
-	  if (args.length === 1) {
-	    return [null, attrs, {}];
-	  } else if (args.length === 3) {
-	    return [attrs, items, options];
-	  } else {
-	    if (typeof items === 'function') {
-	      return [
-	        null, attrs, {
-	          itemFunc: items
-	        }
-	      ];
-	    } else if (isArray(items)) {
-	      return [attrs, items, {}];
-	    } else if (isArray(attrs)) {
-	      return [null, attrs, items];
-	    } else if (!items) {
-	      return [null, attrs, {}];
-	    } else if (!isObject(items)) {
-	      throw new Error('wrong parameter');
-	    } else {
-	      for (key in items) {
-	        if (items.hasOwnProperty(key)) {
-	          continue;
-	        } else if (key.test(/itemFunc|separatorFunc|updateSuccChild|updateSuccIndex/)) {
-	          return [null, attrs, items];
-	        }
-	      }
-	      return [attrs, items, {}];
-	    }
-	  }
-	};
-
-	exports.every = every = function() {
-	  var args, attrs, items, options, _ref3;
-	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	  _ref3 = getEachArgs(args), attrs = _ref3[0], items = _ref3[1], options = _ref3[2];
-	  return _each(attrs, items, options);
-	};
-
-	exports.each = each = function() {
-	  var args, attrs, items, listComponent, options, _ref3;
-	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	  _ref3 = getEachArgs(args), attrs = _ref3[0], items = _ref3[1], options = _ref3[2];
-	  listComponent = every(attrs, items, options);
-	  return watchItems(items, listComponent);
-	};
-
-	exports.funcEach = function(attrs, listFunc, options) {
-	  var isRenew, listComponent, listItems;
-	  if (typeof attrs === 'function') {
-	    options = listFunc;
-	    listFunc = attrs;
-	    attrs = null;
-	  }
-	  if (!listFunc.invalidate) {
-	    isRenew = true;
-	    listFunc = renew(listFunc);
-	  }
-	  listItems = [];
-	  listComponent = each(attrs, listItems, options);
-	  listFunc.onInvalidate(function() {
-	    return listComponent.invalidate();
-	  });
-	  listComponent.on('willRender', function() {
-	    var newList;
-	    newList = listFunc();
-	    listItems.setItem.apply(listItems, [0].concat(__slice.call(newList)));
-	    return listItems.setLength(newList.length);
-	  });
-	  listComponent.on('didRender', function() {
-	    if (isRenew) {
-	      return listComponent.holder.invalidateOffspring(listComponent);
-	    }
-	  });
-	  return listComponent;
-	};
-
-	exports.mapEach = function(attrs, mapFunc, options) {
-	  var isRenew, listComponent, listFunc, map;
-	  if (typeof attrs === 'function') {
-	    options = mapFunc;
-	    mapFunc = attrs;
-	    attrs = null;
-	  }
-	  if (!listFunc.invalidate) {
-	    isRenew = true;
-	    listFunc = renew(listFunc);
-	  }
-	  map = {};
-	  listComponent = each(attrs, map, options);
-	  listFunc.onInvalidate(function() {
-	    return listComponent.invalidate();
-	  });
-	  listComponent.on('willRender', function() {
-	    var deleteKeys, key, newMap, _results;
-	    newMap = listFunc();
-	    deleteKeys = [];
-	    for (key in map) {
-	      if (newMap.hasOwnProperty(key)) {
-	        if (isEachObjectSystemKey()) {
-	          continue;
-	        } else {
-	          map.setItem(key, newMap[key]);
-	        }
-	      } else {
-	        deleteKeys.push(key);
-	      }
-	    }
-	    map.deleteItem.apply(map, keys);
-	    _results = [];
-	    for (key in newMap) {
-	      if (!map.hasOwnProperty(key)) {
-	        _results.push(map.setItem(key, newMap[key]));
-	      } else {
-	        _results.push(void 0);
-	      }
-	    }
-	    return _results;
-	  });
-	  listComponent.on('didRender', function() {
-	    if (isRenew) {
-	      return listComponent.holder.invalidateOffspring(listComponent);
-	    }
-	  });
-	  return listComponent;
-	};
-
-	exports.defer = function(attrs, promise, fulfill, reject, init) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Defer(promise, fulfill, reject, init)]);
-	  } else {
-	    return new Defer(attrs, promise, fulfill, reject);
-	  }
-	};
-
-	exports.clone = function(attrs, src) {
-	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [toComponent(src).clone()]);
-	  } else {
-	    return toComponent(attrs).clone(src);
-	  }
-	};
-
-
-/***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Comment, Func, Html, Text, isComponent, mergeThenElseValue, toComponent, _ref;
 
-	_ref = __webpack_require__(14), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
+	_ref = __webpack_require__(18), isComponent = _ref.isComponent, toComponent = _ref.toComponent;
 
-	Func = __webpack_require__(27);
+	Func = __webpack_require__(31);
 
-	Text = __webpack_require__(18);
+	Text = __webpack_require__(22);
 
-	Html = __webpack_require__(35);
+	Html = __webpack_require__(39);
 
-	Comment = __webpack_require__(34);
+	Comment = __webpack_require__(38);
 
 	exports.isAttrs = function(item) {
 	  return typeof item === 'object' && item !== null && !isComponent(item) && !(item instanceof Array);
@@ -6631,7 +6164,371 @@
 
 
 /***/ },
-/* 46 */
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ListWatchMixin, ObjectWatchMixin, flow, isArray, isEachObjectSystemKey, react, slice, watchList, watchObject,
+	  __slice = [].slice;
+
+	react = (flow = __webpack_require__(7)).react;
+
+	isArray = __webpack_require__(3).isArray;
+
+	module.exports = flow;
+
+	slice = Array.prototype.slice;
+
+	flow.watchList = watchList = function(listItems, listComponent) {
+	  var watchingListComponents;
+	  watchingListComponents = listItems.watchingListComponents || (listItems.watchingListComponents = {});
+	  watchingListComponents[listComponent.dcid] = listComponent;
+	  if (listItems.eachWatching) {
+	    return;
+	  }
+	  listItems.eachWatching = true;
+	  listItems._shift = listItems.shift;
+	  listItems._pop = listItems.pop;
+	  listItems._push = listItems.push;
+	  listItems._reverse = listItems.reverse;
+	  listItems._sort = listItems.sort;
+	  listItems._splice = listItems.splice;
+	  listItems._unshift = listItems.unshift;
+	  listItems.shift = ListWatchMixin.shift;
+	  listItems.pop = ListWatchMixin.pop;
+	  listItems.push = ListWatchMixin.push;
+	  listItems.reverse = ListWatchMixin.reverse;
+	  listItems.sort = ListWatchMixin.sort;
+	  listItems.splice = ListWatchMixin.splice;
+	  listItems.unshift = ListWatchMixin.unshift;
+	  listItems.setItem = ListWatchMixin.setItem;
+	  listItems.setLength = ListWatchMixin.setLength;
+	  listItems.updateComponents = ListWatchMixin.updateComponents;
+	  listItems.updateComponent = ListWatchMixin.updateComponent;
+	  return listItems.getListChildren = ListWatchMixin.getListChildren;
+	};
+
+	ListWatchMixin = {};
+
+	ListWatchMixin.getListChildren = function(listComponent, start, stop) {
+	  var children, i, itemComponent;
+	  children = [];
+	  i = start;
+	  while (i < stop) {
+	    itemComponent = listComponent.getItemComponent(this[i], start + i);
+	    itemComponent.valid = true;
+	    children.push(itemComponent);
+	    i++;
+	  }
+	  return children;
+	};
+
+	ListWatchMixin.updateComponent = function(listComponent, start, stop) {
+	  var children;
+	  children = this.getListChildren(listComponent, start, stop);
+	  listComponent.setChildren.apply(listComponent, [start].concat(__slice.call(children)));
+	  return this;
+	};
+
+	ListWatchMixin.updateComponents = function(start, stop) {
+	  var listComponent, watchingListComponents, _;
+	  watchingListComponents = this.watchingListComponents;
+	  for (_ in watchingListComponents) {
+	    listComponent = watchingListComponents[_];
+	    this.updateComponent(listComponent, start, stop);
+	  }
+	  return this;
+	};
+
+	ListWatchMixin.setItem = function() {
+	  var i, start, value, values, _i, _len;
+	  start = arguments[0], values = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+	  start = start >>> 0;
+	  if (start < 0) {
+	    start = 0;
+	  }
+	  for (i = _i = 0, _len = values.length; _i < _len; i = ++_i) {
+	    value = values[i];
+	    this[start + i] = values[i];
+	  }
+	  this.updateComponents(start, start + values.length);
+	  return this;
+	};
+
+	ListWatchMixin.pop = function() {
+	  var listComponent, result, watchingListComponents, _;
+	  if (!this.length) {
+
+	  } else {
+	    watchingListComponents = this.watchingListComponents;
+	    result = this._pop();
+	    for (_ in watchingListComponents) {
+	      listComponent = watchingListComponents[_];
+	      listComponent.popChild();
+	    }
+	    return result;
+	  }
+	};
+
+	ListWatchMixin.push = function() {
+	  var args, child, length, listComponent, result, watchingListComponents, _;
+	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	  watchingListComponents = this.watchingListComponents;
+	  length = this.length;
+	  result = this._push.apply(this, arguments);
+	  for (_ in watchingListComponents) {
+	    listComponent = watchingListComponents[_];
+	    child = listComponent.getItemComponent(this[length], length);
+	    listComponent.pushChild(child);
+	  }
+	  return result;
+	};
+
+	ListWatchMixin.shift = function() {
+	  var args, length, listComponent, watchingListComponents, _;
+	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	  if (!this.length) {
+	    return this;
+	  } else {
+	    watchingListComponents = this.watchingListComponents;
+	    this._shift();
+	    length = this.length;
+	    for (_ in watchingListComponents) {
+	      listComponent = watchingListComponents[_];
+	      if (!listComponent.updateSuccChild) {
+	        listComponent.shiftChild();
+	      } else {
+	        this.updateComponent(listComponent, length);
+	      }
+	    }
+	    return this;
+	  }
+	};
+
+	ListWatchMixin.unshift = function(child) {
+	  var listComponent, watchingListComponents, _, _results;
+	  this._unshift(child);
+	  watchingListComponents = this.watchingListComponents;
+	  _results = [];
+	  for (_ in watchingListComponents) {
+	    listComponent = watchingListComponents[_];
+	    if (!listComponent.updateSuccChild) {
+	      child = listComponent.getItemComponent(this[0], 0);
+	      _results.push(listComponent.unshiftChild(child));
+	    } else {
+	      _results.push(this.updateComponent(listComponent, this.length));
+	    }
+	  }
+	  return _results;
+	};
+
+	ListWatchMixin.reverse = function() {
+	  var listLength;
+	  listLength = this.length;
+	  if (listLength <= 1) {
+	    return this;
+	  } else {
+	    this._reverse();
+	    return this.updateComponents(0, listLength);
+	  }
+	};
+
+	ListWatchMixin.sort = function() {
+	  var listLength;
+	  listLength = this.length;
+	  if (listLength <= 1) {
+	    return this;
+	  } else {
+	    this._sort();
+	    return this.updateComponents(0, listLength);
+	  }
+	};
+
+	ListWatchMixin.splice = function(start, deleteCount) {
+	  var child, i, inserted, insertedLength, listComponent, newLength, oldListLength, result, _;
+	  inserted = slice.call(arguments, 2);
+	  insertedLength = inserted.length;
+	  if (deleteCount === 0 && insertedLength === 0) {
+	    return this;
+	  } else {
+	    oldListLength = this.length;
+	    start = start >>> 0;
+	    if (start < 0) {
+	      start = 0;
+	    } else if (start > oldListLength) {
+	      start = oldListLength;
+	    }
+	    result = this._splice.apply(this, [start, deleteCount].concat(inserted));
+	    newLength = result.length;
+	    if (newLength === oldListLength) {
+	      this.updateComponents(start, start + insertedLength);
+	    } else {
+	      for (_ in watchingListComponents) {
+	        listComponent = watchingListComponents[_];
+	        if (!listComponent.updateSuccChild) {
+	          if (insertedLength > deleteCount) {
+	            i = start;
+	            while (i < deleteCount) {
+	              child = listComponent.getItemComponent(this[i], i);
+	              listComponent.replaceChild(i, child);
+	              i++;
+	            }
+	            while (i < insertedLength) {
+	              child = listComponent.getItemComponent(this[i], i);
+	              listComponent.insertChild(i, child);
+	              i++;
+	            }
+	          } else {
+	            i = start;
+	            while (i < insertedLength) {
+	              child = listComponent.getItemComponent(this[i], i);
+	              listComponent.replaceChild(i, child);
+	              i++;
+	            }
+	            while (i < deleteCount) {
+	              listComponent.removeChild(start + insertedLength);
+	              i++;
+	            }
+	          }
+	        } else {
+	          this.updateComponent(listComponent, start, newLength);
+	        }
+	      }
+	    }
+	    return result;
+	  }
+	};
+
+	ListWatchMixin.setLength = function(length) {
+	  var listComponent, oldListLength, watchingListComponents, _;
+	  oldListLength = this.length;
+	  if (length === oldListLength) {
+	    return this;
+	  } else if (length <= oldListLength) {
+	    watchingListComponents = this.watchingListComponents;
+	    this.length = length;
+	    for (_ in watchingListComponents) {
+	      listComponent = watchingListComponents[_];
+	      listComponent.setLength(length);
+	    }
+	    return this;
+	  } else {
+	    this.updateComponents(oldListLength, length);
+	    return this;
+	  }
+	};
+
+	flow.watchObject = watchObject = function(objectItems, listComponent, itemFn) {
+	  var watchingListComponents;
+	  watchingListComponents = objectItems.watchingListComponents || (objectItems.watchingListComponents = {});
+	  watchingListComponents[listComponent.dcid] = listComponent;
+	  if (objectItems.eachWatching) {
+	    return;
+	  }
+	  objectItems.eachWatching = true;
+	  objectItems.deleteItem = ObjectWatchMixin.deleteItem;
+	  objectItems.setItem = ObjectWatchMixin.setItem;
+	  return objectItems.extendItems = ObjectWatchMixin.extendItems;
+	};
+
+	ObjectWatchMixin = {};
+
+	ObjectWatchMixin.deleteItem = function() {
+	  var children, i, index, key, keyChildMap, keys, length, listComponent, newChild, oldChild, watchingListComponents, _, _i, _len;
+	  keys = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	  watchingListComponents = this.watchingListComponents;
+	  if (!watchingListComponents.length) {
+	    return this;
+	  }
+	  for (_i = 0, _len = keys.length; _i < _len; _i++) {
+	    key = keys[_i];
+	    if (this.hasOwnProperty(key)) {
+	      if (key.slice(0, 3) === '$dc') {
+	        throw new Error('do not remove the key: ' + key + ', which is used by "each component" of dc');
+	      }
+	      delete this[key];
+	      for (_ in watchingListComponents) {
+	        listComponent = watchingListComponents[_];
+	        keyChildMap = listComponent.keyChildMap;
+	        index = keyChildMap[key];
+	        children = listComponent.children;
+	        length = children.length;
+	        break;
+	      }
+	      for (_ in watchingListComponents) {
+	        listComponent = watchingListComponents[_];
+	        if (!listComponent.updateSuccChild) {
+	          listComponent.removeChild(index);
+	        } else {
+	          i = index + 1;
+	          children = listComponent.children;
+	          while (i < length) {
+	            oldChild = children[i];
+	            newChild = listComponent.getItemComponent(oldChild.$watchingKey, i, this, listComponent);
+	            listComponent.replaceChild(oldChild, newChild);
+	            i++;
+	          }
+	          listComponent.removeChild(index);
+	        }
+	        delete keyChildMap[key];
+	      }
+	    }
+	  }
+	  return this;
+	};
+
+	ObjectWatchMixin.setItem = function(key, value) {
+	  var length, listComponent, newChild, oldChildIndex, watchingListComponents, _;
+	  if (isEachObjectSystemKey(key)) {
+	    throw new Error('do not use the key: ' + key + ', which is used by "each component" of dc');
+	  }
+	  watchingListComponents = this.watchingListComponents;
+	  if (this.hasOwnProperty(key)) {
+	    this[key] = value;
+	    for (_ in watchingListComponents) {
+	      listComponent = watchingListComponents[_];
+	      oldChildIndex = listComponent.keyChildMap[key];
+	      newChild = listComponent.getItemComponent(key, oldChildIndex, this, listComponent);
+	      listComponent.replaceChild(oldChild, newChild);
+	    }
+	  } else {
+	    length = listComponent.children.length;
+	    for (_ in watchingListComponents) {
+	      listComponent = watchingListComponents[_];
+	      newChild = listComponent.getItemComponent(key, length, this, listComponent);
+	      listComponent.pushChild(newChild);
+	    }
+	  }
+	  return this;
+	};
+
+	ObjectWatchMixin.extendItems = function(obj) {
+	  var key, value;
+	  for (key in obj) {
+	    value = obj[key];
+	    this.setItem(key, value);
+	  }
+	  return this;
+	};
+
+	flow.isEachObjectSystemKey = isEachObjectSystemKey = function(key) {
+	  return /setItem|deleteItem|extendItems|watchingListComponents|eachWatching/.test(key);
+	};
+
+	flow.watchItems = function(items, listComponent) {
+	  if (!items) {
+	    throw new Error('items to be watched should be an array or object.');
+	  }
+	  if (isArray(items)) {
+	    watchList(items, listComponent);
+	  } else {
+	    watchObject(items, listComponent);
+	  }
+	  return listComponent;
+	};
+
+
+/***/ },
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var extend, getBindProp, input, inputTypes, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref,
@@ -6639,9 +6536,9 @@
 
 	extend = __webpack_require__(10);
 
-	tag = __webpack_require__(44).tag;
+	tag = __webpack_require__(17).tag;
 
-	getBindProp = __webpack_require__(7).getBindProp;
+	getBindProp = __webpack_require__(6).getBindProp;
 
 	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section" + " svg iframe";
 
@@ -6742,7 +6639,336 @@
 
 
 /***/ },
-/* 47 */
+/* 49 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var dcidIndexMap, isArray, isComponent, lastTime, nextNodes, parentNodes, rafUpdate, refreshComponents, removeComponents, updateWhenComponentEvent, vendor, _i, _len, _ref;
+
+	isArray = __webpack_require__(3).isArray;
+
+	isComponent = __webpack_require__(9);
+
+	if (typeof window !== 'undefined') {
+	  _ref = ['ms', 'moz', 'webkit', 'o'];
+	  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	    vendor = _ref[_i];
+	    if (window.requestAnimationFrame = window[vendor + 'RequestAnimationFrame']) {
+	      window.cancelAnimationFrame = window[vendor + 'CancelAnimationFrame'] || window[vendor + 'CancelRequestAnimationFrame'];
+	      break;
+	    }
+	  }
+	  if (!window.requestAnimationFrame) {
+	    lastTime = 0;
+	    window.requestAnimationFrame = function(callback) {
+	      var currTime, id, timeToCall;
+	      currTime = (new Date).getTime();
+	      timeToCall = Math.max(0, 16 - (currTime - lastTime));
+	      id = window.setTimeout((function() {
+	        callback(currTime + timeToCall);
+	      }), timeToCall);
+	      lastTime = currTime + timeToCall;
+	      return id;
+	    };
+	  }
+	  if (!window.cancelAnimationFrame) {
+	    window.cancelAnimationFrame = function(id) {
+	      clearTimeout(id);
+	    };
+	  }
+	}
+
+	dc.dcidIndexMap = dcidIndexMap = {};
+
+	dc.parentNodes = parentNodes = [];
+
+	dc.nextNodes = nextNodes = [];
+
+	dc.listIndex = 0;
+
+	dc.renderingMap = {};
+
+	dc.removingMap = {};
+
+	dc.reset = function() {
+	  dc.listeners = {};
+	  dc.dcidIndexMap = {};
+	  dc.parentNodes = [];
+	  dc.nextNodes = [];
+	  dc.listIndex = 0;
+	  dc.renderingMap = {};
+	  return dc.removingMap = {};
+	};
+
+	dc.getChildParentNode = function(child) {
+	  return parentNodes[dcidIndexMap[child.dcid]];
+	};
+
+	dc.getChildNextNode = function(child) {
+	  return this.nextNodes[dcidIndexMap[child.dcid]];
+	};
+
+	dc.invalidate = function() {
+	  return dc.valid = false;
+	};
+
+	dc.invalidateOffspring = function(offspring) {
+	  dc.valid = false;
+	  return dc.renderingMap[offspring.dcid] = [offspring, offspring.holder];
+	};
+
+	dc.refreshComponents = refreshComponents = function() {
+	  var component, holder, renderingMap, _, _ref1;
+	  this.valid = true;
+	  renderingMap = this.oldRenderingMap = this.renderingMap;
+	  this.renderingMap = {};
+	  for (_ in renderingMap) {
+	    _ref1 = renderingMap[_], component = _ref1[0], holder = _ref1[1];
+	    holder.updateChildHolder(component);
+	    component.renderDom(component.baseComponent);
+	  }
+	  this.valid = false;
+	  return this;
+	};
+
+	removeComponents = function() {
+	  var dcid, removingMap;
+	  removingMap = this.removingMap;
+	  this.removingMap = {};
+	  for (dcid in removingMap) {
+	    removingMap[dcid].removeDom();
+	  }
+	  return this;
+	};
+
+	dc.update = function(force) {
+	  dc.emit('willUpdate');
+	  if ((force || dc.alwaysUpdate) && !dc.valid) {
+	    refreshComponents.call(this);
+	    removeComponents.call(this);
+	  }
+	  return dc.emit('didUpdate');
+	};
+
+	dc.updateChildHolder = function(child) {
+	  if (child.holder !== this) {
+	    child.invalidate();
+	    child.holder = this;
+	    child.setParentNode(this.getChildParentNode(child));
+	    child.sinkNextNode(this.getChildNextNode(child));
+	  }
+	};
+
+	dc.raiseNode = function() {};
+
+	dc.raiseFirstNextNode = function() {};
+
+	dc.linkNextNode = function() {};
+
+	dc.rafUpdate = rafUpdate = function() {
+	  if (!dc.rafUpdateStop || !dc.rafUpdateStop()) {
+	    requestAnimFrame(rafUpdate);
+	    dc.update(true);
+	  }
+	};
+
+	dc.updateWhen = function(component, events, options) {
+	  var callback, clear, comp, event, handler, interval, test, _j, _k, _l, _len1, _len2, _len3;
+	  if (component instanceof Array) {
+	    for (_j = 0, _len1 = component.length; _j < _len1; _j++) {
+	      comp = component[_j];
+	      if (isArray(events)) {
+	        for (_k = 0, _len2 = events.length; _k < _len2; _k++) {
+	          event = events[_k];
+	          updateWhenComponentEvent(comp, event, options);
+	        }
+	      } else {
+	        updateWhenComponentEvent(comp, events, options);
+	      }
+	    }
+	  } else if (isComponent(component)) {
+	    if (isArray(events)) {
+	      for (_l = 0, _len3 = events.length; _l < _len3; _l++) {
+	        event = events[_l];
+	        updateWhenComponentEvent(component, event, options);
+	      }
+	    } else {
+	      updateWhenComponentEvent(component, events, options);
+	    }
+	  } else if (component === setInterval) {
+	    if (typeof events === 'number') {
+	      options = options || {};
+	      options.interval = events;
+	    } else {
+	      options = events || {};
+	    }
+	    test = options.test, interval = options.interval, clear = options.clear;
+	    handler = null;
+	    callback = function() {
+	      if (!test || test()) {
+	        dc.update();
+	      }
+	      if (clear && clear()) {
+	        return clearInterval(handler);
+	      }
+	    };
+	    handler = setInterval(callback, interval || 16);
+	  } else if (component === dc.rafUpdate) {
+	    dc.rafUpdateStop = events;
+	    dc.rafUpdate();
+	  }
+	};
+
+	updateWhenComponentEvent = function(component, event, alwaysUpdate) {
+	  if (event.slice(0, 2) !== 'on') {
+	    event = 'on' + event;
+	  }
+	  return component.eventUpdateConfig[event] = alwaysUpdate;
+	};
+
+
+/***/ },
+/* 50 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var exports, extend;
+
+	extend = __webpack_require__(10);
+
+	module.exports = exports = extend({}, __webpack_require__(18), __webpack_require__(17), __webpack_require__(48), __webpack_require__(33));
+
+
+/***/ },
+/* 51 */
+/***/ function(module, exports) {
+
+	var DomNode, Tag, makeComponentDelegationHandler, makeDelegationHandler, makeHolderDelegationHandler;
+
+	Tag = dc.Tag, DomNode = dc.DomNode;
+
+	exports.makeDelegationHandler = makeDelegationHandler = function() {
+	  return function(event) {
+	    var targetComponent, targetNode;
+	    targetNode = event.target;
+	    targetComponent = targetNode.component;
+	    return targetComponent['do_' + event.type](event);
+	  };
+	};
+
+	Tag.prototype.delegate = DomNode.prototype.delegate = function(events, delegationHandler) {
+	  if (delegationHandler == null) {
+	    delegationHandler = makeDelegationHandler();
+	  }
+	  return this.bind(events, delegationHandler);
+	};
+
+	exports.makeHolderDelegationHandler = makeHolderDelegationHandler = function() {
+	  return function(event) {
+	    var handler, method, targetComponent, targetNode;
+	    targetNode = event.target;
+	    targetComponent = targetNode.component;
+	    method = 'do_' + event.type;
+	    while (targetComponent) {
+	      handler = targetComponent[method];
+	      if (handler) {
+	        handler.call(targetComponent, event);
+	        if (event.continueDelegating) {
+	          targetComponent = targetComponent.holder;
+	        } else {
+	          break;
+	        }
+	      } else {
+	        targetComponent = targetComponent.holder;
+	      }
+	    }
+	  };
+	};
+
+	Tag.prototype.delegateByHolder = DomNode.prototype.delegateByHolder = function(events, delegationHandler) {
+	  if (delegationHandler == null) {
+	    delegationHandler = makeHolderDelegationHandler();
+	  }
+	  return this.bind(events, delegationHandler);
+	};
+
+	makeComponentDelegationHandler = function(component) {
+	  return function(event) {
+	    var handler;
+	    if (handler = component['do_' + event.type]) {
+	      handler.call(component, event);
+	    }
+	  };
+	};
+
+	Tag.prototype.delegateByComponent = DomNode.prototype.delegateByComponent = function(events, component) {
+	  return this.bind(events, makeComponentDelegationHandler(component));
+	};
+
+
+/***/ },
+/* 52 */
+/***/ function(module, exports) {
+
+	var Tag, reNonUnit, unitAdd, unitDiv, unitMul, unitSub;
+
+	Tag = dc.Tag;
+
+	reNonUnit = /[\d\s\.-]/g;
+
+	exports.unitAdd = unitAdd = function(x, y) {
+	  var num;
+	  num = parseFloat(x);
+	  if (isNaN(num)) {
+	    console.log('wrong type in unitAdd(prop, value)');
+	  }
+	  return num + parseFloat(y) + x.replace(reNonUnit, '');
+	};
+
+	exports.unitSub = unitSub = function(x, y) {
+	  var num;
+	  num = parseFloat(x);
+	  if (isNaN(num)) {
+	    console.log('wrong type in unitSub(prop, value)');
+	  }
+	  return num - parseFloat(y) + x.replace(reNonUnit, '');
+	};
+
+	exports.unitMul = unitMul = function(x, y) {
+	  var num;
+	  num = parseFloat(x);
+	  if (isNaN(num)) {
+	    console.log('wrong type in unitMul(prop, value)');
+	  }
+	  return num * parseFloat(y) + x.replace(reNonUnit, '');
+	};
+
+	exports.unitDiv = unitDiv = function(x, y) {
+	  var num;
+	  num = parseFloat(x);
+	  if (isNaN(num)) {
+	    console.log('wrong type in unitDiv(prop, value)');
+	  }
+	  return num / parseFloat(y) + x.replace(reNonUnit, '');
+	};
+
+	Tag.prototype.cssAdd = function(prop, value) {
+	  return this.css(prop, unitAdd(this.css(prop), value));
+	};
+
+	Tag.prototype.cssSub = function(prop, value) {
+	  return this.css(prop, unitSub(this.css(prop), value));
+	};
+
+	Tag.prototype.cssMul = function(prop, value) {
+	  return this.css(prop, unitMul(this.css(prop), value));
+	};
+
+	Tag.prototype.cssDiv = function(prop, value) {
+	  return this.css(prop, unitDiv(this.css(prop), value));
+	};
+
+
+/***/ },
+/* 53 */
 /***/ function(module, exports) {
 
 	var DomcomError, dcError, slice, stackReg, stackReg2, stacktraceMessage,
@@ -6830,262 +7056,6 @@
 	    }
 	    throw new Error(message + ':\n' + stacktraceMessage());
 	  }
-	};
-
-
-/***/ },
-/* 48 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var dc, extend, flow;
-
-	extend = (dc = __webpack_require__(1)).extend;
-
-	dc.builtinDirectives = __webpack_require__(50);
-
-	extend(dc, dc.builtinDirectives, __webpack_require__(55), __webpack_require__(49));
-
-	flow = dc.flow;
-
-	extend(flow, __webpack_require__(39), __webpack_require__(2));
-
-	dc.bindings = flow.bindings;
-
-	module.exports = dc;
-
-
-/***/ },
-/* 49 */
-/***/ function(module, exports) {
-
-	var Tag, reNonUnit, unitAdd, unitDiv, unitMul, unitSub;
-
-	Tag = dc.Tag;
-
-	reNonUnit = /[\d\s\.-]/g;
-
-	exports.unitAdd = unitAdd = function(x, y) {
-	  var num;
-	  num = parseFloat(x);
-	  if (isNaN(num)) {
-	    console.log('wrong type in unitAdd(prop, value)');
-	  }
-	  return num + parseFloat(y) + x.replace(reNonUnit, '');
-	};
-
-	exports.unitSub = unitSub = function(x, y) {
-	  var num;
-	  num = parseFloat(x);
-	  if (isNaN(num)) {
-	    console.log('wrong type in unitSub(prop, value)');
-	  }
-	  return num - parseFloat(y) + x.replace(reNonUnit, '');
-	};
-
-	exports.unitMul = unitMul = function(x, y) {
-	  var num;
-	  num = parseFloat(x);
-	  if (isNaN(num)) {
-	    console.log('wrong type in unitMul(prop, value)');
-	  }
-	  return num * parseFloat(y) + x.replace(reNonUnit, '');
-	};
-
-	exports.unitDiv = unitDiv = function(x, y) {
-	  var num;
-	  num = parseFloat(x);
-	  if (isNaN(num)) {
-	    console.log('wrong type in unitDiv(prop, value)');
-	  }
-	  return num / parseFloat(y) + x.replace(reNonUnit, '');
-	};
-
-	Tag.prototype.cssAdd = function(prop, value) {
-	  return this.css(prop, unitAdd(this.css(prop), value));
-	};
-
-	Tag.prototype.cssSub = function(prop, value) {
-	  return this.css(prop, unitSub(this.css(prop), value));
-	};
-
-	Tag.prototype.cssMul = function(prop, value) {
-	  return this.css(prop, unitMul(this.css(prop), value));
-	};
-
-	Tag.prototype.cssDiv = function(prop, value) {
-	  return this.css(prop, unitDiv(this.css(prop), value));
-	};
-
-
-/***/ },
-/* 50 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var $hide, $show, _ref;
-
-	exports.$model = __webpack_require__(51);
-
-	exports.$bind = __webpack_require__(52);
-
-	_ref = __webpack_require__(53), $show = _ref.$show, $hide = _ref.$hide;
-
-	exports.$show = $show;
-
-	exports.$hide = $hide;
-
-	exports.$options = __webpack_require__(54);
-
-
-/***/ },
-/* 51 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var getBindProp;
-
-	getBindProp = __webpack_require__(7).getBindProp;
-
-	module.exports = function(binding, eventName) {
-	  return function(comp) {
-	    var bindProp, props;
-	    props = comp.props;
-	    bindProp = getBindProp(comp);
-	    comp.setProp(bindProp, binding, props, 'Props');
-	    comp.bind(eventName || 'onchange', (function() {
-	      return binding(this[bindProp]);
-	    }), 'before');
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 52 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var domField, getBindProp, _ref;
-
-	_ref = __webpack_require__(7), getBindProp = _ref.getBindProp, domField = _ref.domField;
-
-	module.exports = function(binding) {
-	  return function(comp) {
-	    comp.setProp(getBindProp(comp), binding, props, 'Props');
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 53 */
-/***/ function(module, exports) {
-
-	
-	/* @param test - paramenter expression for directive
-	 */
-	var showHide;
-
-	showHide = function(showing) {
-	  return function(test, display) {
-	    return function(comp) {
-	      comp.showHide(showing, test, display);
-	      return comp;
-	    };
-	  };
-	};
-
-	exports.$show = showHide(true);
-
-	exports.$hide = showHide(false);
-
-
-/***/ },
-/* 54 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Tag, every, option, txt, _ref;
-
-	_ref = __webpack_require__(44), every = _ref.every, txt = _ref.txt;
-
-	option = __webpack_require__(46).option;
-
-	Tag = __webpack_require__(28);
-
-	module.exports = function(items, attrs) {
-	  return function(comp) {
-	    if (!(comp instanceof Tag) || comp.tagName !== 'select') {
-	      throw new Error('options should be only used in select tag');
-	    }
-	    comp.setChildren(0, every(items, function(item) {
-	      return option(attrs, [txt(item)]);
-	    }));
-	    return comp;
-	  };
-	};
-
-
-/***/ },
-/* 55 */
-/***/ function(module, exports) {
-
-	var DomNode, Tag, makeComponentDelegationHandler, makeDelegationHandler, makeHolderDelegationHandler;
-
-	Tag = dc.Tag, DomNode = dc.DomNode;
-
-	exports.makeDelegationHandler = makeDelegationHandler = function() {
-	  return function(event) {
-	    var targetComponent, targetNode;
-	    targetNode = event.target;
-	    targetComponent = targetNode.component;
-	    return targetComponent['do_' + event.type](event);
-	  };
-	};
-
-	Tag.prototype.delegate = DomNode.prototype.delegate = function(events, delegationHandler) {
-	  if (delegationHandler == null) {
-	    delegationHandler = makeDelegationHandler();
-	  }
-	  return this.bind(events, delegationHandler);
-	};
-
-	exports.makeHolderDelegationHandler = makeHolderDelegationHandler = function() {
-	  return function(event) {
-	    var handler, method, targetComponent, targetNode;
-	    targetNode = event.target;
-	    targetComponent = targetNode.component;
-	    method = 'do_' + event.type;
-	    while (targetComponent) {
-	      handler = targetComponent[method];
-	      if (handler) {
-	        handler.call(targetComponent, event);
-	        if (event.continueDelegating) {
-	          targetComponent = targetComponent.holder;
-	        } else {
-	          break;
-	        }
-	      } else {
-	        targetComponent = targetComponent.holder;
-	      }
-	    }
-	  };
-	};
-
-	Tag.prototype.delegateByHolder = DomNode.prototype.delegateByHolder = function(events, delegationHandler) {
-	  if (delegationHandler == null) {
-	    delegationHandler = makeHolderDelegationHandler();
-	  }
-	  return this.bind(events, delegationHandler);
-	};
-
-	makeComponentDelegationHandler = function(component) {
-	  return function(event) {
-	    var handler;
-	    if (handler = component['do_' + event.type]) {
-	      handler.call(component, event);
-	    }
-	  };
-	};
-
-	Tag.prototype.delegateByComponent = DomNode.prototype.delegateByComponent = function(events, component) {
-	  return this.bind(events, makeComponentDelegationHandler(component));
 	};
 
 
