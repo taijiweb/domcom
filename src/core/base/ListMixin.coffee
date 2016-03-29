@@ -2,7 +2,6 @@
 
 isComponent = require('./isComponent')
 toComponent = require('./toComponent')
-toComponentList = require('./toComponentList')
 Nothing = require('./Nothing')
 
 {extendChildFamily} = require('../../dom-util')
@@ -22,9 +21,7 @@ updateDcidIndexMap = (dcidIndexMap, children, start) ->
 
 module.exports =
 
-  initChildren: (children) ->
-    children = toComponentList(children)
-
+  initListMixin: ->
     # do not use component.listIndex
     # because a component can occurs different places in component tree
     # especially because in the different the TransformComponsnt branch
@@ -33,18 +30,26 @@ module.exports =
     this.renderingMap = {}
     this.removingMap = {}
 
-    this.nextNodes = nextNodes = []
+    this.nextNodes = []
 
     this.family = family = {}
     family[this.dcid] = true
 
-    for child, i in children
-      child = children[i]
+    for child, i in this.children
       child.holder = this
       extendChildFamily(family, child)
       dcidIndexMap[child.dcid] = i
 
-    this.children = children
+    return
+
+  cloneChildrenFrom: (component, options) ->
+    children = []
+    for child, i in component.children
+      children.push(this.cloneChild(child, i, options, component))
+    this.setChildren(0, children)
+
+  cloneChild: (child, index, options, srcComponent) ->
+    child.clone(options)
 
   # because dc.getChildNextNode, ListMixin.getChildNextNode have different behaviours
   # especially, dc.nextNodes is an array!!!
@@ -53,8 +58,8 @@ module.exports =
 
   updateChildHolder: updateChildHolder
 
-# after Component.removeNode, the previousSibling component  will reset nextNode,
-# and then this method will be called
+  # after Component.removeNode, the previousSibling component  will reset nextNode,
+  # and then this method will be called
   linkNextNode: (child) ->
     nextNode = child.nextNode
     children = this.children
@@ -138,7 +143,10 @@ module.exports =
     extendChildFamily(this.family, child)
     this.updateChildHolder(child)
     if !refChild
-      nextNode = this.nextNode
+      if this.isTag
+        nextNode = null
+      else
+        nextNode = this.nextNode
     else
       nextNode = refChild.firstNode || refChild.nextNode
     child.sinkNextNode(nextNode)
@@ -238,7 +246,7 @@ module.exports =
       startIndex++
     this
 
-  setChildren: (startIndex, newChildren...) ->
+  setChildren: (startIndex, newChildren) ->
     children = this.children
     oldChildrenLength = children.length
     n = oldChildrenLength
@@ -250,7 +258,7 @@ module.exports =
         this.replaceChild(startIndex + i, newChildren[i])
       else
         this.pushChild(newChildren[i])
-    return this
+    this
 
   setLength: (newLength) ->
     length = this.children.length

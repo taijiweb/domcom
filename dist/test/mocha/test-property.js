@@ -66,7 +66,7 @@ describe('domcom/properties/extendAttrs', function() {
         b: 1
       }
     });
-    return expect(classFn(attrs.className)()).to.equal("a b");
+    return expect(classFn(attrs.className).call()).to.equal("a b");
   });
   return it('extendAttrs({style:{width:1}}, {style:{height:2}})', function() {
     var attrs;
@@ -122,7 +122,7 @@ describe("domcom/properties/classFn", function() {
         b: active
       }
     });
-    expect(comp.className()).to.equal('a b', 'first');
+    expect(comp.className.call(comp)).to.equal('a b', 'first');
     comp.className = classFn({
       a: 1,
       b: active
@@ -166,7 +166,9 @@ describe('domcom/properties/event', function() {
       }
     }, 'click me');
     comp.mount('#demo');
-    comp.node.click();
+    comp.node.onclick({
+      type: 'click'
+    });
     return expect(x).to.equal(2);
   });
   it('multiple handlers for one event', function() {
@@ -181,7 +183,9 @@ describe('domcom/properties/event', function() {
     });
     comp.mount();
     comp.node.value = 2;
-    comp.node.onchange();
+    comp.node.onchange({
+      type: 'change'
+    });
     expect(spy1.called).to.equal(true);
     return expect(x.a).to.equal('2');
   });
@@ -196,7 +200,9 @@ describe('domcom/properties/event', function() {
     }, $a);
     comp.mount();
     comp.node.value = 2;
-    comp.node.onchange();
+    comp.node.onchange({
+      type: 'change'
+    });
     expect(spy1.called).to.equal(true);
     return expect(x.a).to.equal('2');
   });
@@ -289,7 +295,9 @@ describe('domcom/properties/bind checkbox', function() {
     cbx.mount('#demo');
     expect(cbx.node.onchange).to.be.defined;
     cbx.node.checked = true;
-    cbx.node.onchange();
+    cbx.node.onchange({
+      type: 'change'
+    });
     return expect(model1.a).to.equal(true);
   });
 });

@@ -2,6 +2,7 @@ extend = require('extend')
 
 {normalizeDomElement} = require('../../dom-util')
 {newDcid} = require('dc-util')
+{flow} = require('lazy-flow')
 isComponent = require('./isComponent')
 dc = require('../../dc')
 
@@ -18,6 +19,7 @@ module.exports = class Component
     this.holder = null
     this.dcid = newDcid()
     this.valid = true
+    this.setReactive()
 
   ### if mountNode is given, it should not be the node of any Component
   only use beforeNode if mountNode is given
@@ -150,6 +152,20 @@ module.exports = class Component
       if this.firstNode != firstNode
         this.firstNode = firstNode
         this.holder.raiseFirstNextNode(this)
+
+  setReactive: ->
+    if this.reactMap
+      me = this
+      invalidateThis = -> me.invalidate()
+      for srcField, reactField of this.reactMap
+        reactive = flow.bind(this, srcField)
+        if typeof reactField == 'string'
+          reactive.onInvalidate ->
+            if reaction = me[reactField]
+              reaction.invalidate()
+        else
+          reactive.onInvalidate invalidateThis
+    this
 
   copyEventListeners: (srcComponent) ->
     myListeners = this.listeners

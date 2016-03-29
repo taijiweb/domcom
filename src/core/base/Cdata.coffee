@@ -13,11 +13,11 @@ module.exports = class Cdata extends Text
     this operation is not supported in html document
   ###
   createDom: (parentNode, nextNode) ->
-    @node = document.createCDATASection(domValue(@text))
+    @node = document.createCDATASection(domValue(@text, this))
     @node
 
   updateDom: (parentNode, nextNode) ->
-    @text and @node.data = domValue(@text)
+    @text and @node.data = domValue(@text, this)
     @node
 
   toString: (indent=2, addNewLine) -> newLine("<CDATA #{funcString(@text)}/>", indent, addNewLine)

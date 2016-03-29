@@ -1,11 +1,12 @@
 extend = require('extend')
 {refreshComponents} = dc = require('../../dc')
 {domField, domValue} = require('../../dom-util')
-{classFn, styleFrom, eventHandlerFromArray, attrToPropName, updating} = require('../property')
+{directiveRegistry} = require('../../dc')
+{classFn, styleFrom, domEventHandler, attrToPropName, updating} = require('../property')
 BaseComponent = require('./BaseComponent')
 {funcString, newLine, cloneObject} = require('dc-util')
-{directiveRegistry} = require('../../config')
 {flow, react} = require('lazy-flow')
+toComponentArray = require('./toComponentArray')
 
 module.exports = class Tag extends BaseComponent
   constructor: (tagName, attrs={}, children) ->
@@ -14,7 +15,6 @@ module.exports = class Tag extends BaseComponent
       throw 'should use new SubclassComponent(...) with the subclass of Tag'
 
     super()
-    this.initChildren(children)
 
     this.isTag = true
 
@@ -22,28 +22,29 @@ module.exports = class Tag extends BaseComponent
     this.tagName = tagName.toLowerCase()
     this.namespace = attrs.namespace
 
-    this.initAttrs()
+    # initChildren must put before extendAttrs
+    this.children = toComponentArray(children)
+    this.initListMixin()
+    this.initProperties()
     this.extendAttrs(attrs)
-
     return
 
-  initAttrs: ->
-    me = this
-
+  initProperties: ->
     this.hasActiveProperties = false
 
     this.cacheClassName = ""
     this.className = className = classFn()
+    me = this
     this.className.onInvalidate ->
       if className.valid
         me.hasActiveProperties = true
         me.invalidate()
 
+    this.hasActiveProps = false
     this.cacheProps = {}
     this.props = {}
     this.boundProps = {}
     this['invalidateProps'] = {}
-    this.nodeProps = {}
 
     this.hasActiveNodeAttrs = false
     this.cacheNodeAttrs = {}
@@ -57,16 +58,17 @@ module.exports = class Tag extends BaseComponent
     this.boundStyle = {}
     this['invalidateStyle'] = {}
 
-    this.hasActiveEvents = false
-    # maybe this.events is be set in sub class's tag.bind(...) call
-    this.events = this.events || {}
+    this.hasActiveDomEvents = false
+    this.domEventCallbackMap = {}
     this.eventUpdateConfig = {}
+    return
 
   extendAttrs: (attrs)->
 
     {className, style, props, nodeAttrs} = this
 
     for key, value of attrs
+
 
       if key=='style'
         # style is this.style
@@ -75,9 +77,10 @@ module.exports = class Tag extends BaseComponent
           this.setProp(key, value, style, 'Style')
 
       else if key=='class' or key=='className'
+        this.hasActiveProperties = true
         className.extend(value)
 
-      # events and its handler
+      # dom event
       else if key[..1]=='on'
         if !value then continue
         else if typeof value == 'function'
@@ -98,35 +101,18 @@ module.exports = class Tag extends BaseComponent
         generator = directiveRegistry[key]
         if value instanceof Array then handler = generator.apply(null, value)
         else handler = generator.apply(null, [value])
-        handler(@)
+        handler(this)
 
       else if key[..4] == 'attr_'
-        @setProp(key[5...], value, nodeAttrs, 'NodeAttrs')
+        this.setProp(key[5...], value, nodeAttrs, 'NodeAttrs')
 
-      else @setProp(key, value, props, 'Props')
+      else this.setProp(key, value, props, 'Props')
 
-    @
+    this
 
-  prop: (args...) -> @_prop(args, @props, 'Props')
-
-  propBind: (prop) ->  @_propBind([prop], @props, 'Props')
-
-  css: (args...) -> @_prop(args, @style, 'Style')
-
-  cssBind: (prop) ->  @_propBind(prop, @style, 'Style')
-
-  attr: (args...) -> @_prop(args, @nodeAttrs, 'NodeAttrs')
-
-  attrBind: (prop) ->  @_propBind(prop, @nodeAttrs, 'NodeAttrs')
-
-  _propBind: (prop, props, type) ->
-    boundProps = this['bound'+type]
-    if bound = boundProps[prop]
-      bound
-    else
-      me = this
-      boundProps[prop] = react ->
-        me._prop(prop, props, type)
+  prop: (args...) -> this._prop(args, this.props, 'Props')
+  css: (args...) -> this._prop(args, this.style, 'Style')
+  attr: (args...) -> this._prop(args, this.nodeAttrs, 'NodeAttrs')
 
   _prop: (args, props, type) ->
     if args.length==0
@@ -135,47 +121,43 @@ module.exports = class Tag extends BaseComponent
     if args.length==1
       prop = args[0]
       if typeof prop == 'string'
-        # should return dom value
-        value = props[prop]
-        if value?
-          if typeof value == 'function'
-            return domValue(value())
-          else return domValue(value)
+        if props.hasOwnProperty(prop)
+          return domValue(props[prop], this)
         else
-          return domValue(@['cache'+type][prop])
+          return this['cache'+type][prop]
       else
         for key, v of prop
-          @setProp(key, v, props, type)
+          this.setProp(key, v, props, type)
 
     else if args.length==2
       if type=='NodeAttrs'
         this.setProp(args[0], args[1], props, type)
-      else @setProp(args[0], args[1], props, type)
+      else this.setProp(args[0], args[1], props, type)
 
     this
 
   setProp: (prop, value, props, type) ->
     prop = attrToPropName(prop)
-    value = domField value
+    value = domField(value, this)
     oldValue = props[prop]
 
     if value==oldValue
-      return @
+      return this
 
     else if !oldValue?
       if typeof value == 'function'
-        me = @
-        @['invalidate'+type][prop] = fn = ->
+        me = this
+        this['invalidate'+type][prop] = fn = ->
           me.addActivity(props, prop, type, true)
           if bound = me['bound'+type][prop]
             bound.invalidate()
           props[prop] = value
         value.onInvalidate(fn)
-        @addActivity(props, prop, type)
+        this.addActivity(props, prop, type)
         props[prop] = value
 
       else if value != this['cache'+type][prop]
-        @addActivity(props, prop, type)
+        this.addActivity(props, prop, type)
         if bound = this['bound'+type][prop]
           bound.invalidate()
         props[prop] = value
@@ -195,7 +177,7 @@ module.exports = class Tag extends BaseComponent
           if bound = me['bound'+type][prop]
             bound.invalidate()
           props[prop] = value
-        # value will always be a reactive function after executing "value = domField(value)"
+        # value will always be a reactive function after executing "value = domField(value, this)"
         value.onInvalidate(fn)
       # else null # do not need  value.onInvalidate
       if bound = this['bound'+type][prop]
@@ -204,99 +186,113 @@ module.exports = class Tag extends BaseComponent
 
     this
 
+  propBind: (prop) ->  this._propBind(prop, this.props, 'Props')
+  cssBind: (prop) ->  this._propBind(prop, this.style, 'Style')
+  attrBind: (prop) ->  this._propBind(prop, this.nodeAttrs, 'NodeAttrs')
+
+  _propBind: (prop, props, type) ->
+    boundProps = this['bound'+type]
+    if bound = boundProps[prop]
+      bound
+    else
+      boundProps[prop] = react ->
+        this._prop([prop], props, type)
+
   addActivity: (props, prop, type) ->
-    @['hasActive'+type] = true
-    @hasActiveProperties = true
-    if !@node then return
-    @invalidate()
+    this['hasActive'+type] = true
+    this.hasActiveProperties = true
+    if !this.node then return
+    this.invalidate()
 
   bind: (eventNames, handler, before) ->
     if arguments.length == 1
       for eventName, handler of eventNames
-        @bindOne(eventName, handler)
+        this.bindOne(eventName, handler)
     else
-      if !this.events
-        this.events = {}
+      if !this.domEventCallbackMap
+        this.domEventCallbackMap = {}
       eventNames = eventNames.split('\s+')
       for eventName in eventNames
-        @bindOne(eventName, handler, before)
+        this.bindOne(eventName, handler, before)
 
-    @
+    this
 
   bindOne: (eventName, handler, before) ->
     if eventName[...2]!='on' then eventName = 'on'+eventName
-    {events} = @
-    eventHandlers = events[eventName]
-    if !eventHandlers
-      events[eventName] = [handler]
-      if @node
-        @node[eventName] = eventHandlerFromArray(events[eventName], eventName, this)
+    domEventCallbackMap = this.domEventCallbackMap
+    if !(domEventCallbacks = domEventCallbackMap[eventName])
+      domEventCallbackMap[eventName] = [handler]
+      if this.node
+        this.node[eventName] = domEventHandler
       else
-        @hasActiveEvents = true
-        @hasActiveProperties = true
+        this.hasActiveDomEvents = true
+        this.hasActiveProperties = true
     else
-      index = eventHandlers.indexOf(handler)
-      if index>=0 then return @
-      if before then eventHandlers.unshift.call(eventHandlers, handler)
-      else eventHandlers.push.call(eventHandlers, handler)
-    @
+      index = domEventCallbacks.indexOf(handler)
+      if index>=0 then return this
+      if before
+        domEventCallbacks.unshift.call(domEventCallbacks, handler)
+      else
+        domEventCallbacks.push.call(domEventCallbacks, handler)
+    this
 
   unbind: (eventNames, handler) ->
     eventNames = eventNames.split('\s+')
-    {events} = @
+    domEventCallbackMap = this.domEventCallbackMap
     for eventName in eventNames
       if eventName[..1]!='on' then eventName = 'on'+eventName
-      eventHandlers = events[eventName]
-      if !eventHandlers then continue
-      index = eventHandlers.indexOf(handler)
+      domEventCallbacks = domEventCallbackMap[eventName]
+      if !domEventCallbacks then continue
+      index = domEventCallbacks.indexOf(handler)
       if index>=0
-        eventHandlers.splice(index, 1)
-        if !eventHandlers.length
-          events[eventName] = null
-          @node and @node[prop] = null
-    @
+        domEventCallbacks.splice(index, 1)
+        if !domEventCallbacks.length
+          domEventCallbackMap[eventName] = null
+          this.node and this.node[prop] = null
+    this
 
   addClass: (items...) ->
-    @className.extend(items)
-    if  @node and !@className.valid
-      @hasActiveProperties = true
-      @invalidate()
+    this.className.extend(items)
+    if  this.node and !this.className.valid
+      this.hasActiveProperties = true
+      this.invalidate()
     this
 
   removeClass: (items...) ->
-    @className.removeClass(items...)
-    if @node and !@className.valid
-      @hasActiveProperties = true
-      @invalidate()
+    this.className.removeClass(items...)
+    if this.node and !this.className.valid
+      this.hasActiveProperties = true
+      this.invalidate()
     this
 
   show: (display) ->
     if typeof display == 'function'
       display = display()
       if !display? then display = ''
-    if !display? then @setProp('display', 'block', @style, 'Style')
-    else if display=='visible' then @setProp('visibility', 'visible', @style, 'Style')
-    else @setProp('display', display, @style, 'Style')
+    if !display? then this.setProp('display', 'block', this.style, 'Style')
+    else if display=='visible' then this.setProp('visibility', 'visible', this.style, 'Style')
+    else this.setProp('display', display, this.style, 'Style')
     dc.update()
-    @
+    this
 
   hide: (display) ->
     if typeof display == 'function'
       display = display()
       if !display? then display = ''
-    if !display then @setProp('display', 'none', @style, 'Style')
-    else if display=='hidden' then @setProp('visibility', 'hidden', @style, 'Style')
-    else @setProp('display', display, @style, 'Style')
+    if !display then this.setProp('display', 'none', this.style, 'Style')
+    else if display=='hidden' then this.setProp('visibility', 'hidden', this.style, 'Style')
+    else this.setProp('display', display, this.style, 'Style')
     dc.update()
-    @
+    this
 
   showHide: (status, test, display) ->
-    {style} = @
-    test = domField(test)
+    {style} = this
+    test = domField(test, this)
     oldDisplay = style.display
-    if !oldDisplay then  @addActivity(style, 'display', 'Style', @node)
+    if !oldDisplay
+      this.addActivity(style, 'display', 'Style', this.node)
     else if typeof oldDisplay =='function' and oldDisplay.offInvalidate
-      oldDisplay.offInvalidate(@invalidateStyle.display)
+      oldDisplay.offInvalidate(this.invalidateStyle.display)
     style.display = method = flow test, oldDisplay, ->
       if (if typeof test == 'function' then !!test() else !!test)==status
         if display
@@ -310,15 +306,15 @@ module.exports = class Tag extends BaseComponent
         else oldDisplay = 'block'
       else 'none'
     me = this
-    @invalidateStyle.display = fn = ->
+    this.invalidateStyle.display = fn = ->
       me.addActivity(style, 'display', 'Style', true)
       style.display = method
     method.onInvalidate fn
-    @style = style
-    @
+    this.style = style
+    this
 
-  showOn: (test, display) -> @showHide(true, test, display)
-  hideOn: (test, display) -> @showHide(false, test, display)
+  showOn: (test, display) -> this.showHide(true, test, display)
+  hideOn: (test, display) -> this.showHide(false, test, display)
 
   # because dc, tag and List has different behaviour
   # so getChildParentNode is a necessary method
@@ -329,11 +325,11 @@ module.exports = class Tag extends BaseComponent
     this.valid = true
 
     this.node = node =
-      if @namespace then document.createElementNS(@namespace, @tagName)
-      else document.createElement(@tagName)
+      if this.namespace then document.createElementNS(this.namespace, this.tagName)
+      else document.createElement(this.tagName)
     node.component = this
 
-    @hasActiveProperties and @updateProperties()
+    this.hasActiveProperties and this.updateProperties()
 
     children = this.children
     this.childNodes = childNodes = []
@@ -343,7 +339,7 @@ module.exports = class Tag extends BaseComponent
     this.childNextNode = null
     if length=children.length
       nextNodes[length-1] = null
-      @createChildrenDom()
+      this.createChildrenDom()
 
     this.firstNode = node
 
@@ -355,69 +351,72 @@ module.exports = class Tag extends BaseComponent
     this.node
 
   updateProperties: ->
-    @hasActiveProperties = false
+    this.hasActiveProperties = false
 
-    {node, className} = @
+    {node, className} = this
     if !className.valid
-      classValue = className()
-      if classValue!=@cacheClassName
-        @cacheClassName = node.className = classValue
+      classValue = className.call(this)
+      if classValue!=this.cacheClassName
+        this.cacheClassName = node.className = classValue
 
-    if @hasActiveNodeAttrs
-      {nodeAttrs, cacheNodeAttrs} = @
-      @hasActiveNodeAttrs = false
+    if this.hasActiveNodeAttrs
+      {nodeAttrs, cacheNodeAttrs} = this
+      this.hasActiveNodeAttrs = false
       for prop, value of nodeAttrs
         delete nodeAttrs[prop]
-        value = domValue(value)
+        value = domValue(value, this)
         cacheNodeAttrs[prop] = node[prop] = value
         node.setAttribute(prop, value)
 
-    if @hasActiveProps
-      {props, cacheProps} = @
-      @hasActiveProps = false
+    if this.hasActiveProps
+      {props, cacheProps} = this
+      this.hasActiveProps = false
       for prop, value of props
         delete props[prop]
-        value = domValue(value)
+        value = domValue(value, this)
         cacheProps[prop] = node[prop] = value
 
-    if @hasActiveStyle
-      {style, cacheStyle} = @
-      @hasActiveStyle = false
+    if this.hasActiveStyle
+      {style, cacheStyle} = this
+      this.hasActiveStyle = false
       elementStyle = node.style
       for prop, value of style
         delete style[prop]
-        value = domValue(value)
+        value = domValue(value, this)
         cacheStyle[prop] = elementStyle[prop] = value
 
-    if @hasActiveEvents
-      {events} = @
-      for eventName, callbackList of events
-        node[eventName] = eventHandlerFromArray(callbackList, eventName, @)
-    @hasActiveEvents = false
+    if this.hasActiveDomEvents
+      for eventName, callbackList of this.domEventCallbackMap
+        if callbackList && callbackList.length
+          node[eventName] = domEventHandler
+    this.hasActiveDomEvents = false
 
     return
 
-  getPrevChainComponentOf: (child) ->
-    children = this.children
-    if index = this.dcidIndexMap[child.dcid]
-      children[index - 1]
-    else  null
+  clone: (options) ->
+    attrs = {className: this.className.clone(), style: extend({}, this.cacheStyle, this.style)}
+    extend(attrs, this.cacheProps, this.props, this.cacheNodeAttrs, this.nodeAttrs)
+    for eventName, domEventCallbacks of this.domEventCallbackMap
+      attrs[eventName] = domEventCallbacks[...]
+    result = new Tag(this.tagName, attrs, [])
+    result.__proto__ = this.__proto__
+    result.constructor = this.constructor
+    result.cloneChildrenFrom(this, options)
+    result.copyEventListeners(this)
+    result.setupCloneComponent(this, options)
 
-  clone: ->
-    children = []
-    for child in @children
-      children.push child.clone()
-    new Tag(@tagName, @attrs, children).copyEventListeners(@)
+  setupCloneComponent: (srcTag, options) ->
+    this.setReactive()
 
   toString: (indent=0, addNewLine) ->
-    s = newLine("<#{@tagName}", indent, addNewLine)
+    s = newLine("<#{this.tagName}", indent, addNewLine)
 
-    for key, value of @props
+    for key, value of this.props
       s += ' '+key+'='+funcString(value)
 
-    if @hasActiveStyle
+    if this.hasActiveStyle
       s += ' style={'
-      for key, value of @style
+      for key, value of this.style
         if typeof value =='string'
           s += value
         else for key, v of  value
@@ -425,16 +424,16 @@ module.exports = class Tag extends BaseComponent
       s += '}'
 
     s += '>'
-    children = @children
+    children = this.children
 
     if children.length>1
-      for child in @children
+      for child in this.children
         s += child.toString(indent+2, true)
-      s += newLine("</#{@tagName}>", indent+2, true)
+      s += newLine("</#{this.tagName}>", indent+2, true)
     else
       if children.length==1
         s += children[0].toString(indent+2)
-      s += newLine("</#{@tagName}>", indent+2)
+      s += newLine("</#{this.tagName}>", indent+2)
 
 {mixin} = require('dc-util')
 ListMixin = require('./ListMixin')

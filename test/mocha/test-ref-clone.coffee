@@ -3,8 +3,8 @@
 {see
 Component, TransformComponent, Tag, Text,
 txt, list, func, if_, case_, func, each
-clone
-a, p, span, text, div} = dc
+a, p, span, text, div
+flow} = dc
 
 describe 'Component.refs, clone', ->
   afterEach ->
@@ -68,22 +68,47 @@ describe 'Component.refs, clone', ->
       expect(node2.value).to.equal undefined
       expect(node2.fakeProp).to.equal undefined
 
-    it 'should process text clone component ', ->
-      comp = list(t1=txt(1), clone(t1))
+    it 'should process text clone component bind', ->
+      comp = list(t1=txt(1), t1.clone())
       comp.mount('#demo')
       dc.update()
       expect(comp.node[1].textContent).to.equal '1'
 
+    it 'should process text clone component with bind', ->
+      t1 = txt(flow.thisBind('x'))
+      t2 = t1.clone()
+      t1.x = 1
+      t2.x = 2
+      t1.mount('#demo')
+      t2.mount('#demo')
+      dc.update()
+      expect(t1.node.textContent).to.equal '1'
+      expect(t2.node.textContent).to.equal '2'
+      t2.x = 3
+      dc.update()
+      expect(t2.node.textContent).to.equal '3'
+
+    it 'should process mount cloned tag ', ->
+      c1 = p(1)
+      comp = c1.clone()
+      comp.mount('#demo')
+      dc.update()
+      expect(comp.node.innerHTML).to.equal '1'
+
     it 'should process tag clone component ', ->
-      comp = list(c1=p(1), c2=clone(c1))
+      c1 = p(1)
+      c2 = c1.clone()
+      comp = list(c1, c2)
       comp.mount('#demo')
       dc.update()
       expect(comp.node[1].innerHTML).to.equal '1'
 
     it 'should process if_ clone component ', ->
       x = see 0
-      lstComp = list(c1=p(2), c2=clone(c1))
-      comp = if_(x, c1=p(3), lstComp)
+      c1 = p(1)
+      c2 = c1.clone()
+      lstComp = list(c1, c2)
+      comp = if_(x, p(3), lstComp)
       comp.mount('#demo')
       x 1
       dc.update()

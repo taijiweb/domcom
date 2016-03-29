@@ -164,12 +164,12 @@ describe 'domcom/mergeIf', ->
     comp = mergeIf(x, div({onclick: -> a = 1}, 1), div({ onclick: -> a = 2}, 2))
     comp.mount()
 
-    comp.node.onclick()
+    comp.node.onclick({type: 'click'})
     expect(a).to.equal(2, 'first click')
 
     x 1
     dc.update()
-    comp.node.onclick()
+    comp.node.onclick({type: 'click'})
     expect(a).to.equal(1, 'second click')
 
   it 'should NOT merge If(0, div({onclick}, 1), div({onclick}, 2), true, false, true)', ->
@@ -178,12 +178,12 @@ describe 'domcom/mergeIf', ->
     comp = new If(0, div({onclick: -> a = 1}, 1), div({ onclick: -> a = 2}, 2), true, false, true) # merge, recursive, alwaysBeIf
     comp.mount()
 
-    comp.node.onclick()
+    comp.node.onclick({type: 'click'})
     expect(a).to.equal(2, 'first click')
 
     comp.test = 1
     dc.update()
-    comp.node.onclick()
+    comp.node.onclick({type: 'click'})
     expect(a).to.equal(1, 'second click')
 
   it 'should render mergeIf(x, div({style}, 1), div({style}, 2))', ->

@@ -20,8 +20,7 @@ module.exports = class Func extends TransformComponent
   getContentComponent: -> toComponent(@func())
 
   clone: ->
-    me = this
-    (new Func((-> toComponent(me.func()).clone())))
+    (new Func(this.func))
       .copyEventListeners(@)
 
   toString: (indent=2, addNewLine) ->

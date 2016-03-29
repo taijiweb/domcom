@@ -2,6 +2,8 @@
 
 isComponent = require('./core/base/isComponent')
 
+dc.useSystemUpdating = false
+
 if typeof window != 'undefined'
   for vendor in  ['ms', 'moz','webkit','o']
     if window.requestAnimationFrame = window[vendor + 'RequestAnimationFrame']
@@ -60,7 +62,6 @@ dc.refreshComponents = refreshComponents = ->
   for _, [component, holder] of renderingMap
     holder.updateChildHolder(component)
     component.renderDom(component.baseComponent)
-  this.valid = false
   this
 
 removeComponents = ->
@@ -72,7 +73,7 @@ removeComponents = ->
 
 dc.update = (force) ->
   dc.emit('willUpdate')
-  if (force || dc.alwaysUpdate) && !dc.valid
+  if !dc.valid && (force || dc.alwaysUpdate || !dc.useSystemUpdating)
     refreshComponents.call(this)
     removeComponents.call(this)
   dc.emit('didUpdate')

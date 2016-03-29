@@ -81,7 +81,9 @@ describe("component  ", function() {
       });
       comp.mount();
       expect(spy.called).to.equal(false);
-      comp.node.onclick();
+      comp.node.onclick({
+        type: 'click'
+      });
       return expect(spy.called).to.equal(true);
     });
     it('should process event name without on', function() {
@@ -92,7 +94,9 @@ describe("component  ", function() {
       });
       comp.mount();
       expect(spy.called).to.equal(false);
-      comp.node.onclick();
+      comp.node.onclick({
+        type: 'click'
+      });
       return expect(spy.called).to.equal(true);
     });
     it('should not run event hanlder while rendering tag', function() {
@@ -103,7 +107,9 @@ describe("component  ", function() {
       });
       comp.mount();
       expect(spy.called).to.equal(false);
-      comp.node.onclick();
+      comp.node.onclick({
+        type: 'click'
+      });
       return expect(spy.called).to.equal(true);
     });
     it('should not run event hanlder while rendering button tag', function() {
@@ -116,7 +122,9 @@ describe("component  ", function() {
       });
       comp.mount();
       expect(spy.called).to.equal(false);
-      comp.node.onclick();
+      comp.node.onclick({
+        type: 'click'
+      });
       return expect(spy.called).to.equal(true);
     });
     it('should not run event hanlder while rendering div > button tag', function() {
@@ -129,7 +137,9 @@ describe("component  ", function() {
       }));
       comp.mount();
       expect(spy.called).to.equal(false);
-      comp.children[0].node.onclick();
+      comp.children[0].node.onclick({
+        type: 'click'
+      });
       return expect(spy.called).to.equal(true);
     });
     it('should create tag with attribute', function() {
@@ -268,7 +278,9 @@ describe("component  ", function() {
       comp.mount('#demo');
       expect(comp.node.value).to.equal('1');
       comp.node.value = '2';
-      comp.node.onchange();
+      comp.node.onchange({
+        type: 'change'
+      });
       return expect(a$()).to.equal('2');
     });
     it('should render div(2) component', function() {

@@ -203,7 +203,9 @@ describe("test base component", function() {
       comp.bind('click', function() {
         return x = 2;
       });
-      comp.node.onclick();
+      comp.node.onclick({
+        type: 'click'
+      });
       return expect(x).to.equal(2);
     });
     return it('should Html.text setter', function() {

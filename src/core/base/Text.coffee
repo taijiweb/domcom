@@ -2,6 +2,8 @@ BaseComponent = require('./BaseComponent')
 {funcString, newLine, value, dynamic} = require('dc-util')
 {domField, domValue} = require('../../dom-util')
 
+{setText} = require('../property/attrs')
+
 if 'textContent' of document.documentElement
   hasTextContent = true
 else
@@ -10,19 +12,24 @@ else
 exports = module.exports = class Text extends BaseComponent
   constructor: (text) ->
     super()
-    this.text = text = domField(text)
-
-    me = this
-    if typeof text == 'function'
-      text.onInvalidate ->
-        me.textValid = false
-        me.invalidate()
-
+    this.setText(text)
     this.isText = true
+
+    if Object.defineProperty
+      me = this
+
+      get = -> me._text
+      set = (text) ->
+        me.setText(text)
+        text
+
+      Object.defineProperty(this, 'text', {get, set})
 
     this.family = {}
     this.family[this.dcid] = true
     this
+
+  setText:setText
 
   invalidateOffspring: (offspring) ->
     holder = this.holder
@@ -41,7 +48,7 @@ exports = module.exports = class Text extends BaseComponent
 
   createDom: ->
     this.textValid = true
-    text = domValue(this.text)
+    text = domValue(this.text, this)
     node = document.createTextNode(text)
     node.component = this
     this.node = node
@@ -56,7 +63,7 @@ exports = module.exports = class Text extends BaseComponent
       return node
     else
       this.textValid = true
-      text = domValue(this.text)
+      text = domValue(this.text, this)
       if text!=this.cacheText
         if hasTextContent
           node.textContent = text
@@ -65,6 +72,8 @@ exports = module.exports = class Text extends BaseComponent
         this.cacheText = text
       node
 
-  clone: -> (new this.constructor(this.text)).copyEventListeners(this)
+  clone: ->
+    result = new this.constructor(this.text)
+    result.copyEventListeners(this)
 
   toString: (indent=2, addNewLine) -> newLine(funcString(this.text), indent, addNewLine)

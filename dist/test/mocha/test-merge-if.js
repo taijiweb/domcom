@@ -172,11 +172,15 @@ describe('domcom/mergeIf', function() {
       }
     }, 2));
     comp.mount();
-    comp.node.onclick();
+    comp.node.onclick({
+      type: 'click'
+    });
     expect(a).to.equal(2, 'first click');
     x(1);
     dc.update();
-    comp.node.onclick();
+    comp.node.onclick({
+      type: 'click'
+    });
     return expect(a).to.equal(1, 'second click');
   });
   it('should NOT merge If(0, div({onclick}, 1), div({onclick}, 2), true, false, true)', function() {
@@ -192,11 +196,15 @@ describe('domcom/mergeIf', function() {
       }
     }, 2), true, false, true);
     comp.mount();
-    comp.node.onclick();
+    comp.node.onclick({
+      type: 'click'
+    });
     expect(a).to.equal(2, 'first click');
     comp.test = 1;
     dc.update();
-    comp.node.onclick();
+    comp.node.onclick({
+      type: 'click'
+    });
     return expect(a).to.equal(1, 'second click');
   });
   return it('should render mergeIf(x, div({style}, 1), div({style}, 2))', function() {

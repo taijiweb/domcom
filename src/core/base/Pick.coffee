@@ -56,5 +56,3 @@ module.exports = class Pick extends TransformComponent
 
   toString: (indent=0, addNewLine='') ->
       newLine('', indent, addNewLine)+'<Pick:'+@field+': '+@_content.toString(indent+2, true)+'>'
-
-

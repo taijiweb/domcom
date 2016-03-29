@@ -4,23 +4,13 @@ BaseComponent = require('./BaseComponent')
 
 {refreshComponents} = dc = require('../../dc')
 
-getFirstNodeFromArray = (nodes) ->
-  if !nodes.length
-    return null
-  else
-    for node in nodes
-      if !isArray(node) && node
-        return node
-      else if node = getFirstNodeFromArray(node)
-        return node
-    null
+toComponentArray = require('./toComponentArray')
 
 module.exports = exports = class List extends BaseComponent
   constructor: (children) ->    
     super()
-    this.renderingMap = {}
-    this.removingMap = {}
-    this.initChildren(children)
+    this.children = toComponentArray(children)
+    this.initListMixin()
     this.isList = true
 
     return
@@ -178,7 +168,10 @@ module.exports = exports = class List extends BaseComponent
 
     this.node
 
-  clone: -> (new List((for child in this.children then child.clone()))).copyEventListeners(this)
+  clone: (arg) ->
+    result = new List(this.cloneChildren(arg))
+    result.constructor = this.constructor
+    result.copyEventListeners(this)
 
   toString: (indent=0, addNewLine) ->
     if !this.children.length then newLine("<List/>", indent, addNewLine)

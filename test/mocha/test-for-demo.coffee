@@ -33,8 +33,8 @@ describe 'demo', ->
       expect(z.node.innerHTML).to.equal '3',  'mount'
       x.node.value = '3'
       y.node.value = '4'
-      x.node.onchange()
-      y.node.onchange()
+      x.node.onchange({type: 'change'})
+      y.node.onchange({type: 'change'})
       expect(a_()).to.equal('3', 'a_')
       expect(b_()).to.equal('4', 'b_')
       expect(sum()).to.equal('34', 'sum')
@@ -49,14 +49,14 @@ describe 'demo', ->
       x = 0
       comp = div({}, c0=input({ onmouseenter: -> x = 1}), div({}, 'wawa'))
       comp.mount()
-      c0.node.onmouseenter()
+      c0.node.onmouseenter({type: 'mouseenter'})
       expect(x).to.equal 1
 
     it 'should process event property of child component with model directive', ->
       x = 0
       comp = div({}, c0=input({ $model:duplex({}, 'x'), onmouseenter: -> x = 1}), div({}, 'wawa'))
       comp.mount()
-      c0.node.onmouseenter()
+      c0.node.onmouseenter({type: 'mouseenter'})
       expect(x).to.equal 1
 
   describe 'text model', ->
@@ -66,7 +66,7 @@ describe 'demo', ->
       comp = list(text1=text(attrs, a$), text2=text(attrs, a$))
       comp.mount()
       text1.node.value = 3
-      text1.node.onchange()
+      text1.node.onchange({type: 'change'})
       expect(m.a).to.equal '3', 'm.a'
       expect(text2.node.value).to.equal '3', 'text2.node.value'
 
@@ -76,7 +76,7 @@ describe 'demo', ->
       comp = list(text1=text(attrs), text2=text(attrs))
       comp.mount()
       text1.node.value = 3
-      text1.node.onchange()
+      text1.node.onchange({type: 'change'})
       expect(m.a).to.equal '3', 'm.a'
       expect(text2.node.value).to.equal '3', 'text2.node.value'
 
@@ -88,7 +88,9 @@ describe 'demo', ->
       opts = for item in [1,2] then do (item=item) ->
         span({
           style:{display:'block', border:"1px solid blue", "min-width":"40px"}
-          onclick:(-> value(item); dc.update())
+          onclick: ->
+            value(item)
+            dc.update()
         }, item)
       attrs = extendAttrs attrs, {
         onmouseleave:(-> showingItems false; dc.update())
@@ -103,9 +105,9 @@ describe 'demo', ->
       expect(input1.node.value).to.equal('')
       expect(showingItems()).to.equal(false)
       expect(items.node.style.display).to.equal('none')
-      input1.node.onmouseenter()
+      input1.node.onmouseenter({type: 'mouseenter'})
       expect(items.node.style.display).to.equal('block')
-      opts[1].node.onclick()
+      opts[1].node.onclick({type: 'click'})
       expect(input1.node.value).to.equal('2')
 
   describe 'controls', ->

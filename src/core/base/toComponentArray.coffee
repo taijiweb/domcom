@@ -1,6 +1,6 @@
 toComponent = require('./toComponent')
 
-module.exports = toComponentList = (item) ->
+module.exports = toComponentArray = (item) ->
   if !item then []
 
   else if item instanceof Array

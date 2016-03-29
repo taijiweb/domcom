@@ -1,6 +1,7 @@
 Tag = require('./Tag')
 {funcString, newLine, mixin} = require('dc-util')
 {domValue, domField} = require('../../dom-util')
+{setText} = require('../property/attrs')
 
 # !!! Warning:
 # By default, Html does not escape to safe the html.
@@ -35,36 +36,33 @@ module.exports = class Html extends Tag
 
 Html.HtmlMixin = HtmlMixin = {
 
+  setText: setText
+
   initHtmlComponent: (text, transform) ->
-    @_text = text = domField(text)
     @transform = transform
 
-    me = @
-    if typeof text == 'function'
-      text.onInvalidate ->
-        me.textValid = false
-        me.invalidate()
+    this.setText(text)
 
     if Object.defineProperty
+      me = this
 
-      get: -> me._text
-
+      get = -> me._text
       set = (text) ->
         me.setText(text)
         text
 
-      Object.defineProperty(this, 'text', {set})
+      Object.defineProperty(this, 'text', {get, set})
 
-  # initChildren is called by the constructor of Tag class
+  # initListMixin is called by the constructor of Tag class
   # so put a empty definition here
-  initChildren: ->
+  initListMixin: ->
 
   createDom: ->
     @textValid = true
     @node = @firstNode = node = document.createElement(this.tagName)
     node.component = this
     this.updateProperties()
-    this.cacheText = node.innerHTML = @transform and @transform(domValue(@_text)) or domValue(@_text)
+    this.cacheText = node.innerHTML = @transform and @transform(domValue(@_text, this)) or domValue(@_text, this)
     @
 
   refreshDom: ->
@@ -74,7 +72,7 @@ Html.HtmlMixin = HtmlMixin = {
       return @
 
     @textValid = true
-    text = @transform and @transform(domValue(@_text)) or domValue(@_text)
+    text = @transform and @transform(domValue(@_text, this)) or domValue(@_text, this)
 
     node = @node
 
@@ -94,22 +92,6 @@ Html.HtmlMixin = HtmlMixin = {
     # because may be cloneNode
     this.updateProperties()
 
-    @
-
-  setText: (text) ->
-    text = domField(text)
-    if @_text == text
-      return this
-
-    @textValid = false
-    @_text = text
-
-    me = @
-    if typeof text == 'function'
-      text.onInvalidate ->
-        me.textValid = false
-        me.invalidate()
-    @invalidate()
     @
 
   invalidateOffspring: (offspring) ->

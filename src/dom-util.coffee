@@ -36,11 +36,12 @@ if typeof window != 'undefined'
 
 {renew} = require('lazy-flow')
 
-exports.domField = (value) ->
+exports.domField = (value, component) ->
 
-  if !value? then return ''
+  if !value?
+    ''
 
-  if typeof value != 'function'
+  else if typeof value != 'function'
 
    if value.then and value.catch
      fn = react -> fn.promiseResult
@@ -53,21 +54,30 @@ exports.domField = (value) ->
         fn.promiseResult = error
         fn.invalidate()
 
-     return fn
+     fn
 
-   else return value
+   else
+     value
 
-  if !value.invalidate then return renew(value)
+  else if value.bindComponent
+    value.bindComponent(component)
 
-  value
+  else if !value.invalidate
+    renew(value)
 
-exports.domValue = (value) ->
-  if !value? then return ''
-  else if typeof value != 'function' then value
+  else value
+
+exports.domValue = (value, component) ->
+  if !value?
+    ''
+  else if typeof value != 'function'
+    value
   else
-    value = value()
-    if !value? then return ''
-    else value
+    value = value.call(component)
+    if !value?
+      ''
+    else
+      value
 
 # family do not consider exceeding TransformComponent
 # a BaseComponent can have only one reference of one component in all of its family

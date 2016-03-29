@@ -5,7 +5,8 @@ Pick
 Nothing, Defer} = require('./base')
 {isEven} = require('dc-util')
 
-{isAttrs} = require('./util')
+exports.isAttrs = isAttrs = (item) ->
+  typeof item == 'object' and item!=null and !isComponent(item) and item not instanceof Array
 
 {isArray, isObject} = require('dc-util')
 
@@ -278,9 +279,3 @@ exports.defer = (attrs, promise, fulfill, reject, init) ->
     new Tag('div', attrs, [new Defer(promise, fulfill, reject, init)])
   else
     new Defer(attrs, promise, fulfill, reject)
-
-exports.clone = (attrs, src) ->
-  if isAttrs(attrs)
-    new Tag('div', attrs, [toComponent(src).clone()])
-  else
-    toComponent(attrs).clone(src)

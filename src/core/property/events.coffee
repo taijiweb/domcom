@@ -1,5 +1,3 @@
-config = require('../../config')
-
 exports.extendEventValue = extendEventValue = (props, prop, value, before) ->
   oldValue = props[prop]
 
@@ -17,23 +15,27 @@ exports.extendEventValue = extendEventValue = (props, prop, value, before) ->
   else
     props[prop] = oldValue.concat(value)
 
-exports.eventHandlerFromArray = (callbackList, eventName) ->
-  (event) ->
-    component = this.component
+exports.domEventHandler = (event) ->
+  eventType = 'on' + event.type
+  component = this.component
+  domEventCallbacks = component.domEventCallbackMap[eventType]
+  for fn in domEventCallbacks
+    if fn
+      fn.call(this, event)
 
-    for fn in callbackList
-      if fn
-        fn.call(this, event, component)
+  if (updating = this.component.eventUpdateConfig[eventType])?
+    dc.update(updating)
 
-    if (updating = component.eventUpdateConfig[eventName])?
-      dc.update(updating)
-
-    if !event
-      return
-
-    if !event.executeDefault
+  if event
+    if !event.executeDefault && event.preventDefault
       event.preventDefault()
-    if !event.continuePropagation
+    if !event.continuePropagation && event.stopPropagation
       event.stopPropagation()
 
+  return
+
+exports.domEventHandlerFromArray = (callbackArray) ->
+  (event) ->
+    for fn in callbackArray
+      fn && fn.call(this, event)
     return

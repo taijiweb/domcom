@@ -309,10 +309,14 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount();
       expect(pIf.node.innerHTML).to.equal('2');
       t1.node.value = 1;
-      t1.node.onchange();
+      t1.node.onchange({
+        type: 'change'
+      });
       expect(pIf.node.innerHTML).to.equal('1');
       t1.node.value = 0;
-      t1.node.onchange();
+      t1.node.onchange({
+        type: 'change'
+      });
       return expect(pIf.node.innerHTML).to.equal('2');
     });
     it('should process event in embedded if 2-5', function() {
@@ -327,10 +331,14 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount();
       expect(pIf.node.innerHTML).to.equal('2');
       t1.node.value = 1;
-      t1.node.onchange();
+      t1.node.onchange({
+        type: 'change'
+      });
       expect(pIf.node.innerHTML).to.equal('1');
       t1.node.value = 0;
-      t1.node.onchange();
+      t1.node.onchange({
+        type: 'change'
+      });
       return expect(pIf.node.innerHTML).to.equal('2');
     });
     it('should process event in embedded if 2-6', function() {
@@ -345,10 +353,14 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount();
       expect(pIf.node.innerHTML).to.equal('2');
       t1.node.value = 1;
-      t1.node.onchange();
+      t1.node.onchange({
+        type: 'change'
+      });
       expect(pIf.node.innerHTML).to.equal('1');
       t1.node.value = 0;
-      t1.node.onchange();
+      t1.node.onchange({
+        type: 'change'
+      });
       return expect(pIf.node.innerHTML).to.equal('2');
     });
     return it('should process two list with same children', function() {

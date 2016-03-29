@@ -12,7 +12,7 @@ describe("test dc", function() {
     it('dc(document) should be Component', function() {
       return expect(!isComponent(dc(document))).to.equal(true);
     });
-    it('should cache DomComponent', function() {
+    nit('should cache DomComponent', function() {
       return expect(dc(document)).to.equal(dc(document));
     });
     return it('dc(document).bind should be a function', function() {

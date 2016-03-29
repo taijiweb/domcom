@@ -111,8 +111,6 @@ todoHeader = header id: "header",
   h1 "todos"
   form id: "todo-form", text1
 
-#todoHeader = text1
-
 todoItems = funcEach getTodos, (todo, index) ->
 
   li className: { completed: (-> todo.completed), editing: -> todo==editingTodo},
@@ -130,8 +128,6 @@ todoItems = funcEach getTodos, (todo, index) ->
         onblur: -> todo.title = @value; save(todos); editingTodo = null; dc.update()
         onfocus: -> todo == editingTodo
         onkeyup: onEscapeFn( -> revertEdits(todo) ) }
-
-xxxtodoEditArea = funcEach getTodos, (todo) -> todo.title + ' '
 
 todoEditArea = section id: "main",
 

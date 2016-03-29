@@ -40,7 +40,7 @@ describe 'domcom/properties/extendAttrs', ->
 
   it 'extendAttrs({class{a:1}}, className({b:1})', ->
     attrs = extendAttrs({class:{a:1}}, {className:{b:1}})
-    expect(classFn(attrs.className)()).to.equal("a b")
+    expect(classFn(attrs.className).call()).to.equal("a b")
 
   it 'extendAttrs({style:{width:1}}, {style:{height:2}})', ->
     attrs = extendAttrs({style:{width:1}}, {style:{height:2}})
@@ -73,7 +73,7 @@ describe "domcom/properties/classFn", ->
   it 'should get class property in component', ->
     active = see true
     comp = div({class:{a:1, b:active}})
-    expect(comp.className()).to.equal('a b', 'first')
+    expect(comp.className.call(comp)).to.equal('a b', 'first')
     comp.className = classFn {a:1, b:active} # need be assign again before the call before affected the className and its invalid
     expect(comp.className.valid).to.equal false, 'className.valid 1'
     expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties 1'
@@ -100,7 +100,7 @@ describe 'domcom/properties/event', ->
     x = 1
     comp = a({onclick: -> x = 2}, 'click me')
     comp.mount('#demo')
-    comp.node.click()
+    comp.node.onclick({type:'click'})
     expect(x).to.equal(2)
 
   it 'multiple handlers for one event', ->
@@ -109,7 +109,7 @@ describe 'domcom/properties/event', ->
     comp = text({onchange:spy1, $model:$a})
     comp.mount()
     comp.node.value = 2
-    comp.node.onchange()
+    comp.node.onchange({type:'change'})
     expect(spy1.called).to.equal true
     expect(x.a).to.equal '2'
 
@@ -119,7 +119,7 @@ describe 'domcom/properties/event', ->
     comp = text({onchange:spy1}, $a)
     comp.mount()
     comp.node.value = 2
-    comp.node.onchange()
+    comp.node.onchange({type:'change'})
     expect(spy1.called).to.equal true
     expect(x.a).to.equal '2'
 
@@ -169,5 +169,5 @@ describe 'domcom/properties/bind checkbox', ->
     cbx.mount('#demo')
     expect(cbx.node.onchange).to.be.defined
     cbx.node.checked = true
-    cbx.node.onchange()
+    cbx.node.onchange({type:'change'})
     expect(model1.a).to.equal true

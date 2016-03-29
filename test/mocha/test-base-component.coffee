@@ -151,7 +151,7 @@ describe "test base component", ->
       comp.mount(demoNode=newDemoNode())
       x = 1
       comp.bind('click', -> x = 2)
-      comp.node.onclick()
+      comp.node.onclick({type:'click'})
       expect(x).to.equal(2)
 
     it 'should Html.text setter', ->

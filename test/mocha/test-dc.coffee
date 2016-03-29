@@ -7,9 +7,9 @@
 describe "test dc", ->
   describe 'dc(document)', ->
     it 'dc(document) should be Component', ->
-      expect(!isComponent(dc(document))).to.equal true
+      expect(!isComponent(dc(document))).to.equal(true)
 
-    it 'should cache DomComponent', ->
+    nit 'should cache DomComponent', ->
       expect(dc(document)).to.equal dc(document)
 
     it 'dc(document).bind should be a function', ->

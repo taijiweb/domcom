@@ -105,11 +105,7 @@ module.exports = class BaseComponent extends Component
         holder.linkNextNode(component)
     return
 
-  attachNode: ->
-    if !(attached=this.attached)
-      this.attached = true
-      this.emit('willAttach')
-
+  executeAttachNode: ->
     this.removing = false
 
     node = this.node
@@ -123,6 +119,13 @@ module.exports = class BaseComponent extends Component
       catch e
         dc.error(e)
 
+  attachNode: ->
+    if !(attached=this.attached)
+      this.attached = true
+      this.emit('willAttach')
+
+    this.executeAttachNode()
+
     if holder = this.holder
       holder.raiseNode(this)
       holder.raiseFirstNextNode(this)
@@ -130,7 +133,7 @@ module.exports = class BaseComponent extends Component
     if !attached
       this.emit('didAttach')
 
-    node
+    this.node
 
   setParentNode: (parentNode) ->
     this.parentNode = parentNode
@@ -140,6 +143,3 @@ module.exports = class BaseComponent extends Component
   sinkNextNode: (nextNode) ->
     if nextNode != this.nextNode
       this.nextNode = nextNode
-
-  getPrevChainComponentOf: (child) ->
-    throw new Error('Atomic BaseComponent should not has child component.')

@@ -4,7 +4,7 @@ Tag = require('./base/Tag')
 List = require('./base/List')
 Nothing = require('./base/Nothing')
 
-{eventHandlerFromArray} = require('./property')
+{domEventHandlerFromArray} = require('./property')
 
 flow = require('lazy-flow/addon')
 flowIf = flow.if_
@@ -31,7 +31,7 @@ exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
     className = mergeIfClassFn(test, then_.className, else_.className)
     props = mergeIfProps(test, then_.props, else_.props)
     style = mergeIfProps(test, then_.style, else_.style)
-    events = mergeIfEvents(test, then_.events, else_.events, component)
+    events = mergeIfEvents(test, then_.domEventCallbackMap, else_.domEventCallbackMap)
 
     component
       .addClass(className)
@@ -114,26 +114,26 @@ mergeIfProps = (test, thenProps, elseProps) ->
 
 emptyEventCallback = ->
 
-mergeIfEvents = (test, thenEvents, elseEvents, component) ->
+mergeIfEvents = (test, thenEventCallbackMap, elseEventCallbackMap) ->
 
-  unified = extend({}, thenEvents, elseEvents)
+  unified = extend({}, thenEventCallbackMap, elseEventCallbackMap)
 
   for eventName of unified
 
-    if thenCallbackList = thenEvents[eventName]
-      thenHandler = eventHandlerFromArray(thenCallbackList[...], eventName, component)
+    if thenCallbackList = thenEventCallbackMap[eventName]
+      thenHandler = domEventHandlerFromArray(thenCallbackList[...])
     else 
       thenHandler = emptyEventCallback
 
-    if elseCallbackList = elseEvents[eventName]
-      elseHandler = eventHandlerFromArray(elseCallbackList[...], eventName, component)
+    if elseCallbackList = elseEventCallbackMap[eventName]
+      elseHandler = domEventHandlerFromArray(elseCallbackList[...])
     else
       elseHandler = emptyEventCallback
 
     unified[eventName] = (event) ->
       if test()
-        thenHandler.call(component.node, event, component)
+        thenHandler.call(this, event)
       else
-        elseHandler.call(component.node, event, component)
+        elseHandler.call(this, event)
 
   unified

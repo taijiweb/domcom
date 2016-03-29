@@ -53,24 +53,24 @@ In javascript:
     demoSum = function() {
       var a, b, comp, p1, t1, t2;
 
-      a = see(1);
-      b = see(2);
+      a$ = see(1);
+      b$ = see(2);
 
       comp = list((t1 = text({
-        value: a,
-        onchange() { return a(this.value * 1); } // ES 6
+        value: a$,
+        onchange() { return a$(this.value * 1); } // ES 6
 
-        // onchange: function() { return a(this.value * 1) } // ES5
+        // onchange: function() { return a$(this.value * 1) } // ES5
 
       })), (t2 = text({
-        value: b,
-        onchange() { return b(this.value * 1); } // ES 6
+        value: b$,
+        onchange() { return b$(this.value * 1); } // ES 6
 
-        // onchange: function() { return b(this.value * 1);}  // ES5
+        // onchange: function() { return b$(this.value * 1);}  // ES5
 
-      })), p1 = p(flow.add(a, b)));
+      })), p1 = p(flow.add(a$, b$)));
 
-      dc.updateWhen([t1, t2], 'change', p1);
+      dc.updateWhen([t1, t2], 'change');
 
       return comp.mount();
     };
@@ -83,14 +83,14 @@ In coffee-script(recommended):
 
     demoSum = ->
 
-        a = see 1; b = see 2
+        a$ = see 1; b$ = see 2
 
         comp = list \
-            (t1 = text value: a, onchange: -> a @value*1),
-            (t2 = text value: b, onchange: -> b @value*1),
-            p1 = p flow.add a, b
+            (t1 = text value: a$, onchange: -> a$ @value*1),
+            (t2 = text value: b$, onchange: -> b$ @value*1),
+            p1 = p flow.add a$, b$
 
-        dc.updateWhen [t1, t2], 'change', p1
+        dc.updateWhen [t1, t2], 'change'
 
         comp.mount()
 

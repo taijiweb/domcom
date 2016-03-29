@@ -2,7 +2,7 @@
 {domField} = require('../../dom-util')
 {isArray} = require('dc-util')
 
-module.exports = (items...) ->
+module.exports = classFn = (items...) ->
   classMap = {}
 
   method = ->
@@ -11,15 +11,16 @@ module.exports = (items...) ->
       method.valid = true
       for klass, value of classMap
         if typeof value == 'function'
-          value = value()
-        if value then lst.push klass
+          value = value.call(this)
+        if value
+          lst.push klass
       lst.join(' ')
     else
-      extendClassMap(arguments.slice())
+      extendClassMap([].slice(arguments))
       return
 
   processClassValue = (name, value) ->
-    value = domField value
+    value = domField(value)
     oldValue=classMap[name]
     if typeof oldValue == 'function'
       oldValue.offInvalidate method.invalidate
@@ -68,4 +69,9 @@ module.exports = (items...) ->
 
   method.extend = (items...) ->
      extendClassMap(items)
+
+  method.clone = ->
+    newClassName = classFn()
+    newClassName.extend(method)
+
   method

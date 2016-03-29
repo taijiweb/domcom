@@ -1,8 +1,8 @@
-var Component, Tag, Text, TransformComponent, a, case_, clone, ddescribe, div, each, expect, func, idescribe, if_, iit, list, ndescribe, nit, p, see, span, text, txt, _ref;
+var Component, Tag, Text, TransformComponent, a, case_, ddescribe, div, each, expect, flow, func, idescribe, if_, iit, list, ndescribe, nit, p, see, span, text, txt, _ref;
 
 _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, ddescribe = _ref.ddescribe;
 
-see = dc.see, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, clone = dc.clone, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
+see = dc.see, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div, flow = dc.flow;
 
 describe('Component.refs, clone', function() {
   afterEach(function() {
@@ -89,16 +89,41 @@ describe('Component.refs, clone', function() {
       expect(node2.value).to.equal(void 0);
       return expect(node2.fakeProp).to.equal(void 0);
     });
-    it('should process text clone component ', function() {
+    it('should process text clone component bind', function() {
       var comp, t1;
-      comp = list(t1 = txt(1), clone(t1));
+      comp = list(t1 = txt(1), t1.clone());
       comp.mount('#demo');
       dc.update();
       return expect(comp.node[1].textContent).to.equal('1');
     });
+    it('should process text clone component with bind', function() {
+      var t1, t2;
+      t1 = txt(flow.thisBind('x'));
+      t2 = t1.clone();
+      t1.x = 1;
+      t2.x = 2;
+      t1.mount('#demo');
+      t2.mount('#demo');
+      dc.update();
+      expect(t1.node.textContent).to.equal('1');
+      expect(t2.node.textContent).to.equal('2');
+      t2.x = 3;
+      dc.update();
+      return expect(t2.node.textContent).to.equal('3');
+    });
+    it('should process mount cloned tag ', function() {
+      var c1, comp;
+      c1 = p(1);
+      comp = c1.clone();
+      comp.mount('#demo');
+      dc.update();
+      return expect(comp.node.innerHTML).to.equal('1');
+    });
     it('should process tag clone component ', function() {
       var c1, c2, comp;
-      comp = list(c1 = p(1), c2 = clone(c1));
+      c1 = p(1);
+      c2 = c1.clone();
+      comp = list(c1, c2);
       comp.mount('#demo');
       dc.update();
       return expect(comp.node[1].innerHTML).to.equal('1');
@@ -106,8 +131,10 @@ describe('Component.refs, clone', function() {
     return it('should process if_ clone component ', function() {
       var c1, c2, comp, lstComp, x;
       x = see(0);
-      lstComp = list(c1 = p(2), c2 = clone(c1));
-      comp = if_(x, c1 = p(3), lstComp);
+      c1 = p(1);
+      c2 = c1.clone();
+      lstComp = list(c1, c2);
+      comp = if_(x, p(3), lstComp);
       comp.mount('#demo');
       x(1);
       dc.update();

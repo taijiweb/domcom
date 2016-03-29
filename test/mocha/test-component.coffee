@@ -64,7 +64,7 @@ describe "component  ", ->
       comp = p({onclick:spy})
       comp.mount()
       expect(spy.called).to.equal false
-      comp.node.onclick()
+      comp.node.onclick({type: 'click'})
       expect(spy.called).to.equal true
 
     it 'should process event name without on', ->
@@ -72,7 +72,7 @@ describe "component  ", ->
       comp = p({onclick:spy})
       comp.mount()
       expect(spy.called).to.equal false
-      comp.node.onclick()
+      comp.node.onclick({type: 'click'})
       expect(spy.called).to.equal true
 
     it 'should not run event hanlder while rendering tag', ->
@@ -80,7 +80,7 @@ describe "component  ", ->
       comp = p({onclick:spy})
       comp.mount()
       expect(spy.called).to.equal false
-      comp.node.onclick()
+      comp.node.onclick({type: 'click'})
       expect(spy.called).to.equal true
 
     it 'should not run event hanlder while rendering button tag', ->
@@ -88,7 +88,7 @@ describe "component  ", ->
       comp =  button({id:"search-ok", type:"submit", onclick:spy})
       comp.mount()
       expect(spy.called).to.equal false
-      comp.node.onclick()
+      comp.node.onclick({type: 'click'})
       expect(spy.called).to.equal true
 
     it 'should not run event hanlder while rendering div > button tag', ->
@@ -96,7 +96,7 @@ describe "component  ", ->
       comp =  div button({id:"search-ok", type:"submit", onclick:spy})
       comp.mount()
       expect(spy.called).to.equal false
-      comp.children[0].node.onclick()
+      comp.children[0].node.onclick({type: 'click'})
       expect(spy.called).to.equal true
 
     it 'should create tag with attribute', ->
@@ -190,7 +190,7 @@ describe "component  ", ->
       comp.mount('#demo')
       expect(comp.node.value).to.equal '1'
       comp.node.value = '2'
-      comp.node.onchange()
+      comp.node.onchange({type: 'change'})
       expect(a$()).to.equal '2'
 
     it 'should render div(2) component', ->

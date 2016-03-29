@@ -3,6 +3,7 @@ extend = require('extend')
 {extendEventValue} = require('./events')
 classFn = require('./classFn')
 {styleFrom} = require('./style')
+{domField} = require('../../dom-util')
 
 exports.extendAttrs = (attrs, obj, options={}) ->
   if !obj then return attrs
@@ -65,3 +66,19 @@ exports.attrToPropName = (name) ->
     i++
 
   pieces.join('')
+
+exports.setText = (text) ->
+    text = domField(text, this)
+    if this._text == text
+      return this
+
+    this.textValid = false
+    this._text = text
+
+    me = this
+    if typeof text == 'function'
+      text.onInvalidate ->
+        me.textValid = false
+        me.invalidate()
+    this.invalidate()
+    this

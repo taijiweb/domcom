@@ -27,14 +27,15 @@ exports.unitDiv = unitDiv = (x, y) ->
   num / parseFloat(y) + x.replace(reNonUnit, '')
 
 Tag::cssAdd = (prop, value) ->
-  @css(prop, unitAdd(@css(prop), value))
+  v = unitAdd(this.css(prop), value)
+  this.css(prop, v)
 
 Tag::cssSub = (prop, value) ->
-  @css(prop, unitSub(@css(prop), value))
+  this.css(prop, unitSub(this.css(prop), value))
 
 Tag::cssMul = (prop, value) ->
-  @css(prop, unitMul(@css(prop), value))
+  this.css(prop, unitMul(this.css(prop), value))
 
 Tag::cssDiv = (prop, value) ->
-  @css(prop, unitDiv(@css(prop), value))
+  this.css(prop, unitDiv(this.css(prop), value))
 

@@ -11,7 +11,7 @@ module.exports = class Comment extends Text
 
   createDom: ->
     @textValid = true
-    text = domValue(@text)
+    text = domValue(@text, this)
     node = document.createComment(text)
     @node = @firstNode = node
     @cacheText = text
@@ -22,7 +22,7 @@ module.exports = class Comment extends Text
       return @node
 
     @textValid = true
-    text = domValue(@text)
+    text = domValue(@text, this)
     if text != @cacheText
       parentNode = node.parentNode
       if parentNode

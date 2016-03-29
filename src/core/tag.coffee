@@ -1,6 +1,6 @@
 extend = require('extend')
 
-{tag} = require('./instantiate')
+{tag, isAttrs} = require('./instantiate')
 {getBindProp} = require('../dom-util')
 
 tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl"+
@@ -16,6 +16,7 @@ for tagName in tagNames
 
 # Because the name 'html' under dc has been used to instantiate Html component
 # So use tagHtml instead here
+# in client side, html is not necessary, because the dc component must be mounted somewhere
 exports.tagHtml = (args...) ->
   tag('html', args...)
 
@@ -30,28 +31,35 @@ input = exports.input = (type, attrs, value) ->
   component = tag('input', attrs)
   if value?
     component.prop(getBindProp(component), value)
-    if value.isDuplex then component.bind('onchange', ((event, comp) -> value(@value)), 'before')
+    if value.isDuplex
+      component.bind('onchange', ((event) -> value.call(this.component, this.value)), 'before')
   component
 
 for type in 'text checkbox radio date email tel number'.split(' ')
-  do (type=type) -> exports[type] = (value, attrs) ->
-    if typeof value =='object'
-      temp = attrs
-      attrs = value
-      value = temp
-    attrs = attrs or {}
-    input(type, attrs, value)
+  do (type=type) ->
+    exports[type] =
+      (value, attrs) ->
+        if typeof value =='object'
+          temp = attrs
+          attrs = value
+          value = temp
+        attrs = attrs or {}
+        input(type, attrs, value)
 
 exports.textarea = (attrs, value) ->
   if isAttrs(attrs)
     if  value?
       attrs = extend({value:value}, attrs)
       component = tag('textarea', attrs)
-      if value.isDuplex then component.bind('onchange', ((event, comp) -> value(@value)), 'before')
-    else  component = tag('textarea', attrs)
+      if value.isDuplex 
+        component.bind('onchange', ((event) -> value.call(this.component, this.value)), 'before')
+    else  
+      component = tag('textarea', attrs)
   else
     if attrs? # attrs is value
       component = tag('textarea', {value:attrs})
-      if attrs.isDuplex then component.bind('onchange', ((event, comp) -> attrs(@value)), 'before')
-    else  component = tag('textarea')
+      if attrs.isDuplex 
+        component.bind('onchange', ((event) -> attrs.call(this.component, this.value)), 'before')
+    else  
+      component = tag('textarea')
   component

@@ -22,7 +22,9 @@ describe('directives', function() {
       });
       comp.mount();
       comp.node.value = '2';
-      comp.node.onchange();
+      comp.node.onchange({
+        type: 'change'
+      });
       return expect(a$()).to.equal('2');
     });
     return it('should process event property of component with model directive', function() {
@@ -36,7 +38,9 @@ describe('directives', function() {
         }
       });
       comp.mount();
-      comp.node.onmouseenter();
+      comp.node.onmouseenter({
+        type: 'mouseenter'
+      });
       return expect(x).to.equal(1);
     });
   });

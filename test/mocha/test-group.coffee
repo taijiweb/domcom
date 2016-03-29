@@ -71,12 +71,12 @@ describe 'group component: List, each', ->
       comp = new List([txt(1)])
       comp.mount()
       expect(comp.node[0].textContent).to.equal '1'
-      expect(->comp.setChildren(1, t2=txt(2))).not.to.throw()
+      expect(->comp.setChildren(1, [t2=txt(2)])).not.to.throw()
       comp.unmount()
 
     it 'list setChildren: similar to splitter', ->
       comp = new List([txt(1), t3=txt(3)])
-      comp.setChildren(1, t2=txt(2), t3)
+      comp.setChildren(1, [t2=txt(2), t3])
       comp.mount()
       expect(comp.node[0].textContent).to.equal '1'
       expect(comp.node[1].textContent).to.equal '2'

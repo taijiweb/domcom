@@ -87,14 +87,14 @@ describe('group component: List, each', function() {
       expect(comp.node[0].textContent).to.equal('1');
       expect(function() {
         var t2;
-        return comp.setChildren(1, t2 = txt(2));
+        return comp.setChildren(1, [t2 = txt(2)]);
       }).not.to["throw"]();
       return comp.unmount();
     });
     it('list setChildren: similar to splitter', function() {
       var t2, t3;
       comp = new List([txt(1), t3 = txt(3)]);
-      comp.setChildren(1, t2 = txt(2), t3);
+      comp.setChildren(1, [t2 = txt(2), t3]);
       comp.mount();
       expect(comp.node[0].textContent).to.equal('1');
       expect(comp.node[1].textContent).to.equal('2');

@@ -21,8 +21,6 @@ extend(dc,
 
   require('dc-util'),
 
-  require('./config'),
-
   require('./dom-util'),
   require('./dc-update'),
 

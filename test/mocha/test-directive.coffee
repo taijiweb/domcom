@@ -21,7 +21,7 @@ describe 'directives', ->
       comp = text({$model:a$})
       comp.mount()
       comp.node.value = '2'
-      comp.node.onchange()
+      comp.node.onchange({type: 'change'})
       expect(a$()).to.equal '2'
 
     it 'should process event property of component with model directive', ->
@@ -29,7 +29,7 @@ describe 'directives', ->
       modelValue = duplex(m={}, 'x')
       comp = input({$model:modelValue, onmouseenter: -> x = 1})
       comp.mount()
-      comp.node.onmouseenter()
+      comp.node.onmouseenter({type: 'mouseenter'})
       expect(x).to.equal 1
 
   describe '$show', ->
