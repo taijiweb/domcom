@@ -4435,15 +4435,11 @@
 	    tagName = tagName || 'div';
 	    this.tagName = tagName.toLowerCase();
 	    this.namespace = attrs.namespace;
-	    if (attrs === 'cloning') {
-	      return this;
-	    } else {
-	      this.children = toComponentArray(children);
-	      this.initListMixin();
-	      this.initProperties();
-	      this.extendAttrs(attrs);
-	      return;
-	    }
+	    this.children = toComponentArray(children);
+	    this.initListMixin();
+	    this.initProperties();
+	    this.extendAttrs(attrs);
+	    return;
 	  }
 
 	  Tag.prototype.initProperties = function() {

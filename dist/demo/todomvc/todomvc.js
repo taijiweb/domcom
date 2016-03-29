@@ -1,4 +1,4 @@
-var a, allChecked, bind, button, checkbox, clearCompletedTodos, completedCount, div, editTodo, editingTodo, extend, footer, form, funcEach, h1, header, label, li, markAll, onEscapeFn, originalTodo, p, pluralize, remainingCount, removeTodo, revertEdits, reverted, saving, section, span, strong, text, text1, todoEditArea, todoFooter, todoHeader, todoItems, toggleCompleted, txt, ul, view, viewStatusHash, xxxtodoEditArea;
+var a, allChecked, bind, button, checkbox, clearCompletedTodos, completedCount, div, editTodo, editingTodo, extend, footer, form, funcEach, h1, header, label, li, markAll, onEscapeFn, originalTodo, p, pluralize, remainingCount, removeTodo, revertEdits, reverted, saving, section, span, strong, text, text1, todoEditArea, todoFooter, todoHeader, todoItems, toggleCompleted, txt, ul, view, viewStatusHash;
 
 bind = dc.bind, section = dc.section, h1 = dc.h1, header = dc.header, form = dc.form, text = dc.text, checkbox = dc.checkbox, div = dc.div, ul = dc.ul, li = dc.li, p = dc.p, a = dc.a, label = dc.label, button = dc.button, footer = dc.footer, strong = dc.strong, span = dc.span, funcEach = dc.funcEach, txt = dc.txt, extend = dc.extend;
 
@@ -221,10 +221,6 @@ todoItems = funcEach(getTodos, function(todo, index) {
       return revertEdits(todo);
     })
   })));
-});
-
-xxxtodoEditArea = funcEach(getTodos, function(todo) {
-  return todo.title + ' ';
 });
 
 todoEditArea = section({
