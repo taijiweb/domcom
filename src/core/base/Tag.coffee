@@ -106,6 +106,9 @@ module.exports = class Tag extends BaseComponent
       else if key[..4] == 'attr_'
         this.setProp(key[5...], value, nodeAttrs, 'NodeAttrs')
 
+      else if key[..2] == 'xxx'
+        continue
+
       else this.setProp(key, value, props, 'Props')
 
     this

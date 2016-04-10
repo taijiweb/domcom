@@ -15,14 +15,13 @@ module.exports = dcEventMixin =
         if callbacks = listeners[event]
           if callbacks.indexOf(callback) < 0
             callbacks.push(callback)
-          # else null # do not repeat to add callback
         else
           listeners[event] = [callback]
     this
 
   off: (event, callback) ->
-    if this.argmuents.length
-      dc.error('missing arguments for Component.off(event, callback)')
+    if !arguments.length
+      this.listeners = {}
     else if arguments.length==1
       {listeners} = this
       for event in event.split(/\s*,\s*|\s+/)
@@ -31,12 +30,17 @@ module.exports = dcEventMixin =
       {listeners} = this
       for event in event.split(/\s*,\s*|\s+/)
         callbacks = listeners[event]
-        if callbacks and callbacks.indexOf(callback) >= 0
+        if callbacks and (index = callbacks.indexOf(callback)) >= 0
           callbacks.splice(index, 1)
           if !callbacks.length
             listeners[event] = null
-    # else null # do nothing
     this
+
+  once: (event, callback) ->
+    onceCallback = (args...) ->
+      this.off(event, onceCallback)
+      callback.apply(this, args)
+    this.on(event, onceCallback)
 
   emit:(event, args...) ->
     if this.destroyed
@@ -44,6 +48,6 @@ module.exports = dcEventMixin =
     if callbacks = this.listeners[event]
       for callback in callbacks then callback.apply(this, args)
     else
-      if method=this[event]
+      if method = this[event]
         method.apply(this, args)
     this

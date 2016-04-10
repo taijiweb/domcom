@@ -92,7 +92,7 @@ module.exports = class Component
     if this.destroyed || this == oldComponent
       return
     holder = oldComponent.holder
-    if holder != dc
+    if holder && (holder != dc)
       if holder.isTransformComponent
         dc.error('Should not replace the content of TransformComponent')
       else
@@ -138,13 +138,14 @@ module.exports = class Component
     firstNode = child.firstNode
     if children
       index = this.dcidIndexMap[child.dcid]
+      nextNodes = this.nextNodes
       while index
-        index--
         node = firstNode || child.nextNode
-        this.nextNodes[index] = children[index].nextNode = node
+        index--
         child = children[index]
+        nextNodes[index] = child.nextNode = node
         firstNode = child.firstNode
-      if !index && this.isList
+      if index == 0 && this.isList
         if this.firstNode != firstNode
           this.firstNode = firstNode
           this.holder.raiseFirstNextNode(this)
@@ -152,6 +153,18 @@ module.exports = class Component
       if this.firstNode != firstNode
         this.firstNode = firstNode
         this.holder.raiseFirstNextNode(this)
+
+  getPrevSibling: ->
+    if !(holder = this.holder)
+      null
+    else if dcidIndexMap = holder.dcidIndexMap
+      holder.children[dcidIndexMap[this.dcid]-1]
+
+  getNextSibling: ->
+    if !(holder = this.holder)
+      null
+    else if dcidIndexMap = holder.dcidIndexMap
+      holder.children[dcidIndexMap[this.dcid]+1]
 
   setReactive: ->
     if this.reactMap

@@ -15,10 +15,6 @@ updateDcidIndexMap = (dcidIndexMap, children, start) ->
     i++
   return
 
-# todo: use double linked list as children???
-# {dcid: {next: dcid, prev: dcid, nextNode: theNode}}
-# array and linked list, which is better?
-
 module.exports =
 
   initListMixin: ->
@@ -72,8 +68,10 @@ module.exports =
       child = children[i]
       if !child.firstNode
         child.sinkNextNode(nextNode)
-        nextNodes[i] = this.nextNodes
-      i++
+        nextNodes[i] = this.nextNode
+        i++
+      else
+        break
     i
 
   createChildrenDom: ->
@@ -113,7 +111,6 @@ module.exports =
       refChild = children.indexOf(refChild)
       if refChild < 0
         refChild = 0
-
     this.insertChild(refChild+1, child)
 
   pushChild: (child) ->
@@ -175,13 +172,14 @@ module.exports =
       child = children[index]
     delete dcidIndexMap[child.dcid]
 
-    children[index].markRemovingDom(true)
+    child.markRemovingDom(true)
 
     substractSet(this.family, child.family)
     children.splice(index, 1)
     if this.childNodes
       this.childNodes.splice(index, 1)
     updateDcidIndexMap(dcidIndexMap, children, index)
+
     this
 
   shiftChild: (children...) ->
@@ -209,7 +207,6 @@ module.exports =
       index = dcidIndexMap[oldChild.dcid]
       if !index?
         dc.error('oldChild to be replaced is not in the children')
-      delete dcidIndexMap[oldChild.id]
     else
       if oldChild >= children.length || oldChild < 0
         dc.error('oldChild to be replaced is out of bound')

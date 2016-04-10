@@ -36,7 +36,6 @@ module.exports =
 
 
   renderDom: (oldBaseComponent) ->
-    this.rendering = true
     this.emit('willRender')
 
     if this.node && this.valid && oldBaseComponent==this.baseComponent
@@ -46,7 +45,6 @@ module.exports =
       this.updateBaseComponent()
       this.renderContent(oldBaseComponent)
 
-    this.rendering = false
     this.emit('didRender')
     this
 
@@ -66,8 +64,8 @@ module.exports =
   # after Component.removeNode, the previousSibling component  will reset nextNode,
   # and then this method will be called
   linkNextNode: (child) ->
+    this.nextNode = child.nextNode
     if holder = this.holder
-      this.nextNode = child.nextNode
       holder.linkNextNode(this)
 
   # push down the nextNode, but does not propagate to the prev component

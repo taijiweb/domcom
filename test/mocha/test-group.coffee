@@ -23,6 +23,11 @@ describe 'group component: List, each', ->
       comp.unmount()
 
   describe 'List', ->
+    afterEach ->
+      dc.reset()
+      if comp && comp.node && !dontUnmount
+        comp.unmount()
+
     it 'all of item in list should be  component', ->
       comp = list([1, 2])
       expect(isComponent(comp.children[0])).to.equal(true)

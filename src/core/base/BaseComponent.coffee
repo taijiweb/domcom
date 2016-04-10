@@ -17,16 +17,14 @@ module.exports = class BaseComponent extends Component
       this
 
   invalidateOffspring: (offspring) ->
-    holder = this.holder
-    if !holder
+    if this != offspring && !this.node
+      this
+    else if !(holder = this.holder)
       # while the component is not mounted, the holder may be undefined
       this.renderingMap[offspring.dcid] = [offspring, offspring.holder]
       this
     else
-      if this.inWillRenderender
-        this.renderingMap[offspring.dcid] = [offspring, offspring.holder]
-        offspring.renderingHolder = this
-      else if holder == dc
+      if holder == dc
         dc.invalidateOffspring(offspring)
       else
         if !holder.isBaseComponent
@@ -36,7 +34,7 @@ module.exports = class BaseComponent extends Component
         else
           holder.invalidateOffspring(offspring)
 
-    this
+      this
 
   markRemovingDom: (removing) ->
     this.removing = removing
@@ -44,11 +42,11 @@ module.exports = class BaseComponent extends Component
       if this.node && this.node.parentNode
         dc.valid = false
         dc.removingMap[this.dcid] = this
-        if this.renderHolder
-          this.renerHolder = null
-          delete this.renderHolder.renderingMap[this.dcid]
-        delete dc.renderingMap[this.dcid]
-        delete dc.oldRenderingMap[this.dcid]
+      if this.renderingHolder
+        renderingHolder = this.renderingHolder
+        this.renerHolder = null
+        delete renderingHolder.renderingMap[this.dcid]
+        delete renderingHolder.oldRenderingMap[this.dcid]
       this.holder = null
     this
 
@@ -62,12 +60,7 @@ module.exports = class BaseComponent extends Component
       holder.raiseFirstNextNode(this)
 
   renderDom: (oldBaseComponent) ->
-    this.rendering = true
-
-    # this is a special hack for funcEach
-    this.inWillRenderender = true
     this.emit('willRender')
-    this.inWillRenderender = false
 
     if oldBaseComponent and oldBaseComponent != this
       oldBaseComponent.markRemovingDom(true)
@@ -80,7 +73,7 @@ module.exports = class BaseComponent extends Component
       this.refreshDom()
 
     this.attachNode(this.parentNode, this.nextNode)
-    this.rendering = false
+
     this.emit('didRender')
 
     this
@@ -112,7 +105,7 @@ module.exports = class BaseComponent extends Component
     parentNode = this.parentNode
     nextNode = this.nextNode
 
-    if parentNode != node.parentNode || nextNode != node.nextSibling
+    if parentNode && (parentNode != node.parentNode || nextNode != node.nextSibling)
       node = this.node
       try
         parentNode.insertBefore(node, nextNode)
@@ -143,3 +136,6 @@ module.exports = class BaseComponent extends Component
   sinkNextNode: (nextNode) ->
     if nextNode != this.nextNode
       this.nextNode = nextNode
+      if (holder = this.holder) && (nextNodes = holder.nextNodes)
+        index = holder.dcidIndexMap[this.dcid]
+        nextNodes[index] = nextNode

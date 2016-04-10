@@ -45,7 +45,6 @@ describe('demo', function() {
       expect(sum()).to.equal('34', 'sum');
       expect(!!comp.valid).to.equal(true, 'comp.valid');
       expect(!!z.valid).to.equal(true, 'z.valid');
-      expect(!!t1.valid).to.equal(false, 't1.valid');
       dc.update();
       return expect(z.node.innerHTML).to.equal('34', 'update');
     });
@@ -294,10 +293,10 @@ describe('demo', function() {
       expect(comp.children.length).to.equal(1, '1-1');
       status.hash = 'completed';
       dc.update();
-      expect(comp.children.length).to.equal(0);
+      expect(comp.children.length).to.equal(0, '1-2');
       status.hash = 'all';
       dc.update();
-      return expect(comp.children.length).to.equal(1, '1-2');
+      return expect(comp.children.length).to.equal(1, '1-3');
     });
     it('should process getTodos and each correctly', function() {
       var comp, todos;

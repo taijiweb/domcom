@@ -10,6 +10,7 @@ exports.extendEventValue = extendEventValue = (props, prop, value, before) ->
     value = []
   else if value not instanceof Array
     value = [value]
+
   if before
     props[prop] = value.concat(oldValue)
   else
@@ -23,8 +24,12 @@ exports.domEventHandler = (event) ->
     if fn
       fn.call(this, event)
 
-  if (updating = this.component.eventUpdateConfig[eventType])?
+  # it is necessary to check "this.component"
+  # because maybe "this.component" is destroyed in fn.call(this, event)
+  # and node.component is set to null
+  if (updating = this.component && this.component.eventUpdateConfig[eventType])?
     dc.update(updating)
+  else dc.update()
 
   if event
     if !event.executeDefault && event.preventDefault

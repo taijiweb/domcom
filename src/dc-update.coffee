@@ -54,13 +54,15 @@ dc.invalidate = ->
 dc.invalidateOffspring = (offspring) ->
   dc.valid = false
   dc.renderingMap[offspring.dcid] = [offspring, offspring.holder]
+  offspring.renderingHolder = dc
 
 dc.refreshComponents = refreshComponents = ->
   this.valid = true
   renderingMap = this.oldRenderingMap = this.renderingMap
   this.renderingMap = {}
   for _, [component, holder] of renderingMap
-    holder.updateChildHolder(component)
+    if holder
+      holder.updateChildHolder(component)
     component.renderDom(component.baseComponent)
   this
 
@@ -80,7 +82,7 @@ dc.update = (force) ->
 
 dc.updateChildHolder = (child) ->
   if child.holder != this
-    child.invalidate()
+    child.holder && child.invalidate()
     child.holder = this
     child.setParentNode(this.getChildParentNode(child))
     child.sinkNextNode(this.getChildNextNode(child))

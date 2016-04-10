@@ -24,6 +24,12 @@ describe('group component: List, each', function() {
     }
   });
   describe('List', function() {
+    afterEach(function() {
+      dc.reset();
+      if (comp && comp.node && !dontUnmount) {
+        return comp.unmount();
+      }
+    });
     it('all of item in list should be  component', function() {
       comp = list([1, 2]);
       return expect(isComponent(comp.children[0])).to.equal(true);

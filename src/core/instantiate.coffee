@@ -216,59 +216,22 @@ exports.funcEach = (attrs, listFunc, options) ->
     attrs = null
 
   if !listFunc.invalidate
-    isRenew = true
     listFunc = renew(listFunc)
 
-  listItems = []
-  listComponent = each(attrs, listItems, options)
-  listFunc.onInvalidate ->
-    listComponent.invalidate()
-  listComponent.on 'willRender', ->
-    newList = listFunc()
-    listItems.setItem(0, newList...)
-    listItems.setLength(newList.length)
-  listComponent.on 'didRender', ->
-    if isRenew
-      listComponent.holder.invalidateOffspring(listComponent)
-  listComponent
-
-exports.mapEach = (attrs, mapFunc, options) ->
-  if typeof attrs == 'function'
-    options = mapFunc
-    mapFunc = attrs
-    attrs = null
-
-  if !listFunc.invalidate
-    isRenew = true
-    listFunc = renew(listFunc)
-
-  map = {}
-  listComponent = each(attrs, map, options)
+  items = null
 
   listFunc.onInvalidate ->
-    listComponent.invalidate()
+    dc.once 'willUpdate', ->
+      newItems = listFunc()
+      items.replaceAll(newItems)
 
-  listComponent.on 'willRender', ->
-    newMap = listFunc()
-    deleteKeys = []
-    for key of map
-      if newMap.hasOwnProperty(key)
-        if isEachObjectSystemKey()
-          continue
-        else
-          map.setItem(key, newMap[key])
-      else
-        deleteKeys.push(key)
-    map.deleteItem(keys...)
-    for key of newMap
-      if !map.hasOwnProperty(key)
-        map.setItem(key, newMap[key])
+  items = listFunc()
+  if isArray(items)
+    items = items[...]
+  else
+    items = extend({}, items)
 
-  listComponent.on 'didRender', ->
-    if isRenew
-      listComponent.holder.invalidateOffspring(listComponent)
-
-  listComponent
+  each(attrs, items, options)
 
 # promise is a promise, which have .then and .catch the two method
 # fulfill: (value, promise, component) ->

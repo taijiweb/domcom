@@ -53,7 +53,7 @@ exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
   else if then_.isText and else_.isText and then_.constructor == else_.constructor
     new then_.constructor(flowIf(test, then_.text, else_.text))
 
-  else if then_.isNothing and else_.isNothing
+  else if then_ instanceof Nothing && else_ instanceof Nothing
     return then_
 
   # List component

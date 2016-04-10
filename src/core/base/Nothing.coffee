@@ -8,8 +8,6 @@ module.exports = class Nothing extends BaseComponent
     this.firstNode = null
     this.family = {}
 
-    this.isNothing = true
-
     this.baseComponent = this
 
   invalidateOffspring: -> this
@@ -33,7 +31,7 @@ module.exports = class Nothing extends BaseComponent
 
   refreshDom: ->
     this.valid = true
-    this.node
+    null # this.node
 
   attachNode: ->
     if holder = this.holder
@@ -42,9 +40,9 @@ module.exports = class Nothing extends BaseComponent
     this.node
 
   markRemovingDom: (removing) ->
-    this.removing = removing
     if removing
       this.holder = null
+    this.removing = removing
     this
 
   removeDom: -> this

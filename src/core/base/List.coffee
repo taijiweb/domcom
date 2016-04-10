@@ -75,18 +75,15 @@ module.exports = exports = class List extends BaseComponent
   markRemovingDom: (removing) ->
     this.removing = removing
     if removing
-      if this.renderHolder
-        this.renderHolder = null
-        delete this.renderHolder.renderingMap[this.dcid]
-        delete this.oldRenderingMap[this.dcid]
-      delete dc.renderingMap[this.dcid]
-      delete dc.oldRenderingMap[this.dcid]
-      node = this.node
-      if node
-        if node.parentNode
-          node.parentNode = null
-          for child in this.children
-            child.markRemovingDom(removing)
+      if this.renderingHolder
+        renderingHolder = this.renderingHolder
+        this.renderingHolder = null
+        delete renderingHolder.renderingMap[this.dcid]
+        delete renderingHolder.oldRenderingMap[this.dcid]
+      if (node = this.node) && node.parentNode
+        node.parentNode = null
+        for child in this.children
+          child.markRemovingDom(removing)
       this.holder = null
     this
 
