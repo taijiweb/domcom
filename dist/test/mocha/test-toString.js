@@ -11,7 +11,7 @@ describe('toString', function() {
     comp = list(t1 = text({
       onchange: function() {
         x = parseInt(this.value);
-        return dc.update();
+        return comp.render();
       }
     }, x), pIf = if_((function() {
       return x;

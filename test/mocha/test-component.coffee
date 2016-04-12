@@ -148,10 +148,10 @@ describe "component  ", ->
       comp.mount()
       expect(comp.node.innerHTML).to.equal '1'
       ++count
-      dc.update()
+      comp.render()
       expect(comp.node.innerHTML).to.equal('2', 'update 2')
       ++count
-      dc.update()
+      comp.render()
       expect(comp.node.innerHTML).to.equal('3', 'update 3')
 
     it 'should update bidirectional bind', ->
@@ -167,10 +167,10 @@ describe "component  ", ->
       elm = comp.node
       expect(elm.innerHTML).to.equal '1'
       ++count
-      dc.update()
+      comp.render()
       expect(elm.innerHTML).to.equal '2'
       ++count
-      dc.update()
+      comp.render()
       expect(elm.innerHTML).to.equal '3'
 
     it 'should process text with bind', ->
@@ -181,7 +181,7 @@ describe "component  ", ->
       a_ 3; b_ 4
       expect(a_()).to.equal(3, 'a_')
       expect(b_()).to.equal(4, 'b_')
-      dc.update()
+      comp.render()
       expect(comp.node.innerHTML).to.equal '7', 'update'
 
     it 'should process bidirectional bind', ->
@@ -209,7 +209,7 @@ describe "component  ", ->
       comp.remove()
       expect(document.getElementById('replace-demo3').innerHTML).to.equal('')
 
-    it 'should execute component.remove child component', ->
+    it 'should execute remove child component', ->
       comp1 = div(comp3=(div(3)))
       comp1.mount(newDemoNode('replace-demo4'))
       comp3.remove()
@@ -225,6 +225,7 @@ describe "component  ", ->
     it 'should execute component.replace child component', ->
       comp1 = div(comp3=(div(3)))
       comp1.mount(newDemoNode('replace-demo2'))
+      expect(document.getElementById('replace-demo2').innerHTML).to.equal('<div><div>3</div></div>')
       comp2 = div(2)
       comp2.replace(comp3)
       expect(document.getElementById('replace-demo2').innerHTML).to.equal('<div><div>2</div></div>')
@@ -233,7 +234,7 @@ describe "component  ", ->
       comp = p(->12)
       comp.mount()
       expect(comp.node.innerHTML).to.equal '12'
-      dc.update()
+      comp.render()
       expect(comp.node.innerHTML).to.equal '12'
-      dc.update()
+      comp.render()
       expect(comp.node.innerHTML).to.equal '12'

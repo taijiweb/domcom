@@ -11,7 +11,7 @@ module.exports = function() {
   prompt = label('Please choose: ');
   prefered = text({
     onchange: function() {
-      return dc.update();
+      return comp.render();
     }
   }, firstLetter$);
   frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember'];
@@ -36,7 +36,7 @@ module.exports = function() {
   prompt = label('Please choose: ');
   prefered = text({
     onchange: function() {
-      return dc.update();
+      return comp.render();
     }
   }, firstLetter$);
   frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember'];
@@ -50,7 +50,7 @@ module.exports = function() {
       newFramework = this.value;
       frameworks.push(newFramework);
       firstLetter$(newFramework[0]);
-      return dc.update();
+      return comp.render();
     }
   });
   choice = func(flow(firstLetter$, function() {

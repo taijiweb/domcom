@@ -62,7 +62,7 @@ describe('Component.refs, clone', function() {
       x = see(0);
       comp = if_(x, t = txt(1), t);
       comp.mount();
-      return dc.update();
+      return comp.render();
     });
   });
   return describe('Clone', function() {
@@ -93,7 +93,7 @@ describe('Component.refs, clone', function() {
       var comp, t1;
       comp = list(t1 = txt(1), t1.clone());
       comp.mount('#demo');
-      dc.update();
+      comp.render();
       return expect(comp.node[1].textContent).to.equal('1');
     });
     it('should process text clone component with bind', function() {
@@ -104,19 +104,18 @@ describe('Component.refs, clone', function() {
       t2.x = 2;
       t1.mount('#demo');
       t2.mount('#demo');
-      dc.update();
       expect(t1.node.textContent).to.equal('1');
       expect(t2.node.textContent).to.equal('2');
       t2.x = 3;
-      dc.update();
-      return expect(t2.node.textContent).to.equal('3');
+      t2.render();
+      return expect(t2.node.textContent).to.equal('3', 3);
     });
     it('should process mount cloned tag ', function() {
       var c1, comp;
       c1 = p(1);
       comp = c1.clone();
       comp.mount('#demo');
-      dc.update();
+      comp.render();
       return expect(comp.node.innerHTML).to.equal('1');
     });
     it('should process tag clone component ', function() {
@@ -125,7 +124,7 @@ describe('Component.refs, clone', function() {
       c2 = c1.clone();
       comp = list(c1, c2);
       comp.mount('#demo');
-      dc.update();
+      comp.render();
       return expect(comp.node[1].innerHTML).to.equal('1');
     });
     return it('should process if_ clone component ', function() {
@@ -137,7 +136,7 @@ describe('Component.refs, clone', function() {
       comp = if_(x, p(3), lstComp);
       comp.mount('#demo');
       x(1);
-      dc.update();
+      comp.render();
       return expect(comp.node.innerHTML).to.equal('3');
     });
   });

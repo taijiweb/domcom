@@ -9,7 +9,7 @@ module.exports = function() {
   }).a$;
   attrs = {
     onchange: function() {
-      return dc.update();
+      return comp.render();
     }
   };
   return comp = list(a = text(attrs, a$), text(attrs, a$));

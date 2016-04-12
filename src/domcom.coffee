@@ -22,7 +22,7 @@ extend(dc,
   require('dc-util'),
 
   require('./dom-util'),
-  require('./dc-update'),
+  require('./dc-render'),
 
   # component
   require('./core/index'),

@@ -25,11 +25,11 @@ exports.eachDemo3 = function() {
   comp.on('willAttach', function() {
     setTimeout((function() {
       lst3.push(7);
-      return dc.update();
+      return comp.render();
     }), 1000);
     return setTimeout((function() {
       lst3.setLength(4);
-      return dc.update();
+      return comp.render();
     }), 2000);
   });
   return comp;
@@ -44,11 +44,11 @@ exports.eachDemo4 = function() {
   comp.on('willAttach', function() {
     setTimeout((function() {
       lst4.push(7);
-      return dc.update();
+      return comp.render();
     }), 1000);
     return setTimeout((function() {
       lst4.setLength(4);
-      return dc.update();
+      return comp.render();
     }), 2000);
   });
   return comp;

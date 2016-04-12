@@ -6,14 +6,14 @@ dc.directives({
   $show: dc.$show
 });
 
-dc.alwaysUpdate = true;
+dc.alwaysRender = true;
 
 window.fetch = function() {
-  return JSON.parse(localStorage.getItem('dc') || '[]');
+  return JSON.parse(localStorage.getItem('view') || '[]');
 };
 
 window.save = function(todos) {
-  return localStorage.setItem('dc', JSON.stringify(todos));
+  return localStorage.setItem('view', JSON.stringify(todos));
 };
 
 window.todos = [];
@@ -83,7 +83,7 @@ pluralize = function(test, item) {
 toggleCompleted = function(todo) {
   todo.completed = !todo.completed;
   save(todos);
-  return dc.update();
+  return view.render();
 };
 
 markAll = function() {
@@ -103,14 +103,14 @@ markAll = function() {
   }
   if (!valid) {
     save(todos);
-    return dc.update();
+    return view.render();
   }
 };
 
 editTodo = function(todo) {
   editingTodo = todo;
   originalTodo = extend({}, todo);
-  return dc.update();
+  return view.render();
 };
 
 removeTodo = function(todo) {
@@ -118,12 +118,12 @@ removeTodo = function(todo) {
   index = todos.indexOf(todo);
   todos.splice(index, 1);
   save(todos);
-  return dc.update();
+  return view.render();
 };
 
 revertEdits = function(todo) {
   todos[todos.indexOf(todo)] = originalTodo;
-  return dc.update();
+  return view.render();
 };
 
 clearCompletedTodos = function() {
@@ -139,7 +139,7 @@ clearCompletedTodos = function() {
   }
   if (!valid) {
     save(todos);
-    return dc.update();
+    return view.render();
   }
 };
 
@@ -158,7 +158,7 @@ text1 = text({
       completed: false
     });
     save(todos);
-    return dc.update();
+    return view.render();
   },
   autofocus: true
 });
@@ -212,7 +212,7 @@ todoItems = funcEach(getTodos, function(todo, index) {
       todo.title = this.value;
       save(todos);
       editingTodo = null;
-      return dc.update();
+      return view.render();
     },
     onfocus: function() {
       return todo === editingTodo;
@@ -308,6 +308,6 @@ window.runTodoMvc = function() {
   view.mount('#todo-app');
   return window.addEventListener('hashchange', function() {
     updateHash();
-    return dc.update();
+    return view.render();
   });
 };

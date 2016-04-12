@@ -19,67 +19,27 @@ module.exports = exports = class List extends BaseComponent
     this.valid = true
 
     children = this.children
-    nextNodes = this.nextNodes
     this.node = this.childNodes = node = []
-    this.childParentNode = this.parentNode
     this.childNextNode = this.nextNode
-    nextNodes.length = length = children.length
-    if length
-      nextNodes[length-1] = this.nextNode
-      this.createChildrenDom()
+    this.createChildrenDom()
     this.firstNode = this.childFirstNode
     node
 
-  # because dc, tag and List has different behaviour
-  # so getChildParentNode is a necessary method
-  getChildParentNode: (child) ->
-    this.parentNode
+  updateDom: ->
+    {children, parentNode, invalidIndexes} = this
 
-  updateChildHolder: (child, listIndex) ->
-    if child.holder != this
-      if child.holder && child.node
-        child.invalidate()
-      child.setParentNode(this.parentNode)
-      child.holder = this
-    return
+    for index in invalidIndexes
+      children[index].parentNode = parentNode
 
-  # push down the nextNode, but does not propagate to the prev component
-  sinkNextNode: (nextNode) ->
-    if nextNode != this.nextNode
-      this.nextNode = nextNode
-      children = this.children
-      length = children.length
-      if length
-        i = length - 1
-        while i >= 0
-          child = children[i]
-          child.sinkNextNode()
-          if child.firstNode
-            break
-          else
-             i--
+    this.childrenNextNode = this.nextNode
+    this.updateChildrenDom()
+    this.firstNode = this.childFirstNode
 
-  refreshDom: ->
-    this.valid = true
-    refreshComponents.call(this)
     this.node
-
-  # set parentNode and nextNode field for transformComponent and its offspring, till baseComponent
-  setParentNode: (parentNode) ->
-    if this.parentNode != parentNode
-      this.parentNode = parentNode
-      for child in this.children
-        child.setParentNode(parentNode)
-    return
 
   markRemovingDom: (removing) ->
     this.removing = removing
     if removing
-      if this.renderingHolder
-        renderingHolder = this.renderingHolder
-        this.renderingHolder = null
-        delete renderingHolder.renderingMap[this.dcid]
-        delete renderingHolder.oldRenderingMap[this.dcid]
       if (node = this.node) && node.parentNode
         node.parentNode = null
         for child in this.children
@@ -103,16 +63,6 @@ module.exports = exports = class List extends BaseComponent
       child.baseComponent.removeNode()
     return
 
-  # after Component.removeNode, the previousSibling component  will reset nextNode,
-  # and then this method will be called
-  linkNextNode: (child) ->
-    i = ListMixinLinkNextNode.call(this, child)
-    if i == length
-      this.nextNode = child.nextNode
-      if holder = this.holder
-        holder.linkNextNode(this)
-    return
-
   # Tag, Comment, Html, Text should have attached them self in advance
   # But if the children is valid, and the List Component has been removeDom before,
   # it must attachNode of all the children to the parentNode
@@ -126,10 +76,8 @@ module.exports = exports = class List extends BaseComponent
 
     # different parentNode, it was removeDom before !
     # attach it again
-    if parentNode != node.parentNode or  nextNode != node.nextSibling
+    if parentNode != node.parentNode ||  nextNode != node.nextSibling
       node.parentNode = parentNode
-      # nextSibling is just the thing
-      # node.nextNode = nextNode
       length = children.length
       if length
 
@@ -138,7 +86,7 @@ module.exports = exports = class List extends BaseComponent
 
         while index >= 0
           child = children[index]
-          if child.holder && child.holder != this.holder
+          if child.holder && child.holder != this
             child.invalidate()
             child.holder = this.holder
           child.parentNode = parentNode
@@ -149,17 +97,10 @@ module.exports = exports = class List extends BaseComponent
           baseComponent.attachNode()
 
           if index
-            children[index-1].nextNode = child.firstNode or child.nextNode
-          #else null # meet the first children
+            children[index-1].nextNode = child.firstNode || child.nextNode
+
           index--
 
-      # else null # no children, do nothing
-
-    if holder = this.holder
-      holder.raiseNode(this)
-      holder.raiseFirstNextNode(this)
-
-    # else null # both parentNode and nextNode does not change, do nothing
     if !attached
       this.emit('didAttach')
 
@@ -182,4 +123,4 @@ module.exports = exports = class List extends BaseComponent
 ListMixin = require('./ListMixin')
 mixin(List.prototype, ListMixin)
 
-ListMixinLinkNextNode = ListMixin.linkNextNode
+#ListMixinLinkNextNode = ListMixin.linkNextNode

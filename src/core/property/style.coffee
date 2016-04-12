@@ -23,7 +23,7 @@ exports.styleFrom = styleFrom = (value) ->
         [key, value] = item
       result[key] = value
     result
-  else if value and typeof value != 'object'
+  else if value && typeof value != 'object'
     {}
   else
     cloneObject(value)

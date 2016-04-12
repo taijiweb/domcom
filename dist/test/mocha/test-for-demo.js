@@ -43,9 +43,10 @@ describe('demo', function() {
       expect(a_()).to.equal('3', 'a_');
       expect(b_()).to.equal('4', 'b_');
       expect(sum()).to.equal('34', 'sum');
-      expect(!!comp.valid).to.equal(true, 'comp.valid');
-      expect(!!z.valid).to.equal(true, 'z.valid');
-      dc.update();
+      expect(!!comp.valid).to.equal(false, 'comp.valid');
+      expect(!!z.valid).to.equal(false, 'z.valid');
+      expect(!!t1.valid).to.equal(false, 't1.valid');
+      comp.render();
       return expect(z.node.innerHTML).to.equal('34', 'update');
     });
   });
@@ -88,7 +89,7 @@ describe('demo', function() {
       }).a$;
       attrs = {
         onchange: function() {
-          return dc.update();
+          return comp.render();
         }
       };
       comp = list(text1 = text(attrs, a$), text2 = text(attrs, a$));
@@ -109,7 +110,7 @@ describe('demo', function() {
         value: a$,
         onchange: function() {
           a$(this.value);
-          return dc.update();
+          return comp.render();
         }
       };
       comp = list(text1 = text(attrs), text2 = text(attrs));
@@ -143,7 +144,7 @@ describe('demo', function() {
               },
               onclick: function() {
                 value(item);
-                return dc.update();
+                return comp.render();
               }
             }, item);
           })(item));
@@ -153,14 +154,14 @@ describe('demo', function() {
       attrs = extendAttrs(attrs, {
         onmouseleave: (function() {
           showingItems(false);
-          return dc.update();
+          return comp.render();
         })
       });
       comp = div(attrs, input1 = input({
         $model: value,
         onmouseenter: (function() {
           showingItems(true);
-          return dc.update();
+          return comp.render();
         })
       }), items = div({
         style: {
@@ -292,10 +293,10 @@ describe('demo', function() {
       comp.mount();
       expect(comp.children.length).to.equal(1, '1-1');
       status.hash = 'completed';
-      dc.update();
+      comp.render();
       expect(comp.children.length).to.equal(0, '1-2');
       status.hash = 'all';
-      dc.update();
+      comp.render();
       return expect(comp.children.length).to.equal(1, '1-3');
     });
     it('should process getTodos and each correctly', function() {
@@ -311,10 +312,10 @@ describe('demo', function() {
       comp.mount();
       expect(comp.node.length).to.equal(1);
       status.hash = 'completed';
-      dc.update();
+      comp.render();
       expect(comp.node.length).to.equal(0);
       status.hash = 'all';
-      dc.update();
+      comp.render();
       return expect(comp.node.length).to.equal(1);
     });
     it('should todoEditArea', function() {
@@ -333,7 +334,7 @@ describe('demo', function() {
       comp.mount();
       expect(todoItems.node.length).to.equal(2);
       lst.push(3);
-      dc.update();
+      comp.render();
       return expect(todoItems.node.length).to.equal(3);
     });
     return it('should switch todo by status', function() {
@@ -364,13 +365,13 @@ describe('demo', function() {
       expect(comp.node[0].textContent).to.equal(' 1');
       expect(comp.node[1].textContent).to.equal(' 2');
       state = 0;
-      dc.update();
+      comp.render();
       expect(comp.children.length).to.equal(3, 'children 2');
       expect(comp.node.length).to.equal(3);
       expect(comp.node[0].textContent).to.equal(' 2');
       expect(comp.node[1].textContent).to.equal(' 4');
       state = 1;
-      dc.update();
+      comp.render();
       expect(comp.children.length).to.equal(3, 'children 3');
       expect(comp.node.length).to.equal(3);
       expect(comp.node[0].textContent).to.equal(' 1');

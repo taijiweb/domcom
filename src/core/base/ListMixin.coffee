@@ -4,8 +4,8 @@ isComponent = require('./isComponent')
 toComponent = require('./toComponent')
 Nothing = require('./Nothing')
 
+{binarySearch, binaryInsert, substractSet} = require('dc-util')
 {extendChildFamily} = require('../../dom-util')
-{updateChildHolder, getChildNextNode} = require('../../dc')
 
 updateDcidIndexMap = (dcidIndexMap, children, start) ->
   length = children.length
@@ -15,18 +15,21 @@ updateDcidIndexMap = (dcidIndexMap, children, start) ->
     i++
   return
 
+addIndexes = (indexes, value, start) ->
+  length = indexes.length
+  i = start
+  while i < length
+    indexes[i] += value
+    i++
+  return
+
 module.exports =
 
   initListMixin: ->
     # do not use component.listIndex
     # because a component can occurs different places in component tree
-    # especially because in the different the TransformComponsnt branch
+    # especially because in the different TransformComponsnt branch
     this.dcidIndexMap = dcidIndexMap = {}
-
-    this.renderingMap = {}
-    this.removingMap = {}
-
-    this.nextNodes = []
 
     this.family = family = {}
     family[this.dcid] = true
@@ -47,60 +50,111 @@ module.exports =
   cloneChild: (child, index, options, srcComponent) ->
     child.clone(options)
 
-  # because dc.getChildNextNode, ListMixin.getChildNextNode have different behaviours
-  # especially, dc.nextNodes is an array!!!
-  # so getChildNextNode is a necessary method
-  getChildNextNode: getChildNextNode
-
-  updateChildHolder: updateChildHolder
-
-  # after Component.removeNode, the previousSibling component  will reset nextNode,
-  # and then this method will be called
-  linkNextNode: (child) ->
-    nextNode = child.nextNode
-    children = this.children
-    nextNodes = this.nextNodes
-    length = children.length
-    i = this.dcidIndexMap[child.dcid]
-    nextNodes[i] = nextNode
-    i++
-    while i < length
-      child = children[i]
-      if !child.firstNode
-        child.sinkNextNode(nextNode)
-        nextNodes[i] = this.nextNode
-        i++
-      else
-        break
-    i
-
   createChildrenDom: ->
-    nextNodes = this.nextNodes
-    children = this.children
     node = this.childNodes
-    node.nextSibling = nextNode = this.childNextNode
-    node.parentNode = this.childParentNode
-    i = children.length - 1
-    nextNodes[i] = nextNode
-    while i >= 0
-      child = children[i]
-      child.parentNode = this.childParentNode
-      child.nextNode = nextNode
-      if child.holder != this
-        if child.node
-          child.invalidate()
-        child.holder = this
+    this.invalidIndexes = []
+    this.removingChildren = {}
+    {children} = this
+
+    index = children.length-1
+    firstNode = null
+    while index>=0
+      child = children[index]
+
+      if child.holder && child.holder != this
+        child.holder.invalidateContent(child)
+      child.holder = this
+
       try
         child.renderDom(child.baseComponent)
       catch e
         dc.onerror(e)
-      node[i] = child.node
-      i--
-      firstNode = child.firstNode
-      if i >= 0
-        nextNodes[i] = nextNode = firstNode || nextNode
+
+      node.unshift(child.node)
+      firstNode = child.firstNode || firstNode
+      index && children[index-1].nextNode = firstNode || child.nextNode
+      index--
+
     this.childFirstNode = firstNode
+
     node
+
+  updateChildrenDom: ->
+    {invalidIndexes} = this
+
+    if invalidIndexes.length
+
+      {children} = this
+      this.invalidIndexes = []
+      i = invalidIndexes.length - 1
+      {childNodes} = this
+      lastNextNode = nextNode = this.childrenNextNode
+      childrenLength = children.length
+      if (lastChild = children[childrenLength - 1]) && lastChild.nextNode != nextNode
+        lastChild.nextNode = nextNode
+        listIndex = invalidIndexes[i]
+        j = childrenLength - 1
+        nextChild = children[j]
+        j--
+        while j >= listIndex
+          child = children[j]
+          if nextChildFirstNode = nextChild.firstNode
+            child.nextNode = nextNode = nextChildFirstNode
+            break
+          else
+            if child.nextNode != nextNode
+              child.nextNode = nextNode
+              nextChild = child
+              j--
+            else
+              break
+      while i >= 0
+        listIndex = invalidIndexes[i]
+        child = children[listIndex]
+
+        if child.holder && child.holder != this
+          child.holder.invalidateContent(child)
+        child.holder = this
+
+        if listIndex == childrenLength - 1
+          child.nextNode = lastNextNode
+        else
+          child.nextNode = children[listIndex+1].firstNode || children[listIndex+1].nextNode
+        try
+          child.renderDom(child.baseComponent)
+        catch e
+          dc.onerror(e)
+
+        childNodes[listIndex] = child.node
+        nextNode = child.firstNode || nextNode
+        i--
+        if listIndex > 0
+          nextChild = children[listIndex]
+          j = listIndex - 1
+          if i >= 0
+            listIndex = invalidIndexes[i]
+          else
+            listIndex = 0
+          while j >= listIndex
+            child = children[j]
+            if nextChildFirstNode = children[j+1].firstNode
+              child.nextNode = nextChildFirstNode
+              break
+            else
+              if child.nextNode != nextNode
+                child.nextNode = nextNode
+                nextChild = child
+                j--
+              else
+                break
+
+      this.childFirstNode = children[0].firstNode || children[0].nextNode
+
+    for _, child of this.removingChildren
+      child.removeDom()
+    this.removingChildren = {}
+
+    childNodes
 
   insertChildBefore: (child, refChild) ->
     this.insertChild(refChild, child)
@@ -123,7 +177,7 @@ module.exports =
     {children, dcidIndexMap} = this
     length = children.length
     if isComponent(refChild)
-      index = dcidIndexMap[refChild.dcid]
+      index = this.dcidIndexMap[refChild.dcid]
       if !index?
         index = length
     else if refChild > length
@@ -137,48 +191,19 @@ module.exports =
       refChild = children[index]
 
     this.emit('onInsertChild', index, refChild, child)
-    extendChildFamily(this.family, child)
-    this.updateChildHolder(child)
-    if !refChild
-      if this.isTag
-        nextNode = null
-      else
-        nextNode = this.nextNode
-    else
-      nextNode = refChild.firstNode || refChild.nextNode
-    child.sinkNextNode(nextNode)
-    child.invalidate()
-    dcidIndexMap[child.dcid] = index
+    this.invalidate()
+
+    child = toComponent(child)
     children.splice(index, 0, child)
-    if this.childNodes
-      this.childNodes.splice(index, 0, null)
-    updateDcidIndexMap(dcidIndexMap, children, index + 1, 0)
-    this
-
-  removeChild: (child) ->
-    if !child?
-      dc.error('child to be removed is undefined')
-
-    children = this.children
-    dcidIndexMap = this.dcidIndexMap
-    if isComponent(child)
-      index = dcidIndexMap[child.dcid]
-      if !index?
-        dc.error('child to be removed is not in the children')
-    else if child >= children.length || child < 0
-      dc.error('child to be removed is out of bound')
-    else
-      index = child
-      child = children[index]
-    delete dcidIndexMap[child.dcid]
-
-    child.markRemovingDom(true)
-
-    substractSet(this.family, child.family)
-    children.splice(index, 1)
-    if this.childNodes
-      this.childNodes.splice(index, 1)
     updateDcidIndexMap(dcidIndexMap, children, index)
+
+    if this.node
+      {invalidIndexes} = this
+      if i = binarySearch(index, invalidIndexes)
+        invalidIndexes.splice(i, 0, index)
+        addIndexes(invalidIndexes, 1, i+1)
+      else
+        invalidIndexes.push(index)
 
     this
 
@@ -200,6 +225,49 @@ module.exports =
     else
       this
 
+  removeChild: (child) ->
+    if !child?
+      dc.error('child to be removed is undefined')
+
+    children = this.children
+    dcidIndexMap = this.dcidIndexMap
+    if isComponent(child)
+      index = dcidIndexMap[child.dcid]
+      if !index?
+        dc.error('child to be removed is not in the children')
+    else if child >= children.length || child < 0
+      dc.error('child to be removed is out of bound')
+    else
+      index = child
+      child = children[index]
+    delete dcidIndexMap[child.dcid]
+
+    this.invalidate()
+    child = children[index]
+
+    child.markRemovingDom(true)
+
+    substractSet(this.family, child.family)
+    children.splice(index, 1)
+    updateDcidIndexMap(dcidIndexMap, children, index)
+
+    if this.node
+      {invalidIndexes} = this
+      invalidIndex = binarySearch(index, invalidIndexes)
+
+      if invalidIndexes[invalidIndex]==index
+        invalidIndexes.splice(invalidIndex, 1)
+        addIndexes(invalidIndexes, -1, index)
+
+      prevIndex = index-1
+      if prevIndex >= 0
+        children[prevIndex].nextNode = child.nextNode
+
+      this.childNodes.splice(index, 1)
+      this.removingChildren[child.dcid] = child
+
+    this
+
   replaceChild: (oldChild, newChild) ->
     {children, dcidIndexMap} = this
 
@@ -207,6 +275,7 @@ module.exports =
       index = dcidIndexMap[oldChild.dcid]
       if !index?
         dc.error('oldChild to be replaced is not in the children')
+      delete dcidIndexMap[oldChild.id]
     else
       if oldChild >= children.length || oldChild < 0
         dc.error('oldChild to be replaced is out of bound')
@@ -222,25 +291,19 @@ module.exports =
     children[index] = newChild
     dcidIndexMap[newChild.dcid] = index
 
-    newChild.holder = this
-    newChild.setParentNode(this.childParentNode)
-    newChild.sinkNextNode(oldChild.nextNode)
-    newChild.invalidate()
+    this.invalidate()
     oldChild.markRemovingDom(true)
+
+    newChild.parentNode = oldChild.parentNode
+    newChild.nextNode = oldChild.nextNode
 
     substractSet(this.family, oldChild.family)
     extendChildFamily(this.family, newChild)
-    this
 
-  invalidateChildren: (startIndex, stopIndex) ->
-    if !stopIndex?
-      stopIndex = startIndex+1
-    if !this.node
-      return this
-    children = this.children
-    while startIndex<stopIndex
-      children[startIndex].invalidate()
-      startIndex++
+    if this.node
+      binaryInsert(index, this.invalidIndexes)
+      this.removingChildren[oldChild.dcid] = oldChild
+
     this
 
   setChildren: (startIndex, newChildren) ->
@@ -258,15 +321,21 @@ module.exports =
     this
 
   setLength: (newLength) ->
-    length = this.children.length
-    if newLength >= length
-      n = length
-      while n < newLength
-        this.pushChild(new Nothing())
-        n++
+    children = this.children
+    if newLength >= children.length
+      this
     else
-      last = length - 1
+      last = children.length-1
+      if this.node
+        insertLocation = binarySearch(newLength, this.invalidIndexes)
+        this.invalidIndexes = this.invalidIndexes[0...insertLocation]
       while last >= newLength
         this.removeChild(last)
         last--
-    this
+      this
+
+  invalidateContent: (child) ->
+    this.valid = false
+    this.contentValid = false
+    this.node && binaryInsert(this.dcidIndexMap[child.dcid], this.invalidIndexes)
+    this.holder && this.holder.invalidateContent(this)

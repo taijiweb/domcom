@@ -35,10 +35,10 @@ exports.DomcomError = class DomcomError extends Error
   constructor: (@message, @component) ->
 
   toString: ->
-    if @component
-      @component.toString()+'\n'+@message
+    if this.component
+      this.component.toString()+'\n'+this.message
     else
-      @message
+      this.message
 
 exports.error = dcError = (message, component) ->
   message = stacktraceMessage(message, 2)

@@ -10,13 +10,11 @@ module.exports = class Nothing extends BaseComponent
 
     this.baseComponent = this
 
-  invalidateOffspring: -> this
-
   invalidate: -> this
 
   renderDom: (oldBaseComponent) ->
 
-    if oldBaseComponent and oldBaseComponent != this
+    if oldBaseComponent && oldBaseComponent != this
       oldBaseComponent.markRemovingDom(true)
 
     this.valid = true
@@ -27,16 +25,9 @@ module.exports = class Nothing extends BaseComponent
 
     this
 
-  createDom: -> @node = []
-
-  refreshDom: ->
-    this.valid = true
-    null # this.node
+  createDom: -> this.node = []
 
   attachNode: ->
-    if holder = this.holder
-      holder.raiseNode(this)
-      holder.raiseFirstNextNode(this)
     this.node
 
   markRemovingDom: (removing) ->

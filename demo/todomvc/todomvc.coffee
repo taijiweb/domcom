@@ -5,13 +5,13 @@ extend} = dc
 
 dc.directives $show: dc.$show
 
-dc.alwaysUpdate = true
+dc.alwaysRender = true
 
 #######################################################################################################################
 # store
 
-window.fetch = -> JSON.parse localStorage.getItem('dc') || '[]'
-window.save = (todos) -> localStorage.setItem('dc', JSON.stringify(todos))
+window.fetch = -> JSON.parse localStorage.getItem('view') || '[]'
+window.save = (todos) -> localStorage.setItem('view', JSON.stringify(todos))
 
 #######################################################################################################################
 # model
@@ -29,16 +29,16 @@ saving = false
 
 window.getTodos = ->
   if viewStatusHash=='active'
-    todos.filter (todo) -> todo and !todo.completed
+    todos.filter (todo) -> todo && !todo.completed
   else if viewStatusHash=='completed'
-    todos.filter (todo) -> todo and todo.completed
+    todos.filter (todo) -> todo && todo.completed
   else todos
 
 remainingCount = -> todos.filter((todo) -> !todo.completed).length
 completedCount = -> todos.length - remainingCount()
 allChecked = -> !remainingCount()
 
-onEscapeFn = (fn) -> (event) -> if event.keyCode==27 or event.which==27  then fn()
+onEscapeFn = (fn) -> (event) -> if event.keyCode==27 || event.which==27  then fn()
 
 pluralize = (test, item) ->
   if typeof test == 'function'
@@ -48,7 +48,7 @@ pluralize = (test, item) ->
 toggleCompleted = (todo) ->
   todo.completed = !todo.completed
   save todos
-  dc.update()
+  view.render()
 
 markAll = ->
   if allChecked() then completed = false
@@ -62,22 +62,22 @@ markAll = ->
 
   if !valid
     save(todos)
-    dc.update()
+    view.render()
 
 editTodo = (todo) ->
   editingTodo = todo
   originalTodo = extend {}, todo
-  dc.update()
+  view.render()
 
 removeTodo = (todo) ->
   index = todos.indexOf todo
   todos.splice index, 1
   save todos
-  dc.update()
+  view.render()
 
 revertEdits = (todo) ->
   todos[todos.indexOf(todo)] = originalTodo
-  dc.update()
+  view.render()
 
 clearCompletedTodos = ->
   valid = true
@@ -91,7 +91,7 @@ clearCompletedTodos = ->
 
   if !valid
     save todos
-    dc.update()
+    view.render()
 
 #######################################################################################################################
 # view
@@ -101,10 +101,10 @@ text1 = text {
   placeholder: "What needs to be done?"
   disable: -> saving
   onchange: ->
-    if !@value then return
-    todos.push title: @value, completed: false
+    if !this.value then return
+    todos.push title: this.value, completed: false
     save todos
-    dc.update()
+    view.render()
   autofocus:true }
 
 todoHeader = header id: "header",
@@ -116,8 +116,8 @@ todoItems = funcEach getTodos, (todo, index) ->
   li className: { completed: (-> todo.completed), editing: -> todo==editingTodo},
 
     div class: "view",
-      checkbox className: "toggle", checked: (-> todo and todo.completed), onchange:(-> toggleCompleted(todo))
-      label ondblclick:( -> editTodo(todo) ), (-> todo and todo.title)
+      checkbox className: "toggle", checked: (-> todo && todo.completed), onchange:(-> toggleCompleted(todo))
+      label ondblclick:( -> editTodo(todo) ), (-> todo && todo.title)
       button className: "destroy", onclick:(-> removeTodo(todo))
 
     form {submit: -> save todos },
@@ -125,7 +125,7 @@ todoItems = funcEach getTodos, (todo, index) ->
         className: "edit"
         trim: "false"
         value: bind todo, "title"
-        onblur: -> todo.title = @value; save(todos); editingTodo = null; dc.update()
+        onblur: -> todo.title = this.value; save(todos); editingTodo = null; view.render()
         onfocus: -> todo == editingTodo
         onkeyup: onEscapeFn( -> revertEdits(todo) ) }
 
@@ -186,4 +186,4 @@ window.runTodoMvc = ->
 
   window.addEventListener 'hashchange',  ->
     updateHash()
-    dc.update()
+    view.render()

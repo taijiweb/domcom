@@ -84,7 +84,7 @@ describe "domcom/properties/classFn", ->
     active false
     expect(comp.className.valid).to.equal false, 'className.valid 3'
     expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties 3'
-    dc.update()
+    comp.render()
     expect(comp.node.className).to.equal('a', '3')
 
 describe 'domcom/properties/create', ->
@@ -143,7 +143,7 @@ describe 'domcom/properties/style', ->
 
   nit 'change style dynamically', ->
     paddingColor = (hexStr) ->
-      if not (hexStr.match /^\d/)  then return hexStr
+      if !(hexStr.match /^\d/)  then return hexStr
       while (hexStr.length < 6)
         hexStr = '0' + hexStr
       '#'+hexStr
@@ -155,7 +155,7 @@ describe 'domcom/properties/style', ->
     styleFn = ->
       color += 0x111111
       i$ i++
-      dc.update()
+      comp.render()
       if i==50
         clearInterval handle
     handle = setInterval(styleFn, 5)

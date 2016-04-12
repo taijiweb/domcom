@@ -8,7 +8,7 @@ module.exports = function() {
   return comp = list(text({
     onchange: function() {
       x = parseInt(this.value);
-      return dc.update();
+      return comp.render();
     }
   }, x), if_(x, div(1), div(2)));
 };
@@ -18,7 +18,7 @@ module.exports = function() {
   x = see(0, parseFloat);
   return comp = list(text({
     onchange: function() {
-      return dc.update();
+      return comp.render();
     }
   }, x), if_(x, div('It is not 0.'), div('It is 0 or NaN.')));
 };

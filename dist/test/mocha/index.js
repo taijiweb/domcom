@@ -1,4 +1,4 @@
-dc.alwaysUpdate = true;
+dc.alwaysRender = true;
 
 require('dc-util/test-util');
 

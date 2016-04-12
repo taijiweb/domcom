@@ -13,39 +13,39 @@ module.exports = class Defer extends TransformComponent
 
     super
 
-    @fulfill = fulfill or (result) -> result
-    @reject = reject or (error) -> error
-    @init = init and init(promise, @) or new Nothing()
+    this.fulfill = fulfill || (result) -> result
+    treject = reject || (error) -> error
+    this.init = init && init(promise, this) || new Nothing()
 
-    @family = family = intersect([fullfill.family, reject.family, init.family])
-    family[@dcid] = true
+    this.family = family = intersect([fullfill.family, reject.family, init.family])
+    family[this.dcid] = true
 
-    @promiseState = INIT
+    this.promiseState = INIT
 
     promise
     .then (value) ->
-      @promiseResult = value
-      @promiseState = FULFILL
-      @invalidateTransform()
+      this.promiseResult = value
+      this.promiseState = FULFILL
+      this.invalidateTransform()
 
     .catch (error) ->
-      @promiseResult = error
-      @promiseState = REJECT
-      @invalidateTransform()
+      this.promiseResult = error
+      this.promiseState = REJECT
+      this.invalidateTransform()
 
     return this
 
   getContentComponent: ->
-    if (state=@promiseState)==INIT then init
-    else if state==FULFILL then toComponent(@fulfill(@promiseResult, @promise, @))
-    else toComponent(@reject(@promiseResult, @promise, @))
+    if (state=this.promiseState)==INIT then init
+    else if state==FULFILL then toComponent(this.fulfill(this.promiseResult, this.promise, this))
+    else toComponent(this.reject(this.promiseResult, this.promise, this))
 
-  clone: -> (new Defer(@promise, @fulfill, @reject, @init.clone)).copyEventListeners(@)
+  clone: -> (new Defer(this.promise, this.fulfill, this.reject, this.init.clone)).copyEventListeners(this)
 
   toString: (indent=0, addNewLine='') ->
-    newLine('', indent, addNewLine)+'<Defer '+@promise+'>' + \
-      newLine('', indent, addNewLine) + funcString(@fulfill) + \
-      newLine('', indent, addNewLine) + funcString(@reject) +  \
-      @init.toString(indent+2, true) + newLine('</Defer>', indent, true)
+    newLine('', indent, addNewLine)+'<Defer '+this.promise+'>' + \
+      newLine('', indent, addNewLine) + funcString(this.fulfill) + \
+      newLine('', indent, addNewLine) + funcString(this.reject) +  \
+      this.init.toString(indent+2, true) + newLine('</Defer>', indent, true)
 
 extend Defer, {INIT, FULFILL, REJECT}

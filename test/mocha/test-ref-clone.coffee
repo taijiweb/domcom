@@ -44,7 +44,7 @@ describe 'Component.refs, clone', ->
       x = see 0
       comp = if_(x, t=txt(1), t)
       comp.mount()
-      dc.update()
+      comp.render()
 
   describe 'Clone', ->
     it 'should not clone node event handler',  ->
@@ -71,7 +71,7 @@ describe 'Component.refs, clone', ->
     it 'should process text clone component bind', ->
       comp = list(t1=txt(1), t1.clone())
       comp.mount('#demo')
-      dc.update()
+      comp.render()
       expect(comp.node[1].textContent).to.equal '1'
 
     it 'should process text clone component with bind', ->
@@ -81,18 +81,17 @@ describe 'Component.refs, clone', ->
       t2.x = 2
       t1.mount('#demo')
       t2.mount('#demo')
-      dc.update()
       expect(t1.node.textContent).to.equal '1'
       expect(t2.node.textContent).to.equal '2'
       t2.x = 3
-      dc.update()
-      expect(t2.node.textContent).to.equal '3'
+      t2.render()
+      expect(t2.node.textContent).to.equal('3', 3)
 
     it 'should process mount cloned tag ', ->
       c1 = p(1)
       comp = c1.clone()
       comp.mount('#demo')
-      dc.update()
+      comp.render()
       expect(comp.node.innerHTML).to.equal '1'
 
     it 'should process tag clone component ', ->
@@ -100,7 +99,7 @@ describe 'Component.refs, clone', ->
       c2 = c1.clone()
       comp = list(c1, c2)
       comp.mount('#demo')
-      dc.update()
+      comp.render()
       expect(comp.node[1].innerHTML).to.equal '1'
 
     it 'should process if_ clone component ', ->
@@ -111,5 +110,5 @@ describe 'Component.refs, clone', ->
       comp = if_(x, p(3), lstComp)
       comp.mount('#demo')
       x 1
-      dc.update()
+      comp.render()
       expect(comp.node.innerHTML).to.equal '3'

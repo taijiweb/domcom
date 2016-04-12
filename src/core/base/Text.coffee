@@ -10,10 +10,10 @@ else
   hasTextContent = false
 
 exports = module.exports = class Text extends BaseComponent
+  isText: true
   constructor: (text) ->
     super()
     this.setText(text)
-    this.isText = true
 
     if Object.defineProperty
       me = this
@@ -31,21 +31,6 @@ exports = module.exports = class Text extends BaseComponent
 
   setText:setText
 
-  invalidateOffspring: (offspring) ->
-    holder = this.holder
-    if !holder
-      # while the component is not mounted, the holder may be undefined
-      this
-    else
-      if holder == dc
-        dc.invalidateOffspring(offspring)
-      else
-        if holder.isBaseComponent
-          holder.invalidateOffspring(offspring)
-        else
-          holder.invalidate()
-    this
-
   createDom: ->
     this.textValid = true
     text = domValue(this.text, this)
@@ -56,22 +41,21 @@ exports = module.exports = class Text extends BaseComponent
     this.cacheText = text
     node
 
-  refreshDom: ->
-    this.valid = true
+  updateDom: ->
     node = this.node
     if this.textValid
       return node
     else
       this.textValid = true
       text = domValue(this.text, this)
-      if text!=this.cacheText
+      if text != this.cacheText
         if hasTextContent
           node.textContent = text
         else
           node.innerText = text
         this.cacheText = text
       node
-
+    
   clone: ->
     result = new this.constructor(this.text)
     result.copyEventListeners(this)

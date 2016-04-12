@@ -24,7 +24,7 @@ module.exports = classFn = (items...) ->
     oldValue=classMap[name]
     if typeof oldValue == 'function'
       oldValue.offInvalidate method.invalidate
-    if !value and oldValue
+    if !value && oldValue
       method.invalidate()
       delete classMap[name]
     else
@@ -46,7 +46,7 @@ module.exports = classFn = (items...) ->
           else processClassValue(name, true)
       else if item instanceof Array
         extendClassMap(item)
-      else if item and item.classMap
+      else if item && item.classMap
         # another classFn
         for name, value of item.classMap
           if typeof value != 'function' then value = true

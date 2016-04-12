@@ -25,24 +25,24 @@ module.exports = class If extends TestComponent
 
     super(test)
 
-    @then_ = then_
-    @else_ = else_
+    this.then_ = then_
+    this.else_ = else_
 
-    @family = family = intersect([then_.family, else_.family])
-    family[@dcid] = true
+    this.family = family = intersect([then_.family, else_.family])
+    family[this.dcid] = true
 
     return this
 
   getContentComponent: ->
-    if @getTestValue()
-      @then_
+    if this.getTestValue()
+      this.then_
     else
-      @else_
+      this.else_
 
-  clone: -> (new If(@test, @then_.clone(), @else_.clone())).copyEventListeners(@)
+  clone: -> (new If(this.test, this.then_.clone(), this.else_.clone())).copyEventListeners(this)
 
   toString: (indent=0, addNewLine='') ->
-      newLine('', indent, addNewLine)+'<if '+funcString(@test)+'>' + \
-        @then_.toString(indent+2, true) + \
-        @else_.toString(indent+2, true) + \
+      newLine('', indent, addNewLine)+'<if '+funcString(this.test)+'>' + \
+        this.then_.toString(indent+2, true) + \
+        this.else_.toString(indent+2, true) + \
         newLine('</if>', indent, true)

@@ -49,13 +49,13 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp = if_(x, txt(1), txt(2));
       comp.mount();
       expect(comp.node.textContent).to.equal('2', 'mount');
-      dc.update();
+      comp.render();
       expect(comp.node.textContent).to.equal('2', 'update');
       x(1);
-      dc.update();
+      comp.render();
       expect(comp.node.textContent).to.equal('1', 'update x 1');
       x(0);
-      dc.update();
+      comp.render();
       return expect(comp.node.textContent).to.equal('2', 'update x 0');
     });
     it('should render forceIf(0, txt(1), txt(2))', function() {
@@ -63,13 +63,13 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp = forceIf(0, txt(1), txt(2));
       comp.mount();
       expect(comp.node.textContent).to.equal('2', 'mount');
-      dc.update();
+      comp.render();
       expect(comp.node.textContent).to.equal('2', 'update');
       comp.test = 1;
-      dc.update();
+      comp.render();
       expect(comp.node.textContent).to.equal('1', 'update x 1');
       comp.test = 0;
-      dc.update();
+      comp.render();
       return expect(comp.node.textContent).to.equal('2', 'update x 0');
     });
     it('should render if_(x, list(t1, t2), list(t2, t1))', function() {
@@ -82,7 +82,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node[0].textContent).to.equal('2', 'mount');
       expect(demoNode.innerHTML).to.equal('21', 'mount');
       x(1);
-      dc.update();
+      comp.render();
       expect(comp.node[0].textContent).to.equal('1', 'update x 1');
       return expect(demoNode.innerHTML).to.equal('12', 'mount');
     });
@@ -95,7 +95,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount(demoNode = newDemoNode('if-ref'));
       expect(demoNode.innerHTML).to.equal('21', 'mount');
       x(0);
-      dc.update();
+      comp.render();
       return expect(demoNode.innerHTML).to.equal('1', 'update');
     });
     it('should render if_(x, t1, list(t2, t1))', function() {
@@ -106,13 +106,13 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp = if_(x, t1, lst = list(t2, t1));
       comp.mount(demoNode = newDemoNode('if-ref'));
       expect(demoNode.innerHTML).to.equal('21', 'mount');
-      dc.update();
+      comp.render();
       expect(demoNode.innerHTML).to.equal('21', 'update');
       x(1);
-      dc.update();
+      comp.render();
       expect(demoNode.innerHTML).to.equal('1', 'update x 1');
       x(0);
-      dc.update();
+      comp.render();
       return expect(demoNode.innerHTML).to.equal('21', 'update x 0');
     });
     it('should render if_(x, p(t1), list(p(t2), t1))', function() {
@@ -124,13 +124,13 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount(demoNode = newDemoNode('if-ref'));
       expect(demoNode.innerHTML).to.equal('<p>2</p>1', 'mount');
       x(1);
-      dc.update();
+      comp.render();
       expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1');
       x(0);
-      dc.update();
+      comp.render();
       expect(demoNode.innerHTML).to.equal('<p>2</p>1', 'update x 0');
       x(1);
-      dc.update();
+      comp.render();
       return expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1 again');
     });
     it('should render if_(x, p(t1), div(t2))', function() {
@@ -141,13 +141,13 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount(demoNode = newDemoNode('if-ref'));
       expect(demoNode.innerHTML).to.equal('<div>1</div>', 'mount');
       x(1);
-      dc.update();
+      comp.render();
       expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1');
       x(0);
-      dc.update();
+      comp.render();
       expect(demoNode.innerHTML).to.equal('<div>1</div>', 'update x 0');
       x(1);
-      dc.update();
+      comp.render();
       return expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1 again');
     });
     it('should render p(if_(x, p(t1), list(p(t2), t1)))', function() {
@@ -158,16 +158,16 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp = p(if1 = if_(x, p1 = p(t1), list(p(t2), t1)));
       comp.mount();
       expect(comp.node.innerHTML).to.equal('<p>2</p>1', 'mount');
-      dc.update();
+      comp.render();
       expect(comp.node.innerHTML).to.equal('<p>2</p>1', 'update');
       x(1);
-      dc.update();
+      comp.render();
       expect(comp.node.innerHTML).to.equal('<p>1</p>', 'update x 1');
       x(0);
-      dc.update();
+      comp.render();
       expect(comp.node.innerHTML).to.equal('<p>2</p>1', 'update x 0');
       x(1);
-      dc.update();
+      comp.render();
       return expect(comp.node.innerHTML).to.equal('<p>1</p>', 'update x 1 again');
     });
     it('should render if_(x, p(t1), p list(p(t2), t1))', function() {
@@ -179,10 +179,10 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount();
       expect(p2.node.innerHTML).to.equal('<p>2</p>1', 'mount');
       x(1);
-      dc.update();
+      comp.render();
       expect(comp.node.innerHTML).to.equal('1', 'update x 1');
       x(0);
-      dc.update();
+      comp.render();
       return expect(p2.node.innerHTML).to.equal('<p>2</p>1', 'mount');
     });
     it('should render if_(x, div(1), div(2))', function() {
@@ -193,10 +193,10 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node.tagName).to.equal('DIV', 'tagName');
       expect(comp.node.innerHTML).to.equal('2', 'mount');
       x(1);
-      dc.update();
+      comp.render();
       expect(comp.node.innerHTML).to.equal('1', 'first update');
       x(0);
-      dc.update();
+      comp.render();
       return expect(comp.node.innerHTML).to.equal('2', 'second update');
     });
     it('should create and update if_ with attrs', function() {
@@ -217,7 +217,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       x(1);
       expect(comp.props.fakeProp).to.equal(x, 'see invalidate fakeProp');
       expect(comp.hasActiveProperties).to.equal(true, 'hasActiveProperties');
-      dc.update();
+      comp.render();
       expect(comp.node.fakeProp).to.equal(1, 'update fakeProp');
       expect(comp.node.childNodes[0].innerHTML).to.equal('1', 'update innerHTML');
       return expect(comp.node.childNodes[0]).to.equal(c1.node);
@@ -232,7 +232,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(pIf.node.innerHTML).to.equal('2');
       expect(demo2Node.innerHTML).to.equal('<p>2</p><p>3</p>');
       x(1);
-      dc.update();
+      comp.render();
       expect(pIf.node.innerHTML).to.equal('1', 'pif update');
       expect(demo2Node.innerHTML).to.equal('<p>1</p><p>3</p>', 'demo2Node update');
       return expect(comp.node[0].innerHTML).to.equal('1', 'comp update');
@@ -249,7 +249,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node[1].innerHTML).to.equal('2');
       expect(c0.parentNode).to.equal(comp.parentNode);
       x(1);
-      dc.update();
+      comp.render();
       expect(c0.parentNode).to.equal(comp.parentNode);
       expect(c0.node.innerHTML).to.equal('1');
       expect(c2.node.innerHTML).to.equal('2');
@@ -263,10 +263,10 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount();
       expect(pIf.node.innerHTML).to.equal('2');
       x(1);
-      dc.update();
+      comp.render();
       expect(pIf.node.innerHTML).to.equal('1');
       x(0);
-      dc.update();
+      comp.render();
       return expect(pIf.node.innerHTML).to.equal('2');
     });
     it('should process embedded if 2-2', function() {
@@ -277,10 +277,10 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount();
       expect(pIf.node.innerHTML).to.equal('2');
       x(1);
-      dc.update();
+      comp.render();
       expect(pIf.node.innerHTML).to.equal('1');
       x(0);
-      dc.update();
+      comp.render();
       return expect(pIf.node.innerHTML).to.equal('2');
     });
     it('should process embedded if 2-3', function() {
@@ -290,10 +290,10 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount();
       expect(pIf.node.textContent).to.equal('2');
       x(1);
-      dc.update();
+      comp.render();
       expect(pIf.node.textContent).to.equal('1');
       x(0);
-      dc.update();
+      comp.render();
       return expect(pIf.node.textContent).to.equal('2');
     });
     it('should process event in embedded if 2-4', function() {
@@ -303,7 +303,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp = list(t1 = text({
         onchange: function() {
           x(parseInt(this.value));
-          return dc.update();
+          return comp.render();
         }
       }, x), pIf);
       comp.mount();
@@ -325,7 +325,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp = list(t1 = text({
         onchange: function() {
           x(parseInt(this.value));
-          return dc.update();
+          return comp.render();
         }
       }, 1), pIf = if_(x, div(1), div(2)));
       comp.mount();
@@ -347,7 +347,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp = list(t1 = text({
         onchange: function() {
           x(parseInt(this.value));
-          return dc.update();
+          return comp.render();
         }
       }, x), pIf = if_(x, div(1), div(2)));
       comp.mount();
@@ -374,10 +374,10 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount(demoNode = newDemoNode('list'));
       expect(demoNode.innerHTML).to.equal('1234');
       x(0);
-      dc.update();
+      comp.render();
       expect(demoNode.innerHTML).to.equal('4123');
       x(1);
-      dc.update();
+      comp.render();
       return expect(demoNode.innerHTML).to.equal('1234');
     });
   });
@@ -394,7 +394,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node).to.be["instanceof"](window.Text);
       expect(comp.node.textContent).to.equal('others');
       x(1);
-      dc.update();
+      comp.render();
       return expect(comp.node.innerHTML).to.equal('a');
     });
     it('should create and render forceCase', function() {
@@ -408,7 +408,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node).to.be["instanceof"](window.Text);
       expect(comp.node.textContent).to.equal('others');
       comp.test = 1;
-      dc.update();
+      comp.render();
       return expect(comp.node.innerHTML).to.equal('a');
     });
     return it('should create and render array case_', function() {
@@ -419,7 +419,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node).to.be["instanceof"](window.Text);
       expect(comp.node.textContent).to.equal('others');
       x(1);
-      dc.update();
+      comp.render();
       return expect(comp.node.innerHTML).to.equal('b');
     });
   });
@@ -431,9 +431,9 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       });
       comp.mount();
       expect(comp.node.textContent).to.equal('12');
-      dc.update();
+      comp.render();
       expect(comp.node.textContent).to.equal('12');
-      dc.update();
+      comp.render();
       return expect(comp.node.textContent).to.equal('12');
     });
     it('p(-> a))', function() {
@@ -442,12 +442,12 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp = p(a);
       comp.mount();
       a(2);
-      dc.update();
+      comp.render();
       expect(comp.node.innerHTML).to.equal('2', 'update a 2');
       a(3);
-      dc.update();
+      comp.render();
       a(4);
-      dc.update();
+      comp.render();
       return expect(comp.node.innerHTML).to.equal('4', 'update a 4');
     });
     it('should  create func component', function() {
@@ -472,10 +472,10 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node).to.be["instanceof"](window.Text);
       expect(comp.node.textContent).to.equal('others');
       x(1);
-      dc.update();
+      comp.render();
       expect(comp.node.innerHTML).to.equal('1');
       x(2);
-      dc.update();
+      comp.render();
       return expect(comp.node.innerHTML).to.equal('2');
     });
     it('should create and update func with  attrs', function() {
@@ -491,7 +491,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node).to.be["instanceof"](Element);
       expect(comp.node.childNodes[0].textContent).to.equal('1');
       x(2);
-      dc.update();
+      comp.render();
       expect(comp.node.fakeProp).to.equal(2);
       return expect(comp.node.childNodes[0].textContent).to.equal('2');
     });
@@ -513,7 +513,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.mount();
       expect(comp.node.textContent).to.equal('1');
       x(2);
-      dc.update();
+      comp.render();
       return expect(comp.node.textContent).to.equal('2');
     });
   });
@@ -532,7 +532,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node.textContent).to.equal('1');
       host.content = 2;
       expect(x).to.equal('called');
-      dc.update();
+      comp.render();
       return expect(comp.node.textContent).to.equal('2');
     });
     it('pick(host, "content", 1) by setContent', function() {
@@ -549,7 +549,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node.textContent).to.equal('1');
       comp.setContent(2);
       expect(x).to.equal('called');
-      dc.update();
+      comp.render();
       return expect(comp.node.textContent).to.equal('2');
     });
     it('pick(host, "activeContent", 1)', function() {
@@ -564,7 +564,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node.textContent).to.equal('1');
       host.activeContent = 2;
       expect(x).to.equal('called');
-      dc.update();
+      comp.render();
       return expect(comp.node.textContent).to.equal('2');
     });
     return it('pick(host, "activeContent", 1) by setContent', function() {
@@ -579,7 +579,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node.textContent).to.equal('1');
       comp.setContent(2);
       expect(x).to.equal('called');
-      dc.update();
+      comp.render();
       return expect(comp.node.textContent).to.equal('2');
     });
   });

@@ -14,7 +14,7 @@ module.exports = dc = (element, all) ->
       element.component
     else
       new DomNode(element)
-  else if element instanceof NodeList or element instanceof Array
+  else if element instanceof NodeList || element instanceof Array
     new DomNode(element)
   else
     throw new Error('error type for dc')
@@ -51,7 +51,7 @@ if typeof window != 'undefined'
   addEventListener document, 'DOMContentLoaded', ->
     window.$body = dc.$body = new DomNode(document.body)
 
-dc.listeners = {}
+# set dc.listeners = {} in dc.reset()
 extend = require('extend')
 EventMixn = require('./dc-event')
 extend(dc, EventMixn)

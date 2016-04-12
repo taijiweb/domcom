@@ -14,7 +14,7 @@ module.exports = toComponent = (item) ->
 
   else if !item? then new Nothing()
 
-  else if item.then and item.catch
+  else if item.then && item.catch
     Func = require('./Func') # avoid loop require
     component = new Func react -> component.promiseResult
 

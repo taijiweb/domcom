@@ -6,7 +6,7 @@ Tag = require('./Tag')
 # !!! Warning:
 # By default, Html does not escape to safe the html.
 # So it's UNSAFE to use Html class without a transform function!!!
-# It's the responsibilityn of user program to keep it in safe!
+# It's the responsibility of user program to keep it in safe!
 # Maybe a npm package like escape-html will help.
 
 # this is Html Component, which take some text as innerHTML
@@ -32,14 +32,14 @@ module.exports = class Html extends Tag
     super(tagName, attrs, [])
 
   toString: (indent=2, addNewLine) ->
-    newLine("<Html #{funcString(@_text)}/>", indent, addNewLine)
+    newLine("<Html #{funcString(this._text)}/>", indent, addNewLine)
 
 Html.HtmlMixin = HtmlMixin = {
 
   setText: setText
 
   initHtmlComponent: (text, transform) ->
-    @transform = transform
+    this.transform = transform
 
     this.setText(text)
 
@@ -54,60 +54,47 @@ Html.HtmlMixin = HtmlMixin = {
       Object.defineProperty(this, 'text', {get, set})
 
   # initListMixin is called by the constructor of Tag class
-  # so put a empty definition here
+  # so put an empty definition here
   initListMixin: ->
 
   createDom: ->
-    @textValid = true
-    @node = @firstNode = node = document.createElement(this.tagName)
+    this.textValid = true
+    this.node = this.firstNode = node = document.createElement(this.tagName)
     node.component = this
     this.updateProperties()
-    this.cacheText = node.innerHTML = @transform and @transform(domValue(@_text, this)) or domValue(@_text, this)
-    @
+    text = domValue(this._text, this)
+    if this.transform
+      text = this.transform(text)
+    this.cacheText = node.innerHTML = text
+    this
 
-  refreshDom: ->
-    this.valid = true
+  updateDom: ->
+    if this.textValid
+      return this
 
-    if @textValid
-      return @
+    this.textValid = true
+    text = domValue(this._text, this)
+    if this.transform
+      text = this.transform(text)
 
-    @textValid = true
-    text = @transform and @transform(domValue(@_text, this)) or domValue(@_text, this)
+    node = this.node
 
-    node = @node
-
-    if text!=@cacheText
+    if text!=this.cacheText
       if node.childNodes.length >=2
         if node.parentNode
-          @removeNode()
-        @node = @firstNode = node = node.cloneNode(false)
-        this.attachNode()
+          this.removeNode()
+        this.node = this.firstNode = node = node.cloneNode(false)
         node.component = this
       node.innerHTML =  text
 
-      @cacheText = text
-    # else null # text do not change, do nothing
+      this.cacheText = text
 
     # this should be done after this.node is processed
     # because may be cloneNode
     this.updateProperties()
 
-    @
-
-  invalidateOffspring: (offspring) ->
-    holder = this.holder
-    if !holder
-      # while the component is not mounted, the holder may be undefined
-      this
-    else
-      if holder == dc
-        dc.invalidateOffspring(offspring)
-      else
-        if holder.isBaseComponent
-          holder.invalidateOffspring(offspring)
-        else
-          holder.invalidate()
     this
+
 }
 
 ListMixin = require('./ListMixin')

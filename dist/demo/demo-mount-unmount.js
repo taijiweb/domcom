@@ -6,14 +6,14 @@ module.exports = function() {
   var active, comp, div1;
   active = see(true);
   return comp = list(div({
-    onclick: (function() {
+    onclick: function() {
       active(true);
-      return dc.update();
-    })
+      return div1.render();
+    }
   }, 'mount'), div({
-    onclick: (function() {
+    onclick: function() {
       active(false);
-      return dc.update();
-    })
+      return div1.render();
+    }
   }, 'unmount'), div1 = if_(active, div('toggle me')));
 };

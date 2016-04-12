@@ -10,7 +10,7 @@ exports.demoEachPush = function() {
   }), 'some other thing');
   comp.mount();
   lst.push(3);
-  return dc.update();
+  return comp.render();
 };
 
 exports.demoIfEach = function() {
@@ -22,13 +22,13 @@ exports.demoIfEach = function() {
   }));
   comp.mount();
   showingEach$(false);
-  dc.update();
+  comp.render();
   showingEach$(true);
-  return dc.update();
+  return comp.render();
 };
 
 exports.demoModelOnMultipleInput = function() {
-  var a, comp, text1, text2;
+  var a, text1, text2;
   a = {};
   text1 = text({
     $model: duplex(a, 'x')
@@ -36,7 +36,5 @@ exports.demoModelOnMultipleInput = function() {
   text2 = text({
     $model: duplex(a, 'x')
   });
-  comp = list(text1, text2);
-  dc.updateWhen([text1, text2], 'change');
-  return comp.mount();
+  return list(text1, text2).renderWhen([text1, text2], 'change').mount();
 };

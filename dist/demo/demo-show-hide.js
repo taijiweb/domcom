@@ -10,7 +10,7 @@ module.exports = function() {
   return comp = list(div({
     onclick: function() {
       toggle(x);
-      return dc.update();
+      return comp.render();
     }
   }, 'show/hide by changing style.display'), p({
     "class": {},

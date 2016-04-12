@@ -21,8 +21,8 @@ exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
   if then_==else_
     return then_
 
-  else if ( then_.constructor==Tag and else_.constructor==Tag and
-       then_.tagName == else_.tagName and then_.namespace==else_.namespace)
+  else if ( then_.constructor==Tag && else_.constructor==Tag &&
+       then_.tagName == else_.tagName && then_.namespace==else_.namespace)
 
     children = mergeIfChildren(test, then_, else_, recursive)
 
@@ -39,32 +39,32 @@ exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
       .css(style)
       .bind(events)
 
-  else if then_.isHtml and else_.isHtml
+  else if then_.isHtml && else_.isHtml
     thenTransform = then_.transform
     elseTransform = else_.transform
     transform = (text) ->
       if test()
-        thenTransform and thenTransform(text) or text
+        thenTransform && thenTransform(text) || text
       else
-        elseTransform and elseTransform(text) or text
+        elseTransform && elseTransform(text) || text
     new then_.constructor(flowIf(test, then_.text, else_.text), transform)
 
   # this is for Text, Comment and Cdata
-  else if then_.isText and else_.isText and then_.constructor == else_.constructor
+  else if then_.isText && else_.isText && then_.constructor == else_.constructor
     new then_.constructor(flowIf(test, then_.text, else_.text))
 
   else if then_ instanceof Nothing && else_ instanceof Nothing
     return then_
 
   # List component
-  else if then_.isList and else_.isList
+  else if then_.isList && else_.isList
     return new List(mergeIfChildren(test, then_, else_, recursive))
 
   else
      new If(test, then_, else_, false, false, true)  # merge, recursive, forceIf
 
 mergeIfChild = (test, then_, else_, recursive) ->
-  if !recursive and (then_.isList or else_.isList)
+  if !recursive && (then_.isList || else_.isList)
     # whether another is List or not, then_ and else_ should or could not be merged
     If = require('./base/If')
     new If(test, then_, else_, false, false, true) # merge, recursive, forceIf

@@ -43,7 +43,7 @@ for type in 'text checkbox radio date email tel number'.split(' ')
           temp = attrs
           attrs = value
           value = temp
-        attrs = attrs or {}
+        attrs = attrs || {}
         input(type, attrs, value)
 
 exports.textarea = (attrs, value) ->

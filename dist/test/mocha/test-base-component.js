@@ -189,9 +189,9 @@ describe("test base component", function() {
       comp.mount(demoNode = newDemoNode());
       expect(demoNode.innerHTML).to.equal('<div><div>1</div><p>2</p>a</div>');
       str('x');
-      dc.update();
+      comp.render();
       expect(demoNode.innerHTML).to.equal('<div>xa</div>', 'update 1');
-      dc.update();
+      comp.render();
       return expect(demoNode.innerHTML).to.equal('<div>xa</div>', 'update 2');
     });
     it('should Html.bind', function() {
@@ -214,7 +214,7 @@ describe("test base component", function() {
       comp = html(str);
       comp.mount();
       comp.text = 'x';
-      dc.update();
+      comp.render();
       return expect(comp.node.innerHTML).to.equal('x');
     });
   });

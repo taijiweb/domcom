@@ -1,17 +1,17 @@
 module.exports =
   initTransformComponent: ->
+    this.valid = false
     this.transformValid = false
-    this.isTransformComponent = true
 
   invalidate: ->
-    this.invalidateOffspring(this)
-
-  invalidateOffspring: (offspring) ->
     if this.valid
       this.valid = false
       if this.holder
-        this.holder.invalidateOffspring(this)
+        this.holder.invalidateContent(this)
     this
+
+  invalidateContent: (content) ->
+    this.invalidate()
 
   invalidateTransform: ->
     this.transformValid = false
@@ -23,53 +23,52 @@ module.exports =
     this.holder = null
     this
 
-  updateBaseComponent: ->
-    if !this.transformValid
-      this.transformValid = true
-      this.content = content = this.getContentComponent()
-      if content != this
-        content.holder = this
-        content.parentNode = this.parentNode
-        content.nextNode = this.nextNode
-        this.baseComponent = content.updateBaseComponent()
-    this.baseComponent
-
-
   renderDom: (oldBaseComponent) ->
-    this.emit('willRender')
-
-    if this.node && this.valid && oldBaseComponent==this.baseComponent
-      this.baseComponent.attachNode()
+    this.emit('willRenderDom')
+    if !(attached = this.attached)
+      this.emit('willAttach')
+    if this.valid
+      if oldBaseComponent == this.baseComponent
+        if attached
+          return this
+        else
+          this.attached = true
+          this.baseComponent.attachNode(this.parentNode, this.nextNode)
+      else
+        this.attached = true
+        baseComponent = this.baseComponent
+        baseComponent.renderDom(oldBaseComponent)
+        this.node = baseComponent.node
+        this.firstNode = baseComponent.firstNode
     else
       this.valid = true
-      this.updateBaseComponent()
-      this.renderContent(oldBaseComponent)
-
-    this.emit('didRender')
+      this.attached = true
+      if !this.transformValid
+        this.transformValid = true
+        oldContent = this.content
+        this.content = content = this.getContentComponent()
+        if oldContent && oldContent != content && oldContent.holder == this
+          needRemoveOld = true
+          oldContent.markRemovingDom(true)
+        if content!=this
+          content.holder = this
+      else
+        content = this.content
+      content.parentNode = this.parentNode
+      content.nextNode = this.nextNode
+      content.renderContent(oldBaseComponent)
+      if needRemoveOld
+        oldContent.removeDom()
+      this.baseComponent = baseComponent = content.baseComponent
+      this.node = baseComponent.node
+      this.firstNode = baseComponent.firstNode
+    if !attached
+      this.emit('didAttach')
+    this.emit('didRenderDom')
     this
 
-
   renderContent: (oldBaseComponent) ->
-    this.baseComponent.renderDom(oldBaseComponent)
+    this.renderDom(oldBaseComponent)
 
-  getChildParentNode: (child) ->
-    this.parentNode
-
-  setParentNode: (parentNode) ->
-    if this.parentNode!=parentNode
-      this.parentNode = parentNode
-      this.content and this.content.setParentNode(parentNode)
-    return
-
-  # after Component.removeNode, the previousSibling component  will reset nextNode,
-  # and then this method will be called
-  linkNextNode: (child) ->
-    this.nextNode = child.nextNode
-    if holder = this.holder
-      holder.linkNextNode(this)
-
-  # push down the nextNode, but does not propagate to the prev component
-  sinkNextNode: (nextNode) ->
-    if nextNode != this.nextNode
-      this.nextNode = nextNode
-      this.content.sinkNextNode(nextNode)
+  removeDom: ->
+    this.baseComponent.removeDom()

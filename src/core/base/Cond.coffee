@@ -12,7 +12,7 @@ module.exports = class Cond extends TransformComponent
       test = testComponentPairs[i]
       if !test.invalidate
         test = renew test
-      test.onInvalidate @invalidateTransform.bind(@)
+      test.onInvalidate this.invalidateTransform.bind(this)
       testComponentPairs[i] = test
       testComponentPairs[i+1] = toComponent(testComponentPairs[i+1])
       i += 2
@@ -25,28 +25,28 @@ module.exports = class Cond extends TransformComponent
       families.push  testComponentPairs[i].family
       i += 2
     families.push else_.family
-    @family = intersect(families)
+    this.family = intersect(families)
 
     this
 
   getContentComponent: ->
-    for [test, component] in @testComponentPairs
+    for [test, component] in this.testComponentPairs
       if test()
         return component
-    @else_
+    this.else_
 
   clone: ->
-    newCondComponentList = @testComponentPairs.slice()
+    newCondComponentList = this.testComponentPairs.slice()
     i = 0; length = newCondComponentList.length
     while i<length
       newCondComponentList[i+1] = newCondComponentList[i+1].clone()
       i+=2
-    new Cond(newCondComponentList, @else_.clone()).copyEventListeners(@)
+    new Cond(newCondComponentList, this.else_.clone()).copyEventListeners(this)
 
   toString: (indent=0, addNewLine) ->
     s = newLine('', indent, addNewLine)+'<Cond '+funcString(test)+'>'
-    for test, comp in @testComponentPairs
+    for test, comp in this.testComponentPairs
       s += newLine(funcString(test)+': '+comp.toString(indent+2), indent+2)
-    s += @else_.toString(indent+2)+newLine('</Cond>', indent, true)
+    s += this.else_.toString(indent+2)+newLine('</Cond>', indent, true)
 
   this

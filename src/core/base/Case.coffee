@@ -6,7 +6,7 @@ TestComponent = require('./TestComponent')
 module.exports = class Case extends TestComponent
   constructor: (test, @map, else_, forceCase=false) ->
 
-    if !forceCase and typeof test != 'function'
+    if !forceCase && typeof test != 'function'
       if map.hasOwnPoperty(test)
         return toComponent(map[key])
       else
@@ -14,26 +14,26 @@ module.exports = class Case extends TestComponent
 
     foreach map, (value, index) ->
       map[index] = toComponent(value)
-    @else_ = toComponent(else_)
+    this.else_ = toComponent(else_)
 
     families = []
     foreach map, (value) -> families.push(value.family)
-    families.push @else_.family
-    @family = family = intersect(families)
-    family[@dcid] = true
+    families.push this.else_.family
+    this.family = family = intersect(families)
+    family[this.dcid] = true
 
     super(test)
 
   getContentComponent: ->
-    @map[@getTestValue()] or @else_
+    this.map[this.getTestValue()] || this.else_
 
   clone: ->
-    cloneMap = foreach @map, (value) -> value.clone()
-    (new Case(@test, cloneMap, @else.clone())).copyEventListeners(@)
+    cloneMap = foreach this.map, (value) -> value.clone()
+    (new Case(this.test, cloneMap, this.else_.clone())).copyEventListeners(this)
 
   toString: (indent=0, addNewLine) ->
-    s = newLine('', indent, addNewLine)+'<Case '+funcString(@test)+'>'
-    foreach @map, (value, index) ->
+    s = newLine('', indent, addNewLine)+'<Case '+funcString(this.test)+'>'
+    foreach this.map, (value, index) ->
       s += newLine(index+': '+value.toString(indent+2, false), indent+2, true)
-    s += @else_.toString(indent+2, true)+newLine('</Case>', indent, true)
+    s += this.else_.toString(indent+2, true)+newLine('</Case>', indent, true)
 

@@ -10,29 +10,29 @@ module.exports = class Comment extends Text
     super(text)
 
   createDom: ->
-    @textValid = true
-    text = domValue(@text, this)
+    this.textValid = true
+    text = domValue(this.text, this)
     node = document.createComment(text)
-    @node = @firstNode = node
-    @cacheText = text
-    @node
+    this.node = this.firstNode = node
+    this.cacheText = text
+    this.node
 
   updateDom: ->
-    if @textValid
-      return @node
+    if this.textValid
+      return this.node
 
-    @textValid = true
-    text = domValue(@text, this)
-    if text != @cacheText
+    this.textValid = true
+    text = domValue(this.text, this)
+    if text != this.cacheText
       parentNode = node.parentNode
       if parentNode
         parentNode.removeChild(node)
       node = document.createComment(text)
-      @node = @firstNode = node
-      @cacheText = text
-    @node
+      this.node = this.firstNode = node
+      this.cacheText = text
+    this.node
 
   toString: (indent=2, addNewLine) ->
-    newLine("<Comment #{funcString(@text)}/>", indent, addNewLine)
+    newLine("<Comment #{funcString(this.text)}/>", indent, addNewLine)
 
 

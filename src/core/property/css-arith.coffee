@@ -26,16 +26,16 @@ exports.unitDiv = unitDiv = (x, y) ->
     console.log('wrong type in unitDiv(prop, value)')
   num / parseFloat(y) + x.replace(reNonUnit, '')
 
-Tag::cssAdd = (prop, value) ->
+Tag.prototype.cssAdd = (prop, value) ->
   v = unitAdd(this.css(prop), value)
   this.css(prop, v)
 
-Tag::cssSub = (prop, value) ->
+Tag.prototype.cssSub = (prop, value) ->
   this.css(prop, unitSub(this.css(prop), value))
 
-Tag::cssMul = (prop, value) ->
+Tag.prototype.cssMul = (prop, value) ->
   this.css(prop, unitMul(this.css(prop), value))
 
-Tag::cssDiv = (prop, value) ->
+Tag.prototype.cssDiv = (prop, value) ->
   this.css(prop, unitDiv(this.css(prop), value))
 

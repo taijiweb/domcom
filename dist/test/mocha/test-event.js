@@ -40,7 +40,7 @@ describe("component event", function() {
     comp.mount();
     expect(x()).to.equal(0);
     x(1);
-    dc.update();
+    comp.render();
     return expect(x()).to.equal(1);
   });
   it('component shoud not call embeded listeners before updating if_', function() {
@@ -53,7 +53,7 @@ describe("component event", function() {
     comp.mount();
     expect(x()).to.equal(0);
     x(1);
-    dc.update();
+    comp.render();
     return expect(x()).to.equal(1);
   });
   it('component shoud call listeners after mounting', function() {
@@ -101,7 +101,7 @@ describe("component event", function() {
     comp.mount();
     expect(x()).to.equal(0, 'mount');
     x(1);
-    dc.update();
+    comp.render();
     expect(x()).to.equal(1);
     return expect(y).to.equal(0);
   });
@@ -116,7 +116,7 @@ describe("component event", function() {
     comp.mount();
     expect(x()).to.equal(0);
     x(1);
-    dc.update();
+    comp.render();
     expect(x()).to.equal(1);
     return expect(y).to.equal(0);
   });

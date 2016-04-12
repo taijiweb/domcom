@@ -7,7 +7,7 @@ if typeof window != 'undefined'
 exports.getBindProp = (component)  ->
   {tagName} = component
   if !tagName then throw new Error 'trying to bind a Component which is not a Tag'
-  else if tagName=='textarea' or tagName=='select' then return 'value'
+  else if tagName=='textarea' || tagName=='select' then return 'value'
   else if component.props.type=='checkbox' then return 'checked'
   else return 'value'
 
@@ -32,7 +32,7 @@ if typeof window != 'undefined'
   # Returns true if it is a DOM element
   exports.isElement = (item) ->
     if typeof HTMLElement == "object" then item instanceof HTMLElement
-    else item and typeof item == "object" and item != null && item.nodeType == 1 && typeof item.nodeName=="string"
+    else item && typeof item == "object" && item != null && item.nodeType == 1 && typeof item.nodeName=="string"
 
 {renew} = require('lazy-flow')
 
@@ -43,7 +43,7 @@ exports.domField = (value, component) ->
 
   else if typeof value != 'function'
 
-   if value.then and value.catch
+   if value.then && value.catch
      fn = react -> fn.promiseResult
 
      value

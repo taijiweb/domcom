@@ -6,7 +6,7 @@ Nothing, Defer} = require('./base')
 {isEven} = require('dc-util')
 
 exports.isAttrs = isAttrs = (item) ->
-  typeof item == 'object' and item!=null and !isComponent(item) and item not instanceof Array
+  typeof item == 'object' && item!=null && !isComponent(item) && !(item instanceof Array)
 
 {isArray, isObject} = require('dc-util')
 
@@ -26,10 +26,14 @@ attrsChildren = (args) ->
   else [{}, args]
 
 toTagChildren = (args) ->
-  if args not instanceof Array then [args]
-  else if !args.length then []
-  else if args.length==1 then toTagChildren(args[0])
-  else args
+  if !(args instanceof Array)
+    [args]
+  else if !args.length
+    []
+  else if args.length==1
+    toTagChildren(args[0])
+  else
+    args
 
 tag = exports.tag = (tagName, args...) ->
   [attrs, children] = attrsChildren(args)
@@ -161,7 +165,7 @@ _each = (attrs, items, options) ->
       itemComponent.itemIndex = itemIndex
       itemComponent
 
-  children = listComponent.children
+  children = []
   if isArray(items)
     for item, i in items
       children.push(getItemComponent(item, i))
@@ -170,8 +174,7 @@ _each = (attrs, items, options) ->
     for key of items
       children.push(getItemComponent(key, i))
       i++
-
-  listComponent
+  listComponent.setChildren(0, children)
 
 getEachArgs = (args) ->
   [attrs, items, options] = args
@@ -202,7 +205,6 @@ getEachArgs = (args) ->
 exports.every = every = (args...) ->
   [attrs, items, options] = getEachArgs(args)
   _each(attrs, items, options)
-      
 
 exports.each = each = (args...) ->
   [attrs, items, options] = getEachArgs(args)
@@ -215,25 +217,29 @@ exports.funcEach = (attrs, listFunc, options) ->
     listFunc = attrs
     attrs = null
 
-  if !listFunc.invalidate
-    listFunc = renew(listFunc)
-
-  items = null
-
-  listFunc.onInvalidate ->
-    dc.once 'willUpdate', ->
-      newItems = listFunc()
-      items.replaceAll(newItems)
-
   items = listFunc()
   if isArray(items)
     items = items[...]
   else
     items = extend({}, items)
+  component = each(attrs, items, options)
 
-  each(attrs, items, options)
+  updateItemsCallback =  ->
+    newItems = listFunc()
+    items.replaceAll(newItems)
 
-# promise is a promise, which have .then and .catch the two method
+  if listFunc.onInvalidate
+    listFunc.onInvalidate updateItemsCallback
+  else
+    component.on 'willRenderDom', ->
+      if component.node
+        updateItemsCallback()
+    component.on 'didRenderDom', ->
+      component.invalidate()
+
+  component
+
+# promise is a Promise instance which have .then and .catch the two method
 # fulfill: (value, promise, component) ->
 # reject: (reason, promise, component) ->
 # init: will be converted to component by toComponent

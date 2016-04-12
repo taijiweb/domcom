@@ -32,9 +32,10 @@ exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem) ->
       componentsMap[key] = comp()
     else
       componentsMap[key] = comp
-  list(demoSelect = select($options: [Object.keys(demoMap)], $model:currentItem),
+  comp = list(demoSelect = select($options: [Object.keys(demoMap)], $model:currentItem),
     div case_(currentItem, componentsMap, else_=componentsMap[initItem])
-  ).updateWhen(demoSelect, 'change')
+  )
+  comp.renderWhen(demoSelect, 'change')
 
 exports.runDemo = (demoMap, initItem, element) ->
   comp = makeDemoComponent(demoMap, initItem)

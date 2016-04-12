@@ -9,7 +9,7 @@ module.exports = function() {
   indexInput = number({
     onchange: function() {
       x = parseInt(this.value);
-      return dc.update();
+      return comp.render();
     }
   });
   lst = each([0, 1, 2, 3], function(item) {
@@ -35,7 +35,7 @@ module.exports = function() {
   indexInput = number({
     onchange: function() {
       x = parseInt(this.value);
-      return dc.update();
+      return comp.render();
     }
   });
   return comp = list(indexInput, func(function() {
@@ -54,6 +54,6 @@ module.exports = function() {
     if (v >= 0 && v <= 3) {
       return div(v);
     }
-  })), dc.updateWhen(num, 'change'));
-  return comp;
+  })));
+  return comp.renderWhen(num, 'change');
 };

@@ -17,15 +17,14 @@ module.exports = demoSum = function() {
       return b(this.value);
     }
   }), p1 = p(flow.add(a, b)));
-  dc.updateWhen([t1, t2], 'change');
-  return comp;
+  return comp.renderWhen([t1, t2], 'change');
 };
 
 module.exports = demoSum = function() {
-  var a, b, comp, p1, t1, t2;
+  var a, b, p1, t1, t2;
   a = see(1);
   b = see(2);
-  comp = list((t1 = text({
+  return list((t1 = text({
     value: a,
     onchange: (function() {
       return a(this.value * 1);
@@ -35,7 +34,5 @@ module.exports = demoSum = function() {
     onchange: (function() {
       return b(this.value * 1);
     })
-  })), p1 = p(flow.add(a, b)));
-  dc.updateWhen([t1, t2], 'change');
-  return comp;
+  })), p1 = p(flow.add(a, b))).renderWhen([t1, t2], 'change');
 };

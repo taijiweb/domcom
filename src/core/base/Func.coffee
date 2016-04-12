@@ -8,20 +8,20 @@ module.exports = class Func extends TransformComponent
     super()
 
     if !func.invalidate
-      @func = renew(func)
+      this.func = renew(func)
     else
-      @func = func
+      this.func = func
 
     me = this
-    @func.onInvalidate(-> me.invalidateTransform())
+    this.func.onInvalidate(-> me.invalidateTransform())
 
     this
 
-  getContentComponent: -> toComponent(@func())
+  getContentComponent: -> toComponent(this.func())
 
   clone: ->
     (new Func(this.func))
-      .copyEventListeners(@)
+      .copyEventListeners(this)
 
   toString: (indent=2, addNewLine) ->
-    newLine("<Func #{funcString(@func)}/>",  indent, addNewLine)
+    newLine("<Func #{funcString(this.func)}/>",  indent, addNewLine)

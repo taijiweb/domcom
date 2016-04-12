@@ -136,7 +136,7 @@ describe("domcom/properties/classFn", function() {
     active(false);
     expect(comp.className.valid).to.equal(false, 'className.valid 3');
     expect(comp.hasActiveProperties).to.equal(true, 'hasActiveProperties 3');
-    dc.update();
+    comp.render();
     return expect(comp.node.className).to.equal('a', '3');
   });
 });
@@ -270,7 +270,7 @@ describe('domcom/properties/style', function() {
     styleFn = function() {
       color += 0x111111;
       i$(i++);
-      dc.update();
+      comp.render();
       if (i === 50) {
         return clearInterval(handle);
       }

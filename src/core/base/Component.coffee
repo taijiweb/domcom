@@ -1,7 +1,7 @@
 extend = require('extend')
 
 {normalizeDomElement} = require('../../dom-util')
-{newDcid} = require('dc-util')
+{newDcid, isArray} = require('dc-util')
 {flow} = require('lazy-flow')
 isComponent = require('./isComponent')
 dc = require('../../dc')
@@ -24,13 +24,14 @@ module.exports = class Component
   ### if mountNode is given, it should not be the node of any Component
   only use beforeNode if mountNode is given
   ###
-  create: (mountNode, beforeNode, force) ->
+  create: (mountNode, beforeNode, cancelUpdate) ->
     if mountNode && mountNode.component
       mountNode = mountNode.component
     else if beforeNode && beforeNode.component
       console.log(mountNode)
       console.log(beforeNode)
       throw new Error('error while mounting: mountNode is not a component, but beforeNode is a component')
+
     if isComponent(mountNode)
       if !beforeNode
         if !mountNode.children
@@ -51,64 +52,94 @@ module.exports = class Component
         mountNode.insertChildBefore(this, beforeNode)
     else
       this.emit('willMount')
+      this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.body
+      this.nextNode = beforeNode || this.nextNode
       this.holder = dc
-      dc.dcidIndexMap[this.dcid] = listIndex = dc.listIndex
-      dc.invalidateOffspring(this)
-      dc.parentNodes[listIndex] = this.parentNode = normalizeDomElement(mountNode) or this.parentNode or document.body
-      dc.nextNodes[listIndex] = this.nextNode = beforeNode
-      dc.listIndex++
-    dc.update(force)
+      dc.rootComponentMap[this.dcid] = this
+    if !cancelUpdate
+      this.render()
     this
 
   mount: (mountNode, beforeNode) ->
     this.emit('willMount')
-    this.create(mountNode, beforeNode, true)
+    this.create(mountNode, beforeNode)
     this.emit('didMount')
+
+  render: (force) ->
+    if !this.destroyed && (force || dc.alwaysRender || !dc.renderBySystemLoop)
+      this.emit('willRender')
+      if this.removing
+        this.removeDom()
+      else
+        this.renderDom(this.baseComponent)
+      this.emit('didRender')
+    this
 
   unmount: ->
     this.emit('willUnmount')
-    this.remove(true)
+    this.remove()
     this.emit('didUnmount')
     this
 
-  remove: (force) ->
+  remove: (cancelUpdate) ->
     holder = this.holder
+    component = this
+    while holder && holder != dc && !holder.isBaseComponent
+      component = holder
+      holder = holder.holder
     if holder == dc
-      this.markRemovingDom(true)
+      component.markRemovingDom(true)
+      dc.rootComponentMap[component.dcid] = component
+      if !cancelUpdate
+        component.render()
+    else if !holder
+      this
+    else if holder.children
+      holder.removeChild(component)
+      if !cancelUpdate
+        component.render()
     else
-      component = this
-      while holder && holder != dc and !holder.isBaseComponent
-        component = holder
-        holder = holder.holder
-      if !holder
-        return this
-      else if holder.children
-        holder.removeChild(component)
-      else if holder != dc
-        dc.error('Should not remove the content of TransformComponent')
-    dc.update(force)
+      dc.error('Should not remove the content of TransformComponent')
+    this
 
-  replace: (oldComponent, force) ->
+  replace: (oldComponent, cancelUpdate) ->
     if this.destroyed || this == oldComponent
       return
     holder = oldComponent.holder
-    if holder && (holder != dc)
+    if holder && holder != dc
       if holder.isTransformComponent
         dc.error('Should not replace the content of TransformComponent')
       else
         # holder is List or Tag
         holder.replaceChild(oldComponent, this)
-    else
-      this.setParentNode(oldComponent.parentNode)
-      this.sinkNextNode(oldComponent.nextNode)
+        if !cancelUpdate
+          this.render()
+          oldComponent.render()
+    else if holder == dc
+      this.parentNode = oldComponent.parentNode
+      this.nextNode = oldComponent.nextNode
       oldComponent.markRemovingDom(true)
       this.holder = holder
       this.invalidate()
-    dc.update(force)
+      dc.rootComponentMap[this.dcid] = this
+      dc.rootComponentMap[oldComponent.dcid] = oldComponent
+      if !cancelUpdate
+        this.render()
+        oldComponent.render()
     this
 
-  updateWhen: (component, event, options) ->
-    dc.updateWhen(component, event, options)
+  ###
+  component.renderWhen components, events
+  component.renderWhen setInterval, interval, options
+  component.renderWhen setTimeout, interval, options
+  ###
+  renderWhen: (component, events, options) ->
+    if isArray(component) || isComponent(component)
+      options = [this]
+    else
+      options = options || {}
+      options.components = [this]
+    dc.renderWhen(component, events, options)
     this
 
   destroy: ->
@@ -120,39 +151,6 @@ module.exports = class Component
       this.node = null
     this.baseComponent = null
     this.parentNode = null
-
-  raiseNode: (child) ->
-    node = child.node
-    if this.children
-      try
-        this.childNodes[this.dcidIndexMap[child.dcid]] = node
-      catch e
-        throw e
-    else
-      this.node = node
-      if holder = this.holder
-        holder.raiseNode(this)
-
-  raiseFirstNextNode: (child) ->
-    children = this.children
-    firstNode = child.firstNode
-    if children
-      index = this.dcidIndexMap[child.dcid]
-      nextNodes = this.nextNodes
-      while index
-        node = firstNode || child.nextNode
-        index--
-        child = children[index]
-        nextNodes[index] = child.nextNode = node
-        firstNode = child.firstNode
-      if index == 0 && this.isList
-        if this.firstNode != firstNode
-          this.firstNode = firstNode
-          this.holder.raiseFirstNextNode(this)
-    else
-      if this.firstNode != firstNode
-        this.firstNode = firstNode
-        this.holder.raiseFirstNextNode(this)
 
   getPrevSibling: ->
     if !(holder = this.holder)
@@ -184,7 +182,7 @@ module.exports = class Component
     myListeners = this.listeners
     srcListeners = srcComponent.listeners
     for event of srcListeners
-      srcListeners[event] and myListeners[event] = srcListeners[event].splice()
+      srcListeners[event] && myListeners[event] = srcListeners[event].splice()
     this
 
 dcEventMixin = require('../../dc-event')

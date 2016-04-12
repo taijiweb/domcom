@@ -23,11 +23,11 @@ exports.extendAttrs = (attrs, obj, options={}) ->
     attrs.style = style
 
   for key, value of obj
-    if key=='class' or key=='className'
+    if key=='class' || key=='className'
       # class and className have been processed in advance
       continue
     else if key[..1]=='on'
-      if options['replace_'+key] or options.replaceEvents then attrs[key] = value
+      if options['replace_'+key] || options.replaceEvents then attrs[key] = value
       else extendEventValue(attrs, key, value)
     else if key=='style'
       continue

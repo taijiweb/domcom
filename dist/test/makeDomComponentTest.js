@@ -19,7 +19,7 @@ module.exports = function(testModule, description, singleTestName, unmount) {
         }
         if (isComponent(value)) {
           value.mount();
-          dc.update();
+          value.render();
           if (unmount) {
             return value.unmount();
           }
@@ -36,7 +36,7 @@ module.exports = function(testModule, description, singleTestName, unmount) {
             }
             if (isComponent(value)) {
               value.mount();
-              dc.update();
+              value.render();
               if (unmount) {
                 return value.unmount();
               }

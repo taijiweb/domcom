@@ -3,7 +3,7 @@ module.exports = dcEventMixin =
     if !arguments.length
       dc.error('missing arguments for Component.on(event, callback)')
     if arguments.length == 1
-      if !event or typeof event != 'object'
+      if !event || typeof event != 'object'
         dc.error('wrong arguments for Component.on(event, callback)')
       else
         for eventName, callback of event
@@ -30,7 +30,7 @@ module.exports = dcEventMixin =
       {listeners} = this
       for event in event.split(/\s*,\s*|\s+/)
         callbacks = listeners[event]
-        if callbacks and (index = callbacks.indexOf(callback)) >= 0
+        if callbacks && (index = callbacks.indexOf(callback)) >= 0
           callbacks.splice(index, 1)
           if !callbacks.length
             listeners[event] = null

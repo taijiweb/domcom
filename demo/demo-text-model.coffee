@@ -3,5 +3,5 @@ a, checkbox, text} = dc
 
 module.exports = ->
   {a$} = bindings({a: 1})
-  attrs = {onchange: -> dc.update()}
+  attrs = {onchange: -> comp.render()}
   comp = list(a=text(attrs, a$), text(attrs, a$))

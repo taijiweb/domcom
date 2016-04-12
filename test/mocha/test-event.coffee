@@ -34,7 +34,7 @@ describe "component event", ->
     comp.mount()
     expect(x()).to.equal 0
     x 1
-    dc.update()
+    comp.render()
     expect(x()).to.equal 1
 
   it 'component shoud not call embeded listeners before updating if_', ->
@@ -44,7 +44,7 @@ describe "component event", ->
     comp.mount()
     expect(x()).to.equal 0
     x 1
-    dc.update()
+    comp.render()
     expect(x()).to.equal 1
 
   it 'component shoud call listeners after mounting', ->
@@ -77,7 +77,7 @@ describe "component event", ->
     comp.mount()
     expect(x()).to.equal 0, 'mount'
     x 1
-    dc.update()
+    comp.render()
     expect(x()).to.equal 1
     expect(y).to.equal 0
 
@@ -89,7 +89,7 @@ describe "component event", ->
     comp.mount()
     expect(x()).to.equal 0
     x 1
-    dc.update()
+    comp.render()
     expect(x()).to.equal 1
     expect(y).to.equal 0
 

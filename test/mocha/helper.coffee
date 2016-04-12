@@ -3,7 +3,7 @@ extend = require('extend')
 exports.newDemoNode = (id) ->
   node = document.createElement('div')
   document.body.appendChild(node)
-  id and node.setAttribute('id', id)
+  id && node.setAttribute('id', id)
   node
 
 exports.fakeEvent = (targetNode, type='click', keyCodeOrOptions) ->

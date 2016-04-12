@@ -1,6 +1,5 @@
 Component = require('./Component')
 {cloneObject} = require('dc-util')
-{refreshComponents} = require('../../dc')
 
 module.exports = class BaseComponent extends Component
   constructor: ->
@@ -9,31 +8,35 @@ module.exports = class BaseComponent extends Component
     this.removing = false
     this.baseComponent = this
 
+  renderDom: (oldBaseComponent) ->
+    this.emit('willRenderDom')
+
+    if oldBaseComponent && oldBaseComponent != this
+      oldBaseComponent.markRemovingDom(true)
+
+    if !this.node
+      this.valid = true
+      this.createDom()
+    else
+      this.removing = false
+      if !this.valid
+        this.valid = true
+        this.updateDom()
+
+    this.attachNode(this.parentNode, this.nextNode)
+
+    if oldBaseComponent && oldBaseComponent != this
+      oldBaseComponent.removeDom()
+
+    this.emit('didRenderDom')
+
+    this
+
   invalidate: ->
     if this.valid
       this.valid = false
-      this.holder && this.holder.invalidateOffspring(this)
+      this.holder && this.holder.invalidateContent(this)
     else
-      this
-
-  invalidateOffspring: (offspring) ->
-    if this != offspring && !this.node
-      this
-    else if !(holder = this.holder)
-      # while the component is not mounted, the holder may be undefined
-      this.renderingMap[offspring.dcid] = [offspring, offspring.holder]
-      this
-    else
-      if holder == dc
-        dc.invalidateOffspring(offspring)
-      else
-        if !holder.isBaseComponent
-          this.renderingMap[offspring.dcid] = [offspring, offspring.holder]
-          offspring.renderingHolder = this
-          holder.invalidate()
-        else
-          holder.invalidateOffspring(offspring)
-
       this
 
   markRemovingDom: (removing) ->
@@ -41,46 +44,12 @@ module.exports = class BaseComponent extends Component
     if removing
       if this.node && this.node.parentNode
         dc.valid = false
-        dc.removingMap[this.dcid] = this
-      if this.renderingHolder
-        renderingHolder = this.renderingHolder
-        this.renerHolder = null
-        delete renderingHolder.renderingMap[this.dcid]
-        delete renderingHolder.oldRenderingMap[this.dcid]
-      this.holder = null
-    this
-
-  updateBaseComponent: ->
-    this
-
-  renderContent: (oldBaseComponent) ->
-    this.renderDom(oldBaseComponent)
-    if holder = this.holder
-      holder.raiseNode(this)
-      holder.raiseFirstNextNode(this)
-
-  renderDom: (oldBaseComponent) ->
-    this.emit('willRender')
-
-    if oldBaseComponent and oldBaseComponent != this
-      oldBaseComponent.markRemovingDom(true)
-
-    if !this.node
-      this.valid = true
-      this.renderingMap = {}
-      this.createDom()
-    else
-      this.refreshDom()
-
-    this.attachNode(this.parentNode, this.nextNode)
-
-    this.emit('didRender')
-
     this
 
   removeDom: ->
     if this.removing && this.attached
       this.removing = false
+      this.holder = null
       this.emit('willDetach')
       this.removeNode()
       this.emit('didDetach')
@@ -89,21 +58,16 @@ module.exports = class BaseComponent extends Component
 
   removeNode: ->
     node = this.node
-    prevNode = node.previousSibling
-    nextNode = node.nextSibling
     node.parentNode.removeChild(node)
-    if prevNode && (component = prevNode.component)
-      component.nextNode = nextNode
-      if holder = component.holder
-        holder.linkNextNode(component)
     return
 
   executeAttachNode: ->
-    this.removing = false
 
     node = this.node
     parentNode = this.parentNode
     nextNode = this.nextNode
+
+    this.removing = false
 
     if parentNode && (parentNode != node.parentNode || nextNode != node.nextSibling)
       node = this.node
@@ -119,23 +83,11 @@ module.exports = class BaseComponent extends Component
 
     this.executeAttachNode()
 
-    if holder = this.holder
-      holder.raiseNode(this)
-      holder.raiseFirstNextNode(this)
-
     if !attached
       this.emit('didAttach')
 
     this.node
 
-  setParentNode: (parentNode) ->
-    this.parentNode = parentNode
-    return
+  renderContent: (oldBaseComponent) ->
+    this.renderDom(oldBaseComponent)
 
-  # push down the nextNode, but does not propagate to the prev component
-  sinkNextNode: (nextNode) ->
-    if nextNode != this.nextNode
-      this.nextNode = nextNode
-      if (holder = this.holder) && (nextNodes = holder.nextNodes)
-        index = holder.dcidIndexMap[this.dcid]
-        nextNodes[index] = nextNode

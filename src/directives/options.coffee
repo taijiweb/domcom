@@ -4,7 +4,7 @@ Tag = require('../core/base/Tag')
 
 # options directive，used for select tag
 module.exports = (items, attrs) -> (comp) ->
-  if comp not instanceof Tag or comp.tagName!='select'
+  if !(comp instanceof Tag) || comp.tagName!='select'
     throw new Error 'options should be only used in select tag'
   options = []
   if items

@@ -3,16 +3,16 @@ path = require('path')
 webpack = require("webpack")
 
 exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
-  plugins = options.plugins or [ new webpack.NoErrorsPlugin() ]
+  plugins = options.plugins || [ new webpack.NoErrorsPlugin() ]
 
   config =
     entry: entry
 
     output:
-      path: path.join(__dirname, options.path or '../public'),
+      path: path.join(__dirname, options.path || '../public'),
       filename: filename
       pathinfo: if options.pathinfo? then options.pathinfo else true
-      publicPath: options.publicPath or "/assets/",
+      publicPath: options.publicPath || "/assets/",
 
     resolve: {extensions: ['', '.coffee', '.js']}
 
@@ -46,7 +46,7 @@ exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
 WebpackDevServer = require("webpack-dev-server")
 exports.makeWebpackDevServer = (entry, filename, options={}) ->
 
-  options.plugins = options.plugins or [
+  options.plugins = options.plugins || [
     new webpack.HotModuleReplacementPlugin()
     new webpack.NoErrorsPlugin()
   ]
@@ -56,7 +56,7 @@ exports.makeWebpackDevServer = (entry, filename, options={}) ->
 
   serverConfig =
     contentBase: "http://localhost/",
-    publicPath: options.publicPath or "/assets/",
+    publicPath: options.publicPath || "/assets/",
 
     hot: true,
 
@@ -78,4 +78,4 @@ exports.makeWebpackDevServer = (entry, filename, options={}) ->
     inline:options.inline
 
   webpackDevServer = new WebpackDevServer(webpackCompiler, serverConfig)
-  webpackDevServer.listen options.port or 8080, "localhost", ->
+  webpackDevServer.listen options.port || 8080, "localhost", ->

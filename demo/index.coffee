@@ -1,6 +1,6 @@
 {runDemo, demoMap} = require('./util')
 
-dc.alwaysUpdate = true
+dc.alwaysRender = true
 
 window.onload = ->
 #  comp = accordion()

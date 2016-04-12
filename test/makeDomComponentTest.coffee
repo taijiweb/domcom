@@ -11,7 +11,7 @@ module.exports = (testModule, description, singleTestName, unmount=true) ->
           value = value()
         if isComponent(value)
           value.mount()
-          dc.update()
+          value.render()
           if unmount
             value.unmount()
     else
@@ -22,6 +22,6 @@ module.exports = (testModule, description, singleTestName, unmount=true) ->
               value = value()
             if isComponent(value)
               value.mount()
-              dc.update()
+              value.render()
               if unmount
                 value.unmount()

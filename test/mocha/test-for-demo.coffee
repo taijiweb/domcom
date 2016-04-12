@@ -38,10 +38,10 @@ describe 'demo', ->
       expect(a_()).to.equal('3', 'a_')
       expect(b_()).to.equal('4', 'b_')
       expect(sum()).to.equal('34', 'sum')
-      expect(!!comp.valid).to.equal true, 'comp.valid'
-      expect(!!z.valid).to.equal true, 'z.valid'
-#      expect(!!t1.valid).to.equal false, 't1.valid'
-      dc.update()
+      expect(!!comp.valid).to.equal(false, 'comp.valid')
+      expect(!!z.valid).to.equal(false, 'z.valid')
+      expect(!!t1.valid).to.equal(false, 't1.valid')
+      comp.render()
       expect(z.node.innerHTML).to.equal '34', 'update'
 
   describe 'combobox', ->
@@ -62,7 +62,7 @@ describe 'demo', ->
   describe 'text model', ->
     it 'should text model by value', ->
       {a$} = bindings(m={a: 1})
-      attrs = {onchange: -> dc.update()}
+      attrs = {onchange: -> comp.render()}
       comp = list(text1=text(attrs, a$), text2=text(attrs, a$))
       comp.mount()
       text1.node.value = 3
@@ -72,7 +72,7 @@ describe 'demo', ->
 
     it 'should text model by value and onchange', ->
       {a$} = bindings(m={a: 1})
-      attrs = {value: a$, onchange: -> a$ @value; dc.update()}
+      attrs = {value: a$, onchange: -> a$ this.value; comp.render()}
       comp = list(text1=text(attrs), text2=text(attrs))
       comp.mount()
       text1.node.value = 3
@@ -90,15 +90,15 @@ describe 'demo', ->
           style:{display:'block', border:"1px solid blue", "min-width":"40px"}
           onclick: ->
             value(item)
-            dc.update()
+            comp.render()
         }, item)
       attrs = extendAttrs attrs, {
-        onmouseleave:(-> showingItems false; dc.update())
+        onmouseleave:(-> showingItems false; comp.render())
       }
       comp = div(attrs,
         input1=input({
           $model:value
-          onmouseenter:(-> showingItems true; dc.update())}),
+          onmouseenter:(-> showingItems true; comp.render())}),
         items=div({style:{display: flow showingItems, -> if showingItems() then 'block' else 'none'}}, opts) # flow showingItems,
       )
       comp.mount()
@@ -148,9 +148,9 @@ describe 'demo', ->
 
       getTodos = ->
         if status.hash=='active'
-          todos.filter((todo) -> todo and !todo.completed)
+          todos.filter((todo) -> todo && !todo.completed)
         else if status.hash=='completed'
-          todos.filter((todo) -> todo and todo.completed)
+          todos.filter((todo) -> todo && todo.completed)
         else todos
 
       funcEach getTodos, (todo) ->
@@ -168,10 +168,10 @@ describe 'demo', ->
       comp.mount()
       expect(comp.children.length).to.equal(1, '1-1')
       status.hash = 'completed'
-      dc.update()
+      comp.render()
       expect(comp.children.length).to.equal(0, '1-2')
       status.hash = 'all'
-      dc.update()
+      comp.render()
       expect(comp.children.length).to.equal(1, '1-3')
 
     it 'should process getTodos and each correctly', ->
@@ -180,10 +180,10 @@ describe 'demo', ->
       comp.mount()
       expect(comp.node.length).to.equal 1
       status.hash = 'completed'
-      dc.update()
+      comp.render()
       expect(comp.node.length).to.equal 0
       status.hash = 'all'
-      dc.update()
+      comp.render()
       expect(comp.node.length).to.equal 1
 
     it 'should todoEditArea', ->
@@ -200,7 +200,7 @@ describe 'demo', ->
       comp.mount()
       expect(todoItems.node.length).to.equal(2)
       lst.push(3)
-      dc.update()
+      comp.render()
       expect(todoItems.node.length).to.equal(3)
 
     it 'should switch todo by status', ->
@@ -208,9 +208,9 @@ describe 'demo', ->
       todos = [1, 2, 3, 4, 5, 6]
       getTodos = ->
         if state == 0
-          todos.filter (todo) -> todo and todo % 2 == 0
+          todos.filter (todo) -> todo && todo % 2 == 0
         else if state == 1
-          todos.filter (todo) -> todo and todo % 2 == 1
+          todos.filter (todo) -> todo && todo % 2 == 1
         else
           todos.filter (todo) -> todo
 
@@ -221,13 +221,13 @@ describe 'demo', ->
       expect(comp.node[0].textContent).to.equal(' 1')
       expect(comp.node[1].textContent).to.equal(' 2')
       state = 0
-      dc.update()
+      comp.render()
       expect(comp.children.length).to.equal(3, 'children 2')
       expect(comp.node.length).to.equal(3)
       expect(comp.node[0].textContent).to.equal(' 2')
       expect(comp.node[1].textContent).to.equal(' 4')
       state = 1
-      dc.update()
+      comp.render()
       expect(comp.children.length).to.equal(3, 'children 3')
       expect(comp.node.length).to.equal(3)
       expect(comp.node[0].textContent).to.equal(' 1')

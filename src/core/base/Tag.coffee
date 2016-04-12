@@ -11,14 +11,14 @@ toComponentArray = require('./toComponentArray')
 module.exports = class Tag extends BaseComponent
   constructor: (tagName, attrs={}, children) ->
 
-    if this not instanceof Tag
+    if !(this instanceof Tag)
       throw 'should use new SubclassComponent(...) with the subclass of Tag'
 
     super()
 
     this.isTag = true
 
-    tagName = tagName or 'div'
+    tagName = tagName || 'div'
     this.tagName = tagName.toLowerCase()
     this.namespace = attrs.namespace
 
@@ -76,7 +76,7 @@ module.exports = class Tag extends BaseComponent
         for key, value of styles
           this.setProp(key, value, style, 'Style')
 
-      else if key=='class' or key=='className'
+      else if key=='class' || key=='className'
         this.hasActiveProperties = true
         className.extend(value)
 
@@ -87,7 +87,7 @@ module.exports = class Tag extends BaseComponent
           this.bindOne(key, value)
         else
           v0 = value[0]
-          if v0=='before' or v0=='after'
+          if v0=='before' || v0=='after'
             for v in value[1...]
               # value is an array of handlers
               this.bindOne(key, v, v0=='before')
@@ -251,19 +251,19 @@ module.exports = class Tag extends BaseComponent
         domEventCallbacks.splice(index, 1)
         if !domEventCallbacks.length
           domEventCallbackMap[eventName] = null
-          this.node and this.node[prop] = null
+          this.node && this.node[prop] = null
     this
 
   addClass: (items...) ->
     this.className.extend(items)
-    if  this.node and !this.className.valid
+    if  this.node && !this.className.valid
       this.hasActiveProperties = true
       this.invalidate()
     this
 
   removeClass: (items...) ->
     this.className.removeClass(items...)
-    if this.node and !this.className.valid
+    if this.node && !this.className.valid
       this.hasActiveProperties = true
       this.invalidate()
     this
@@ -275,7 +275,7 @@ module.exports = class Tag extends BaseComponent
     if !display? then this.setProp('display', 'block', this.style, 'Style')
     else if display=='visible' then this.setProp('visibility', 'visible', this.style, 'Style')
     else this.setProp('display', display, this.style, 'Style')
-    dc.update()
+    this.render()
     this
 
   hide: (display) ->
@@ -285,7 +285,7 @@ module.exports = class Tag extends BaseComponent
     if !display then this.setProp('display', 'none', this.style, 'Style')
     else if display=='hidden' then this.setProp('visibility', 'hidden', this.style, 'Style')
     else this.setProp('display', display, this.style, 'Style')
-    dc.update()
+    this.render()
     this
 
   showHide: (status, test, display) ->
@@ -294,7 +294,7 @@ module.exports = class Tag extends BaseComponent
     oldDisplay = style.display
     if !oldDisplay
       this.addActivity(style, 'display', 'Style', this.node)
-    else if typeof oldDisplay =='function' and oldDisplay.offInvalidate
+    else if typeof oldDisplay =='function' && oldDisplay.offInvalidate
       oldDisplay.offInvalidate(this.invalidateStyle.display)
     style.display = method = flow test, oldDisplay, ->
       if (if typeof test == 'function' then !!test() else !!test)==status
@@ -319,39 +319,36 @@ module.exports = class Tag extends BaseComponent
   showOn: (test, display) -> this.showHide(true, test, display)
   hideOn: (test, display) -> this.showHide(false, test, display)
 
-  # because dc, tag and List has different behaviour
-  # so getChildParentNode is a necessary method
-  getChildParentNode: (child) ->
-    this.node
-
   createDom: ->
-    this.valid = true
-
     this.node = node =
       if this.namespace then document.createElementNS(this.namespace, this.tagName)
       else document.createElement(this.tagName)
     node.component = this
 
-    this.hasActiveProperties and this.updateProperties()
-
-    children = this.children
-    this.childNodes = childNodes = []
-    nextNodes = this.nextNodes
-    childNodes.length = nextNodes.length = length = children.length
-    this.childParentNode = this.node
-    this.childNextNode = null
-    if length=children.length
-      nextNodes[length-1] = null
-      this.createChildrenDom()
-
+    this.node = node
     this.firstNode = node
 
-  refreshDom: ->
-    this.valid = true
-    if this.hasActiveProperties
-      this.updateProperties()
-    refreshComponents.call(this)
-    this.node
+    this.hasActiveProperties && this.updateProperties()
+
+    {children} = this
+    for child in children
+      child.parentNode = node
+    this.childrenNextNode = null
+    this.childNodes = []
+
+    this.createChildrenDom()
+
+    node
+
+  updateDom: ->
+    this.hasActiveProperties && this.updateProperties()
+    {children, node, invalidIndexes} = this
+
+    for index in invalidIndexes
+      if children[index]
+        children[index].parentNode = node
+    this.updateChildrenDom()
+    node
 
   updateProperties: ->
     this.hasActiveProperties = false
