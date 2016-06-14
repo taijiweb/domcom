@@ -70,7 +70,7 @@ In javascript:
 
       })), p1 = p(flow.add(a$, b$)));
 
-      dc.updateWhen([t1, t2], 'change');
+      dc.renderWhen([t1, t2], 'change');
 
       return comp.mount();
     };
@@ -90,7 +90,7 @@ In coffee-script(recommended):
             (t2 = text value: b$, onchange: -> b$ @value*1),
             p1 = p flow.add a$, b$
 
-        dc.updateWhen [t1, t2], 'change'
+        dc.renderWhen [t1, t2], 'change'
 
         comp.mount()
 

@@ -1,7 +1,8 @@
 ### todo
-* more utilties for flow, to help convert normal function to reactive, reduce appended computation in reactive function, or directly invalidate the component from the changing
+* more utilties for flow, to help convert normaling function to reactive, reduce appended computation in reactive function, or directly invalidate the component while changing
 
 #### done
+* separate the code for updating dom and attach/detach dom
 * flatten the render hierarchy, skip the call to inactive component level
 * delegation to events
 * error processing: dc.onerror and dc.error

@@ -2844,7 +2844,7 @@
 	    this.baseComponent = baseComponent;
 	    this.node = baseComponent.node;
 	    this.firstNode = baseComponent.firstNode;
-	    if (!this.node || !this.node.parentNode) {
+	    if (!this.node.parentNode) {
 	      content.attachValid = false;
 	      this.invalidateAttach(content);
 	    }

@@ -4,7 +4,7 @@
   "homepage": "http://github.com/taijiweb/domcom",
   "description": "the web framework to provide dom component",
   "authors": [
-    "Caoxingming <taijiweeb@gmail.com>",
+    "Caoxingming <taijiweeb@gmail.com>"
   ],
   "repository": {
     "type": "git",

@@ -1,3 +1,7 @@
+### 2016-6-14: v0.5.0 on github, npm
+* big refactor: restore to update from top to bottom
+* separate the code for updating and attaching/detaching dom
+
 ### 2016-3-17: v0.2.0 on github, npm
 * a very big refactor: do not update from top to bottom, directly update the component in renderingMap instead
 * Each component is removed, in favor of the new every, each, funcEacn and mapEach function, which generate watched list component

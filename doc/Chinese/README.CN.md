@@ -51,7 +51,7 @@
 
       })), p1 = p(flow.add(a, b)));
 
-      dc.updateWhen([t1, t2], 'change', p1);
+      dc.renderWhen([t1, t2], 'change', p1);
 
       return comp.mount();
     };
@@ -71,7 +71,7 @@
             (t2 = text value: b, onchange: -> b @value*1),
             p1 = p flow.add a, b
 
-        dc.updateWhen [t1, t2], 'change', p1
+        dc.renderWhen [t1, t2], 'change', p1
 
         comp.mount()
 

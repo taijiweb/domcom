@@ -144,13 +144,13 @@ These are obviously not ideal. I still suggest to use Coffee-script or ES6.
 
 ### components
 
-The component is the core concept in the structure of Domcom. The domcom framefork uses the components to proxy and manipulate dom nodes. Every component will generate their respective dom nodes or empty node. The components can be divided to two categories by their base classes: base compnoents and transform components. The base components manipulate dom nodes directly, and they have the methods to create or refresh dom, attach/detach node. The most important method for the transform components is getContentComponent, which converts the compnent to a base componet step by step. With components, domcom give a complete declarational description to dom, including node, node perperty, node events, and so on. Besides, Domcom creates the static or dynamic interactive relations between the dom and the date by using value or reactive functions, and induce the method to update the components and to refresh dom, to improve the performance.
+The component is the core concept in the structure of Domcom. The domcom framefork uses the components to proxy and manipulate dom nodes. Every component will generate their respective dom nodes or empty node. The components can be divided to two categories by their base classes: base compnoents and transform components. The base components manipulate dom nodes directly, and they have the methods to create or refresh dom, attach/detach node. The most important method for the transform components is getContentComponent, which converts the compnent to a base componet step by step. With components, domcom give a complete declarational description to dom, including node, node perperty, node events, and so on. Besides, Domcom creates the static or dynamic interactive relations between the dom and the date by using value or reactive functions, and induce the method to render the components and to refresh dom, to improve the performance.
 
 ***********************************************************
 
 #### Component base class: Component
 
-This is the base class of all components. It provides the common method for component classes. In them, the mount, unmount and remount method manipulate, the render and update method are used to create, render or update the components, the renderWhen and updateWhen method can set the schema to render or update the component; the on, off and emit manage the component events.
+This is the base class of all components. It provides the common method for component classes. In them, the mount, unmount and remount method manipulate, the render method are used to create or update the components, the renderWhen method can set the schema to render the component; the on, off and emit manage the component events.
 
 ##### Component method
 * **mount，unmount，remount**
@@ -167,23 +167,17 @@ This is the base class of all components. It provides the common method for comp
 
   Remount the component agian, i.e. remount the dom node to dom again, and keep the parentNode and the nextNode not being changed.
 
-* **render，update**
+* **render**
 
   > function prototype: `component.render()`
 
   Render compnent. If dom node does not exists, the node will be created at first. If the dom node exists, and the component was invalidated, proper updation will be executed. If the component is valid, but the parent node of its dom node(`component.node.parentNode`) is not the parentNode of the component itself(`component.parentNode`), the dom node will be attached to component.parentNode and before `component.nextNode`, again.
 
-  > function prototype: `component.update()`
+* **renderWhen**
 
-  Update compnent. The only difference between this method and the previous mehtod(component.render) is this mthoed will call `component.emit('update')` at first.
-
-* **renderWhen，updateWhen**
-
-  Set the opportunity to update the component, which can be som dom events on some component, or window.setInterval, dc.raf. The type declaration for the two methos are below: 
+  Set the opportunity to render the component, which can be som dom events on some component, or window.setInterval, dc.raf. The type declaration for the two methos are below:
 
   > function prototype:  `component.renderWhen components:[Component]|Component, events:[DomEventName], options`
-
-  > function prototype:  `component.updateWhen components:[Component]|Component, events:[DomEventName], options`
 
   When the dom events on components happen, component will be rendered or updated. If dc.config.useSystemUpdating is true, ，then the render or the updatioin configured by this method will not be done, except options.alwaysUpdating is true.
 
@@ -191,7 +185,7 @@ This is the base class of all components. It provides the common method for comp
 
   > function prototype:  `component.renderWhen event:setInterval, interval:Int(ms), options`
 
-  Use window.setInterval function to render or update the component once every interval milliseconds. In the options parameter, a test function can be set to check at first whether to render or update, a clear function can be used to stop render or update by clearInterval. The code below can be used to help us understanding this:
+  Use window.setInterval function to render the component once every interval milliseconds. In the options parameter, a test function can be set to check at first whether to render or update, a clear function can be used to stop render or update by clearInterval. The code below can be used to help us understanding this:
 
 	addSetIntervalUpdate = (method, component, options) ->
 	  handler = null
@@ -206,7 +200,7 @@ This is the base class of all components. It provides the common method for comp
 
   > function prototype:  `component.renderWhen when:dc.render, options`
 
-  Tell dc.render rendering or updating the component。In the options parameter, a test function can be set to check at first whether to render or update, a clear function can be used to stop rendering or updating. The code below can be used to help us understanding this:
+  Tell dc.render rendering or updating the component。In the options parameter, a test function can be set to check at first whether to render, a clear function can be used to stop rendering. The code below can be used to help us understanding this:
 
 	addRenderUpdate = (method, component, options) ->
 	  {test, clear} = options
@@ -217,7 +211,7 @@ This is the base class of all components. It provides the common method for comp
 
 * **on, off, emit**
 
-  This three method manipulate the event happening on this compnent. This kind of events are called component event, which are different from the dom event, and are provided by the domcom framework. Compnent event mechanism is indepent completely from the dom event mechanism. The component events are registered in the Component.listeners by Component.on, off, and emitted by the emit method. The domcom framework emits a group of component events internally, including beforeMount, update, afterUnmount, beforeAttach, contentChanged etc.
+  This three method manipulate the event happening on this compnent. This kind of events are called component event, which are different from the dom event, and are provided by the domcom framework. Compnent event mechanism is indepent completely from the dom event mechanism. The component events are registered in the Component.listeners by Component.on, off, and emitted by the emit method. The domcom framework emits a group of component events internally, including willMount, didUnmount, willAttach etc.
 
   > function prototype: `component.on event, callback`
 
@@ -366,7 +360,7 @@ This is the base class of all components. It provides the common method for comp
 
 ##### List method
 
-  The list components provide a group of methods to manipulate its children dynamically, which can add or remove the child component in its children field. Please notice that these methods will not affect the dom immediately, instead, they set invalidateIndexes and invalidate the list component at first, and the dom will be refreshed until the render or update method of the component is called. Most of time these method may do NOT need be used, except while customing or extending the components. It is suggested not to imperatively and directly modify the compnent structure by using these methods as possible.
+  The list components provide a group of methods to manipulate its children dynamically, which can add or remove the child component in its children field. Please notice that these methods will not affect the dom immediately, instead, they set invalidateIndexes and invalidate the list component at first, and the dom will be refreshed until the render method of the component is called. Most of time these method may do NOT need be used, except while customing or extending the components. It is suggested not to imperatively and directly modify the compnent structure by using these methods as possible.
 
 * **pushChild**
 
@@ -450,9 +444,9 @@ This is the base class of all components. It provides the common method for comp
 
 ##### Tag component method
 
-  Tag component is used for the Element node in the dom. It can manipulate the dom node properties, Css Style, Dom events and so on. The properties defined on Tag component is reactive, i.e. if their values is a function, which will  become reactive function. The Tag component need be updated only while the reactive function is invalidated. While updating, The new value of the computation will be compared to the cached value, when and only when they are different, the dom node properties will be modified and dom operations will be executed to refresh. Dom events is the events which happen on the dom node. They are not domcom component events. The dom events include onclick, onchange and so on. For processing dom Dom, domcom mainly take use of the declaration through the attrs parameter while constructing Tag component, in the meanwhile, The two methods, Tag.bind, Tag.unbind can be used. Besides, some directives, the methods such as Component.renderWhen, Component.updateWhen, dc,renderWhen, dc,updateWhen can also add dom event handler functions.
+  Tag component is used for the Element node in the dom. It can manipulate the dom node properties, Css Style, Dom events and so on. The properties defined on Tag component is reactive, i.e. if their values is a function, which will  become reactive function. The Tag component need be updated only while the reactive function is invalidated. While updating, The new value of the computation will be compared to the cached value, when and only when they are different, the dom node properties will be modified and dom operations will be executed to refresh. Dom events is the events which happen on the dom node. They are not domcom component events. The dom events include onclick, onchange and so on. For processing dom Dom, domcom mainly take use of the declaration through the attrs parameter while constructing Tag component, in the meanwhile, The two methods, Tag.bind, Tag.unbind can be used. Besides, some directives, the methods such as Component.renderWhen, dc,renderWhen, dc,updateWhen can also add dom event handler functions.
 
-  Most of the methods on Tag components do not directlye operate on the dom, so they will not immediately take affect, and the dom will not be refreshed until the call to the render of update method to the tag component or their holder components. No dom operation will be executed if the new value is equal to the cached value of the property. Domcom imrove the performance the web application by this kind of mechanism. The Tag component methods include prop, css, addClass, removeClass, show, hide etc.
+  Most of the methods on Tag components do not directlye operate on the dom, so they will not immediately take affect, and the dom will not be refreshed until the call to the render method to the tag component or their holder components. No dom operation will be executed if the new value is equal to the cached value of the property. Domcom imrove the performance the web application by this kind of mechanism. The Tag component methods include prop, css, addClass, removeClass, show, hide etc.
 
   Tag.bind, Tag.unbind are different from the description above. These two method will operate on the event callback array for the event handler of the dom node, and will affect the behaviour of the dom node event. If the first event callback is added or the last is removed, then the event handler of the dom node event will be assigned to null. Because the modification to event property of dom node will not cause dom redraw or reflow, so this behavior will not affect the performance.
 
@@ -508,7 +502,7 @@ This is the base class of all components. It provides the common method for comp
 			if updateList
 			 for [comp, options] in updateList
 			   # the comp is in updateList, so it need to be updated
-			   # if config.useSystemUpdating then update this component in dc's system update scheme
+			   # if config.useSystemUpdating then render this component in dc's system render scheme
 			   if options.alwaysUpdating or !config.useSystemUpdating then comp[options.method]()
 			if !event then return
 			!event.executeDefault and event.preventDefault()
@@ -679,7 +673,7 @@ This is the base class of all components. It provides the common method for comp
 
 	x = see 0, parseFloat
 	comp = list \
-        text({onchange: -> comp.update()}, x)
+        text({onchange: -> comp.render()}, x)
         if_(x, div('It is not 0.'), div('It is 0 or NaN.')))
 
 ***********************************************************
@@ -1050,7 +1044,7 @@ update(2016-3-16): Each component is removed, use the functions "every", "each",
 	  render()
 	  return
 
-* dc.renderWhen和dc.updateWhen
+* dc.renderWhen
 
 
 ##### dc properties
