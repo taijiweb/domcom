@@ -15,7 +15,7 @@ for tagName in tagNames
     tag(tagName, args...)
 
 # Because the name 'html' under dc has been used to instantiate Html component
-# So use tagHtml instead here
+# So use tagHtml here, instead.
 # in client side, html is not necessary, because the dc component must be mounted somewhere
 exports.tagHtml = (args...) ->
   tag('html', args...)

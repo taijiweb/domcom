@@ -1,6 +1,7 @@
+extend = require('extend')
+
 DomNode = require('./DomNode')
 {requestAnimationFrame, raf, isElement, addEventListener} = require('./dom-util')
-{newDcid, isEven} = require('dc-util')
 isComponent = require('./core/base/isComponent')
 
 module.exports = dc = (element, all) ->
@@ -51,7 +52,5 @@ if typeof window != 'undefined'
   addEventListener document, 'DOMContentLoaded', ->
     window.$body = dc.$body = new DomNode(document.body)
 
-# set dc.listeners = {} in dc.reset()
-extend = require('extend')
-EventMixn = require('./dc-event')
-extend(dc, EventMixn)
+# mixin component event:
+extend(dc, require('./dc-event'))

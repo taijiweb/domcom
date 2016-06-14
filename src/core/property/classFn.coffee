@@ -2,7 +2,7 @@
 {domField} = require('../../dom-util')
 {isArray} = require('dc-util')
 
-module.exports = classFn = (items...) ->
+module.exports = exports = classFn = (items...) ->
   classMap = {}
 
   method = ->
@@ -75,3 +75,5 @@ module.exports = classFn = (items...) ->
     newClassName.extend(method)
 
   method
+
+exports.classFn = classFn

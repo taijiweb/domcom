@@ -4,7 +4,7 @@ Tag = require('./base/Tag')
 List = require('./base/List')
 Nothing = require('./base/Nothing')
 
-{domEventHandlerFromArray} = require('./property')
+{domEventHandlerFromArray} = require('./property/events')
 
 flow = require('lazy-flow/addon')
 flowIf = flow.if_

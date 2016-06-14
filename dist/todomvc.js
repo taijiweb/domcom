@@ -1,1 +1,361 @@
-!function(e){function t(n){if(o[n])return o[n].exports;var r=o[n]={exports:{},id:n,loaded:!1};return e[n].call(r.exports,r,r.exports,t),r.loaded=!0,r.exports}var o={};return t.m=e,t.c=o,t.p="/assets/",t(0)}([function(e,t){var o,n,r,c,d,i,u,l,s,a,f,m,p,h,v,g,w,b,x,k,N,y,C,O,T,S,$,H,M,j,A,E,I,J,z,D,L,P,R,V,W,q;r=dc.bind,M=dc.section,v=dc.h1,g=dc.header,p=dc.form,E=dc.text,d=dc.checkbox,l=dc.div,V=dc.ul,b=dc.li,y=dc.p,o=dc.a,w=dc.label,c=dc.button,m=dc.footer,A=dc.strong,j=dc.span,h=dc.funcEach,R=dc.txt,f=dc.extend,dc.directives({$show:dc.$show}),dc.alwaysRender=!0,window.fetch=function(){return JSON.parse(localStorage.getItem("view")||"[]")},window.save=function(e){return localStorage.setItem("view",JSON.stringify(e))},window.todos=[],window.todos=fetch(),q=null,a=null,N=null,$=null,H=!1,window.getTodos=function(){return"active"===q?todos.filter(function(e){return e&&!e.completed}):"completed"===q?todos.filter(function(e){return e&&e.completed}):todos},O=function(){return todos.filter(function(e){return!e.completed}).length},u=function(){return todos.length-O()},n=function(){return!O()},k=function(e){return function(t){return 27===t.keyCode||27===t.which?e():void 0}},C=function(e,t){return R("function"==typeof e?function(){return e()>1?t+"s":t}:e>1?t+"s":t)},P=function(e){return e.completed=!e.completed,save(todos),W.render()},x=function(){var e,t,o,r,c;for(e=n()?!1:!0,o=!0,r=0,c=todos.length;c>r;r++)t=todos[r],t.completed!==e&&(t.completed=e,o=!1);return o?void 0:(save(todos),W.render())},s=function(e){return a=e,N=f({},e),W.render()},T=function(e){var t;return t=todos.indexOf(e),todos.splice(t,1),save(todos),W.render()},S=function(e){return todos[todos.indexOf(e)]=N,W.render()},i=function(){var e,t;for(t=!0,e=todos.length-1;e>=0;)todos[e].completed&&(todos.splice(e,1),t=!1),e--;return t?void 0:(save(todos),W.render())},I=E({id:"new-todo",placeholder:"What needs to be done?",disable:function(){return H},onchange:function(e,t){return t.value?(todos.push({title:t.value,completed:!1}),save(todos),W.render()):void 0},autofocus:!0}),D=g({id:"header"},v("todos"),p({id:"todo-form"},I)),L=h(getTodos,function(e,t){return b({className:{completed:function(){return e.completed},editing:function(){return e===a}}},l({"class":"view"},d({className:"toggle",checked:function(){return e&&e.completed},onchange:function(){return P(e)}}),w({ondblclick:function(){return s(e)}},function(){return e&&e.title}),c({className:"destroy",onclick:function(){return T(e)}})),p({submit:function(){return save(todos)}},E({className:"edit",trim:"false",value:r(e,"title"),onblur:function(t,o){return e.title=o.value,save(todos),a=null,W.render()},onfocus:function(){return e===a},onkeyup:k(function(){return S(e)})})))}),J=M({id:"main"},d({id:"toggle-all",className:"toggle",checked:function(){return!!n()},onclick:x}),w({"for":"toggle-all"},"Mark all as complete"),V({id:"todo-list"},L),m({id:"footer",$show:function(){return todos.length}},j({id:"todo-count"},A(O),C(O," item")," left"),V({id:"filters"},b(o({className:{selected:function(){return"active"!==q&&"completed"!==q}},href:"#/all"},"All")),b(o({className:{selected:function(){return"active"===q}},href:"#/active"},"Active")),b(o({className:{selected:function(){return"completed"===q}},href:"#/completed"},"Completed"))),c({id:"clear-completed",onclick:i,$show:u},R(function(){return"Clear completed: "+u()})))),z=m({id:"info"},y("Double-click to edit a todo"),y("Created by ",o({href:"http://github.com/taijiweb/domcom"},"Caoxingming(Tiijizhenren, simeon.chaos@gmail.com)")),y("Part of ",o({href:"http://todomvc.com"}," TodoMVC"))),W=M({id:"todoapp"},D,J,z),window.updateHash=function(){var e;return e=document.location.hash,q=e.indexOf("/")>=0?e.split("/")[1]||"":e},window.runTodoMvc=function(){return updateHash(),W.mount("#todo-app"),window.addEventListener("hashchange",function(){return updateHash(),W.render()})}}]);
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "/assets/";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/*!*************************************!*\
+  !*** ./demo/todomvc/todomvc.coffee ***!
+  \*************************************/
+/***/ function(module, exports) {
+
+	var a, allChecked, bind, button, checkbox, clearCompletedTodos, completedCount, div, editTodo, editingTodo, extend, footer, form, funcEach, h1, header, label, li, markAll, onEscapeFn, originalTodo, p, pluralize, remainingCount, removeTodo, revertEdits, reverted, saving, section, span, strong, text, text1, todoEditArea, todoFooter, todoHeader, todoItems, toggleCompleted, txt, ul, view, viewStatusHash;
+
+	bind = dc.bind, section = dc.section, h1 = dc.h1, header = dc.header, form = dc.form, text = dc.text, checkbox = dc.checkbox, div = dc.div, ul = dc.ul, li = dc.li, p = dc.p, a = dc.a, label = dc.label, button = dc.button, footer = dc.footer, strong = dc.strong, span = dc.span, funcEach = dc.funcEach, txt = dc.txt, extend = dc.extend;
+
+	dc.directives({
+	  $show: dc.$show
+	});
+
+	dc.alwaysRender = true;
+
+	window.fetch = function() {
+	  return JSON.parse(localStorage.getItem('view') || '[]');
+	};
+
+	window.save = function(todos) {
+	  return localStorage.setItem('view', JSON.stringify(todos));
+	};
+
+	window.todos = [];
+
+	window.todos = fetch();
+
+	viewStatusHash = null;
+
+	editingTodo = null;
+
+	originalTodo = null;
+
+	reverted = null;
+
+	saving = false;
+
+	window.getTodos = function() {
+	  if (viewStatusHash === 'active') {
+	    return todos.filter(function(todo) {
+	      return todo && !todo.completed;
+	    });
+	  } else if (viewStatusHash === 'completed') {
+	    return todos.filter(function(todo) {
+	      return todo && todo.completed;
+	    });
+	  } else {
+	    return todos;
+	  }
+	};
+
+	remainingCount = function() {
+	  return todos.filter(function(todo) {
+	    return !todo.completed;
+	  }).length;
+	};
+
+	completedCount = function() {
+	  return todos.length - remainingCount();
+	};
+
+	allChecked = function() {
+	  return !remainingCount();
+	};
+
+	onEscapeFn = function(fn) {
+	  return function(event) {
+	    if (event.keyCode === 27 || event.which === 27) {
+	      return fn();
+	    }
+	  };
+	};
+
+	pluralize = function(test, item) {
+	  if (typeof test === 'function') {
+	    return txt(function() {
+	      if (test() > 1) {
+	        return item + 's';
+	      } else {
+	        return item;
+	      }
+	    });
+	  } else if (test > 1) {
+	    return txt(item + 's');
+	  } else {
+	    return txt(item);
+	  }
+	};
+
+	toggleCompleted = function(todo) {
+	  todo.completed = !todo.completed;
+	  save(todos);
+	  return view.render();
+	};
+
+	markAll = function() {
+	  var completed, todo, valid, _i, _len;
+	  if (allChecked()) {
+	    completed = false;
+	  } else {
+	    completed = true;
+	  }
+	  valid = true;
+	  for (_i = 0, _len = todos.length; _i < _len; _i++) {
+	    todo = todos[_i];
+	    if (todo.completed !== completed) {
+	      todo.completed = completed;
+	      valid = false;
+	    }
+	  }
+	  if (!valid) {
+	    save(todos);
+	    return view.render();
+	  }
+	};
+
+	editTodo = function(todo) {
+	  editingTodo = todo;
+	  originalTodo = extend({}, todo);
+	  return view.render();
+	};
+
+	removeTodo = function(todo) {
+	  var index;
+	  index = todos.indexOf(todo);
+	  todos.splice(index, 1);
+	  save(todos);
+	  return view.render();
+	};
+
+	revertEdits = function(todo) {
+	  todos[todos.indexOf(todo)] = originalTodo;
+	  return view.render();
+	};
+
+	clearCompletedTodos = function() {
+	  var i, valid;
+	  valid = true;
+	  i = todos.length - 1;
+	  while (i >= 0) {
+	    if (todos[i].completed) {
+	      todos.splice(i, 1);
+	      valid = false;
+	    }
+	    i--;
+	  }
+	  if (!valid) {
+	    save(todos);
+	    return view.render();
+	  }
+	};
+
+	text1 = text({
+	  id: "new-todo",
+	  placeholder: "What needs to be done?",
+	  disable: function() {
+	    return saving;
+	  },
+	  onchange: function(event, node) {
+	    if (!node.value) {
+	      return;
+	    }
+	    todos.push({
+	      title: node.value,
+	      completed: false
+	    });
+	    save(todos);
+	    return view.render();
+	  },
+	  autofocus: true
+	});
+
+	todoHeader = header({
+	  id: "header"
+	}, h1("todos"), form({
+	  id: "todo-form"
+	}, text1));
+
+	todoItems = funcEach(getTodos, function(todo, index) {
+	  return li({
+	    className: {
+	      completed: (function() {
+	        return todo.completed;
+	      }),
+	      editing: function() {
+	        return todo === editingTodo;
+	      }
+	    }
+	  }, div({
+	    "class": "view"
+	  }, checkbox({
+	    className: "toggle",
+	    checked: (function() {
+	      return todo && todo.completed;
+	    }),
+	    onchange: (function() {
+	      return toggleCompleted(todo);
+	    })
+	  }), label({
+	    ondblclick: (function() {
+	      return editTodo(todo);
+	    })
+	  }, (function() {
+	    return todo && todo.title;
+	  })), button({
+	    className: "destroy",
+	    onclick: (function() {
+	      return removeTodo(todo);
+	    })
+	  })), form({
+	    submit: function() {
+	      return save(todos);
+	    }
+	  }, text({
+	    className: "edit",
+	    trim: "false",
+	    value: bind(todo, "title"),
+	    onblur: function(event, node) {
+	      todo.title = node.value;
+	      save(todos);
+	      editingTodo = null;
+	      return view.render();
+	    },
+	    onfocus: function() {
+	      return todo === editingTodo;
+	    },
+	    onkeyup: onEscapeFn(function() {
+	      return revertEdits(todo);
+	    })
+	  })));
+	});
+
+	todoEditArea = section({
+	  id: "main"
+	}, checkbox({
+	  id: "toggle-all",
+	  className: "toggle",
+	  checked: function() {
+	    return !!allChecked();
+	  },
+	  onclick: markAll
+	}), label({
+	  "for": "toggle-all"
+	}, "Mark all as complete"), ul({
+	  id: "todo-list"
+	}, todoItems), footer({
+	  id: "footer",
+	  $show: (function() {
+	    return todos.length;
+	  })
+	}, span({
+	  id: "todo-count"
+	}, strong(remainingCount), pluralize(remainingCount, ' item'), ' left'), ul({
+	  id: "filters"
+	}, li(a({
+	  className: {
+	    selected: function() {
+	      return viewStatusHash !== 'active' && viewStatusHash !== 'completed';
+	    }
+	  },
+	  href: "#/all"
+	}, "All")), li(a({
+	  className: {
+	    selected: function() {
+	      return viewStatusHash === 'active';
+	    }
+	  },
+	  href: "#/active"
+	}, "Active")), li(a({
+	  className: {
+	    selected: function() {
+	      return viewStatusHash === 'completed';
+	    }
+	  },
+	  href: "#/completed"
+	}, "Completed"))), button({
+	  id: "clear-completed",
+	  onclick: clearCompletedTodos,
+	  $show: completedCount
+	}, txt(function() {
+	  return "Clear completed: " + completedCount();
+	}))));
+
+	todoFooter = footer({
+	  id: "info"
+	}, p("Double-click to edit a todo"), p('Created by ', a({
+	  href: "http://github.com/taijiweb/domcom"
+	}, 'Caoxingming(Tiijizhenren, simeon.chaos@gmail.com)')), p("Part of ", a({
+	  href: "http://todomvc.com"
+	}, " TodoMVC")));
+
+	view = section({
+	  id: "todoapp"
+	}, todoHeader, todoEditArea, todoFooter);
+
+	window.updateHash = function() {
+	  var locationHash;
+	  locationHash = document.location.hash;
+	  if (locationHash.indexOf('/') >= 0) {
+	    return viewStatusHash = locationHash.split('/')[1] || '';
+	  } else {
+	    return viewStatusHash = locationHash;
+	  }
+	};
+
+	window.runTodoMvc = function() {
+	  updateHash();
+	  view.mount('#todo-app');
+	  return window.addEventListener('hashchange', function() {
+	    updateHash();
+	    return view.render();
+	  });
+	};
+
+
+/***/ }
+/******/ ]);

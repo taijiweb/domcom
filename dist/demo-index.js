@@ -1,1 +1,644 @@
-!function(e){function n(o){if(t[o])return t[o].exports;var r=t[o]={exports:{},id:o,loaded:!1};return e[o].call(r.exports,r,r.exports,n),r.loaded=!0,r.exports}var t={};return n.m=e,n.c=t,n.p="/assets/",n(0)}([function(e,n,t){var o,r,c;c=t(1),r=c.runDemo,o=c.demoMap,dc.alwaysRender=!0,window.onload=function(){return r(o,"choose web framework")}},function(e,n,t){var o,r,c,u,d,i,a,s,l,f,h,p,v,m,g,x,w,b,k,y;b=dc.select,w=dc.see,v=dc.if_,o=dc.case_,m=dc.list,p=dc.func,a=dc.each,i=dc.div,x=dc.p,dc.directives({$options:dc.$options,$model:dc.$model}),k=t(3),s=k.eachDemo1,l=k.eachDemo2,f=k.eachDemo3,h=k.eachDemo4,r=t(4),y=t(5),c=y.demoEachPush,u=y.demoIfEach,d=y.demoModelOnMultipleInput,n.demoMap={"choose web framework":r,"show hide":t(6),counter:t(7),event:t(8),controls:t(2),"if":t(9),each1:s,each2:l,each3:f,each4:h,"switch 1 2 3 4":t(10),sum:t(11),"text model":t(12),"mount/unmount":t(13)},n.makeDemoComponent=g=function(e,n){var t,r,c,u,d,a;c=w(n),r={};for(a in e)t=e[a],"function"==typeof t?r[a]=t():r[a]=t;return t=m(u=b({$options:[Object.keys(e)],$model:c}),i(o(c,r,d=r[n]))),t.renderWhen(u,"change")},n.runDemo=function(e,n,t){var o;return o=g(e,n),o.mount(t)}},function(e,n){var t,o,r,c,u,d;c=dc.list,t=dc.a,r=dc.checkbox,d=dc.text,u=dc.p,o=dc.bindings,e.exports=function(){var e,n,t,u,i,a,s;return e=o({a:1}).a$,u=c(n=r(e),t=r(e)),s=c(i=d(e),a=d(e)),e(6),c(u,s).renderWhen([n,t,i,a],"change")}},function(e,n){var t,o,r,c;o=dc.list,t=dc.each,r=dc.p,c=dc.txt,n.eachDemo1=function(){var e,n;return n=[1,2],e=o(n)},n.eachDemo2=function(){var e,n;return n=[1,2],e=t(n,function(e){return r(e)})},n.eachDemo3=function(){var e,n;return n=[1,2,3,4,5,6],e=t(n,function(e){return r(e)}),e.on("willAttach",function(){return setTimeout(function(){return n.push(7),e.render()},1e3),setTimeout(function(){return n.setLength(4),e.render()},2e3)}),e},n.eachDemo4=function(){var e,n;return n=[1,2,3,4,5,6],e=t(n,function(e){return c(e)}),e.on("willAttach",function(){return setTimeout(function(){return n.push(7),e.render()},1e3),setTimeout(function(){return n.setLength(4),e.render()},2e3)}),e}},function(e,n){var t,o,r,c,u,d,i,a,s,l;u=dc.flow,s=dc.see,t=dc.case_,r=dc.each,c=dc.every,d=dc.func,a=dc.list,o=dc.div,i=dc.label,l=dc.text,e.exports=function(){var e,n,r,u,d,f,h,p,v,m,g;for(u=s("d",function(e){return e.toLowerCase()}),r=null,v=i("Please choose: "),p=l({onchange:function(){return r.render()}},u),d=["Domcom","jQuery","Angular","React","Backbone","Ember"],h=c(d,function(e){return o(""+e[0]+". "+e)}),e={},m=0,g=d.length;g>m;m++)f=d[m],e[f[0]]=f;return n=t(u,e,"some other things"),r=a(v,p,h,o("You perfer ",n,"."))},e.exports=function(){var e,n,t,c,f,h,p,v,m;return c=s("d",function(e){return e.toLowerCase()}),t=null,v=i("Please choose: "),p=l({onchange:function(){return t.render()}},c),f=["Domcom","jQuery","Angular","React","Backbone","Ember"],h=r(f,function(e){return o(""+e[0]+". "+e)}),m=i("add some others: "),e=l({onchange:function(e,n){var o;return o=n.value,f.push(o),c(o[0]),t.render()}}),n=d(u(c,function(){var e,n,t,o;for(e=c(),t=0,o=f.length;o>t;t++)if(n=f[t],n[0].toLowerCase()===e)return n;return"some other things"})),t=a(v,p,m,e,h,o("You perfer ",n,"."))}},function(e,n){var t,o,r,c,u,d,i,a;i=dc.see,c=dc.if_,u=dc.list,r=dc.each,t=dc.div,d=dc.p,a=dc.text,o=dc.duplex,n.demoEachPush=function(){var e,n;return n=[1,2],e=u(r(n,function(e){return d(e)}),"some other thing"),e.mount(),n.push(3),e.render()},n.demoIfEach=function(){var e,n,o;return o=i(!0),n=[1,2],e=c(o,r(n,function(e){return t(e)})),e.mount(),o(!1),e.render(),o(!0),e.render()},n.demoModelOnMultipleInput=function(){var e,n,t;return e={},n=a({$model:o(e,"x")}),t=a({$model:o(e,"x")}),u(n,t).renderWhen([n,t],"change").mount()}},function(e,n){var t,o,r,c,u,d,i;r=dc.list,d=dc.text,t=dc.div,c=dc.p,u=dc.see,o=dc.flow,i=o.toggle,e.exports=function(){var e,n;return n=u(!0),e=r(t({onclick:function(){return i(n),e.render()}},"show/hide by changing style.display"),c({"class":{},style:{display:function(){return n()?"block":"none"}}},"asdfdfs"))}},function(e,n){var t,o,r;r=dc.txt,t=dc.p,o=dc.see,e.exports=function(){var e,n;return n=o(e=0),t(r(n)).on("willAttach",function(){var t,o;return t=function(){return n(e++),1001===e?clearInterval(o):void 0},o=setInterval(t,1)}).renderWhen(setInterval,16,{clear:function(){return e>=1e3}})}},function(e,n){var t,o,r,c,u;r=dc.list,t=dc.a,o=dc.checkbox,u=dc.text,c=dc.p,e.exports=function(){var e,n;return n=t({onclick:function(){return alert("parent")}},c({onclick:function(e){return alert("child"),e.continuePropagation=!0}},"propagation")),e=t({onclick:function(){return alert("parent")}},c({onclick:function(e){return alert("child")}},"do not propagation")),r(n,e)}},function(e,n){var t,o,r,c,u;r=dc.list,o=dc.if_,u=dc.text,t=dc.div,c=dc.see,e.exports=function(){var e,n;return n=c(0,parseNumber),e=r(u({onchange:function(){return n=parseInt(this.node.value),e.render()}},n),o(n,t(1),t(2)))},e.exports=function(){var e,n;return n=c(0,parseFloat),e=r(u({onchange:function(){return e.render()}},n),o(n,t("It is not 0."),t("It is 0 or NaN.")))}},function(e,n){var t,o,r,c,u,d,i;c=dc.func,i=dc.see,r=dc.flow,o=dc.each,u=dc.list,t=dc.div,d=dc.number,e.exports=function(){var e,n,r,c;return c=0,e=null,n=d({onchange:function(){return c=parseInt(this.node.value),e.render()}}),r=o([0,1,2,3],function(e){return t({style:{display:function(){return e===c?"block":"none"}}},e)}),e=u(n,r)},e.exports=function(){var e,n,o;return o=0,e=null,n=d({onchange:function(){return o=parseInt(this.node.value),e.render()}}),e=u(n,c(function(){return o>=0&&3>=o?t(o):void 0}))},e.exports=function(){var e,n,o;return o=i(0),e=u(n=d(o),c(r(o,function(){var e;return e=o(),e>=0&&3>=e?t(e):void 0}))),e.renderWhen(n,"change")}},function(e,n){var t,o,r,c,u,d;u=dc.see,o=dc.flow,r=dc.list,d=dc.text,c=dc.p,e.exports=t=function(){var e,n,t,i,a,s;return e=u(1,parseFloat),n=u(2,parseFloat),t=r(a=d({value:e,onchange:function(){return e(this.node.value)}}),s=d({value:n,onchange:function(){return n(this.node.value)}}),i=c(o.add(e,n))),t.renderWhen([a,s],"change")},e.exports=t=function(){var e,n,t,i,a;return e=u(1),n=u(2),r(i=d({value:e,onchange:function(){return e(1*this.node.value)}}),a=d({value:n,onchange:function(){return n(1*this.node.value)}}),t=c(o.add(e,n))).renderWhen([i,a],"change")}},function(e,n){var t,o,r,c,u;c=dc.list,o=dc.bindings,t=dc.a,r=dc.checkbox,u=dc.text,e.exports=function(){var e,n,r;return e=o({a:1}).a$,n={onchange:function(){return r.render()}},r=c(t=u(n,e),u(n,e))}},function(e,n){var t,o,r,c;r=dc.list,t=dc.div,c=dc.see,o=dc.if_,e.exports=function(){var e,n,u;return e=c(!0),n=r(t({onclick:function(){return e(!0),u.render()}},"mount"),t({onclick:function(){return e(!1),u.render()}},"unmount"),u=o(e,t("toggle me")))}}]);
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+
+
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "/assets/";
+
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/*!***************************!*\
+  !*** ./demo/index.coffee ***!
+  \***************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var demoMap, runDemo, _ref;
+
+	_ref = __webpack_require__(/*! ./util */ 1), runDemo = _ref.runDemo, demoMap = _ref.demoMap;
+
+	dc.alwaysRender = true;
+
+	window.onload = function() {
+	  return runDemo(demoMap, 'choose web framework');
+	};
+
+
+/***/ },
+/* 1 */
+/*!**************************!*\
+  !*** ./demo/util.coffee ***!
+  \**************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	var case_, chooseFramework, demoEachPush, demoIfEach, demoModelOnMultipleInput, div, each, eachDemo1, eachDemo2, eachDemo3, eachDemo4, func, if_, list, makeDemoComponent, p, see, select, _ref, _ref1;
+
+	select = dc.select, see = dc.see, if_ = dc.if_, case_ = dc.case_, list = dc.list, func = dc.func, each = dc.each, div = dc.div, p = dc.p;
+
+	dc.directives({
+	  $options: dc.$options,
+	  $model: dc.$model
+	});
+
+	_ref = __webpack_require__(/*! ./demo-each */ 3), eachDemo1 = _ref.eachDemo1, eachDemo2 = _ref.eachDemo2, eachDemo3 = _ref.eachDemo3, eachDemo4 = _ref.eachDemo4;
+
+	chooseFramework = __webpack_require__(/*! ./demo-choose-web-framework */ 4);
+
+	_ref1 = __webpack_require__(/*! ./demo-debug */ 5), demoEachPush = _ref1.demoEachPush, demoIfEach = _ref1.demoIfEach, demoModelOnMultipleInput = _ref1.demoModelOnMultipleInput;
+
+	exports.demoMap = {
+	  'choose web framework': chooseFramework,
+	  "show hide": __webpack_require__(/*! ./demo-show-hide */ 6),
+	  counter: __webpack_require__(/*! ./demo-counter */ 7),
+	  event: __webpack_require__(/*! ./demo-event */ 8),
+	  controls: __webpack_require__(/*! ./demo-controls */ 2),
+	  "if": __webpack_require__(/*! ./demo-if-component */ 9),
+	  each1: eachDemo1,
+	  each2: eachDemo2,
+	  each3: eachDemo3,
+	  each4: eachDemo4,
+	  'switch 1 2 3 4': __webpack_require__(/*! ./demo-switch-1-2-3-4 */ 10),
+	  sum: __webpack_require__(/*! ./demo-sum */ 11),
+	  'text model': __webpack_require__(/*! ./demo-text-model */ 12),
+	  'mount/unmount': __webpack_require__(/*! ./demo-mount-unmount */ 13)
+	};
+
+	exports.makeDemoComponent = makeDemoComponent = function(demoMap, initItem) {
+	  var comp, componentsMap, currentItem, demoSelect, else_, key;
+	  currentItem = see(initItem);
+	  componentsMap = {};
+	  for (key in demoMap) {
+	    comp = demoMap[key];
+	    if (typeof comp === 'function') {
+	      componentsMap[key] = comp();
+	    } else {
+	      componentsMap[key] = comp;
+	    }
+	  }
+	  comp = list(demoSelect = select({
+	    $options: [Object.keys(demoMap)],
+	    $model: currentItem
+	  }), div(case_(currentItem, componentsMap, else_ = componentsMap[initItem])));
+	  return comp.renderWhen(demoSelect, 'change');
+	};
+
+	exports.runDemo = function(demoMap, initItem, element) {
+	  var comp;
+	  comp = makeDemoComponent(demoMap, initItem);
+	  return comp.mount(element);
+	};
+
+
+/***/ },
+/* 2 */
+/*!***********************************!*\
+  !*** ./demo/demo-controls.coffee ***!
+  \***********************************/
+/***/ function(module, exports) {
+
+	var a, bindings, checkbox, list, p, text;
+
+	list = dc.list, a = dc.a, checkbox = dc.checkbox, text = dc.text, p = dc.p, bindings = dc.bindings;
+
+	module.exports = function() {
+	  var a$, cbx1, cbx2, checkboxes, text1, text2, texts;
+	  a$ = bindings({
+	    a: 1
+	  }).a$;
+	  checkboxes = list(cbx1 = checkbox(a$), cbx2 = checkbox(a$));
+	  texts = list((text1 = text(a$)), (text2 = text(a$)));
+	  a$(6);
+	  return list(checkboxes, texts).renderWhen([cbx1, cbx2, text1, text2], 'change');
+	};
+
+
+/***/ },
+/* 3 */
+/*!*******************************!*\
+  !*** ./demo/demo-each.coffee ***!
+  \*******************************/
+/***/ function(module, exports) {
+
+	var each, list, p, txt;
+
+	list = dc.list, each = dc.each, p = dc.p, txt = dc.txt;
+
+	exports.eachDemo1 = function() {
+	  var comp, lst1;
+	  lst1 = [1, 2];
+	  return comp = list(lst1);
+	};
+
+	exports.eachDemo2 = function() {
+	  var comp, lst2;
+	  lst2 = [1, 2];
+	  return comp = each(lst2, function(item) {
+	    return p(item);
+	  });
+	};
+
+	exports.eachDemo3 = function() {
+	  var comp, lst3;
+	  lst3 = [1, 2, 3, 4, 5, 6];
+	  comp = each(lst3, function(item) {
+	    return p(item);
+	  });
+	  comp.on('willAttach', function() {
+	    setTimeout((function() {
+	      lst3.push(7);
+	      return comp.render();
+	    }), 1000);
+	    return setTimeout((function() {
+	      lst3.setLength(4);
+	      return comp.render();
+	    }), 2000);
+	  });
+	  return comp;
+	};
+
+	exports.eachDemo4 = function() {
+	  var comp, lst4;
+	  lst4 = [1, 2, 3, 4, 5, 6];
+	  comp = each(lst4, function(item) {
+	    return txt(item);
+	  });
+	  comp.on('willAttach', function() {
+	    setTimeout((function() {
+	      lst4.push(7);
+	      return comp.render();
+	    }), 1000);
+	    return setTimeout((function() {
+	      lst4.setLength(4);
+	      return comp.render();
+	    }), 2000);
+	  });
+	  return comp;
+	};
+
+
+/***/ },
+/* 4 */
+/*!***********************************************!*\
+  !*** ./demo/demo-choose-web-framework.coffee ***!
+  \***********************************************/
+/***/ function(module, exports) {
+
+	var case_, div, each, every, flow, func, label, list, see, text;
+
+	flow = dc.flow, see = dc.see, case_ = dc.case_, each = dc.each, every = dc.every, func = dc.func, list = dc.list, div = dc.div, label = dc.label, text = dc.text;
+
+	module.exports = function() {
+	  var caseMap, choice, comp, firstLetter$, frameworks, item, items, prefered, prompt, _i, _len;
+	  firstLetter$ = see('d', function(x) {
+	    return x.toLowerCase();
+	  });
+	  comp = null;
+	  prompt = label('Please choose: ');
+	  prefered = text({
+	    onchange: function() {
+	      return comp.render();
+	    }
+	  }, firstLetter$);
+	  frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember'];
+	  items = every(frameworks, function(item) {
+	    return div("" + item[0] + ". " + item);
+	  });
+	  caseMap = {};
+	  for (_i = 0, _len = frameworks.length; _i < _len; _i++) {
+	    item = frameworks[_i];
+	    caseMap[item[0]] = item;
+	  }
+	  choice = case_(firstLetter$, caseMap, 'some other things');
+	  return comp = list(prompt, prefered, items, div("You perfer ", choice, "."));
+	};
+
+	module.exports = function() {
+	  var added, choice, comp, firstLetter$, frameworks, items, prefered, prompt, prompt2;
+	  firstLetter$ = see('d', function(x) {
+	    return x.toLowerCase();
+	  });
+	  comp = null;
+	  prompt = label('Please choose: ');
+	  prefered = text({
+	    onchange: function() {
+	      return comp.render();
+	    }
+	  }, firstLetter$);
+	  frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember'];
+	  items = each(frameworks, function(item) {
+	    return div("" + item[0] + ". " + item);
+	  });
+	  prompt2 = label('add some others: ');
+	  added = text({
+	    onchange: function(event, node) {
+	      var newFramework;
+	      newFramework = node.value;
+	      frameworks.push(newFramework);
+	      firstLetter$(newFramework[0]);
+	      return comp.render();
+	    }
+	  });
+	  choice = func(flow(firstLetter$, function() {
+	    var firstLetter, item, _i, _len;
+	    firstLetter = firstLetter$();
+	    for (_i = 0, _len = frameworks.length; _i < _len; _i++) {
+	      item = frameworks[_i];
+	      if (item[0].toLowerCase() === firstLetter) {
+	        return item;
+	      }
+	    }
+	    return 'some other things';
+	  }));
+	  return comp = list(prompt, prefered, prompt2, added, items, div("You perfer ", choice, "."));
+	};
+
+
+/***/ },
+/* 5 */
+/*!********************************!*\
+  !*** ./demo/demo-debug.coffee ***!
+  \********************************/
+/***/ function(module, exports) {
+
+	var div, duplex, each, if_, list, p, see, text;
+
+	see = dc.see, if_ = dc.if_, list = dc.list, each = dc.each, div = dc.div, p = dc.p, text = dc.text, duplex = dc.duplex;
+
+	exports.demoEachPush = function() {
+	  var comp, lst;
+	  lst = [1, 2];
+	  comp = list(each(lst, function(item) {
+	    return p(item);
+	  }), 'some other thing');
+	  comp.mount();
+	  lst.push(3);
+	  return comp.render();
+	};
+
+	exports.demoIfEach = function() {
+	  var comp, lst4, showingEach$;
+	  showingEach$ = see(true);
+	  lst4 = [1, 2];
+	  comp = if_(showingEach$, each(lst4, function(item) {
+	    return div(item);
+	  }));
+	  comp.mount();
+	  showingEach$(false);
+	  comp.render();
+	  showingEach$(true);
+	  return comp.render();
+	};
+
+	exports.demoModelOnMultipleInput = function() {
+	  var a, text1, text2;
+	  a = {};
+	  text1 = text({
+	    $model: duplex(a, 'x')
+	  });
+	  text2 = text({
+	    $model: duplex(a, 'x')
+	  });
+	  return list(text1, text2).renderWhen([text1, text2], 'change').mount();
+	};
+
+
+/***/ },
+/* 6 */
+/*!************************************!*\
+  !*** ./demo/demo-show-hide.coffee ***!
+  \************************************/
+/***/ function(module, exports) {
+
+	var div, flow, list, p, see, text, toggle;
+
+	list = dc.list, text = dc.text, div = dc.div, p = dc.p, see = dc.see, flow = dc.flow;
+
+	toggle = flow.toggle;
+
+	module.exports = function() {
+	  var comp, x;
+	  x = see(true);
+	  return comp = list(div({
+	    onclick: function() {
+	      toggle(x);
+	      return comp.render();
+	    }
+	  }, 'show/hide by changing style.display'), p({
+	    "class": {},
+	    style: {
+	      display: function() {
+	        if (x()) {
+	          return 'block';
+	        } else {
+	          return 'none';
+	        }
+	      }
+	    }
+	  }, 'asdfdfs'));
+	};
+
+
+/***/ },
+/* 7 */
+/*!**********************************!*\
+  !*** ./demo/demo-counter.coffee ***!
+  \**********************************/
+/***/ function(module, exports) {
+
+	var p, see, txt;
+
+	txt = dc.txt, p = dc.p, see = dc.see;
+
+	module.exports = function() {
+	  var counter, counter$;
+	  counter$ = see(counter = 0);
+	  return p(txt(counter$)).on('willAttach', function() {
+	    var count, countHandle;
+	    count = function() {
+	      counter$(counter++);
+	      if (counter === 1001) {
+	        return clearInterval(countHandle);
+	      }
+	    };
+	    return countHandle = setInterval(count, 1);
+	  }).renderWhen(setInterval, 16, {
+	    clear: function() {
+	      return counter >= 1000;
+	    }
+	  });
+	};
+
+
+/***/ },
+/* 8 */
+/*!********************************!*\
+  !*** ./demo/demo-event.coffee ***!
+  \********************************/
+/***/ function(module, exports) {
+
+	var a, checkbox, list, p, text;
+
+	list = dc.list, a = dc.a, checkbox = dc.checkbox, text = dc.text, p = dc.p;
+
+	module.exports = function() {
+	  var noPropagation, propagation;
+	  propagation = a({
+	    onclick: function() {
+	      return alert('parent');
+	    }
+	  }, p({
+	    onclick: function(event) {
+	      alert('child');
+	      return event.continuePropagation = true;
+	    }
+	  }, 'propagation'));
+	  noPropagation = a({
+	    onclick: function() {
+	      return alert('parent');
+	    }
+	  }, p({
+	    onclick: function(event) {
+	      return alert('child');
+	    }
+	  }, 'do not propagation'));
+	  return list(propagation, noPropagation);
+	};
+
+
+/***/ },
+/* 9 */
+/*!***************************************!*\
+  !*** ./demo/demo-if-component.coffee ***!
+  \***************************************/
+/***/ function(module, exports) {
+
+	var div, if_, list, see, text;
+
+	list = dc.list, if_ = dc.if_, text = dc.text, div = dc.div, see = dc.see;
+
+	module.exports = function() {
+	  var comp, x;
+	  x = see(0, parseNumber);
+	  return comp = list(text({
+	    onchange: function() {
+	      x = parseInt(this.node.value);
+	      return comp.render();
+	    }
+	  }, x), if_(x, div(1), div(2)));
+	};
+
+	module.exports = function() {
+	  var comp, x;
+	  x = see(0, parseFloat);
+	  return comp = list(text({
+	    onchange: function() {
+	      return comp.render();
+	    }
+	  }, x), if_(x, div('It is not 0.'), div('It is 0 or NaN.')));
+	};
+
+
+/***/ },
+/* 10 */
+/*!*****************************************!*\
+  !*** ./demo/demo-switch-1-2-3-4.coffee ***!
+  \*****************************************/
+/***/ function(module, exports) {
+
+	var div, each, flow, func, list, number, see;
+
+	func = dc.func, see = dc.see, flow = dc.flow, each = dc.each, list = dc.list, div = dc.div, number = dc.number;
+
+	module.exports = function() {
+	  var comp, indexInput, lst, x;
+	  x = 0;
+	  comp = null;
+	  indexInput = number({
+	    onchange: function() {
+	      x = parseInt(this.node.value);
+	      return comp.render();
+	    }
+	  });
+	  lst = each([0, 1, 2, 3], function(item) {
+	    return div({
+	      style: {
+	        display: function() {
+	          if (item === x) {
+	            return 'block';
+	          } else {
+	            return 'none';
+	          }
+	        }
+	      }
+	    }, item);
+	  });
+	  return comp = list(indexInput, lst);
+	};
+
+	module.exports = function() {
+	  var comp, indexInput, x;
+	  x = 0;
+	  comp = null;
+	  indexInput = number({
+	    onchange: function() {
+	      x = parseInt(this.node.value);
+	      return comp.render();
+	    }
+	  });
+	  return comp = list(indexInput, func(function() {
+	    if (x >= 0 && x <= 3) {
+	      return div(x);
+	    }
+	  }));
+	};
+
+	module.exports = function() {
+	  var comp, num, x;
+	  x = see(0);
+	  comp = list(num = number(x), func(flow(x, function() {
+	    var v;
+	    v = x();
+	    if (v >= 0 && v <= 3) {
+	      return div(v);
+	    }
+	  })));
+	  return comp.renderWhen(num, 'change');
+	};
+
+
+/***/ },
+/* 11 */
+/*!******************************!*\
+  !*** ./demo/demo-sum.coffee ***!
+  \******************************/
+/***/ function(module, exports) {
+
+	var demoSum, flow, list, p, see, text;
+
+	see = dc.see, flow = dc.flow, list = dc.list, text = dc.text, p = dc.p;
+
+	module.exports = demoSum = function() {
+	  var a, b, comp, p1, t1, t2;
+	  a = see(1, parseFloat);
+	  b = see(2, parseFloat);
+	  comp = list(t1 = text({
+	    value: a,
+	    onchange: function() {
+	      return a(this.node.value);
+	    }
+	  }), t2 = text({
+	    value: b,
+	    onchange: function() {
+	      return b(this.node.value);
+	    }
+	  }), p1 = p(flow.add(a, b)));
+	  return comp.renderWhen([t1, t2], 'change');
+	};
+
+	module.exports = demoSum = function() {
+	  var a, b, p1, t1, t2;
+	  a = see(1);
+	  b = see(2);
+	  return list((t1 = text({
+	    value: a,
+	    onchange: (function() {
+	      return a(this.node.value * 1);
+	    })
+	  })), (t2 = text({
+	    value: b,
+	    onchange: (function() {
+	      return b(this.node.value * 1);
+	    })
+	  })), p1 = p(flow.add(a, b))).renderWhen([t1, t2], 'change');
+	};
+
+
+/***/ },
+/* 12 */
+/*!*************************************!*\
+  !*** ./demo/demo-text-model.coffee ***!
+  \*************************************/
+/***/ function(module, exports) {
+
+	var a, bindings, checkbox, list, text;
+
+	list = dc.list, bindings = dc.bindings, a = dc.a, checkbox = dc.checkbox, text = dc.text;
+
+	module.exports = function() {
+	  var a$, attrs, comp;
+	  a$ = bindings({
+	    a: 1
+	  }).a$;
+	  attrs = {
+	    onchange: function() {
+	      return comp.render();
+	    }
+	  };
+	  return comp = list(a = text(attrs, a$), text(attrs, a$));
+	};
+
+
+/***/ },
+/* 13 */
+/*!****************************************!*\
+  !*** ./demo/demo-mount-unmount.coffee ***!
+  \****************************************/
+/***/ function(module, exports) {
+
+	var div, if_, list, see;
+
+	list = dc.list, div = dc.div, see = dc.see, if_ = dc.if_;
+
+	module.exports = function() {
+	  var active, comp, div1;
+	  active = see(true);
+	  return comp = list(div({
+	    onclick: function() {
+	      active(true);
+	      return div1.render();
+	    }
+	  }, 'mount'), div({
+	    onclick: function() {
+	      active(false);
+	      return div1.render();
+	    }
+	  }, 'unmount'), div1 = if_(active, div('toggle me')));
+	};
+
+
+/***/ }
+/******/ ]);

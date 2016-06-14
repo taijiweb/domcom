@@ -31,14 +31,6 @@ dc.reset = ->
 
 dc.reset()
 
-dc.invalidate = ->
-  dc.valid = false
-
-dc.invalidateContent = (component) ->
-  dc.valid = false
-  dc.rootComponentMap[component.dcid] = component
-  return
-
 dc.render = (force) ->
   dc.emit('willRender')
   if !dc.valid
@@ -110,6 +102,14 @@ dc.stopRenderWhen = (component, event, components) ->
         delete componentMap[dcid]
   else
     delete component.eventUpdateConfig[event]
+  return
+
+dc.invalidate = ->
+  dc.valid = false
+
+dc.invalidateContent = (component) ->
+  dc.valid = false
+  dc.rootComponentMap[component.dcid] = component
   return
 
 dc.invalidateAttach = ->
