@@ -1,4 +1,4 @@
-{Tag} = dc
+Tag = require('../base/Tag')
 
 reNonUnit = /[\d\s\.-]/g
 

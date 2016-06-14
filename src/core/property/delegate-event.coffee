@@ -1,4 +1,5 @@
-{Tag, DomNode} = dc
+Tag = require('../base/Tag')
+DomNode = require('../../DomNode')
 
 exports.makeDelegationHandler = makeDelegationHandler = ->
   (event) ->

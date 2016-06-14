@@ -1,3 +1,6 @@
+### 2016-6-14
+* bug fix: core/index is removed
+
 ### 2016-6-14: v0.5.0 on github, npm
 * big refactor: restore to update from top to bottom
 * separate the code for updating and attaching/detaching dom

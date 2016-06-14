@@ -25,7 +25,7 @@ extend(dc,
   require('./dc-render'),
 
   # component
-  require('./core/index'),
+  require('./core'),
 
   require('./dc-error')
 )
@@ -33,12 +33,7 @@ extend(dc,
 extend(dc, dc.builtinDirectives = require('./directives/index'))
 
 extend(dc,
-  require('./core/property/attrs')
-  require('./core/property/classFn')
-  require('./core/property/style')
-  require('./core/property/css-arith')
-  require('./core/property/events')
-  require('./core/property/delegate-event'),
+  require('./core/property')
 )
 
 

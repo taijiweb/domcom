@@ -1305,7 +1305,7 @@ update(2016-3-16): Each component is removed, use the functions "every", "each",
 
 * sample
 
-  The code below i sin domcom/src/index.coffee:
+  The code below is in domcom/src/index.coffee:
 
 	extend dc,
 
@@ -1316,9 +1316,6 @@ update(2016-3-16): Each component is removed, use the functions "every", "each",
 	  require './flow/watch-list'
 	  require './dom-util'
 	  require './util'
-
-	  # component
-	  require './core/index'
 
 ### Domcom directives
 

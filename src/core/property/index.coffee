@@ -1,8 +1,11 @@
 extend = require('extend')
 module.exports = exports  = extend({},
   require('./attrs'),
-  require('./events'),
+  require('./classFn')
   require('./style')
+  require('./css-arith')
+  require('./events'),
+  require('./delegate-event'),
 )
 
 exports.classFn = require('./classFn')

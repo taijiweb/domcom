@@ -1254,9 +1254,6 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
 	  require './flow/watch-list'
 	  require './dom-util'
 	  require './util'
-	
-	  # component
-	  require './core/index'
 
 ### Domcom指令
 
