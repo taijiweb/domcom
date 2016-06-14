@@ -6,7 +6,7 @@ newDemoNode = require('./helper').newDemoNode;
 
 see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, forceIf = dc.forceIf, If = dc.If, case_ = dc.case_, forceCase = dc.forceCase, func = dc.func, pick = dc.pick, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
-describe('singleton component: If, Case, Func, Pick, ...', function() {
+describe('test-singleton: If, Case, Func, Pick, ...', function() {
   afterEach(function() {
     return dc.reset();
   });
@@ -78,7 +78,8 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       t1 = txt(1);
       t2 = txt(2);
       comp = if_(x, list(t1, t2), list(t2, t1));
-      comp.mount(demoNode = newDemoNode('if-ref'));
+      demoNode = newDemoNode('if-ref');
+      comp.mount(demoNode);
       expect(comp.node[0].textContent).to.equal('2', 'mount');
       expect(demoNode.innerHTML).to.equal('21', 'mount');
       x(1);
@@ -183,7 +184,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node.innerHTML).to.equal('1', 'update x 1');
       x(0);
       comp.render();
-      return expect(p2.node.innerHTML).to.equal('<p>2</p>1', 'mount');
+      return expect(p2.node.innerHTML).to.equal('<p>2</p>1', 'update x 2');
     });
     it('should render if_(x, div(1), div(2))', function() {
       var comp, x;
@@ -230,7 +231,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp = list(pIf = if_(x, p1 = p(1), p2 = p(2)), p3 = p(3));
       comp.mount(demo2Node);
       expect(pIf.node.innerHTML).to.equal('2');
-      expect(demo2Node.innerHTML).to.equal('<p>2</p><p>3</p>');
+      expect(demo2Node.innerHTML).to.equal('<p>2</p><p>3</p>', 'mount');
       x(1);
       comp.render();
       expect(pIf.node.innerHTML).to.equal('1', 'pif update');
@@ -302,7 +303,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       pIf = if_(x, div(1), div(2));
       comp = list(t1 = text({
         onchange: function() {
-          x(parseInt(this.value));
+          x(parseInt(this.node.value));
           return comp.render();
         }
       }, x), pIf);
@@ -324,7 +325,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       x = see(0);
       comp = list(t1 = text({
         onchange: function() {
-          x(parseInt(this.value));
+          x(parseInt(this.node.value));
           return comp.render();
         }
       }, 1), pIf = if_(x, div(1), div(2)));
@@ -346,7 +347,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       x = see(0);
       comp = list(t1 = text({
         onchange: function() {
-          x(parseInt(this.value));
+          x(parseInt(this.node.value));
           return comp.render();
         }
       }, x), pIf = if_(x, div(1), div(2)));
@@ -450,7 +451,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.render();
       return expect(comp.node.innerHTML).to.equal('4', 'update a 4');
     });
-    it('should  create func component', function() {
+    it('should create func component', function() {
       var comp, x;
       x = see(1);
       comp = func(x);
@@ -458,7 +459,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       expect(comp.node).to.be["instanceof"](window.Text);
       return expect(comp.node.textContent).to.equal('1');
     });
-    it('should create and  render func', function() {
+    it('should create and render func', function() {
       var comp, x;
       x = see(0);
       comp = func(flow(x, function() {
@@ -478,7 +479,7 @@ describe('singleton component: If, Case, Func, Pick, ...', function() {
       comp.render();
       return expect(comp.node.innerHTML).to.equal('2');
     });
-    it('should create and update func with  attrs', function() {
+    it('should update func with attrs', function() {
       var comp, x;
       x = see(1);
       comp = func({

@@ -1,10 +1,13 @@
 BaseComponent = require('./BaseComponent')
 
-{newLine, isArray} = require('dc-util')
-
-{refreshComponents} = dc = require('../../dc')
+{newLine} = require('dc-util')
 
 toComponentArray = require('./toComponentArray')
+
+{mixin} = require('dc-util')
+ListMixin = require('./ListMixin')
+
+{binaryInsert} = require('dc-util')
 
 module.exports = exports = class List extends BaseComponent
   constructor: (children) ->    
@@ -15,96 +18,68 @@ module.exports = exports = class List extends BaseComponent
 
     return
 
+  refreshDom: (oldBaseComponent) ->
+    this.renderDom()
+    this.attachChildren()
+    this.removeChildrenDom()
+    this
+
   createDom: ->
-    this.valid = true
-
-    children = this.children
-    this.node = this.childNodes = node = []
-    this.childNextNode = this.nextNode
+    this.node = this.childNodes
     this.createChildrenDom()
-    this.firstNode = this.childFirstNode
-    node
-
-  updateDom: ->
-    {children, parentNode, invalidIndexes} = this
-
-    for index in invalidIndexes
-      children[index].parentNode = parentNode
-
-    this.childrenNextNode = this.nextNode
-    this.updateChildrenDom()
-    this.firstNode = this.childFirstNode
-
+    this.firstNode = this.childrenFirstNode
     this.node
 
-  markRemovingDom: (removing) ->
-    this.removing = removing
-    if removing
-      if (node = this.node) && node.parentNode
-        node.parentNode = null
-        for child in this.children
-          child.markRemovingDom(removing)
-      this.holder = null
+  updateDom: ->
+    this.updateChildrenDom()
+    this.firstNode = this.childrenFirstNode
+    this.node
+
+  markRemovingDom: (holder) ->
+    if this.childParentNode && this.firstNode && this.firstNode.parentNode == this.childParentNode
+      this.removing = true
+      for child in this.children
+        child.markRemoving(holder)
+      holder.memoRemoving(this)
     this
 
-  removeDom: ->
-    if this.removing && this.attached
-      this.removing = false
-      this.attached = false
-      this.emit('willDetach')
+  markRemoving: ->
+    if this.childParentNode && this.node
+      this.removing = true
       for child in this.children
-        child.removeDom()
-      this.emit('didDetach')
-    this
+        child.markRemoving()
+    return
 
   removeNode: ->
     this.node.parentNode = null
+    this.childParentNode = null
     for child in this.children
       child.baseComponent.removeNode()
     return
 
-  # Tag, Comment, Html, Text should have attached them self in advance
-  # But if the children is valid, and the List Component has been removeDom before,
-  # it must attachNode of all the children to the parentNode
-  attachNode: ->
+  invalidateAttach: (child) ->
+    index = this.children.indexOf(child)
+    binaryInsert(index, this.attachParentIndexes)
+    if this.attachValid
+      this.attachValid = false
+      if this.holder
+        this.holder.invalidateAttach(this)
+    this
 
-    {children, parentNode, nextNode, node} = this
+  attachParent: ListMixin.attachChildren
 
-    if !(attached=this.attached)
-      this.attached = true
-      this.emit('willAttach')
-
-    # different parentNode, it was removeDom before !
-    # attach it again
-    if parentNode != node.parentNode ||  nextNode != node.nextSibling
-      node.parentNode = parentNode
-      length = children.length
-      if length
-
-        index = length - 1
-        children[index].nextNode = nextNode
-
-        while index >= 0
-          child = children[index]
-          if child.holder && child.holder != this
-            child.invalidate()
-            child.holder = this.holder
-          child.parentNode = parentNode
-
-          {baseComponent} = child
-          baseComponent.parentNode = parentNode
-          baseComponent.nextNode = child.nextNode
-          baseComponent.attachNode()
-
-          if index
-            children[index-1].nextNode = child.firstNode || child.nextNode
-
-          index--
-
-    if !attached
-      this.emit('didAttach')
-
-    this.node
+  setNextNode: (nextNode) ->
+    this.nextNode = nextNode
+    this.childrenNextNode = nextNode
+    children = this.children
+    index = children.length - 1
+    while child = children[index]
+      child.setNextNode(nextNode)
+      if !child.firstNode
+        index--
+      else
+        break
+    return
 
   clone: (arg) ->
     result = new List(this.cloneChildren(arg))
@@ -119,8 +94,4 @@ module.exports = exports = class List extends BaseComponent
         s += child.toString(indent+2, true)
       s += newLine('</List>', indent, true)
 
-{mixin} = require('dc-util')
-ListMixin = require('./ListMixin')
 mixin(List.prototype, ListMixin)
-
-#ListMixinLinkNextNode = ListMixin.linkNextNode

@@ -51,7 +51,7 @@ exports.onerror = (message, component) ->
   else if message instanceof Error
     throw message
   else
-    if comopenent
+    if component
       console.log(component)
       console.log(message)
     else

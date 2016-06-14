@@ -2,9 +2,9 @@
 
 module.exports = ->
   x = see 0, parseNumber
-  comp = list(text({onchange: -> x = parseInt(this.value); comp.render()}, x), if_(x, div(1), div(2)))
-#  comp = list(text({onchange: -> x = this.value; dc.render()}, (->x)), div(->x))
-#  comp = list(number({onchange: -> x = parseInt(this.value); dc.render()}, (->x) ), div(->x), if_((-> x), div(1), div(2)))
+  comp = list(text({onchange: -> x = parseInt(this.node.value); comp.render()}, x), if_(x, div(1), div(2)))
+#  comp = list(text({onchange: -> x = this.node.value; comp.render()}, (->x)), div(->x))
+#  comp = list(number({onchange: -> x = parseInt(this.node.value); comp.render()}, (->x) ), div(->x), if_((-> x), div(1), div(2)))
   # comp.mount()
 
 module.exports = ->

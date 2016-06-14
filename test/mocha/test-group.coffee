@@ -12,7 +12,7 @@ demo2Node = null
 comp = null
 dontUnmount = false
 
-describe 'group component: List, each', ->
+describe 'test-group: group component: List, each', ->
   beforeEach ->
     demo2Node = document.getElementById('demo2')
     demo2Node.innerHTML = ''
@@ -95,21 +95,24 @@ describe 'group component: List, each', ->
       expect(comp.node.innerHTML).to.equal '12'
       comp.unmount()
 
-    it 'list(p(->12)) ', ->
+    it 'list(p(->12))', ->
       comp = list(p(->12))
       comp.mount()
       comp.render()
       expect(comp.node.innerHTML).to.equal '12'
       comp.unmount()
 
-    it 'list(txt(1)) ', ->
+    it 'list(txt(1))', ->
       comp = new List([txt(1)])
       comp.mount(demoNode=newDemoNode('list'))
+      expect(demoNode.innerHTML).to.equal('1', 1)
       comp.render()
       comp.setLength(0)
+      expect(demoNode.innerHTML).to.equal('', 2)
       comp.render();
-      expect(demoNode.innerHTML).to.equal ''
+      expect(demoNode.innerHTML).to.equal('', 3)
       comp.unmount()
+      expect(demoNode.innerHTML).to.equal('', 3)
 
     it 'list(txt(1), txt(2), txt(3)) and move child', ->
       comp = list(t1=txt(1), t2=txt(2), t3=txt(3))
@@ -117,9 +120,9 @@ describe 'group component: List, each', ->
       expect(demoNode.innerHTML).to.equal '123'
       comp.removeChild(0)
       comp.render()
-      expect(comp.dcidIndexMap[t1.dcid]).to.equal(undefined, 'dcid 0')
-      expect(comp.dcidIndexMap[t2.dcid]).to.equal(0, 'dcid 1')
-      expect(comp.dcidIndexMap[t3.dcid]).to.equal(1, 'dcid 2')
+      expect(comp.children.indexOf(t1)).to.equal(-1, 'dcid 0')
+      expect(comp.children.indexOf(t2)).to.equal(0, 'dcid 1')
+      expect(comp.children.indexOf(t3)).to.equal(1, 'dcid 2')
       expect(comp.children.length).to.equal(2)
       comp.pushChild(t1)
       comp.render()
@@ -142,10 +145,12 @@ describe 'group component: List, each', ->
       expect(demoNode.innerHTML).to.equal('12')
 
     it 'all key of object 2', ->
+      demoNode = newDemoNode('list')
       comp = every({}, {a:1, b:2}, (value, key) -> list(key, ':', value))
-      comp.mount(demoNode=newDemoNode('list'))
-      comp.render()
+      comp.mount(demoNode)
       expect(comp.children.length).to.equal 2
+      expect(comp.node.innerHTML).to.equal('a:1b:2')
+      comp.render()
       expect(comp.node.innerHTML).to.equal('a:1b:2')
 
     it 'all key of object 3', ->
@@ -182,7 +187,7 @@ describe 'group component: List, each', ->
       expect(comp.node[0].innerHTML).to.equal '1'
       comp.unmount()
 
-    it  'should set children.nextNode correctly', ->
+    it  'should set children nextNode correctly', ->
       demo2Node = document.getElementById('demo2')
       demo2Node.innerHTML = ''
       lst = [1, 2]
@@ -521,7 +526,7 @@ describe 'group component: List, each', ->
       expect(demo2Node.innerHTML).to.equal('text 1 2')
       items = [3]
       comp.render()
-      expect(demo2Node.innerHTML).to.equal 'text 3'
+      expect(demo2Node.innerHTML).to.equal('text 3', 1)
       comp.render()
-      expect(demo2Node.innerHTML).to.equal 'text 3'
+      expect(demo2Node.innerHTML).to.equal('text 3', 2)
 

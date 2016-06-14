@@ -8,7 +8,7 @@ module.exports = function() {
   comp = null;
   indexInput = number({
     onchange: function() {
-      x = parseInt(this.value);
+      x = parseInt(this.node.value);
       return comp.render();
     }
   });
@@ -34,7 +34,7 @@ module.exports = function() {
   comp = null;
   indexInput = number({
     onchange: function() {
-      x = parseInt(this.value);
+      x = parseInt(this.node.value);
       return comp.render();
     }
   });

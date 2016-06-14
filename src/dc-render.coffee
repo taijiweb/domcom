@@ -31,6 +31,9 @@ dc.reset = ->
 
 dc.reset()
 
+dc.invalidate = ->
+  dc.valid = false
+
 dc.invalidateContent = (component) ->
   dc.valid = false
   dc.rootComponentMap[component.dcid] = component
@@ -66,6 +69,8 @@ dc.renderWhen =  (component, events, options) ->
 
   else if component == window.setInterval
     {test, clear, components} = options
+    for component in components
+      component.asRenderHolder()
     handler = null
 
     callback = ->
@@ -78,6 +83,8 @@ dc.renderWhen =  (component, events, options) ->
     handler = setInterval(callback, events || 16)
 
   else if component == setTimeout
+    for component in options.component
+      component.asRenderHolder()
     callback = ->
       for component in options.component
         component.render()
@@ -86,6 +93,7 @@ dc.renderWhen =  (component, events, options) ->
   return
 
 renderWhenComponentEvent = (component, event, components) ->
+  component.asRenderHolder()
   if event[...2]!='on'
     event = 'on'+event
   componentMap = component.eventUpdateConfig[event] || component.eventUpdateConfig[event] = {}
@@ -103,3 +111,14 @@ dc.stopRenderWhen = (component, event, components) ->
   else
     delete component.eventUpdateConfig[event]
   return
+
+dc.invalidateAttach = ->
+
+dc.propagateChildNextNode = (child, nextNode) ->
+
+dc.invalidateAttachOnRemove = (child) ->
+  firstNode = child.firstNode
+  if (prevNode = firstNode.previousSibling) && prevComponent = prevNode.component
+    prevComponent.setNextNode(this.nextNode)
+  return
+

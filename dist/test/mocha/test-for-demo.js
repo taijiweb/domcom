@@ -108,8 +108,8 @@ describe('demo', function() {
       }).a$;
       attrs = {
         value: a$,
-        onchange: function() {
-          a$(this.value);
+        onchange: function(event, node) {
+          a$(node.value);
           return comp.render();
         }
       };

@@ -14,7 +14,6 @@ module.exports =
   Cdata: require('./Cdata')
   Html: require('./Html')
   Nothing: require('./Nothing')
-  TransformComponentMixin: require('./TransformComponentMixin')
   TransformComponent: require('./TransformComponent')
   TestComponent: require('./TestComponent')
   If: require('./If')

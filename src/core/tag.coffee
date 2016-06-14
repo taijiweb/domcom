@@ -32,7 +32,7 @@ input = exports.input = (type, attrs, value) ->
   if value?
     component.prop(getBindProp(component), value)
     if value.isDuplex
-      component.bind('onchange', ((event) -> value.call(this.component, this.value)), 'before')
+      component.bind('onchange', ((event, node) -> value.call(this, node.value)), 'before')
   component
 
 for type in 'text checkbox radio date email tel number'.split(' ')
@@ -52,14 +52,14 @@ exports.textarea = (attrs, value) ->
       attrs = extend({value:value}, attrs)
       component = tag('textarea', attrs)
       if value.isDuplex 
-        component.bind('onchange', ((event) -> value.call(this.component, this.value)), 'before')
+        component.bind('onchange', ((event, node) -> value.call(this, node.value)), 'before')
     else  
       component = tag('textarea', attrs)
   else
     if attrs? # attrs is value
       component = tag('textarea', {value:attrs})
       if attrs.isDuplex 
-        component.bind('onchange', ((event) -> attrs.call(this.component, this.value)), 'before')
+        component.bind('onchange', ((event, node) -> attrs.call(this, node.value)), 'before')
     else  
       component = tag('textarea')
   component

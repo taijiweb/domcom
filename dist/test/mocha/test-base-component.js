@@ -11,7 +11,7 @@ a_ = bindings({
   b: 2
 }).a_;
 
-describe("test base component", function() {
+describe("test-base-component", function() {
   afterEach(function() {
     return dc.reset();
   });
@@ -162,7 +162,8 @@ describe("test base component", function() {
       var comp, demoNode, str;
       str = see('');
       comp = html(str);
-      comp.mount(demoNode = newDemoNode());
+      demoNode = newDemoNode();
+      comp.mount(demoNode);
       expect(demoNode.innerHTML).to.equal('<div></div>');
       return expect(comp.node.component).to.equal(comp);
     });

@@ -113,7 +113,7 @@ describe 'domcom/properties/event', ->
     expect(spy1.called).to.equal true
     expect(x.a).to.equal '2'
 
-  it 'multiple handlers for one event, with bind value', ->
+  it 'multiple handlers with bind value', ->
     $a = duplex(x={a:1}, 'a')
     spy1 = sinon.spy()
     comp = text({onchange:spy1}, $a)

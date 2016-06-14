@@ -1,36 +1,50 @@
 Component = require('./Component')
-{cloneObject} = require('dc-util')
 
 module.exports = class BaseComponent extends Component
+
   constructor: ->
     super()
     this.isBaseComponent = true
     this.removing = false
+    this.removingChildren = {}
+    # the line below is moved from ListMixin
+    # because the removing component of TransformComponent will be added to TransformComponent.content
     this.baseComponent = this
+
+  refreshDom: (oldBaseComponent) ->
+    this.renderDom()
+    this.attachParent()
+    this.removeChildrenDom()
+    this
 
   renderDom: (oldBaseComponent) ->
     this.emit('willRenderDom')
 
     if oldBaseComponent && oldBaseComponent != this
-      oldBaseComponent.markRemovingDom(true)
+      oldBaseComponent.markRemovingDom(this)
 
-    if !this.node
-      this.valid = true
-      this.createDom()
-    else
-      this.removing = false
-      if !this.valid
-        this.valid = true
-        this.updateDom()
-
-    this.attachNode(this.parentNode, this.nextNode)
-
-    if oldBaseComponent && oldBaseComponent != this
-      oldBaseComponent.removeDom()
+    this.renderBaseComponent(oldBaseComponent)
 
     this.emit('didRenderDom')
 
     this
+
+  renderBaseComponent: (oldBaseComponent) ->
+    if oldBaseComponent && oldBaseComponent != this
+      this.attachValid = false
+      if this.holder
+        this.holder.invalidateAttach(this)
+    if !this.node
+      this.valid = true
+      this.createDom()
+      if this.holder
+        this.holder.invalidateAttach(this)
+    else
+      if !this.valid || this.isTag
+        this.valid = true
+        this.updateDom()
+
+    return
 
   invalidate: ->
     if this.valid
@@ -39,29 +53,40 @@ module.exports = class BaseComponent extends Component
     else
       this
 
-  markRemovingDom: (removing) ->
-    this.removing = removing
-    if removing
-      if this.node && this.node.parentNode
-        dc.valid = false
+  attachChildren: ->
+
+  markRemovingDom: (holder) ->
+    if this.parentNode && this.firstNode && this.firstNode.parentNode == this.parentNode
+      this.removing = true
+      holder.memoRemoving(this)
     this
 
+  markRemoving: ->
+    if this.parentNode && this.node
+      this.removing = true
+    return
+
   removeDom: ->
-    if this.removing && this.attached
+    if this.removing
       this.removing = false
-      this.holder = null
       this.emit('willDetach')
-      this.removeNode()
+      if this.isList
+        this.node.parentNode = null
+        this.childParentNode = null
+        for child in this.children
+          child.removeDom()
+      else
+        this.removeNode()
       this.emit('didDetach')
-      this.attached = false
     this
 
   removeNode: ->
-    node = this.node
-    node.parentNode.removeChild(node)
+    this.removing = false
+    if node = this.node
+      node.parentNode && node.parentNode.removeChild(node)
     return
 
-  executeAttachNode: ->
+  executeAttachParent: ->
 
     node = this.node
     parentNode = this.parentNode
@@ -70,24 +95,16 @@ module.exports = class BaseComponent extends Component
     this.removing = false
 
     if parentNode && (parentNode != node.parentNode || nextNode != node.nextSibling)
-      node = this.node
-      try
-        parentNode.insertBefore(node, nextNode)
-      catch e
-        dc.error(e)
+      parentNode.insertBefore(node, nextNode)
 
-  attachNode: ->
-    if !(attached=this.attached)
-      this.attached = true
+    return
+
+  attachParent: ->
+    if this.node.parentNode
       this.emit('willAttach')
-
-    this.executeAttachNode()
-
-    if !attached
+      this.executeAttachParent()
       this.emit('didAttach')
+    else
+      this.executeAttachParent()
 
     this.node
-
-  renderContent: (oldBaseComponent) ->
-    this.renderDom(oldBaseComponent)
-

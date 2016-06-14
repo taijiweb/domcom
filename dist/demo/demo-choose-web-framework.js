@@ -45,9 +45,9 @@ module.exports = function() {
   });
   prompt2 = label('add some others: ');
   added = text({
-    onchange: function() {
+    onchange: function(event, node) {
       var newFramework;
-      newFramework = this.value;
+      newFramework = node.value;
       frameworks.push(newFramework);
       firstLetter$(newFramework[0]);
       return comp.render();

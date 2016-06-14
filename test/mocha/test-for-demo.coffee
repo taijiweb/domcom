@@ -72,7 +72,7 @@ describe 'demo', ->
 
     it 'should text model by value and onchange', ->
       {a$} = bindings(m={a: 1})
-      attrs = {value: a$, onchange: -> a$ this.value; comp.render()}
+      attrs = {value: a$, onchange: (event, node) -> a$ node.value; comp.render()}
       comp = list(text1=text(attrs), text2=text(attrs))
       comp.mount()
       text1.node.value = 3

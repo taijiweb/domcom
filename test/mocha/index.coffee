@@ -1,6 +1,5 @@
 dc.alwaysRender = true
 
-require('dc-util/test-util')
 require('lazy-flow/test-flow')
 require('lazy-flow-at/test-at')
 

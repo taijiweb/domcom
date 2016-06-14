@@ -13,30 +13,21 @@ module.exports = class Nothing extends BaseComponent
   invalidate: -> this
 
   renderDom: (oldBaseComponent) ->
-
-    if oldBaseComponent && oldBaseComponent != this
-      oldBaseComponent.markRemovingDom(true)
-
+    if oldBaseComponent
+      oldBaseComponent.markRemovingDom(this)
     this.valid = true
-    if !this.node
-      this.node = []
-
-    this.attachNode()
+    this.node = []
 
     this
 
   createDom: -> this.node = []
+  attachParent:  -> this.node
+  attachChildren: -> this.node
 
-  attachNode: ->
-    this.node
-
-  markRemovingDom: (removing) ->
-    if removing
-      this.holder = null
-    this.removing = removing
-    this
-
+  markRemovingDom: (holder) -> this
+  markRemoving: ->
   removeDom: -> this
+  removeNode: ->
 
   clone: -> new Nothing()
 

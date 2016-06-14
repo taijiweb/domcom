@@ -10,7 +10,7 @@ describe('toString', function() {
     x = 0;
     comp = list(t1 = text({
       onchange: function() {
-        x = parseInt(this.value);
+        x = parseInt(this.node.value);
         return comp.render();
       }
     }, x), pIf = if_((function() {

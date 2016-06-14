@@ -18,6 +18,8 @@ window.save = (todos) -> localStorage.setItem('view', JSON.stringify(todos))
 # [ { title: string, completed: boolean } ... ]
 window.todos = []
 
+window.todos = fetch()
+
 #######################################################################################################################
 # controller
 
@@ -100,9 +102,9 @@ text1 = text {
   id: "new-todo"
   placeholder: "What needs to be done?"
   disable: -> saving
-  onchange: ->
-    if !this.value then return
-    todos.push title: this.value, completed: false
+  onchange: (event, node) ->
+    if !node.value then return
+    todos.push title: node.value, completed: false
     save todos
     view.render()
   autofocus:true }
@@ -125,7 +127,7 @@ todoItems = funcEach getTodos, (todo, index) ->
         className: "edit"
         trim: "false"
         value: bind todo, "title"
-        onblur: -> todo.title = this.value; save(todos); editingTodo = null; view.render()
+        onblur: (event, node) -> todo.title = node.value; save(todos); editingTodo = null; view.render()
         onfocus: -> todo == editingTodo
         onkeyup: onEscapeFn( -> revertEdits(todo) ) }
 
@@ -165,9 +167,6 @@ view = section id:"todoapp",
   todoHeader
   todoEditArea
   todoFooter
-  button {id: "clear-completed", onclick: clearCompletedTodos, $show: completedCount },
-    txt -> "Clear completed: "+completedCount()
-
 
 window.updateHash = ->
   locationHash = document.location.hash
@@ -180,7 +179,6 @@ window.updateHash = ->
 # run the app
 
 window.runTodoMvc = ->
-  window.todos = fetch()
   updateHash()
   view.mount('#todo-app')
 

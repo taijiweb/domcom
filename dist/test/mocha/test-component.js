@@ -6,7 +6,7 @@ newDemoNode = require('./helper').newDemoNode;
 
 bindings = dc.bindings, duplex = dc.duplex, flow = dc.flow, classFn = dc.classFn, styleFrom = dc.styleFrom, Tag = dc.Tag, Text = dc.Text, List = dc.List, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, txt = dc.txt, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, button = dc.button, input = dc.input;
 
-describe("component  ", function() {
+describe("test-component", function() {
   afterEach(function() {
     return dc.reset();
   });
@@ -299,14 +299,14 @@ describe("component  ", function() {
       var comp;
       comp = div(1);
       comp.mount(newDemoNode('replace-demo3'));
-      comp.remove();
+      comp.unmount();
       return expect(document.getElementById('replace-demo3').innerHTML).to.equal('');
     });
     it('should execute remove child component', function() {
       var comp1, comp3;
       comp1 = div(comp3 = div(3));
       comp1.mount(newDemoNode('replace-demo4'));
-      comp3.remove();
+      comp3.unmount();
       return expect(document.getElementById('replace-demo4').innerHTML).to.equal('<div></div>');
     });
     it('should execute component.replace', function() {
@@ -317,7 +317,7 @@ describe("component  ", function() {
       comp2.replace(comp1);
       return expect(document.getElementById('replace-demo').innerHTML).to.equal('<div>2</div>');
     });
-    it('should execute component.replace child component', function() {
+    it('should execute replace child component', function() {
       var comp1, comp2, comp3;
       comp1 = div(comp3 = div(3));
       comp1.mount(newDemoNode('replace-demo2'));

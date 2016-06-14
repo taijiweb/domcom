@@ -8,23 +8,21 @@ dc = require('../../dc')
 
 module.exports = class Component
   constructor: ->
-    # maybe this.listeners is be set in sub class's component.on(...) call
+    # maybe this.listeners is be set in sub class's component.on(...) call in advance
+    # if that, keep it
     this.listeners = this.listeners || {}
     this.baseComponent = null
     this.parentNode = null
     this.nextNode = null
     this.node = null
-    this.attached = false
     this.destroyed = false
     this.holder = null
     this.dcid = newDcid()
     this.valid = true
+    this.attachValid = true
     this.setReactive()
 
-  ### if mountNode is given, it should not be the node of any Component
-  only use beforeNode if mountNode is given
-  ###
-  create: (mountNode, beforeNode, cancelUpdate) ->
+  _prepareMount: (mountNode, beforeNode) ->
     if mountNode && mountNode.component
       mountNode = mountNode.component
     else if beforeNode && beforeNode.component
@@ -48,61 +46,83 @@ module.exports = class Component
           console.log(mountNode)
           console.log(beforeNode)
           throw new Error('both mountNode and beforeNode is component, but mountNode is not the parent of beforeNode')
-        this.emit('willMount')
         mountNode.insertChildBefore(this, beforeNode)
     else
-      this.emit('willMount')
       this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.body
       this.nextNode = beforeNode || this.nextNode
-      this.holder = dc
+      this.setHolder(dc)
       dc.rootComponentMap[this.dcid] = this
-    if !cancelUpdate
-      this.render()
-    this
 
-  mount: (mountNode, beforeNode) ->
+  create: (mountNode, beforeNode, forceRender) ->
+    this._prepareMount(mountNode, beforeNode)
+    this.render(forceRender)
+
+  ### if mountNode is given, it should not be the node of any Component
+  only use beforeNode if mountNode is given
+  ###
+  mount: (mountNode, beforeNode, forceRender) ->
     this.emit('willMount')
-    this.create(mountNode, beforeNode)
+    this._prepareMount(mountNode, beforeNode)
+    this.render(forceRender)
     this.emit('didMount')
 
-  render: (force) ->
-    if !this.destroyed && (force || dc.alwaysRender || !dc.renderBySystemLoop)
-      this.emit('willRender')
-      if this.removing
-        this.removeDom()
-      else
-        this.renderDom(this.baseComponent)
-      this.emit('didRender')
-    this
-
-  unmount: ->
+  unmount: (forceRender) ->
     this.emit('willUnmount')
     this.remove()
     this.emit('didUnmount')
-    this
 
-  remove: (cancelUpdate) ->
+  remove: ->
     holder = this.holder
-    component = this
-    while holder && holder != dc && !holder.isBaseComponent
-      component = holder
-      holder = holder.holder
-    if holder == dc
-      component.markRemovingDom(true)
-      dc.rootComponentMap[component.dcid] = component
-      if !cancelUpdate
-        component.render()
-    else if !holder
-      this
+    if !holder || holder == dc
+      delete dc.rootComponentMap[this.dcid]
+      firstNode = this.firstNode
+      if firstNode && firstNode.parentNode
+        if (prevNode = firstNode.previousSibling) && prevComponent = prevNode.component
+          prevComponent.setNextNode(this.nextNode)
+        this.removeNode()
     else if holder.children
-      holder.removeChild(component)
-      if !cancelUpdate
-        component.render()
-    else
+      holder.removeChild(this)
+    else if holder
       dc.error('Should not remove the content of TransformComponent')
     this
 
-  replace: (oldComponent, cancelUpdate) ->
+  memoRemoving: (component) ->
+    holder = this.holder
+    if !holder || holder == dc
+      this.removingChildren[component.dcid] = component
+    else if this.isTag || this.isRenderHolder
+      this.removingChildren[component.dcid] = component
+    else
+      this.holder.memoRemoving(component)
+    return
+
+  # normally only Tag and List will have removingChildren
+  # but the removing component of TransformComponent will be added to TransformComponent.baseComponent
+  removeChildrenDom: ->
+    for _, child of this.removingChildren
+      child.removeDom()
+    this.removingChildren = {}
+    return
+
+  asRenderHolder: (isRenderHolder = true) ->
+    this.isRenderHolder = isRenderHolder
+    this
+
+  render: (forceRender) ->
+    if !this.destroyed && (forceRender || dc.alwaysRender || !dc.renderBySystemLoop)
+      if this.removing
+        this.removeDom()
+      else
+        this.refreshDom(this.baseComponent)
+    this
+
+  renderHolder: (forceRender) ->
+    if this.holder
+      this.holder.render(forceRender)
+    else
+      this.render(forceRender)
+
+  replace: (oldComponent, forceRender) ->
     if this.destroyed || this == oldComponent
       return
     holder = oldComponent.holder
@@ -112,20 +132,16 @@ module.exports = class Component
       else
         # holder is List or Tag
         holder.replaceChild(oldComponent, this)
-        if !cancelUpdate
-          this.render()
-          oldComponent.render()
+        holder.render(forceRender)
     else if holder == dc
       this.parentNode = oldComponent.parentNode
       this.nextNode = oldComponent.nextNode
-      oldComponent.markRemovingDom(true)
-      this.holder = holder
+      oldComponent.markRemovingDom(this)
+      this.setHolder(holder)
       this.invalidate()
       dc.rootComponentMap[this.dcid] = this
       dc.rootComponentMap[oldComponent.dcid] = oldComponent
-      if !cancelUpdate
-        this.render()
-        oldComponent.render()
+      this.render(forceRender)
     this
 
   ###
@@ -143,8 +159,8 @@ module.exports = class Component
     this
 
   destroy: ->
+    this.unmount(true)
     this.destroyed = true
-    this.remove()
     this.listeners = null
     if this.node
       this.node.component = null
@@ -152,17 +168,38 @@ module.exports = class Component
     this.baseComponent = null
     this.parentNode = null
 
-  getPrevSibling: ->
+  getPrevComponent: ->
     if !(holder = this.holder)
       null
-    else if dcidIndexMap = holder.dcidIndexMap
-      holder.children[dcidIndexMap[this.dcid]-1]
+    else if children = holder.children
+      chilren[children.indexOf(this)]
 
-  getNextSibling: ->
+  getNextComponent: ->
     if !(holder = this.holder)
       null
-    else if dcidIndexMap = holder.dcidIndexMap
-      holder.children[dcidIndexMap[this.dcid]+1]
+    else if children = holder.holder.children
+      children[children.indexOf(this)]
+
+  setNextNode: (nextNode) ->
+    this.nextNode = nextNode
+    return
+
+  setHolder: (holder) ->
+    if this.holder && this.holder != holder
+      this.holder.invalidateAttach(this)
+    this.holder = holder
+    this
+
+  isOffspringOf: (ancestor) ->
+    holder = this.holder
+    while holder
+      if holder == ancestor
+        return true
+      holder = holder.holder
+    false
+
+  inFamilyOf: (ancestor) ->
+    this == ancestor || this.isOffspringOf(ancestor)
 
   setReactive: ->
     if this.reactMap

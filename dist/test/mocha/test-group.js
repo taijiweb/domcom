@@ -12,7 +12,7 @@ comp = null;
 
 dontUnmount = false;
 
-describe('group component: List, each', function() {
+describe('test-group: group component: List, each', function() {
   beforeEach(function() {
     demo2Node = document.getElementById('demo2');
     return demo2Node.innerHTML = '';
@@ -116,7 +116,7 @@ describe('group component: List, each', function() {
       expect(comp.node.innerHTML).to.equal('12');
       return comp.unmount();
     });
-    it('list(p(->12)) ', function() {
+    it('list(p(->12))', function() {
       comp = list(p(function() {
         return 12;
       }));
@@ -125,15 +125,18 @@ describe('group component: List, each', function() {
       expect(comp.node.innerHTML).to.equal('12');
       return comp.unmount();
     });
-    it('list(txt(1)) ', function() {
+    it('list(txt(1))', function() {
       var demoNode;
       comp = new List([txt(1)]);
       comp.mount(demoNode = newDemoNode('list'));
+      expect(demoNode.innerHTML).to.equal('1', 1);
       comp.render();
       comp.setLength(0);
+      expect(demoNode.innerHTML).to.equal('', 2);
       comp.render();
-      expect(demoNode.innerHTML).to.equal('');
-      return comp.unmount();
+      expect(demoNode.innerHTML).to.equal('', 3);
+      comp.unmount();
+      return expect(demoNode.innerHTML).to.equal('', 3);
     });
     return it('list(txt(1), txt(2), txt(3)) and move child', function() {
       var demoNode, t1, t2, t3;
@@ -142,9 +145,9 @@ describe('group component: List, each', function() {
       expect(demoNode.innerHTML).to.equal('123');
       comp.removeChild(0);
       comp.render();
-      expect(comp.dcidIndexMap[t1.dcid]).to.equal(void 0, 'dcid 0');
-      expect(comp.dcidIndexMap[t2.dcid]).to.equal(0, 'dcid 1');
-      expect(comp.dcidIndexMap[t3.dcid]).to.equal(1, 'dcid 2');
+      expect(comp.children.indexOf(t1)).to.equal(-1, 'dcid 0');
+      expect(comp.children.indexOf(t2)).to.equal(0, 'dcid 1');
+      expect(comp.children.indexOf(t3)).to.equal(1, 'dcid 2');
       expect(comp.children.length).to.equal(2);
       comp.pushChild(t1);
       comp.render();
@@ -178,15 +181,17 @@ describe('group component: List, each', function() {
     });
     it('all key of object 2', function() {
       var demoNode;
+      demoNode = newDemoNode('list');
       comp = every({}, {
         a: 1,
         b: 2
       }, function(value, key) {
         return list(key, ':', value);
       });
-      comp.mount(demoNode = newDemoNode('list'));
-      comp.render();
+      comp.mount(demoNode);
       expect(comp.children.length).to.equal(2);
+      expect(comp.node.innerHTML).to.equal('a:1b:2');
+      comp.render();
       return expect(comp.node.innerHTML).to.equal('a:1b:2');
     });
     return it('all key of object 3', function() {
@@ -238,7 +243,7 @@ describe('group component: List, each', function() {
       expect(comp.node[0].innerHTML).to.equal('1');
       return comp.unmount();
     });
-    it('should set children.nextNode correctly', function() {
+    it('should set children nextNode correctly', function() {
       var each1, lst;
       demo2Node = document.getElementById('demo2');
       demo2Node.innerHTML = '';
@@ -715,9 +720,9 @@ describe('group component: List, each', function() {
       expect(demo2Node.innerHTML).to.equal('text 1 2');
       items = [3];
       comp.render();
-      expect(demo2Node.innerHTML).to.equal('text 3');
+      expect(demo2Node.innerHTML).to.equal('text 3', 1);
       comp.render();
-      return expect(demo2Node.innerHTML).to.equal('text 3');
+      return expect(demo2Node.innerHTML).to.equal('text 3', 2);
     });
   });
 });

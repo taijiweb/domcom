@@ -8,7 +8,7 @@ Tag, Text, List
 Component, list, func, if_, txt
 a, p, span, text, li, div, button, input} = dc
 
-describe "component  ", ->
+describe "test-component", ->
   afterEach ->
     dc.reset()
 
@@ -206,13 +206,13 @@ describe "component  ", ->
     it 'should execute component.remove', ->
       comp = div(1)
       comp.mount(newDemoNode('replace-demo3'))
-      comp.remove()
+      comp.unmount()
       expect(document.getElementById('replace-demo3').innerHTML).to.equal('')
 
     it 'should execute remove child component', ->
       comp1 = div(comp3=(div(3)))
       comp1.mount(newDemoNode('replace-demo4'))
-      comp3.remove()
+      comp3.unmount()
       expect(document.getElementById('replace-demo4').innerHTML).to.equal('<div></div>')
 
     it 'should execute component.replace', ->
@@ -222,7 +222,7 @@ describe "component  ", ->
       comp2.replace(comp1)
       expect(document.getElementById('replace-demo').innerHTML).to.equal('<div>2</div>')
 
-    it 'should execute component.replace child component', ->
+    it 'should execute replace child component', ->
       comp1 = div(comp3=(div(3)))
       comp1.mount(newDemoNode('replace-demo2'))
       expect(document.getElementById('replace-demo2').innerHTML).to.equal('<div><div>3</div></div>')

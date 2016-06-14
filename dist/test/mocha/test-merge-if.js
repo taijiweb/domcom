@@ -77,7 +77,7 @@ describe('domcom/mergeIf', function() {
     comp.render();
     return expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1');
   });
-  it('should render mergeIf(x, p(t1), p(t2, t1))', function() {
+  it('should also render mergeIf(x, p(t1), p(t2, t1))', function() {
     var comp, demoNode, t1, t2, x;
     x = see(0);
     t1 = txt(1);

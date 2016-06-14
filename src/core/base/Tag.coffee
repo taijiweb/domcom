@@ -2,13 +2,18 @@ extend = require('extend')
 {refreshComponents} = dc = require('../../dc')
 {domField, domValue} = require('../../dom-util')
 {directiveRegistry} = require('../../dc')
-{classFn, styleFrom, domEventHandler, attrToPropName, updating} = require('../property')
+{classFn, styleFrom, domEventHandler, attrToPropName, addHandlerToCallbackArray} = require('../property')
 BaseComponent = require('./BaseComponent')
 {funcString, newLine, cloneObject} = require('dc-util')
 {flow, react} = require('lazy-flow')
 toComponentArray = require('./toComponentArray')
+{binaryInsert} = require('dc-util')
 
 module.exports = class Tag extends BaseComponent
+
+  # used for Tag.clone(...)
+  FakeTag: -> Tag
+
   constructor: (tagName, attrs={}, children) ->
 
     if !(this instanceof Tag)
@@ -58,8 +63,9 @@ module.exports = class Tag extends BaseComponent
     this.boundStyle = {}
     this['invalidateStyle'] = {}
 
-    this.hasActiveDomEvents = false
-    this.domEventCallbackMap = {}
+    this.hasActiveDomEvents = this.hasActiveDomEvents || false
+    if !this.domEventCallbackMap
+      this.domEventCallbackMap = {}
     this.eventUpdateConfig = {}
     return
 
@@ -113,9 +119,14 @@ module.exports = class Tag extends BaseComponent
 
     this
 
-  prop: (args...) -> this._prop(args, this.props, 'Props')
-  css: (args...) -> this._prop(args, this.style, 'Style')
-  attr: (args...) -> this._prop(args, this.nodeAttrs, 'NodeAttrs')
+  prop: (args...) ->
+    this._prop(args, this.props, 'Props')
+
+  css: (args...) ->
+    this._prop(args, this.style, 'Style')
+
+  attr: (args...) ->
+    this._prop(args, this.nodeAttrs, 'NodeAttrs')
 
   _prop: (args, props, type) ->
     if args.length==0
@@ -208,35 +219,29 @@ module.exports = class Tag extends BaseComponent
     this.invalidate()
 
   bind: (eventNames, handler, before) ->
+    if !this.domEventCallbackMap
+      this.domEventCallbackMap = {}
     if arguments.length == 1
       for eventName, handler of eventNames
-        this.bindOne(eventName, handler)
+        this.bind(eventName, handler)
     else
-      if !this.domEventCallbackMap
-        this.domEventCallbackMap = {}
-      eventNames = eventNames.split('\s+')
+      [eventNames, isBefore] = eventNames.split(/\s*:\s*/)
+      eventNames = eventNames.split(/\s+/)
       for eventName in eventNames
-        this.bindOne(eventName, handler, before)
-
+        this.bindOne(eventName, handler, before || isBefore)
     this
 
   bindOne: (eventName, handler, before) ->
-    if eventName[...2]!='on' then eventName = 'on'+eventName
-    domEventCallbackMap = this.domEventCallbackMap
-    if !(domEventCallbacks = domEventCallbackMap[eventName])
-      domEventCallbackMap[eventName] = [handler]
-      if this.node
-        this.node[eventName] = domEventHandler
-      else
-        this.hasActiveDomEvents = true
-        this.hasActiveProperties = true
+    if eventName[...2]!='on'
+      eventName = 'on'+eventName
+    domEventCallbackMap = this.domEventCallbackMap || this.domEventCallbackMap = {}
+    domEventCallbacks = domEventCallbackMap[eventName] || domEventCallbackMap[eventName] = []
+    if this.node
+      this.node[eventName] = domEventHandler
     else
-      index = domEventCallbacks.indexOf(handler)
-      if index>=0 then return this
-      if before
-        domEventCallbacks.unshift.call(domEventCallbacks, handler)
-      else
-        domEventCallbacks.push.call(domEventCallbacks, handler)
+      this.hasActiveDomEvents = true
+      this.hasActiveProperties = true
+    addHandlerToCallbackArray(handler, domEventCallbacks, before)
     this
 
   unbind: (eventNames, handler) ->
@@ -319,38 +324,46 @@ module.exports = class Tag extends BaseComponent
   showOn: (test, display) -> this.showHide(true, test, display)
   hideOn: (test, display) -> this.showHide(false, test, display)
 
+  refreshDom: (oldBaseComponent) ->
+    this.renderDom(oldBaseComponent)
+    this.attachParent()
+    return
+
   createDom: ->
-    this.node = node =
-      if this.namespace then document.createElementNS(this.namespace, this.tagName)
-      else document.createElement(this.tagName)
+    this.node = this.firstNode = node =
+      if this.namespace
+        document.createElementNS(this.namespace, this.tagName)
+      else
+        document.createElement(this.tagName)
     node.component = this
 
-    this.node = node
-    this.firstNode = node
-
-    this.hasActiveProperties && this.updateProperties()
-
-    {children} = this
-    for child in children
-      child.parentNode = node
-    this.childrenNextNode = null
-    this.childNodes = []
-
+    this.updateProperties()
     this.createChildrenDom()
-
+    this.attachChildren()
+    this.removeChildrenDom()
     node
 
   updateDom: ->
-    this.hasActiveProperties && this.updateProperties()
-    {children, node, invalidIndexes} = this
-
-    for index in invalidIndexes
-      if children[index]
-        children[index].parentNode = node
+    this.updateProperties()
     this.updateChildrenDom()
-    node
+    this.attachChildren()
+    this.removeChildrenDom()
+    this.node
+
+  invalidateAttach: (child) ->
+    index = this.children.indexOf(child)
+    binaryInsert(index, this.attachParentIndexes)
+    if this.holder
+      if this.attachValid && this.valid
+        this.holder.invalidateContent(this)
+      this.valid = false
+      this.attachValid = false
+    this
 
   updateProperties: ->
+    if !this.hasActiveProperties
+      return
+
     this.hasActiveProperties = false
 
     {node, className} = this
@@ -398,7 +411,9 @@ module.exports = class Tag extends BaseComponent
     extend(attrs, this.cacheProps, this.props, this.cacheNodeAttrs, this.nodeAttrs)
     for eventName, domEventCallbacks of this.domEventCallbackMap
       attrs[eventName] = domEventCallbacks[...]
-    result = new Tag(this.tagName, attrs, [])
+
+    FakeTag = this.FakeTag()
+    result = new FakeTag(this.tagName, attrs, [])
     result.__proto__ = this.__proto__
     result.constructor = this.constructor
     result.cloneChildrenFrom(this, options)

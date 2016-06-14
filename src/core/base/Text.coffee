@@ -38,7 +38,6 @@ exports = module.exports = class Text extends BaseComponent
     node.component = this
     this.node = node
     this.firstNode = node
-    this.cacheText = text
     node
 
   updateDom: ->
@@ -48,12 +47,12 @@ exports = module.exports = class Text extends BaseComponent
     else
       this.textValid = true
       text = domValue(this.text, this)
-      if text != this.cacheText
-        if hasTextContent
+      if hasTextContent
+        if text != node.textContent
           node.textContent = text
-        else
+      else
+        if text != node.innerText
           node.innerText = text
-        this.cacheText = text
       node
     
   clone: ->

@@ -9,12 +9,12 @@ module.exports = demoSum = function() {
   comp = list(t1 = text({
     value: a,
     onchange: function() {
-      return a(this.value);
+      return a(this.node.value);
     }
   }), t2 = text({
     value: b,
     onchange: function() {
-      return b(this.value);
+      return b(this.node.value);
     }
   }), p1 = p(flow.add(a, b)));
   return comp.renderWhen([t1, t2], 'change');
@@ -27,12 +27,12 @@ module.exports = demoSum = function() {
   return list((t1 = text({
     value: a,
     onchange: (function() {
-      return a(this.value * 1);
+      return a(this.node.value * 1);
     })
   })), (t2 = text({
     value: b,
     onchange: (function() {
-      return b(this.value * 1);
+      return b(this.node.value * 1);
     })
   })), p1 = p(flow.add(a, b))).renderWhen([t1, t2], 'change');
 };

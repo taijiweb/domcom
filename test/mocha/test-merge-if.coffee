@@ -75,7 +75,7 @@ describe 'domcom/mergeIf', ->
     comp.render()
     expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1'
 
-  it 'should render mergeIf(x, p(t1), p(t2, t1))', ->
+  it 'should also render mergeIf(x, p(t1), p(t2, t1))', ->
     x = see 0
     t1 = txt 1; t2 = txt 2
     comp = mergeIf(x, p(t1), p(t2, t1))

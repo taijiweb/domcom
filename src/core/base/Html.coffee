@@ -57,6 +57,8 @@ Html.HtmlMixin = HtmlMixin = {
   # so put an empty definition here
   initListMixin: ->
 
+  attachChildren: ->
+
   createDom: ->
     this.textValid = true
     this.node = this.firstNode = node = document.createElement(this.tagName)

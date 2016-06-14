@@ -34,8 +34,8 @@ module.exports = ->
   items = each frameworks, (item) -> div "#{item[0]}. #{item}"
 
   prompt2 = label 'add some others: '
-  added = text onchange: ->
-    newFramework = this.value
+  added = text onchange: (event, node) ->
+    newFramework = node.value
     frameworks.push newFramework
     firstLetter$ newFramework[0]
     comp.render()

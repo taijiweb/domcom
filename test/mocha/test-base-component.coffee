@@ -13,7 +13,7 @@ Nothing
 
 {a_} = bindings({a: 1, b: 2})
 
-describe "test base component", ->
+describe "test-base-component", ->
   afterEach ->
     dc.reset()
 
@@ -120,7 +120,8 @@ describe "test base component", ->
     it 'should process Html.node.component', ->
       str = see ''
       comp = html(str)
-      comp.mount(demoNode=newDemoNode())
+      demoNode = newDemoNode()
+      comp.mount(demoNode)
       expect(demoNode.innerHTML).to.equal '<div></div>'
       expect(comp.node.component).to.equal(comp)
 

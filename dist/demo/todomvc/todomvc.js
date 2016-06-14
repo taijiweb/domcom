@@ -18,6 +18,8 @@ window.save = function(todos) {
 
 window.todos = [];
 
+window.todos = fetch();
+
 viewStatusHash = null;
 
 editingTodo = null;
@@ -149,12 +151,12 @@ text1 = text({
   disable: function() {
     return saving;
   },
-  onchange: function() {
-    if (!this.value) {
+  onchange: function(event, node) {
+    if (!node.value) {
       return;
     }
     todos.push({
-      title: this.value,
+      title: node.value,
       completed: false
     });
     save(todos);
@@ -208,8 +210,8 @@ todoItems = funcEach(getTodos, function(todo, index) {
     className: "edit",
     trim: "false",
     value: bind(todo, "title"),
-    onblur: function() {
-      todo.title = this.value;
+    onblur: function(event, node) {
+      todo.title = node.value;
       save(todos);
       editingTodo = null;
       return view.render();
@@ -284,13 +286,7 @@ todoFooter = footer({
 
 view = section({
   id: "todoapp"
-}, todoHeader, todoEditArea, todoFooter, button({
-  id: "clear-completed",
-  onclick: clearCompletedTodos,
-  $show: completedCount
-}, txt(function() {
-  return "Clear completed: " + completedCount();
-})));
+}, todoHeader, todoEditArea, todoFooter);
 
 window.updateHash = function() {
   var locationHash;
@@ -303,7 +299,6 @@ window.updateHash = function() {
 };
 
 window.runTodoMvc = function() {
-  window.todos = fetch();
   updateHash();
   view.mount('#todo-app');
   return window.addEventListener('hashchange', function() {

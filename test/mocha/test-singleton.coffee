@@ -7,7 +7,7 @@ txt, list, func, if_, forceIf, If, case_, forceCase, func,
 pick
 a, p, span, text, div} = dc
 
-describe 'singleton component: If, Case, Func, Pick, ...', ->
+describe 'test-singleton: If, Case, Func, Pick, ...', ->
   afterEach ->
     dc.reset()
 
@@ -66,7 +66,8 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
       x = see 0
       t1 = txt 1; t2 = txt 2
       comp = if_(x, list(t1, t2), list(t2, t1))
-      comp.mount(demoNode=newDemoNode('if-ref'))
+      demoNode = newDemoNode('if-ref')
+      comp.mount(demoNode)
       expect(comp.node[0].textContent).to.equal '2', 'mount'
       expect(demoNode.innerHTML).to.equal '21', 'mount'
       x 1
@@ -161,7 +162,7 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
       expect(comp.node.innerHTML).to.equal '1', 'update x 1'
       x 0
       comp.render()
-      expect(p2.node.innerHTML).to.equal '<p>2</p>1', 'mount'
+      expect(p2.node.innerHTML).to.equal '<p>2</p>1', 'update x 2'
 
     it 'should render if_(x, div(1), div(2))', ->
       x = see 0
@@ -202,7 +203,7 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
       comp = list(pIf=if_(x, p1=p(1), p2=p(2)), p3=p(3))
       comp.mount(demo2Node)
       expect(pIf.node.innerHTML).to.equal '2'
-      expect(demo2Node.innerHTML).to.equal '<p>2</p><p>3</p>'
+      expect(demo2Node.innerHTML).to.equal('<p>2</p><p>3</p>', 'mount')
       x 1
       comp.render()
       expect(pIf.node.innerHTML).to.equal '1' , 'pif update'
@@ -267,7 +268,7 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
     it 'should process event in embedded if 2-4', ->
       x = see 0
       pIf = if_(x, div(1), div(2))
-      comp = list(t1=text({onchange: -> x parseInt(this.value); comp.render()}, x), pIf)
+      comp = list(t1=text({onchange: -> x parseInt(this.node.value); comp.render()}, x), pIf)
       comp.mount()
       expect(pIf.node.innerHTML).to.equal '2'
       t1.node.value = 1
@@ -279,7 +280,7 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
 
     it 'should process event in embedded if 2-5', ->
       x = see 0
-      comp = list(t1=text({onchange: -> x parseInt(this.value); comp.render()}, 1), pIf = if_(x, div(1), div(2)))
+      comp = list(t1=text({onchange: -> x parseInt(this.node.value); comp.render()}, 1), pIf = if_(x, div(1), div(2)))
       comp.mount()
       expect(pIf.node.innerHTML).to.equal '2'
       t1.node.value = 1
@@ -291,7 +292,7 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
 
     it 'should process event in embedded if 2-6', ->
       x = see 0
-      comp = list(t1=text({onchange: -> x parseInt(this.value); comp.render()}, x), pIf = if_(x, div(1), div(2)))
+      comp = list(t1=text({onchange: -> x parseInt(this.node.value); comp.render()}, x), pIf = if_(x, div(1), div(2)))
       comp.mount()
       expect(pIf.node.innerHTML).to.equal '2'
       t1.node.value = 1
@@ -370,14 +371,14 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
       comp.render()
       expect(comp.node.innerHTML).to.equal '4', 'update a 4'
 
-    it 'should  create func component',  ->
+    it 'should create func component',  ->
       x = see 1
       comp = func(x)
       comp.mount()
       expect(comp.node).to.be.instanceof(window.Text)
       expect(comp.node.textContent).to.equal('1')
 
-    it 'should create and  render func', ->
+    it 'should create and render func', ->
       x = see 0
       comp = func(flow(x, -> {1:p(1), 2:p(2), 3:p(3)}[x()] ||  'others'))
       comp.mount()
@@ -390,7 +391,7 @@ describe 'singleton component: If, Case, Func, Pick, ...', ->
       comp.render()
       expect(comp.node.innerHTML).to.equal '2'
 
-    it 'should create and update func with  attrs',  ->
+    it 'should update func with attrs',  ->
       x = see 1
       comp = func({class:'main', fakeProp:x}, x)
       comp.mount()

@@ -189,7 +189,7 @@ describe('domcom/properties/event', function() {
     expect(spy1.called).to.equal(true);
     return expect(x.a).to.equal('2');
   });
-  return it('multiple handlers for one event, with bind value', function() {
+  return it('multiple handlers with bind value', function() {
     var $a, comp, spy1, x;
     $a = duplex(x = {
       a: 1

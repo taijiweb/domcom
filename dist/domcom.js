@@ -66,11 +66,11 @@
 
 	__webpack_require__(10);
 
-	extend(dc, __webpack_require__(4), __webpack_require__(5), __webpack_require__(12), __webpack_require__(13), __webpack_require__(44));
+	extend(dc, __webpack_require__(4), __webpack_require__(5), __webpack_require__(12), __webpack_require__(13), __webpack_require__(43));
 
-	extend(dc, dc.builtinDirectives = __webpack_require__(45));
+	extend(dc, dc.builtinDirectives = __webpack_require__(44));
 
-	extend(dc, __webpack_require__(50), __webpack_require__(51));
+	extend(dc, __webpack_require__(49), __webpack_require__(50));
 
 
 /***/ },
@@ -825,16 +825,12 @@
 	  var cacheValue, computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
 	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
 	  if (!deps.length) {
-	    return react(computation);
+	    return lazy(computation);
 	  }
 	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
 	    dep = deps[_j];
 	    if (typeof dep === 'function' && !dep.invalidate) {
-	      reactive = react(function() {
-	        reactive.invalidate();
-	        return computation.call(this);
-	      });
-	      return reactive;
+	      return renew(computation);
 	    }
 	  }
 	  cacheValue = null;
@@ -883,11 +879,10 @@
 	    dep = deps[_j];
 	    if (typeof dep === 'function' && !dep.invalidate) {
 	      reactive = react(function() {
-	        var args, _k, _len1;
-	        if (argumnets.length) {
+	        var args, result, _k, _len1;
+	        if (arguments.length) {
 	          throw new Error("flow.pipe is not allow to have arguments");
 	        }
-	        reactive.invalidate();
 	        args = [];
 	        for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
 	          dep = deps[_k];
@@ -897,13 +892,17 @@
 	            args.push(dep);
 	          }
 	        }
-	        return computation.apply(this, args);
+	        result = computation.apply(this, args);
+	        reactive.valid = true;
+	        reactive.invalidate();
+	        return result;
 	      });
 	      return reactive;
 	    }
 	  }
 	  reactive = react(function() {
 	    var args, _k, _len1;
+	    reactive.valid = true;
 	    args = [];
 	    for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
 	      dep = deps[_k];
@@ -929,8 +928,6 @@
 	flow.lazy = lazy;
 
 	flow.renew = renew;
-
-	flow.lazy = lazy;
 
 	flow.flow = flow;
 
@@ -988,10 +985,11 @@
 	      setter = function(value) {
 	        if (value !== obj[attr]) {
 	          if (set) {
-	            set(value);
+	            set.call(obj, value);
 	          }
+	          getter.cacheValue = value;
 	          getter.invalidate();
-	          return getter.cacheValue = value;
+	          return value;
 	        }
 	      };
 	      react(getter);
@@ -1019,11 +1017,12 @@
 	        }
 	        if (value !== obj[attr]) {
 	          if (set) {
-	            set(value);
+	            set.call(obj, value);
 	          }
 	          get && get.invalidate && get.invalidate();
+	          method.cacheValue = value;
 	          method.invalidate();
-	          return method.cacheValue = value;
+	          return value;
 	        }
 	      };
 	      method.cacheValue = obj[attr];
@@ -1730,7 +1729,7 @@
 	  return result;
 	};
 
-	ListWatchMixin.shift = function() {
+	ListWatchMixin.unshift = function() {
 	  var args, length, listComponent, watchingListComponents, _;
 	  args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
 	  if (!this.length) {
@@ -1964,13 +1963,13 @@
 	ObjectWatchMixin.replaceAll = function(obj) {
 	  var key, keys, _i, _len;
 	  keys = Object.keys(this);
-	  this.extendItems(obj);
 	  for (_i = 0, _len = keys.length; _i < _len; _i++) {
 	    key = keys[_i];
 	    if (!obj.hasOwnProperty(key)) {
 	      this.deleteItem(key);
 	    }
 	  }
+	  this.extendItems(obj);
 	  return this;
 	};
 
@@ -2133,6 +2132,10 @@
 
 	dc.reset();
 
+	dc.invalidate = function() {
+	  return dc.valid = false;
+	};
+
 	dc.invalidateContent = function(component) {
 	  dc.valid = false;
 	  dc.rootComponentMap[component.dcid] = component;
@@ -2160,7 +2163,7 @@
 	};
 
 	dc.renderWhen = function(component, events, options) {
-	  var callback, clear, comp, components, event, handler, test, _j, _k, _len1, _len2;
+	  var callback, clear, comp, components, event, handler, test, _j, _k, _l, _len1, _len2, _len3, _len4, _m, _ref1;
 	  if (typeof events === 'string') {
 	    events = events.split(/\s+/);
 	  }
@@ -2177,12 +2180,16 @@
 	    }
 	  } else if (component === window.setInterval) {
 	    test = options.test, clear = options.clear, components = options.components;
+	    for (_l = 0, _len3 = components.length; _l < _len3; _l++) {
+	      component = components[_l];
+	      component.asRenderHolder();
+	    }
 	    handler = null;
 	    callback = function() {
-	      var _l, _len3;
+	      var _len4, _m;
 	      if (!test || test()) {
-	        for (_l = 0, _len3 = components.length; _l < _len3; _l++) {
-	          component = components[_l];
+	        for (_m = 0, _len4 = components.length; _m < _len4; _m++) {
+	          component = components[_m];
 	          component.render();
 	        }
 	      }
@@ -2192,12 +2199,17 @@
 	    };
 	    handler = setInterval(callback, events || 16);
 	  } else if (component === setTimeout) {
+	    _ref1 = options.component;
+	    for (_m = 0, _len4 = _ref1.length; _m < _len4; _m++) {
+	      component = _ref1[_m];
+	      component.asRenderHolder();
+	    }
 	    callback = function() {
-	      var _l, _len3, _ref1, _results;
-	      _ref1 = options.component;
+	      var _len5, _n, _ref2, _results;
+	      _ref2 = options.component;
 	      _results = [];
-	      for (_l = 0, _len3 = _ref1.length; _l < _len3; _l++) {
-	        component = _ref1[_l];
+	      for (_n = 0, _len5 = _ref2.length; _n < _len5; _n++) {
+	        component = _ref2[_n];
 	        _results.push(component.render());
 	      }
 	      return _results;
@@ -2208,6 +2220,7 @@
 
 	renderWhenComponentEvent = function(component, event, components) {
 	  var componentMap, _j, _len1;
+	  component.asRenderHolder();
 	  if (event.slice(0, 2) !== 'on') {
 	    event = 'on' + event;
 	  }
@@ -2235,6 +2248,18 @@
 	  }
 	};
 
+	dc.invalidateAttach = function() {};
+
+	dc.propagateChildNextNode = function(child, nextNode) {};
+
+	dc.invalidateAttachOnRemove = function(child) {
+	  var firstNode, prevComponent, prevNode;
+	  firstNode = child.firstNode;
+	  if ((prevNode = firstNode.previousSibling) && (prevComponent = prevNode.component)) {
+	    prevComponent.setNextNode(this.nextNode);
+	  }
+	};
+
 
 /***/ },
 /* 13 */
@@ -2244,7 +2269,7 @@
 
 	extend = __webpack_require__(7);
 
-	module.exports = exports = extend({}, __webpack_require__(14), __webpack_require__(42), __webpack_require__(43), __webpack_require__(33));
+	module.exports = exports = extend({}, __webpack_require__(14), __webpack_require__(41), __webpack_require__(42), __webpack_require__(31));
 
 
 /***/ },
@@ -2253,30 +2278,29 @@
 
 	var route;
 
-	route = __webpack_require__(23);
+	route = __webpack_require__(15);
 
 	module.exports = {
 	  isComponent: __webpack_require__(2),
-	  toComponent: __webpack_require__(26),
-	  toComponentArray: __webpack_require__(29),
+	  toComponent: __webpack_require__(18),
+	  toComponentArray: __webpack_require__(27),
 	  Component: __webpack_require__(17),
-	  BaseComponent: __webpack_require__(16),
-	  ListMixin: __webpack_require__(30),
-	  List: __webpack_require__(28),
-	  Tag: __webpack_require__(32),
-	  Text: __webpack_require__(18),
-	  Comment: __webpack_require__(34),
-	  Cdata: __webpack_require__(15),
-	  Html: __webpack_require__(35),
-	  Nothing: __webpack_require__(27),
-	  TransformComponentMixin: __webpack_require__(25),
-	  TransformComponent: __webpack_require__(24),
-	  TestComponent: __webpack_require__(36),
-	  If: __webpack_require__(37),
-	  Case: __webpack_require__(39),
-	  Func: __webpack_require__(31),
-	  Pick: __webpack_require__(40),
-	  Defer: __webpack_require__(41),
+	  BaseComponent: __webpack_require__(20),
+	  ListMixin: __webpack_require__(28),
+	  List: __webpack_require__(26),
+	  Tag: __webpack_require__(30),
+	  Text: __webpack_require__(21),
+	  Comment: __webpack_require__(32),
+	  Cdata: __webpack_require__(33),
+	  Html: __webpack_require__(34),
+	  Nothing: __webpack_require__(19),
+	  TransformComponent: __webpack_require__(16),
+	  TestComponent: __webpack_require__(35),
+	  If: __webpack_require__(36),
+	  Case: __webpack_require__(38),
+	  Func: __webpack_require__(29),
+	  Pick: __webpack_require__(39),
+	  Defer: __webpack_require__(40),
 	  Route: route.Route,
 	  route: route
 	};
@@ -2284,907 +2308,6 @@
 
 /***/ },
 /* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var BaseComponent, Cdata, Text, domValue, funcString, newLine, _ref,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	BaseComponent = __webpack_require__(16);
-
-	Text = __webpack_require__(18);
-
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
-
-	domValue = __webpack_require__(5).domValue;
-
-	module.exports = Cdata = (function(_super) {
-	  __extends(Cdata, _super);
-
-	  function Cdata(text) {
-	    Cdata.__super__.constructor.call(this, text);
-	  }
-
-
-	  /*
-	    this operation is not supported in html document
-	   */
-
-	  Cdata.prototype.createDom = function() {
-	    this.node = document.createCDATASection(domValue(this.text, this));
-	    return this.node;
-	  };
-
-	  Cdata.prototype.updateDom = function() {
-	    this.text && (this.node.data = domValue(this.text, this));
-	    return this.node;
-	  };
-
-	  Cdata.prototype.toString = function(indent, addNewLine) {
-	    if (indent == null) {
-	      indent = 2;
-	    }
-	    return newLine("<CDATA " + (funcString(this.text)) + "/>", indent, addNewLine);
-	  };
-
-	  return Cdata;
-
-	})(Text);
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var BaseComponent, Component, cloneObject,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	Component = __webpack_require__(17);
-
-	cloneObject = __webpack_require__(4).cloneObject;
-
-	module.exports = BaseComponent = (function(_super) {
-	  __extends(BaseComponent, _super);
-
-	  function BaseComponent() {
-	    BaseComponent.__super__.constructor.call(this);
-	    this.isBaseComponent = true;
-	    this.removing = false;
-	    this.baseComponent = this;
-	  }
-
-	  BaseComponent.prototype.renderDom = function(oldBaseComponent) {
-	    this.emit('willRenderDom');
-	    if (oldBaseComponent && oldBaseComponent !== this) {
-	      oldBaseComponent.markRemovingDom(true);
-	    }
-	    if (!this.node) {
-	      this.valid = true;
-	      this.createDom();
-	    } else {
-	      this.removing = false;
-	      if (!this.valid) {
-	        this.valid = true;
-	        this.updateDom();
-	      }
-	    }
-	    this.attachNode(this.parentNode, this.nextNode);
-	    if (oldBaseComponent && oldBaseComponent !== this) {
-	      oldBaseComponent.removeDom();
-	    }
-	    this.emit('didRenderDom');
-	    return this;
-	  };
-
-	  BaseComponent.prototype.invalidate = function() {
-	    if (this.valid) {
-	      this.valid = false;
-	      return this.holder && this.holder.invalidateContent(this);
-	    } else {
-	      return this;
-	    }
-	  };
-
-	  BaseComponent.prototype.markRemovingDom = function(removing) {
-	    this.removing = removing;
-	    if (removing) {
-	      if (this.node && this.node.parentNode) {
-	        dc.valid = false;
-	      }
-	    }
-	    return this;
-	  };
-
-	  BaseComponent.prototype.removeDom = function() {
-	    if (this.removing && this.attached) {
-	      this.removing = false;
-	      this.holder = null;
-	      this.emit('willDetach');
-	      this.removeNode();
-	      this.emit('didDetach');
-	      this.attached = false;
-	    }
-	    return this;
-	  };
-
-	  BaseComponent.prototype.removeNode = function() {
-	    var node;
-	    node = this.node;
-	    node.parentNode.removeChild(node);
-	  };
-
-	  BaseComponent.prototype.executeAttachNode = function() {
-	    var e, nextNode, node, parentNode;
-	    node = this.node;
-	    parentNode = this.parentNode;
-	    nextNode = this.nextNode;
-	    this.removing = false;
-	    if (parentNode && (parentNode !== node.parentNode || nextNode !== node.nextSibling)) {
-	      node = this.node;
-	      try {
-	        return parentNode.insertBefore(node, nextNode);
-	      } catch (_error) {
-	        e = _error;
-	        return dc.error(e);
-	      }
-	    }
-	  };
-
-	  BaseComponent.prototype.attachNode = function() {
-	    var attached;
-	    if (!(attached = this.attached)) {
-	      this.attached = true;
-	      this.emit('willAttach');
-	    }
-	    this.executeAttachNode();
-	    if (!attached) {
-	      this.emit('didAttach');
-	    }
-	    return this.node;
-	  };
-
-	  BaseComponent.prototype.renderContent = function(oldBaseComponent) {
-	    return this.renderDom(oldBaseComponent);
-	  };
-
-	  return BaseComponent;
-
-	})(Component);
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Component, dc, dcEventMixin, extend, flow, isArray, isComponent, newDcid, normalizeDomElement, _ref;
-
-	extend = __webpack_require__(7);
-
-	normalizeDomElement = __webpack_require__(5).normalizeDomElement;
-
-	_ref = __webpack_require__(4), newDcid = _ref.newDcid, isArray = _ref.isArray;
-
-	flow = __webpack_require__(6).flow;
-
-	isComponent = __webpack_require__(2);
-
-	dc = __webpack_require__(1);
-
-	module.exports = Component = (function() {
-	  function Component() {
-	    this.listeners = this.listeners || {};
-	    this.baseComponent = null;
-	    this.parentNode = null;
-	    this.nextNode = null;
-	    this.node = null;
-	    this.attached = false;
-	    this.destroyed = false;
-	    this.holder = null;
-	    this.dcid = newDcid();
-	    this.valid = true;
-	    this.setReactive();
-	  }
-
-
-	  /* if mountNode is given, it should not be the node of any Component
-	  only use beforeNode if mountNode is given
-	   */
-
-	  Component.prototype.create = function(mountNode, beforeNode, cancelUpdate) {
-	    if (mountNode && mountNode.component) {
-	      mountNode = mountNode.component;
-	    } else if (beforeNode && beforeNode.component) {
-	      console.log(mountNode);
-	      console.log(beforeNode);
-	      throw new Error('error while mounting: mountNode is not a component, but beforeNode is a component');
-	    }
-	    if (isComponent(mountNode)) {
-	      if (!beforeNode) {
-	        if (!mountNode.children) {
-	          console.log(mountNode);
-	          throw new Error('error while mounting: mountNode is a component, but is not a Tag or List component');
-	        }
-	        mountNode.pushChild(this);
-	      } else {
-	        if (!isComponent(beforeNode)) {
-	          beforeNode = beforeNode.component;
-	          if (!beforeNode) {
-	            console.log(beforeNode);
-	            throw new Error('error while mounting: can not mount beforeNode');
-	          }
-	        }
-	        if (beforeNode.holder !== mountNode || !mountNode.children) {
-	          console.log(mountNode);
-	          console.log(beforeNode);
-	          throw new Error('both mountNode and beforeNode is component, but mountNode is not the parent of beforeNode');
-	        }
-	        this.emit('willMount');
-	        mountNode.insertChildBefore(this, beforeNode);
-	      }
-	    } else {
-	      this.emit('willMount');
-	      this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.body;
-	      this.nextNode = beforeNode || this.nextNode;
-	      this.holder = dc;
-	      dc.rootComponentMap[this.dcid] = this;
-	    }
-	    if (!cancelUpdate) {
-	      this.render();
-	    }
-	    return this;
-	  };
-
-	  Component.prototype.mount = function(mountNode, beforeNode) {
-	    this.emit('willMount');
-	    this.create(mountNode, beforeNode);
-	    return this.emit('didMount');
-	  };
-
-	  Component.prototype.render = function(force) {
-	    if (!this.destroyed && (force || dc.alwaysRender || !dc.renderBySystemLoop)) {
-	      this.emit('willRender');
-	      if (this.removing) {
-	        this.removeDom();
-	      } else {
-	        this.renderDom(this.baseComponent);
-	      }
-	      this.emit('didRender');
-	    }
-	    return this;
-	  };
-
-	  Component.prototype.unmount = function() {
-	    this.emit('willUnmount');
-	    this.remove();
-	    this.emit('didUnmount');
-	    return this;
-	  };
-
-	  Component.prototype.remove = function(cancelUpdate) {
-	    var component, holder;
-	    holder = this.holder;
-	    component = this;
-	    while (holder && holder !== dc && !holder.isBaseComponent) {
-	      component = holder;
-	      holder = holder.holder;
-	    }
-	    if (holder === dc) {
-	      component.markRemovingDom(true);
-	      dc.rootComponentMap[component.dcid] = component;
-	      if (!cancelUpdate) {
-	        component.render();
-	      }
-	    } else if (!holder) {
-	      this;
-	    } else if (holder.children) {
-	      holder.removeChild(component);
-	      if (!cancelUpdate) {
-	        component.render();
-	      }
-	    } else {
-	      dc.error('Should not remove the content of TransformComponent');
-	    }
-	    return this;
-	  };
-
-	  Component.prototype.replace = function(oldComponent, cancelUpdate) {
-	    var holder;
-	    if (this.destroyed || this === oldComponent) {
-	      return;
-	    }
-	    holder = oldComponent.holder;
-	    if (holder && holder !== dc) {
-	      if (holder.isTransformComponent) {
-	        dc.error('Should not replace the content of TransformComponent');
-	      } else {
-	        holder.replaceChild(oldComponent, this);
-	        if (!cancelUpdate) {
-	          this.render();
-	          oldComponent.render();
-	        }
-	      }
-	    } else if (holder === dc) {
-	      this.parentNode = oldComponent.parentNode;
-	      this.nextNode = oldComponent.nextNode;
-	      oldComponent.markRemovingDom(true);
-	      this.holder = holder;
-	      this.invalidate();
-	      dc.rootComponentMap[this.dcid] = this;
-	      dc.rootComponentMap[oldComponent.dcid] = oldComponent;
-	      if (!cancelUpdate) {
-	        this.render();
-	        oldComponent.render();
-	      }
-	    }
-	    return this;
-	  };
-
-
-	  /*
-	  component.renderWhen components, events
-	  component.renderWhen setInterval, interval, options
-	  component.renderWhen setTimeout, interval, options
-	   */
-
-	  Component.prototype.renderWhen = function(component, events, options) {
-	    if (isArray(component) || isComponent(component)) {
-	      options = [this];
-	    } else {
-	      options = options || {};
-	      options.components = [this];
-	    }
-	    dc.renderWhen(component, events, options);
-	    return this;
-	  };
-
-	  Component.prototype.destroy = function() {
-	    this.destroyed = true;
-	    this.remove();
-	    this.listeners = null;
-	    if (this.node) {
-	      this.node.component = null;
-	      this.node = null;
-	    }
-	    this.baseComponent = null;
-	    return this.parentNode = null;
-	  };
-
-	  Component.prototype.getPrevSibling = function() {
-	    var dcidIndexMap, holder;
-	    if (!(holder = this.holder)) {
-	      return null;
-	    } else if (dcidIndexMap = holder.dcidIndexMap) {
-	      return holder.children[dcidIndexMap[this.dcid] - 1];
-	    }
-	  };
-
-	  Component.prototype.getNextSibling = function() {
-	    var dcidIndexMap, holder;
-	    if (!(holder = this.holder)) {
-	      return null;
-	    } else if (dcidIndexMap = holder.dcidIndexMap) {
-	      return holder.children[dcidIndexMap[this.dcid] + 1];
-	    }
-	  };
-
-	  Component.prototype.setReactive = function() {
-	    var invalidateThis, me, reactField, reactive, srcField, _ref1;
-	    if (this.reactMap) {
-	      me = this;
-	      invalidateThis = function() {
-	        return me.invalidate();
-	      };
-	      _ref1 = this.reactMap;
-	      for (srcField in _ref1) {
-	        reactField = _ref1[srcField];
-	        reactive = flow.bind(this, srcField);
-	        if (typeof reactField === 'string') {
-	          reactive.onInvalidate(function() {
-	            var reaction;
-	            if (reaction = me[reactField]) {
-	              return reaction.invalidate();
-	            }
-	          });
-	        } else {
-	          reactive.onInvalidate(invalidateThis);
-	        }
-	      }
-	    }
-	    return this;
-	  };
-
-	  Component.prototype.copyEventListeners = function(srcComponent) {
-	    var event, myListeners, srcListeners;
-	    myListeners = this.listeners;
-	    srcListeners = srcComponent.listeners;
-	    for (event in srcListeners) {
-	      srcListeners[event] && (myListeners[event] = srcListeners[event].splice());
-	    }
-	    return this;
-	  };
-
-	  return Component;
-
-	})();
-
-	dcEventMixin = __webpack_require__(8);
-
-	extend(Component.prototype, dcEventMixin);
-
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var BaseComponent, Text, domField, domValue, dynamic, exports, funcString, hasTextContent, newLine, setText, value, _ref, _ref1,
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	BaseComponent = __webpack_require__(16);
-
-	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
-
-	_ref1 = __webpack_require__(5), domField = _ref1.domField, domValue = _ref1.domValue;
-
-	setText = __webpack_require__(19).setText;
-
-	if ('textContent' in document.documentElement) {
-	  hasTextContent = true;
-	} else {
-	  hasTextContent = false;
-	}
-
-	exports = module.exports = Text = (function(_super) {
-	  __extends(Text, _super);
-
-	  Text.prototype.isText = true;
-
-	  function Text(text) {
-	    var get, me, set;
-	    Text.__super__.constructor.call(this);
-	    this.setText(text);
-	    if (Object.defineProperty) {
-	      me = this;
-	      get = function() {
-	        return me._text;
-	      };
-	      set = function(text) {
-	        me.setText(text);
-	        return text;
-	      };
-	      Object.defineProperty(this, 'text', {
-	        get: get,
-	        set: set
-	      });
-	    }
-	    this.family = {};
-	    this.family[this.dcid] = true;
-	    this;
-	  }
-
-	  Text.prototype.setText = setText;
-
-	  Text.prototype.createDom = function() {
-	    var node, text;
-	    this.textValid = true;
-	    text = domValue(this.text, this);
-	    node = document.createTextNode(text);
-	    node.component = this;
-	    this.node = node;
-	    this.firstNode = node;
-	    this.cacheText = text;
-	    return node;
-	  };
-
-	  Text.prototype.updateDom = function() {
-	    var node, text;
-	    node = this.node;
-	    if (this.textValid) {
-	      return node;
-	    } else {
-	      this.textValid = true;
-	      text = domValue(this.text, this);
-	      if (text !== this.cacheText) {
-	        if (hasTextContent) {
-	          node.textContent = text;
-	        } else {
-	          node.innerText = text;
-	        }
-	        this.cacheText = text;
-	      }
-	      return node;
-	    }
-	  };
-
-	  Text.prototype.clone = function() {
-	    var result;
-	    result = new this.constructor(this.text);
-	    return result.copyEventListeners(this);
-	  };
-
-	  Text.prototype.toString = function(indent, addNewLine) {
-	    if (indent == null) {
-	      indent = 2;
-	    }
-	    return newLine(funcString(this.text), indent, addNewLine);
-	  };
-
-	  return Text;
-
-	})(BaseComponent);
-
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var attrPropNameMap, classFn, domField, extend, extendEventValue, isComponent, overAttrs, styleFrom;
-
-	extend = __webpack_require__(7);
-
-	isComponent = __webpack_require__(2).isComponent;
-
-	extendEventValue = __webpack_require__(21).extendEventValue;
-
-	classFn = __webpack_require__(20);
-
-	styleFrom = __webpack_require__(22).styleFrom;
-
-	domField = __webpack_require__(5).domField;
-
-	exports.extendAttrs = function(attrs, obj, options) {
-	  var key, objClass, style, value;
-	  if (options == null) {
-	    options = {};
-	  }
-	  if (!obj) {
-	    return attrs;
-	  } else if (!attrs) {
-	    return obj;
-	  }
-	  objClass = classFn([obj["class"], obj.className]);
-	  if (options.replaceClass) {
-	    attrs.className = objClass;
-	  } else {
-	    attrs.className = classFn([attrs["class"], attrs.className]);
-	    delete attrs["class"];
-	    attrs.className = classFn([attrs.className, objClass]);
-	  }
-	  style = styleFrom(attrs.style);
-	  if (obj.style) {
-	    attrs.style = extend(style, obj.style);
-	  } else {
-	    attrs.style = style;
-	  }
-	  for (key in obj) {
-	    value = obj[key];
-	    if (key === 'class' || key === 'className') {
-	      continue;
-	    } else if (key.slice(0, 2) === 'on') {
-	      if (options['replace_' + key] || options.replaceEvents) {
-	        attrs[key] = value;
-	      } else {
-	        extendEventValue(attrs, key, value);
-	      }
-	    } else if (key === 'style') {
-	      continue;
-	    } else {
-	      attrs[key] = value;
-	    }
-	  }
-	  return attrs;
-	};
-
-	exports.overAttrs = overAttrs = function(attrs, obj) {
-	  var key, value;
-	  if (!obj) {
-	    attrs = extend({}, attrs);
-	    if (attrs.style) {
-	      attrs.style = extend({}, styleFrom(attrs.style));
-	    }
-	    return attrs;
-	  } else if (!attrs) {
-	    return obj;
-	  } else {
-	    for (key in attrs) {
-	      value = attrs[key];
-	      if (obj[key] == null) {
-	        obj[key] = value;
-	      }
-	      if (key === 'style') {
-	        obj[key] = overAttrs(attrs[key], obj[key]);
-	      }
-	    }
-	    return obj;
-	  }
-	};
-
-	attrPropNameMap = {
-	  'for': 'htmlFor'
-	};
-
-	exports.attrToPropName = function(name) {
-	  var i, len, newName, pieces;
-	  if (newName = attrPropNameMap[name]) {
-	    return newName;
-	  }
-	  pieces = name.split('-');
-	  if (pieces.length === 1) {
-	    return name;
-	  }
-	  i = 1;
-	  len = pieces.length;
-	  while (i < len) {
-	    pieces[i] = pieces[i][0].toUpperCase() + pieces[i].slice(1);
-	    i++;
-	  }
-	  return pieces.join('');
-	};
-
-	exports.setText = function(text) {
-	  var me;
-	  text = domField(text, this);
-	  if (this._text === text) {
-	    return this;
-	  }
-	  this.textValid = false;
-	  this._text = text;
-	  me = this;
-	  if (typeof text === 'function') {
-	    text.onInvalidate(function() {
-	      me.textValid = false;
-	      return me.invalidate();
-	    });
-	  }
-	  this.invalidate();
-	  return this;
-	};
-
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var classFn, domField, isArray, react,
-	  __slice = [].slice;
-
-	react = __webpack_require__(6).react;
-
-	domField = __webpack_require__(5).domField;
-
-	isArray = __webpack_require__(4).isArray;
-
-	module.exports = classFn = function() {
-	  var classMap, extendClassMap, items, method, processClassValue;
-	  items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	  classMap = {};
-	  method = function() {
-	    var klass, lst, value;
-	    if (!arguments.length) {
-	      lst = [];
-	      method.valid = true;
-	      for (klass in classMap) {
-	        value = classMap[klass];
-	        if (typeof value === 'function') {
-	          value = value.call(this);
-	        }
-	        if (value) {
-	          lst.push(klass);
-	        }
-	      }
-	      return lst.join(' ');
-	    } else {
-	      extendClassMap([].slice(arguments));
-	    }
-	  };
-	  processClassValue = function(name, value) {
-	    var oldValue;
-	    value = domField(value);
-	    oldValue = classMap[name];
-	    if (typeof oldValue === 'function') {
-	      oldValue.offInvalidate(method.invalidate);
-	    }
-	    if (!value && oldValue) {
-	      method.invalidate();
-	      return delete classMap[name];
-	    } else {
-	      if (oldValue !== value) {
-	        method.invalidate();
-	        if (typeof value === 'function') {
-	          value.onInvalidate(method.invalidate);
-	        }
-	        return classMap[name] = value;
-	      }
-	    }
-	  };
-	  extendClassMap = function(items) {
-	    var item, name, names, value, _i, _j, _len, _len1, _ref;
-	    if (!items) {
-	      return;
-	    }
-	    if (!isArray(items)) {
-	      items = [items];
-	    }
-	    for (_i = 0, _len = items.length; _i < _len; _i++) {
-	      item = items[_i];
-	      if (!item) {
-	        continue;
-	      }
-	      if (typeof item === 'string') {
-	        names = item.trim().split(/\s+(?:,\s+)?/);
-	        for (_j = 0, _len1 = names.length; _j < _len1; _j++) {
-	          name = names[_j];
-	          if (name[0] === '!') {
-	            processClassValue(name.slice(1), false);
-	          } else {
-	            processClassValue(name, true);
-	          }
-	        }
-	      } else if (item instanceof Array) {
-	        extendClassMap(item);
-	      } else if (item && item.classMap) {
-	        _ref = item.classMap;
-	        for (name in _ref) {
-	          value = _ref[name];
-	          if (typeof value !== 'function') {
-	            value = true;
-	          }
-	          processClassValue(name, value);
-	        }
-	      } else if (typeof item === 'object') {
-	        for (name in item) {
-	          value = item[name];
-	          if (typeof value !== 'function') {
-	            value = true;
-	          }
-	          processClassValue(name, value);
-	        }
-	      }
-	    }
-	  };
-	  react(method);
-	  extendClassMap(items);
-	  method.classMap = classMap;
-	  method.valid = !Object.keys(classMap).length;
-	  method.removeClass = function() {
-	    var item, items, _i, _len, _results;
-	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    _results = [];
-	    for (_i = 0, _len = items.length; _i < _len; _i++) {
-	      item = items[_i];
-	      _results.push(processClassValue(item, false));
-	    }
-	    return _results;
-	  };
-	  method.extend = function() {
-	    var items;
-	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    return extendClassMap(items);
-	  };
-	  method.clone = function() {
-	    var newClassName;
-	    newClassName = classFn();
-	    return newClassName.extend(method);
-	  };
-	  return method;
-	};
-
-
-/***/ },
-/* 21 */
-/***/ function(module, exports) {
-
-	var extendEventValue;
-
-	exports.extendEventValue = extendEventValue = function(props, prop, value, before) {
-	  var oldValue;
-	  oldValue = props[prop];
-	  if (!oldValue) {
-	    oldValue = [];
-	  } else if (!(oldValue instanceof Array)) {
-	    oldValue = [oldValue];
-	  }
-	  if (!value) {
-	    value = [];
-	  } else if (!(value instanceof Array)) {
-	    value = [value];
-	  }
-	  if (before) {
-	    return props[prop] = value.concat(oldValue);
-	  } else {
-	    return props[prop] = oldValue.concat(value);
-	  }
-	};
-
-	exports.domEventHandler = function(event) {
-	  var component, componentMap, domEventCallbacks, eventType, fn, _, _i, _len;
-	  if (component = this.component) {
-	    eventType = 'on' + event.type;
-	    domEventCallbacks = component.domEventCallbackMap[eventType];
-	    for (_i = 0, _len = domEventCallbacks.length; _i < _len; _i++) {
-	      fn = domEventCallbacks[_i];
-	      if (fn) {
-	        fn.call(this, event);
-	      }
-	    }
-	    if (componentMap = component.eventUpdateConfig[eventType]) {
-	      for (_ in componentMap) {
-	        component = componentMap[_];
-	        component.render();
-	      }
-	    }
-	    if (event) {
-	      if (!event.executeDefault && event.preventDefault) {
-	        event.preventDefault();
-	      }
-	      if (!event.continuePropagation && event.stopPropagation) {
-	        event.stopPropagation();
-	      }
-	    }
-	  }
-	};
-
-	exports.domEventHandlerFromArray = function(callbackArray) {
-	  return function(event) {
-	    var fn, _i, _len;
-	    for (_i = 0, _len = callbackArray.length; _i < _len; _i++) {
-	      fn = callbackArray[_i];
-	      fn && fn.call(this, event);
-	    }
-	  };
-	};
-
-
-/***/ },
-/* 22 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var cloneObject, styleFrom;
-
-	cloneObject = __webpack_require__(4).cloneObject;
-
-	exports.styleFrom = styleFrom = function(value) {
-	  var item, key, result, v, _i, _j, _len, _len1, _ref, _ref1;
-	  if (typeof value === 'string') {
-	    result = {};
-	    value = value.trim().split(/\s*;\s*/);
-	    for (_i = 0, _len = value.length; _i < _len; _i++) {
-	      item = value[_i];
-	      item = item.trim();
-	      if (!item) {
-	        continue;
-	      }
-	      _ref = item.split(/\s*:\s*/), key = _ref[0], v = _ref[1];
-	      result[key] = v;
-	    }
-	    return result;
-	  } else if (value instanceof Array) {
-	    result = {};
-	    for (_j = 0, _len1 = value.length; _j < _len1; _j++) {
-	      item = value[_j];
-	      if (typeof item === 'string') {
-	        item = item.trim();
-	        if (!item) {
-	          continue;
-	        }
-	        _ref1 = item.split(/\s*:\s*/), key = _ref1[0], value = _ref1[1];
-	      } else {
-	        key = item[0], value = item[1];
-	      }
-	      result[key] = value;
-	    }
-	    return result;
-	  } else if (value && typeof value !== 'object') {
-	    return {};
-	  } else {
-	    return cloneObject(value);
-	  }
-	};
-
-
-/***/ },
-/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -3214,11 +2337,11 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	TransformComponent = __webpack_require__(24);
+	TransformComponent = __webpack_require__(16);
 
 	isComponent = __webpack_require__(2);
 
-	toComponent = __webpack_require__(26);
+	toComponent = __webpack_require__(18);
 
 	_ref = __webpack_require__(4), isEven = _ref.isEven, matchCurvedString = _ref.matchCurvedString;
 
@@ -3594,18 +2717,14 @@
 
 
 /***/ },
-/* 24 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Component, TransformComponent, TransformComponentMixin, extend,
+	var Component, TransformComponent,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	extend = __webpack_require__(7);
-
 	Component = __webpack_require__(17);
-
-	TransformComponentMixin = __webpack_require__(25);
 
 	module.exports = TransformComponent = (function(_super) {
 	  __extends(TransformComponent, _super);
@@ -3614,122 +2733,436 @@
 
 	  function TransformComponent() {
 	    TransformComponent.__super__.constructor.apply(this, arguments);
-	    this.initTransformComponent();
+	    this.transformValid = false;
 	  }
+
+	  TransformComponent.prototype.invalidate = function() {
+	    if (this.valid) {
+	      this.valid = false;
+	      this.holder && this.holder.invalidateContent(this);
+	    }
+	    return this;
+	  };
+
+	  TransformComponent.prototype.invalidateContent = function(content) {
+	    return this.invalidate();
+	  };
+
+	  TransformComponent.prototype.invalidateAttach = function(content) {
+	    if (this.attachValid) {
+	      this.attachValid = false;
+	      if (this.holder) {
+	        this.holder.invalidateAttach(this);
+	      }
+	    }
+	    return this;
+	  };
+
+	  TransformComponent.prototype.invalidateTransform = function() {
+	    this.transformValid = false;
+	    return this.invalidate();
+	  };
+
+	  TransformComponent.prototype.invalidateAttachOnRemove = function(child, nextNode) {
+	    if (this.holder) {
+	      return this.holder.invalidateAttachOnRemove(this, nextNode);
+	    }
+	  };
+
+	  TransformComponent.prototype.refreshDom = function(oldBaseComponent) {
+	    this.renderDom(oldBaseComponent);
+	    this.attachParent();
+	    return this.removeChildrenDom();
+	  };
+
+	  TransformComponent.prototype.renderDom = function(oldBaseComponent) {
+	    var baseComponent, content;
+	    this.emit('willRenderDom');
+	    this.valid = true;
+	    this.attachValid = true;
+	    if (!this.transformValid) {
+	      this.transformValid = true;
+	      content = this.content;
+	      if (content && content.holder === this) {
+	        this.content.holder = null;
+	      }
+	      this.content = this.getContentComponent();
+	    }
+	    content = this.content;
+	    content.holder = this;
+	    content.parentNode = this.parentNode;
+	    content.nextNode = this.nextNode;
+	    content.renderDom(oldBaseComponent);
+	    baseComponent = content.baseComponent;
+	    this.baseComponent = baseComponent;
+	    this.node = baseComponent.node;
+	    this.firstNode = baseComponent.firstNode;
+	    if (!this.node || !this.node.parentNode) {
+	      content.attachValid = false;
+	      this.invalidateAttach(content);
+	    }
+	    this.emit('didRenderDom');
+	    return this;
+	  };
+
+	  TransformComponent.prototype.markRemovingDom = function(holder) {
+	    if (this.baseComponent) {
+	      holder.markRemovingChild(this.baseComponent);
+	    }
+	    return this;
+	  };
+
+	  TransformComponent.prototype.markRemoving = function() {
+	    this.baseComponent.markRemoving();
+	  };
+
+	  TransformComponent.prototype.removeDom = function() {
+	    return this.baseComponent.removeDom();
+	  };
+
+	  TransformComponent.prototype.attachParent = function() {
+	    var content;
+	    if (!this.attachValid) {
+	      this.attachValid = true;
+	      content = this.content;
+	      content.parentNode = this.parentNode;
+	      content.nextNode = this.nextNode;
+	      content.attachParent();
+	    }
+	  };
+
+	  TransformComponent.prototype.propagateChildNextNode = function(child, nextNode) {
+	    if (this.holder) {
+	      this.holder.propagateChildNextNode(child, nextNode);
+	    }
+	  };
 
 	  return TransformComponent;
 
 	})(Component);
 
-	extend(TransformComponent.prototype, TransformComponentMixin);
-
 
 /***/ },
-/* 25 */
-/***/ function(module, exports) {
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = {
-	  initTransformComponent: function() {
-	    this.valid = false;
-	    return this.transformValid = false;
-	  },
-	  invalidate: function() {
-	    if (this.valid) {
-	      this.valid = false;
-	      if (this.holder) {
-	        this.holder.invalidateContent(this);
-	      }
-	    }
-	    return this;
-	  },
-	  invalidateContent: function(content) {
-	    return this.invalidate();
-	  },
-	  invalidateTransform: function() {
-	    this.transformValid = false;
-	    return this.invalidate();
-	  },
-	  markRemovingDom: function(removing) {
-	    if (this.baseComponent) {
-	      this.baseComponent.markRemovingDom(removing);
-	    }
+	var Component, dc, dcEventMixin, extend, flow, isArray, isComponent, newDcid, normalizeDomElement, _ref;
+
+	extend = __webpack_require__(7);
+
+	normalizeDomElement = __webpack_require__(5).normalizeDomElement;
+
+	_ref = __webpack_require__(4), newDcid = _ref.newDcid, isArray = _ref.isArray;
+
+	flow = __webpack_require__(6).flow;
+
+	isComponent = __webpack_require__(2);
+
+	dc = __webpack_require__(1);
+
+	module.exports = Component = (function() {
+	  function Component() {
+	    this.listeners = this.listeners || {};
+	    this.baseComponent = null;
+	    this.parentNode = null;
+	    this.nextNode = null;
+	    this.node = null;
+	    this.destroyed = false;
 	    this.holder = null;
-	    return this;
-	  },
-	  renderDom: function(oldBaseComponent) {
-	    var attached, baseComponent, content, needRemoveOld, oldContent;
-	    this.emit('willRenderDom');
-	    if (!(attached = this.attached)) {
-	      this.emit('willAttach');
+	    this.dcid = newDcid();
+	    this.valid = true;
+	    this.attachValid = true;
+	    this.setReactive();
+	  }
+
+	  Component.prototype._prepareMount = function(mountNode, beforeNode) {
+	    if (mountNode && mountNode.component) {
+	      mountNode = mountNode.component;
+	    } else if (beforeNode && beforeNode.component) {
+	      console.log(mountNode);
+	      console.log(beforeNode);
+	      throw new Error('error while mounting: mountNode is not a component, but beforeNode is a component');
 	    }
-	    if (this.valid) {
-	      if (oldBaseComponent === this.baseComponent) {
-	        if (attached) {
-	          return this;
-	        } else {
-	          this.attached = true;
-	          this.baseComponent.attachNode(this.parentNode, this.nextNode);
+	    if (isComponent(mountNode)) {
+	      if (!beforeNode) {
+	        if (!mountNode.children) {
+	          console.log(mountNode);
+	          throw new Error('error while mounting: mountNode is a component, but is not a Tag or List component');
 	        }
+	        return mountNode.pushChild(this);
 	      } else {
-	        this.attached = true;
-	        baseComponent = this.baseComponent;
-	        baseComponent.renderDom(oldBaseComponent);
-	        this.node = baseComponent.node;
-	        this.firstNode = baseComponent.firstNode;
+	        if (!isComponent(beforeNode)) {
+	          beforeNode = beforeNode.component;
+	          if (!beforeNode) {
+	            console.log(beforeNode);
+	            throw new Error('error while mounting: can not mount beforeNode');
+	          }
+	        }
+	        if (beforeNode.holder !== mountNode || !mountNode.children) {
+	          console.log(mountNode);
+	          console.log(beforeNode);
+	          throw new Error('both mountNode and beforeNode is component, but mountNode is not the parent of beforeNode');
+	        }
+	        return mountNode.insertChildBefore(this, beforeNode);
 	      }
 	    } else {
-	      this.valid = true;
-	      this.attached = true;
-	      if (!this.transformValid) {
-	        this.transformValid = true;
-	        oldContent = this.content;
-	        this.content = content = this.getContentComponent();
-	        if (oldContent && oldContent !== content && oldContent.holder === this) {
-	          needRemoveOld = true;
-	          oldContent.markRemovingDom(true);
-	        }
-	        if (content !== this) {
-	          content.holder = this;
-	        }
-	      } else {
-	        content = this.content;
-	      }
-	      content.parentNode = this.parentNode;
-	      content.nextNode = this.nextNode;
-	      content.renderContent(oldBaseComponent);
-	      if (needRemoveOld) {
-	        oldContent.removeDom();
-	      }
-	      this.baseComponent = baseComponent = content.baseComponent;
-	      this.node = baseComponent.node;
-	      this.firstNode = baseComponent.firstNode;
+	      this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.body;
+	      this.nextNode = beforeNode || this.nextNode;
+	      this.setHolder(dc);
+	      return dc.rootComponentMap[this.dcid] = this;
 	    }
-	    if (!attached) {
-	      this.emit('didAttach');
+	  };
+
+	  Component.prototype.create = function(mountNode, beforeNode, forceRender) {
+	    this._prepareMount(mountNode, beforeNode);
+	    return this.render(forceRender);
+	  };
+
+
+	  /* if mountNode is given, it should not be the node of any Component
+	  only use beforeNode if mountNode is given
+	   */
+
+	  Component.prototype.mount = function(mountNode, beforeNode, forceRender) {
+	    this.emit('willMount');
+	    this._prepareMount(mountNode, beforeNode);
+	    this.render(forceRender);
+	    return this.emit('didMount');
+	  };
+
+	  Component.prototype.unmount = function(forceRender) {
+	    this.emit('willUnmount');
+	    this.remove();
+	    return this.emit('didUnmount');
+	  };
+
+	  Component.prototype.remove = function() {
+	    var firstNode, holder, prevComponent, prevNode;
+	    holder = this.holder;
+	    if (!holder || holder === dc) {
+	      delete dc.rootComponentMap[this.dcid];
+	      firstNode = this.firstNode;
+	      if (firstNode && firstNode.parentNode) {
+	        if ((prevNode = firstNode.previousSibling) && (prevComponent = prevNode.component)) {
+	          prevComponent.setNextNode(this.nextNode);
+	        }
+	        this.removeNode();
+	      }
+	    } else if (holder.children) {
+	      holder.removeChild(this);
+	    } else if (holder) {
+	      dc.error('Should not remove the content of TransformComponent');
 	    }
-	    this.emit('didRenderDom');
 	    return this;
-	  },
-	  renderContent: function(oldBaseComponent) {
-	    return this.renderDom(oldBaseComponent);
-	  },
-	  removeDom: function() {
-	    return this.baseComponent.removeDom();
-	  }
-	};
+	  };
+
+	  Component.prototype.memoRemoving = function(component) {
+	    var holder;
+	    holder = this.holder;
+	    if (!holder || holder === dc) {
+	      this.removingChildren[component.dcid] = component;
+	    } else if (this.isTag || this.isRenderHolder) {
+	      this.removingChildren[component.dcid] = component;
+	    } else {
+	      this.holder.memoRemoving(component);
+	    }
+	  };
+
+	  Component.prototype.removeChildrenDom = function() {
+	    var child, _, _ref1;
+	    _ref1 = this.removingChildren;
+	    for (_ in _ref1) {
+	      child = _ref1[_];
+	      child.removeDom();
+	    }
+	    this.removingChildren = {};
+	  };
+
+	  Component.prototype.asRenderHolder = function(isRenderHolder) {
+	    if (isRenderHolder == null) {
+	      isRenderHolder = true;
+	    }
+	    this.isRenderHolder = isRenderHolder;
+	    return this;
+	  };
+
+	  Component.prototype.render = function(forceRender) {
+	    if (!this.destroyed && (forceRender || dc.alwaysRender || !dc.renderBySystemLoop)) {
+	      if (this.removing) {
+	        this.removeDom();
+	      } else {
+	        this.refreshDom(this.baseComponent);
+	      }
+	    }
+	    return this;
+	  };
+
+	  Component.prototype.renderHolder = function(forceRender) {
+	    if (this.holder) {
+	      return this.holder.render(forceRender);
+	    } else {
+	      return this.render(forceRender);
+	    }
+	  };
+
+	  Component.prototype.replace = function(oldComponent, forceRender) {
+	    var holder;
+	    if (this.destroyed || this === oldComponent) {
+	      return;
+	    }
+	    holder = oldComponent.holder;
+	    if (holder && holder !== dc) {
+	      if (holder.isTransformComponent) {
+	        dc.error('Should not replace the content of TransformComponent');
+	      } else {
+	        holder.replaceChild(oldComponent, this);
+	        holder.render(forceRender);
+	      }
+	    } else if (holder === dc) {
+	      this.parentNode = oldComponent.parentNode;
+	      this.nextNode = oldComponent.nextNode;
+	      oldComponent.markRemovingDom(this);
+	      this.setHolder(holder);
+	      this.invalidate();
+	      dc.rootComponentMap[this.dcid] = this;
+	      dc.rootComponentMap[oldComponent.dcid] = oldComponent;
+	      this.render(forceRender);
+	    }
+	    return this;
+	  };
+
+
+	  /*
+	  component.renderWhen components, events
+	  component.renderWhen setInterval, interval, options
+	  component.renderWhen setTimeout, interval, options
+	   */
+
+	  Component.prototype.renderWhen = function(component, events, options) {
+	    if (isArray(component) || isComponent(component)) {
+	      options = [this];
+	    } else {
+	      options = options || {};
+	      options.components = [this];
+	    }
+	    dc.renderWhen(component, events, options);
+	    return this;
+	  };
+
+	  Component.prototype.destroy = function() {
+	    this.unmount(true);
+	    this.destroyed = true;
+	    this.listeners = null;
+	    if (this.node) {
+	      this.node.component = null;
+	      this.node = null;
+	    }
+	    this.baseComponent = null;
+	    return this.parentNode = null;
+	  };
+
+	  Component.prototype.getPrevComponent = function() {
+	    var children, holder;
+	    if (!(holder = this.holder)) {
+	      return null;
+	    } else if (children = holder.children) {
+	      return chilren[children.indexOf(this)];
+	    }
+	  };
+
+	  Component.prototype.getNextComponent = function() {
+	    var children, holder;
+	    if (!(holder = this.holder)) {
+	      return null;
+	    } else if (children = holder.holder.children) {
+	      return children[children.indexOf(this)];
+	    }
+	  };
+
+	  Component.prototype.setNextNode = function(nextNode) {
+	    this.nextNode = nextNode;
+	  };
+
+	  Component.prototype.setHolder = function(holder) {
+	    if (this.holder && this.holder !== holder) {
+	      this.holder.invalidateAttach(this);
+	    }
+	    this.holder = holder;
+	    return this;
+	  };
+
+	  Component.prototype.isOffspringOf = function(ancestor) {
+	    var holder;
+	    holder = this.holder;
+	    while (holder) {
+	      if (holder === ancestor) {
+	        return true;
+	      }
+	      holder = holder.holder;
+	    }
+	    return false;
+	  };
+
+	  Component.prototype.inFamilyOf = function(ancestor) {
+	    return this === ancestor || this.isOffspringOf(ancestor);
+	  };
+
+	  Component.prototype.setReactive = function() {
+	    var invalidateThis, me, reactField, reactive, srcField, _ref1;
+	    if (this.reactMap) {
+	      me = this;
+	      invalidateThis = function() {
+	        return me.invalidate();
+	      };
+	      _ref1 = this.reactMap;
+	      for (srcField in _ref1) {
+	        reactField = _ref1[srcField];
+	        reactive = flow.bind(this, srcField);
+	        if (typeof reactField === 'string') {
+	          reactive.onInvalidate(function() {
+	            var reaction;
+	            if (reaction = me[reactField]) {
+	              return reaction.invalidate();
+	            }
+	          });
+	        } else {
+	          reactive.onInvalidate(invalidateThis);
+	        }
+	      }
+	    }
+	    return this;
+	  };
+
+	  Component.prototype.copyEventListeners = function(srcComponent) {
+	    var event, myListeners, srcListeners;
+	    myListeners = this.listeners;
+	    srcListeners = srcComponent.listeners;
+	    for (event in srcListeners) {
+	      srcListeners[event] && (myListeners[event] = srcListeners[event].splice());
+	    }
+	    return this;
+	  };
+
+	  return Component;
+
+	})();
+
+	dcEventMixin = __webpack_require__(8);
+
+	extend(Component.prototype, dcEventMixin);
 
 
 /***/ },
-/* 26 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Nothing, Text, isComponent, react, toComponent;
 
 	isComponent = __webpack_require__(2);
 
-	Nothing = __webpack_require__(27);
+	Nothing = __webpack_require__(19);
 
-	Text = __webpack_require__(18);
+	Text = __webpack_require__(21);
 
 	react = __webpack_require__(6).react;
 
@@ -3740,7 +3173,7 @@
 	  } else if (typeof item === 'function') {
 	    return new Text(item);
 	  } else if (item instanceof Array) {
-	    List = __webpack_require__(28);
+	    List = __webpack_require__(26);
 	    return new List((function() {
 	      var _i, _len, _results;
 	      _results = [];
@@ -3753,7 +3186,7 @@
 	  } else if (item == null) {
 	    return new Nothing();
 	  } else if (item.then && item["catch"]) {
-	    Func = __webpack_require__(31);
+	    Func = __webpack_require__(29);
 	    component = new Func(react(function() {
 	      return component.promiseResult;
 	    }));
@@ -3772,14 +3205,14 @@
 
 
 /***/ },
-/* 27 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Nothing, newLine,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(16);
+	BaseComponent = __webpack_require__(20);
 
 	newLine = __webpack_require__(4).newLine;
 
@@ -3798,14 +3231,11 @@
 	  };
 
 	  Nothing.prototype.renderDom = function(oldBaseComponent) {
-	    if (oldBaseComponent && oldBaseComponent !== this) {
-	      oldBaseComponent.markRemovingDom(true);
+	    if (oldBaseComponent) {
+	      oldBaseComponent.markRemovingDom(this);
 	    }
 	    this.valid = true;
-	    if (!this.node) {
-	      this.node = [];
-	    }
-	    this.attachNode();
+	    this.node = [];
 	    return this;
 	  };
 
@@ -3813,21 +3243,25 @@
 	    return this.node = [];
 	  };
 
-	  Nothing.prototype.attachNode = function() {
+	  Nothing.prototype.attachParent = function() {
 	    return this.node;
 	  };
 
-	  Nothing.prototype.markRemovingDom = function(removing) {
-	    if (removing) {
-	      this.holder = null;
-	    }
-	    this.removing = removing;
+	  Nothing.prototype.attachChildren = function() {
+	    return this.node;
+	  };
+
+	  Nothing.prototype.markRemovingDom = function(holder) {
 	    return this;
 	  };
+
+	  Nothing.prototype.markRemoving = function() {};
 
 	  Nothing.prototype.removeDom = function() {
 	    return this;
 	  };
+
+	  Nothing.prototype.removeNode = function() {};
 
 	  Nothing.prototype.clone = function() {
 	    return new Nothing();
@@ -3846,20 +3280,662 @@
 
 
 /***/ },
-/* 28 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, List, ListMixin, dc, exports, isArray, mixin, newLine, refreshComponents, toComponentArray, _ref,
+	var BaseComponent, Component,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(16);
+	Component = __webpack_require__(17);
 
-	_ref = __webpack_require__(4), newLine = _ref.newLine, isArray = _ref.isArray;
+	module.exports = BaseComponent = (function(_super) {
+	  __extends(BaseComponent, _super);
 
-	refreshComponents = (dc = __webpack_require__(1)).refreshComponents;
+	  function BaseComponent() {
+	    BaseComponent.__super__.constructor.call(this);
+	    this.isBaseComponent = true;
+	    this.removing = false;
+	    this.removingChildren = {};
+	    this.baseComponent = this;
+	  }
 
-	toComponentArray = __webpack_require__(29);
+	  BaseComponent.prototype.refreshDom = function(oldBaseComponent) {
+	    this.renderDom();
+	    this.attachParent();
+	    this.removeChildrenDom();
+	    return this;
+	  };
+
+	  BaseComponent.prototype.renderDom = function(oldBaseComponent) {
+	    this.emit('willRenderDom');
+	    if (oldBaseComponent && oldBaseComponent !== this) {
+	      oldBaseComponent.markRemovingDom(this);
+	    }
+	    this.renderBaseComponent(oldBaseComponent);
+	    this.emit('didRenderDom');
+	    return this;
+	  };
+
+	  BaseComponent.prototype.renderBaseComponent = function(oldBaseComponent) {
+	    if (oldBaseComponent && oldBaseComponent !== this) {
+	      this.attachValid = false;
+	      if (this.holder) {
+	        this.holder.invalidateAttach(this);
+	      }
+	    }
+	    if (!this.node) {
+	      this.valid = true;
+	      this.createDom();
+	      if (this.holder) {
+	        this.holder.invalidateAttach(this);
+	      }
+	    } else {
+	      if (!this.valid || this.isTag) {
+	        this.valid = true;
+	        this.updateDom();
+	      }
+	    }
+	  };
+
+	  BaseComponent.prototype.invalidate = function() {
+	    if (this.valid) {
+	      this.valid = false;
+	      return this.holder && this.holder.invalidateContent(this);
+	    } else {
+	      return this;
+	    }
+	  };
+
+	  BaseComponent.prototype.attachChildren = function() {};
+
+	  BaseComponent.prototype.markRemovingDom = function(holder) {
+	    if (this.parentNode && this.firstNode && this.firstNode.parentNode === this.parentNode) {
+	      this.removing = true;
+	      holder.memoRemoving(this);
+	    }
+	    return this;
+	  };
+
+	  BaseComponent.prototype.markRemoving = function() {
+	    if (this.parentNode && this.node) {
+	      this.removing = true;
+	    }
+	  };
+
+	  BaseComponent.prototype.removeDom = function() {
+	    var child, _i, _len, _ref;
+	    if (this.removing) {
+	      this.removing = false;
+	      this.emit('willDetach');
+	      if (this.isList) {
+	        this.node.parentNode = null;
+	        this.childParentNode = null;
+	        _ref = this.children;
+	        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	          child = _ref[_i];
+	          child.removeDom();
+	        }
+	      } else {
+	        this.removeNode();
+	      }
+	      this.emit('didDetach');
+	    }
+	    return this;
+	  };
+
+	  BaseComponent.prototype.removeNode = function() {
+	    var node;
+	    this.removing = false;
+	    if (node = this.node) {
+	      node.parentNode && node.parentNode.removeChild(node);
+	    }
+	  };
+
+	  BaseComponent.prototype.executeAttachParent = function() {
+	    var nextNode, node, parentNode;
+	    node = this.node;
+	    parentNode = this.parentNode;
+	    nextNode = this.nextNode;
+	    this.removing = false;
+	    if (parentNode && (parentNode !== node.parentNode || nextNode !== node.nextSibling)) {
+	      parentNode.insertBefore(node, nextNode);
+	    }
+	  };
+
+	  BaseComponent.prototype.attachParent = function() {
+	    if (this.node.parentNode) {
+	      this.emit('willAttach');
+	      this.executeAttachParent();
+	      this.emit('didAttach');
+	    } else {
+	      this.executeAttachParent();
+	    }
+	    return this.node;
+	  };
+
+	  return BaseComponent;
+
+	})(Component);
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var BaseComponent, Text, domField, domValue, dynamic, exports, funcString, hasTextContent, newLine, setText, value, _ref, _ref1,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	BaseComponent = __webpack_require__(20);
+
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, value = _ref.value, dynamic = _ref.dynamic;
+
+	_ref1 = __webpack_require__(5), domField = _ref1.domField, domValue = _ref1.domValue;
+
+	setText = __webpack_require__(22).setText;
+
+	if ('textContent' in document.documentElement) {
+	  hasTextContent = true;
+	} else {
+	  hasTextContent = false;
+	}
+
+	exports = module.exports = Text = (function(_super) {
+	  __extends(Text, _super);
+
+	  Text.prototype.isText = true;
+
+	  function Text(text) {
+	    var get, me, set;
+	    Text.__super__.constructor.call(this);
+	    this.setText(text);
+	    if (Object.defineProperty) {
+	      me = this;
+	      get = function() {
+	        return me._text;
+	      };
+	      set = function(text) {
+	        me.setText(text);
+	        return text;
+	      };
+	      Object.defineProperty(this, 'text', {
+	        get: get,
+	        set: set
+	      });
+	    }
+	    this.family = {};
+	    this.family[this.dcid] = true;
+	    this;
+	  }
+
+	  Text.prototype.setText = setText;
+
+	  Text.prototype.createDom = function() {
+	    var node, text;
+	    this.textValid = true;
+	    text = domValue(this.text, this);
+	    node = document.createTextNode(text);
+	    node.component = this;
+	    this.node = node;
+	    this.firstNode = node;
+	    return node;
+	  };
+
+	  Text.prototype.updateDom = function() {
+	    var node, text;
+	    node = this.node;
+	    if (this.textValid) {
+	      return node;
+	    } else {
+	      this.textValid = true;
+	      text = domValue(this.text, this);
+	      if (hasTextContent) {
+	        if (text !== node.textContent) {
+	          node.textContent = text;
+	        }
+	      } else {
+	        if (text !== node.innerText) {
+	          node.innerText = text;
+	        }
+	      }
+	      return node;
+	    }
+	  };
+
+	  Text.prototype.clone = function() {
+	    var result;
+	    result = new this.constructor(this.text);
+	    return result.copyEventListeners(this);
+	  };
+
+	  Text.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 2;
+	    }
+	    return newLine(funcString(this.text), indent, addNewLine);
+	  };
+
+	  return Text;
+
+	})(BaseComponent);
+
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var attrPropNameMap, classFn, domField, extend, extendEventValue, isComponent, overAttrs, styleFrom;
+
+	extend = __webpack_require__(7);
+
+	isComponent = __webpack_require__(2).isComponent;
+
+	extendEventValue = __webpack_require__(24).extendEventValue;
+
+	classFn = __webpack_require__(23);
+
+	styleFrom = __webpack_require__(25).styleFrom;
+
+	domField = __webpack_require__(5).domField;
+
+	exports.extendAttrs = function(attrs, obj, options) {
+	  var key, objClass, style, value;
+	  if (options == null) {
+	    options = {};
+	  }
+	  if (!obj) {
+	    return attrs;
+	  } else if (!attrs) {
+	    return obj;
+	  }
+	  objClass = classFn([obj["class"], obj.className]);
+	  if (options.replaceClass) {
+	    attrs.className = objClass;
+	  } else {
+	    attrs.className = classFn([attrs["class"], attrs.className]);
+	    delete attrs["class"];
+	    attrs.className = classFn([attrs.className, objClass]);
+	  }
+	  style = styleFrom(attrs.style);
+	  if (obj.style) {
+	    attrs.style = extend(style, obj.style);
+	  } else {
+	    attrs.style = style;
+	  }
+	  for (key in obj) {
+	    value = obj[key];
+	    if (key === 'class' || key === 'className') {
+	      continue;
+	    } else if (key.slice(0, 2) === 'on') {
+	      if (options['replace_' + key] || options.replaceEvents) {
+	        attrs[key] = value;
+	      } else {
+	        extendEventValue(attrs, key, value);
+	      }
+	    } else if (key === 'style') {
+	      continue;
+	    } else {
+	      attrs[key] = value;
+	    }
+	  }
+	  return attrs;
+	};
+
+	exports.overAttrs = overAttrs = function(attrs, obj) {
+	  var key, value;
+	  if (!obj) {
+	    attrs = extend({}, attrs);
+	    if (attrs.style) {
+	      attrs.style = extend({}, styleFrom(attrs.style));
+	    }
+	    return attrs;
+	  } else if (!attrs) {
+	    return obj;
+	  } else {
+	    for (key in attrs) {
+	      value = attrs[key];
+	      if (obj[key] == null) {
+	        obj[key] = value;
+	      }
+	      if (key === 'style') {
+	        obj[key] = overAttrs(attrs[key], obj[key]);
+	      }
+	    }
+	    return obj;
+	  }
+	};
+
+	attrPropNameMap = {
+	  'for': 'htmlFor'
+	};
+
+	exports.attrToPropName = function(name) {
+	  var i, len, newName, pieces;
+	  if (newName = attrPropNameMap[name]) {
+	    return newName;
+	  }
+	  pieces = name.split('-');
+	  if (pieces.length === 1) {
+	    return name;
+	  }
+	  i = 1;
+	  len = pieces.length;
+	  while (i < len) {
+	    pieces[i] = pieces[i][0].toUpperCase() + pieces[i].slice(1);
+	    i++;
+	  }
+	  return pieces.join('');
+	};
+
+	exports.setText = function(text) {
+	  var me;
+	  text = domField(text, this);
+	  if (this._text === text) {
+	    return this;
+	  }
+	  this.textValid = false;
+	  this._text = text;
+	  me = this;
+	  if (typeof text === 'function') {
+	    text.onInvalidate(function() {
+	      me.textValid = false;
+	      return me.invalidate();
+	    });
+	  }
+	  this.invalidate();
+	  return this;
+	};
+
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var classFn, domField, isArray, react,
+	  __slice = [].slice;
+
+	react = __webpack_require__(6).react;
+
+	domField = __webpack_require__(5).domField;
+
+	isArray = __webpack_require__(4).isArray;
+
+	module.exports = classFn = function() {
+	  var classMap, extendClassMap, items, method, processClassValue;
+	  items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	  classMap = {};
+	  method = function() {
+	    var klass, lst, value;
+	    if (!arguments.length) {
+	      lst = [];
+	      method.valid = true;
+	      for (klass in classMap) {
+	        value = classMap[klass];
+	        if (typeof value === 'function') {
+	          value = value.call(this);
+	        }
+	        if (value) {
+	          lst.push(klass);
+	        }
+	      }
+	      return lst.join(' ');
+	    } else {
+	      extendClassMap([].slice(arguments));
+	    }
+	  };
+	  processClassValue = function(name, value) {
+	    var oldValue;
+	    value = domField(value);
+	    oldValue = classMap[name];
+	    if (typeof oldValue === 'function') {
+	      oldValue.offInvalidate(method.invalidate);
+	    }
+	    if (!value && oldValue) {
+	      method.invalidate();
+	      return delete classMap[name];
+	    } else {
+	      if (oldValue !== value) {
+	        method.invalidate();
+	        if (typeof value === 'function') {
+	          value.onInvalidate(method.invalidate);
+	        }
+	        return classMap[name] = value;
+	      }
+	    }
+	  };
+	  extendClassMap = function(items) {
+	    var item, name, names, value, _i, _j, _len, _len1, _ref;
+	    if (!items) {
+	      return;
+	    }
+	    if (!isArray(items)) {
+	      items = [items];
+	    }
+	    for (_i = 0, _len = items.length; _i < _len; _i++) {
+	      item = items[_i];
+	      if (!item) {
+	        continue;
+	      }
+	      if (typeof item === 'string') {
+	        names = item.trim().split(/\s+(?:,\s+)?/);
+	        for (_j = 0, _len1 = names.length; _j < _len1; _j++) {
+	          name = names[_j];
+	          if (name[0] === '!') {
+	            processClassValue(name.slice(1), false);
+	          } else {
+	            processClassValue(name, true);
+	          }
+	        }
+	      } else if (item instanceof Array) {
+	        extendClassMap(item);
+	      } else if (item && item.classMap) {
+	        _ref = item.classMap;
+	        for (name in _ref) {
+	          value = _ref[name];
+	          if (typeof value !== 'function') {
+	            value = true;
+	          }
+	          processClassValue(name, value);
+	        }
+	      } else if (typeof item === 'object') {
+	        for (name in item) {
+	          value = item[name];
+	          if (typeof value !== 'function') {
+	            value = true;
+	          }
+	          processClassValue(name, value);
+	        }
+	      }
+	    }
+	  };
+	  react(method);
+	  extendClassMap(items);
+	  method.classMap = classMap;
+	  method.valid = !Object.keys(classMap).length;
+	  method.removeClass = function() {
+	    var item, items, _i, _len, _results;
+	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    _results = [];
+	    for (_i = 0, _len = items.length; _i < _len; _i++) {
+	      item = items[_i];
+	      _results.push(processClassValue(item, false));
+	    }
+	    return _results;
+	  };
+	  method.extend = function() {
+	    var items;
+	    items = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    return extendClassMap(items);
+	  };
+	  method.clone = function() {
+	    var newClassName;
+	    newClassName = classFn();
+	    return newClassName.extend(method);
+	  };
+	  return method;
+	};
+
+
+/***/ },
+/* 24 */
+/***/ function(module, exports) {
+
+	var extendEventValue;
+
+	exports.domEventHandler = function(event) {
+	  var comp, component, componentMap, domEventCallbacks, eventType, fn, result, _, _i, _len;
+	  if (component = this.component) {
+	    eventType = 'on' + event.type;
+	    domEventCallbacks = component.domEventCallbackMap[eventType];
+	    for (_i = 0, _len = domEventCallbacks.length; _i < _len; _i++) {
+	      fn = domEventCallbacks[_i];
+	      result = fn.call(component, event, this);
+	    }
+	    if (componentMap = component.eventUpdateConfig[eventType]) {
+	      for (_ in componentMap) {
+	        comp = componentMap[_];
+	        comp.render();
+	      }
+	    }
+	    if (event) {
+	      if (!event.executeDefault && event.preventDefault) {
+	        event.preventDefault();
+	      }
+	      if (!event.continuePropagation && event.stopPropagation) {
+	        event.stopPropagation();
+	      }
+	    }
+	  }
+	  if (event && (event.dcEventResult != null)) {
+	    return event.dcEventResult;
+	  } else {
+	    return result;
+	  }
+	};
+
+	exports.domEventHandlerFromArray = function(callbackArray) {
+	  return function(event) {
+	    var fn, _i, _len;
+	    for (_i = 0, _len = callbackArray.length; _i < _len; _i++) {
+	      fn = callbackArray[_i];
+	      fn && fn.call(this.component, event, this);
+	    }
+	  };
+	};
+
+	exports.extendEventValue = extendEventValue = function(props, prop, value, before) {
+	  var oldValue;
+	  oldValue = props[prop];
+	  if (!oldValue) {
+	    oldValue = [];
+	  } else if (!(oldValue instanceof Array)) {
+	    oldValue = [oldValue];
+	  }
+	  if (!value) {
+	    value = [];
+	  } else if (!(value instanceof Array)) {
+	    value = [value];
+	  }
+	  if (before) {
+	    return props[prop] = value.concat(oldValue);
+	  } else {
+	    return props[prop] = oldValue.concat(value);
+	  }
+	};
+
+	exports.addHandlerToCallbackArray = function(handler, callbacks, before) {
+	  var callback, index, _i, _len;
+	  if (typeof handler === 'function') {
+	    handler = [handler];
+	  }
+	  if (before) {
+	    callback = handler.pop();
+	    while (callback) {
+	      index = callbacks.indexOf(callback);
+	      if (index <= 0) {
+	        callbacks.unshift(callback);
+	      }
+	      callback = handler.pop();
+	    }
+	  } else {
+	    for (_i = 0, _len = handler.length; _i < _len; _i++) {
+	      callback = handler[_i];
+	      index = callbacks.indexOf(callback);
+	      if (index <= 0) {
+	        callbacks.push(callback);
+	      }
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var cloneObject, styleFrom;
+
+	cloneObject = __webpack_require__(4).cloneObject;
+
+	exports.styleFrom = styleFrom = function(value) {
+	  var item, key, result, v, _i, _j, _len, _len1, _ref, _ref1;
+	  if (typeof value === 'string') {
+	    result = {};
+	    value = value.trim().split(/\s*;\s*/);
+	    for (_i = 0, _len = value.length; _i < _len; _i++) {
+	      item = value[_i];
+	      item = item.trim();
+	      if (!item) {
+	        continue;
+	      }
+	      _ref = item.split(/\s*:\s*/), key = _ref[0], v = _ref[1];
+	      result[key] = v;
+	    }
+	    return result;
+	  } else if (value instanceof Array) {
+	    result = {};
+	    for (_j = 0, _len1 = value.length; _j < _len1; _j++) {
+	      item = value[_j];
+	      if (typeof item === 'string') {
+	        item = item.trim();
+	        if (!item) {
+	          continue;
+	        }
+	        _ref1 = item.split(/\s*:\s*/), key = _ref1[0], value = _ref1[1];
+	      } else {
+	        key = item[0], value = item[1];
+	      }
+	      result[key] = value;
+	    }
+	    return result;
+	  } else if (value && typeof value !== 'object') {
+	    return {};
+	  } else {
+	    return cloneObject(value);
+	  }
+	};
+
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var BaseComponent, List, ListMixin, binaryInsert, exports, mixin, newLine, toComponentArray,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	BaseComponent = __webpack_require__(20);
+
+	newLine = __webpack_require__(4).newLine;
+
+	toComponentArray = __webpack_require__(27);
+
+	mixin = __webpack_require__(4).mixin;
+
+	ListMixin = __webpack_require__(28);
+
+	binaryInsert = __webpack_require__(4).binaryInsert;
 
 	module.exports = exports = List = (function(_super) {
 	  __extends(List, _super);
@@ -3872,108 +3948,92 @@
 	    return;
 	  }
 
-	  List.prototype.createDom = function() {
-	    var children, node;
-	    this.valid = true;
-	    children = this.children;
-	    this.node = this.childNodes = node = [];
-	    this.childNextNode = this.nextNode;
-	    this.createChildrenDom();
-	    this.firstNode = this.childFirstNode;
-	    return node;
+	  List.prototype.refreshDom = function(oldBaseComponent) {
+	    this.renderDom();
+	    this.attachChildren();
+	    this.removeChildrenDom();
+	    return this;
 	  };
 
-	  List.prototype.updateDom = function() {
-	    var children, index, invalidIndexes, parentNode, _i, _len;
-	    children = this.children, parentNode = this.parentNode, invalidIndexes = this.invalidIndexes;
-	    for (_i = 0, _len = invalidIndexes.length; _i < _len; _i++) {
-	      index = invalidIndexes[_i];
-	      children[index].parentNode = parentNode;
-	    }
-	    this.childrenNextNode = this.nextNode;
-	    this.updateChildrenDom();
-	    this.firstNode = this.childFirstNode;
+	  List.prototype.createDom = function() {
+	    this.node = this.childNodes;
+	    this.createChildrenDom();
+	    this.firstNode = this.childrenFirstNode;
 	    return this.node;
 	  };
 
-	  List.prototype.markRemovingDom = function(removing) {
-	    var child, node, _i, _len, _ref1;
-	    this.removing = removing;
-	    if (removing) {
-	      if ((node = this.node) && node.parentNode) {
-	        node.parentNode = null;
-	        _ref1 = this.children;
-	        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	          child = _ref1[_i];
-	          child.markRemovingDom(removing);
-	        }
+	  List.prototype.updateDom = function() {
+	    this.updateChildrenDom();
+	    this.firstNode = this.childrenFirstNode;
+	    return this.node;
+	  };
+
+	  List.prototype.markRemovingDom = function(holder) {
+	    var child, _i, _len, _ref;
+	    if (this.childParentNode && this.firstNode && this.firstNode.parentNode === this.childParentNode) {
+	      this.removing = true;
+	      _ref = this.children;
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        child = _ref[_i];
+	        child.markRemoving(holder);
 	      }
-	      this.holder = null;
+	      holder.memoRemoving(this);
 	    }
 	    return this;
 	  };
 
-	  List.prototype.removeDom = function() {
-	    var child, _i, _len, _ref1;
-	    if (this.removing && this.attached) {
-	      this.removing = false;
-	      this.attached = false;
-	      this.emit('willDetach');
-	      _ref1 = this.children;
-	      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	        child = _ref1[_i];
-	        child.removeDom();
+	  List.prototype.markRemoving = function() {
+	    var child, _i, _len, _ref;
+	    if (this.childParentNode && this.node) {
+	      this.removing = true;
+	      _ref = this.children;
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        child = _ref[_i];
+	        child.markRemoving();
 	      }
-	      this.emit('didDetach');
 	    }
-	    return this;
 	  };
 
 	  List.prototype.removeNode = function() {
-	    var child, _i, _len, _ref1;
+	    var child, _i, _len, _ref;
 	    this.node.parentNode = null;
-	    _ref1 = this.children;
-	    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	      child = _ref1[_i];
+	    this.childParentNode = null;
+	    _ref = this.children;
+	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	      child = _ref[_i];
 	      child.baseComponent.removeNode();
 	    }
 	  };
 
-	  List.prototype.attachNode = function() {
-	    var attached, baseComponent, child, children, index, length, nextNode, node, parentNode;
-	    children = this.children, parentNode = this.parentNode, nextNode = this.nextNode, node = this.node;
-	    if (!(attached = this.attached)) {
-	      this.attached = true;
-	      this.emit('willAttach');
-	    }
-	    if (parentNode !== node.parentNode || nextNode !== node.nextSibling) {
-	      node.parentNode = parentNode;
-	      length = children.length;
-	      if (length) {
-	        index = length - 1;
-	        children[index].nextNode = nextNode;
-	        while (index >= 0) {
-	          child = children[index];
-	          if (child.holder && child.holder !== this) {
-	            child.invalidate();
-	            child.holder = this.holder;
-	          }
-	          child.parentNode = parentNode;
-	          baseComponent = child.baseComponent;
-	          baseComponent.parentNode = parentNode;
-	          baseComponent.nextNode = child.nextNode;
-	          baseComponent.attachNode();
-	          if (index) {
-	            children[index - 1].nextNode = child.firstNode || child.nextNode;
-	          }
-	          index--;
-	        }
+	  List.prototype.invalidateAttach = function(child) {
+	    var index;
+	    index = this.children.indexOf(child);
+	    binaryInsert(index, this.attachParentIndexes);
+	    if (this.attachValid) {
+	      this.attachValid = false;
+	      if (this.holder) {
+	        this.holder.invalidateAttach(this);
 	      }
 	    }
-	    if (!attached) {
-	      this.emit('didAttach');
+	    return this;
+	  };
+
+	  List.prototype.attachParent = ListMixin.attachChildren;
+
+	  List.prototype.setNextNode = function(nextNode) {
+	    var child, children, index;
+	    this.nextNode = nextNode;
+	    this.childrenNextNode = nextNode;
+	    children = this.children;
+	    index = children.length - 1;
+	    while (child = children[index]) {
+	      child.setNextNode(nextNode);
+	      if (!child.firstNode) {
+	        index--;
+	      } else {
+	        break;
+	      }
 	    }
-	    return this.node;
 	  };
 
 	  List.prototype.clone = function(arg) {
@@ -3984,7 +4044,7 @@
 	  };
 
 	  List.prototype.toString = function(indent, addNewLine) {
-	    var child, s, _i, _len, _ref1;
+	    var child, s, _i, _len, _ref;
 	    if (indent == null) {
 	      indent = 0;
 	    }
@@ -3992,9 +4052,9 @@
 	      return newLine("<List/>", indent, addNewLine);
 	    } else {
 	      s = newLine("<List>", indent, addNewLine);
-	      _ref1 = this.children;
-	      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	        child = _ref1[_i];
+	      _ref = this.children;
+	      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	        child = _ref[_i];
 	        s += child.toString(indent + 2, true);
 	      }
 	      return s += newLine('</List>', indent, true);
@@ -4005,20 +4065,16 @@
 
 	})(BaseComponent);
 
-	mixin = __webpack_require__(4).mixin;
-
-	ListMixin = __webpack_require__(30);
-
 	mixin(List.prototype, ListMixin);
 
 
 /***/ },
-/* 29 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var toComponent, toComponentArray;
 
-	toComponent = __webpack_require__(26);
+	toComponent = __webpack_require__(18);
 
 	module.exports = toComponentArray = function(item) {
 	  var e, _i, _len, _results;
@@ -4038,33 +4094,23 @@
 
 
 /***/ },
-/* 30 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Nothing, addIndexes, binaryInsert, binarySearch, extendChildFamily, isArray, isComponent, substractSet, toComponent, updateDcidIndexMap, _ref, _ref1,
+	var Nothing, addIndexes, binaryInsert, binarySearch, extendChildFamily, isArray, isComponent, setNextNodes, substractSet, toComponent, _ref, _ref1,
 	  __slice = [].slice;
 
 	_ref = __webpack_require__(4), isArray = _ref.isArray, substractSet = _ref.substractSet;
 
 	isComponent = __webpack_require__(2);
 
-	toComponent = __webpack_require__(26);
+	toComponent = __webpack_require__(18);
 
-	Nothing = __webpack_require__(27);
+	Nothing = __webpack_require__(19);
 
 	_ref1 = __webpack_require__(4), binarySearch = _ref1.binarySearch, binaryInsert = _ref1.binaryInsert, substractSet = _ref1.substractSet;
 
 	extendChildFamily = __webpack_require__(5).extendChildFamily;
-
-	updateDcidIndexMap = function(dcidIndexMap, children, start) {
-	  var i, length;
-	  length = children.length;
-	  i = start;
-	  while (i < length) {
-	    dcidIndexMap[children[i].dcid] = i;
-	    i++;
-	  }
-	};
 
 	addIndexes = function(indexes, value, start) {
 	  var i, length;
@@ -4072,22 +4118,46 @@
 	  i = start;
 	  while (i < length) {
 	    indexes[i] += value;
+	    if (indexes[i] < 0) {
+	      throw 'negative attach index in ListMixin component';
+	    }
 	    i++;
+	  }
+	};
+
+	setNextNodes = function(children, nextNode, last, first) {
+	  var child, i;
+	  i = last;
+	  while (i >= first) {
+	    child = children[i];
+	    if (child.nextNode !== nextNode) {
+	      child.nextNode = nextNode;
+	      if (!child.firstNode) {
+	        i--;
+	        nextNode = child.firstNode;
+	      } else {
+	        break;
+	      }
+	    } else {
+	      break;
+	    }
 	  }
 	};
 
 	module.exports = {
 	  initListMixin: function() {
-	    var child, dcidIndexMap, family, i, _i, _len, _ref2;
-	    this.dcidIndexMap = dcidIndexMap = {};
+	    var child, family, i, _i, _len, _ref2;
+	    this.updatingChildren = {};
+	    this.attachingChildren = {};
+	    this.attachParentIndexes = [];
+	    this.childNodes = [];
 	    this.family = family = {};
 	    family[this.dcid] = true;
 	    _ref2 = this.children;
 	    for (i = _i = 0, _len = _ref2.length; _i < _len; i = ++_i) {
 	      child = _ref2[i];
-	      child.holder = this;
+	      child.setHolder(this);
 	      extendChildFamily(family, child);
-	      dcidIndexMap[child.dcid] = i;
 	    }
 	  },
 	  cloneChildrenFrom: function(component, options) {
@@ -4104,120 +4174,38 @@
 	    return child.clone(options);
 	  },
 	  createChildrenDom: function() {
-	    var child, children, e, firstNode, index, node;
+	    var child, firstNode, firstNodeIndex, index, node, _i, _len, _ref2;
 	    node = this.childNodes;
-	    this.invalidIndexes = [];
-	    this.removingChildren = {};
-	    children = this.children;
-	    index = children.length - 1;
 	    firstNode = null;
-	    while (index >= 0) {
-	      child = children[index];
-	      if (child.holder && child.holder !== this) {
-	        child.holder.invalidateContent(child);
+	    this.updatingChildren = {};
+	    _ref2 = this.children;
+	    for (index = _i = 0, _len = _ref2.length; _i < _len; index = ++_i) {
+	      child = _ref2[index];
+	      child.setHolder(this);
+	      child.renderDom(child.baseComponent);
+	      node.push(child.node);
+	      if (!firstNode && child.firstNode) {
+	        firstNode = child.firstNode;
+	        firstNodeIndex = index;
 	      }
-	      child.holder = this;
-	      try {
-	        child.renderDom(child.baseComponent);
-	      } catch (_error) {
-	        e = _error;
-	        dc.onerror(e);
-	      }
-	      node.unshift(child.node);
-	      firstNode = child.firstNode || firstNode;
-	      index && (children[index - 1].nextNode = firstNode || child.nextNode);
-	      index--;
 	    }
-	    this.childFirstNode = firstNode;
-	    return node;
+	    this.childrenFirstNode = firstNode;
+	    this.firstNodeIndex = firstNodeIndex;
 	  },
 	  updateChildrenDom: function() {
-	    var child, childNodes, children, childrenLength, e, i, invalidIndexes, j, lastChild, lastNextNode, listIndex, nextChild, nextChildFirstNode, nextNode, _, _ref2;
-	    invalidIndexes = this.invalidIndexes;
-	    if (invalidIndexes.length) {
-	      children = this.children;
-	      this.invalidIndexes = [];
-	      i = invalidIndexes.length - 1;
-	      childNodes = this.childNodes;
-	      lastNextNode = nextNode = this.childrenNextNode;
-	      childrenLength = children.length;
-	      if ((lastChild = children[childrenLength - 1]) && lastChild.nextNode !== nextNode) {
-	        lastChild.nextNode = nextNode;
-	        listIndex = invalidIndexes[i];
-	        j = childrenLength - 1;
-	        nextChild = children[j];
-	        j--;
-	        while (j >= listIndex) {
-	          child = children[j];
-	          if (nextChildFirstNode = nextChild.firstNode) {
-	            child.nextNode = nextNode = nextChildFirstNode;
-	            break;
-	          } else {
-	            if (child.nextNode !== nextNode) {
-	              child.nextNode = nextNode;
-	              nextChild = child;
-	              j--;
-	            } else {
-	              break;
-	            }
-	          }
-	        }
-	      }
-	      while (i >= 0) {
-	        listIndex = invalidIndexes[i];
-	        child = children[listIndex];
-	        if (child.holder && child.holder !== this) {
-	          child.holder.invalidateContent(child);
-	        }
-	        child.holder = this;
-	        if (listIndex === childrenLength - 1) {
-	          child.nextNode = lastNextNode;
-	        } else {
-	          child.nextNode = children[listIndex + 1].firstNode || children[listIndex + 1].nextNode;
-	        }
-	        try {
-	          child.renderDom(child.baseComponent);
-	        } catch (_error) {
-	          e = _error;
-	          dc.onerror(e);
-	        }
-	        childNodes[listIndex] = child.node;
-	        nextNode = child.firstNode || nextNode;
-	        i--;
-	        if (listIndex > 0) {
-	          nextChild = children[listIndex];
-	          j = listIndex - 1;
-	          if (i >= 0) {
-	            listIndex = invalidIndexes[i];
-	          } else {
-	            listIndex = 0;
-	          }
-	          while (j >= listIndex) {
-	            child = children[j];
-	            if (nextChildFirstNode = children[j + 1].firstNode) {
-	              child.nextNode = nextChildFirstNode;
-	              break;
-	            } else {
-	              if (child.nextNode !== nextNode) {
-	                child.nextNode = nextNode;
-	                nextChild = child;
-	                j--;
-	              } else {
-	                break;
-	              }
-	            }
-	          }
-	        }
-	      }
-	      this.childFirstNode = children[0].firstNode || children[0].nextNode;
+	    var child, children, index, node, updatingChildren, _;
+	    updatingChildren = this.updatingChildren;
+	    this.updatingChildren = {};
+	    node = this.childNodes;
+	    children = this.children;
+	    for (_ in updatingChildren) {
+	      child = updatingChildren[_];
+	      child.setHolder(this);
+	      child.renderDom(child.baseComponent);
+	      index = children.indexOf(child);
+	      node[index] = child.node;
+	      this.updateChildrenFirstNode(child, index);
 	    }
-	    _ref2 = this.removingChildren;
-	    for (_ in _ref2) {
-	      child = _ref2[_];
-	      child.removeDom();
-	    }
-	    this.removingChildren = {};
-	    return childNodes;
 	  },
 	  insertChildBefore: function(child, refChild) {
 	    return this.insertChild(refChild, child);
@@ -4233,19 +4221,25 @@
 	    }
 	    return this.insertChild(refChild + 1, child);
 	  },
-	  pushChild: function(child) {
-	    return this.insertChild(this.children.length, child);
-	  },
-	  unshiftChild: function(child) {
-	    return this.insertChild(0, child);
+	  pushChild: function() {
+	    var children, i, length, thisChildren;
+	    children = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+	    thisChildren = this.children;
+	    length = children.length;
+	    i = 0;
+	    while (i < length) {
+	      this.insertChild(thisChildren.length, children[i]);
+	      i++;
+	    }
+	    return this;
 	  },
 	  insertChild: function(refChild, child) {
-	    var children, dcidIndexMap, i, index, invalidIndexes, length;
-	    children = this.children, dcidIndexMap = this.dcidIndexMap;
+	    var children, index, length;
+	    children = this.children;
 	    length = children.length;
 	    if (isComponent(refChild)) {
-	      index = this.dcidIndexMap[refChild.dcid];
-	      if (index == null) {
+	      index = children.indexOf(refChild);
+	      if (index < 0) {
 	        index = length;
 	      }
 	    } else if (refChild > length) {
@@ -4259,33 +4253,50 @@
 	      refChild = children[index];
 	    }
 	    this.emit('onInsertChild', index, refChild, child);
-	    this.invalidate();
 	    child = toComponent(child);
+	    return this._insertChild(index, child);
+	  },
+	  _insertChild: function(index, child) {
+	    var attachParentIndexes, children, i;
+	    children = this.children;
 	    children.splice(index, 0, child);
-	    updateDcidIndexMap(dcidIndexMap, children, index);
+	    child.setHolder(this);
+	    child.parentNode = this.childParentNode;
+	    if (index === children.length - 1) {
+	      child.setNextNode(this.childrenNextNode);
+	    } else {
+	      child.setNextNode(children[index + 1].firstNode || children[index + 1].nextNode);
+	    }
 	    if (this.node) {
-	      invalidIndexes = this.invalidIndexes;
-	      if (i = binarySearch(index, invalidIndexes)) {
-	        invalidIndexes.splice(i, 0, index);
-	        addIndexes(invalidIndexes, 1, i + 1);
-	      } else {
-	        invalidIndexes.push(index);
+	      this.childNodes.splice(index, 0, child.node);
+	      if (!child.node || !child.valid) {
+	        this.invalidateContent(child);
+	      }
+	      if (this.holder) {
+	        this.holder.invalidateAttach(this);
+	      }
+	      this.attachValid = false;
+	      attachParentIndexes = this.attachParentIndexes;
+	      i = binaryInsert(index, attachParentIndexes);
+	      addIndexes(attachParentIndexes, 1, i + 1);
+	      if (child.firstNode && (!this.childrenFirstNode || index <= this.firstNodeIndex)) {
+	        this.childrenFirstNode = child.firstNode;
+	        this.firstNodeIndex = index;
 	      }
 	    }
 	    return this;
 	  },
-	  shiftChild: function() {
-	    var child, children, i;
+	  unshiftChild: function() {
+	    var children, i;
 	    children = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	    children = [];
-	    i = children.length(-1);
+	    i = children.length - 1;
 	    while (i >= 0) {
-	      child = toComponent(children[i]);
-	      this.insertChild(0, child);
+	      this.insertChild(0, children[i]);
+	      i--;
 	    }
 	    return this;
 	  },
-	  unshiftChild: function() {
+	  shiftChild: function() {
 	    return this.removeChild(0);
 	  },
 	  popChild: function() {
@@ -4298,15 +4309,14 @@
 	    }
 	  },
 	  removeChild: function(child) {
-	    var children, dcidIndexMap, index, invalidIndex, invalidIndexes, prevIndex;
+	    var attachParentIndexes, childFirstNode, children, i, index;
 	    if (child == null) {
 	      dc.error('child to be removed is undefined');
 	    }
 	    children = this.children;
-	    dcidIndexMap = this.dcidIndexMap;
 	    if (isComponent(child)) {
-	      index = dcidIndexMap[child.dcid];
-	      if (index == null) {
+	      index = children.indexOf(child);
+	      if (index < 0) {
 	        dc.error('child to be removed is not in the children');
 	      }
 	    } else if (child >= children.length || child < 0) {
@@ -4315,38 +4325,74 @@
 	      index = child;
 	      child = children[index];
 	    }
-	    delete dcidIndexMap[child.dcid];
 	    this.invalidate();
 	    child = children[index];
-	    child.markRemovingDom(true);
+	    if (child.holder === this) {
+	      child.holder = null;
+	    }
+	    delete this.updatingChildren[child.dcid];
 	    substractSet(this.family, child.family);
 	    children.splice(index, 1);
-	    updateDcidIndexMap(dcidIndexMap, children, index);
 	    if (this.node) {
-	      invalidIndexes = this.invalidIndexes;
-	      invalidIndex = binarySearch(index, invalidIndexes);
-	      if (invalidIndexes[invalidIndex] === index) {
-	        invalidIndexes.splice(invalidIndex, 1);
-	        addIndexes(invalidIndexes, -1, index);
-	      }
-	      prevIndex = index - 1;
-	      if (prevIndex >= 0) {
-	        children[prevIndex].nextNode = child.nextNode;
-	      }
 	      this.childNodes.splice(index, 1);
-	      this.removingChildren[child.dcid] = child;
+	      childFirstNode = child.firstNode;
+	      if (childFirstNode) {
+	        if (this.firstNodeIndex === index) {
+	          this.setFollowingChildrenFirstNode(index);
+	        }
+	        if (this.childParentNode && childFirstNode.parentNode === this.childParentNode) {
+	          this.propagateChildNextNode(index, this.nextNode);
+	          child.removeNode();
+	        }
+	      }
+	      attachParentIndexes = this.attachParentIndexes;
+	      if ((i = binarySearch(index, attachParentIndexes)) != null) {
+	        attachParentIndexes.splice(i, 1);
+	        addIndexes(attachParentIndexes, -1, i);
+	      }
 	    }
 	    return this;
 	  },
+	  invalidateAttachOnRemove: function(index, nextNode) {
+	    var child, children;
+	    children = this.children;
+	    index--;
+	    while (child = children[index]) {
+	      child.nextNode = nextNode;
+	      if (child.firstNode) {
+	        this.holder.invalidateAttach(this);
+	        return;
+	      } else {
+	        index--;
+	      }
+	    }
+	    if (this.isList && this.holder) {
+	      this.holder.invalidateAttachOnRemove(this, nextNode);
+	    }
+	  },
+	  setFollowingChildrenFirstNode: function(index) {
+	    var children, firstNode, length;
+	    children = this.children;
+	    length = children.length;
+	    index++;
+	    while (index < length) {
+	      if (firstNode = children[index].firstNode) {
+	        this.childrenFirstNode = firstNode;
+	        this.firstNodeIndex = index;
+	        return;
+	      }
+	      index++;
+	    }
+	    this.childrenFirstNode = null;
+	  },
 	  replaceChild: function(oldChild, newChild) {
-	    var children, dcidIndexMap, index;
-	    children = this.children, dcidIndexMap = this.dcidIndexMap;
+	    var children, index;
+	    children = this.children;
 	    if (isComponent(oldChild)) {
-	      index = dcidIndexMap[oldChild.dcid];
-	      if (index == null) {
+	      index = children.indexOf(oldChild);
+	      if (index < 0) {
 	        dc.error('oldChild to be replaced is not in the children');
 	      }
-	      delete dcidIndexMap[oldChild.id];
 	    } else {
 	      if (oldChild >= children.length || oldChild < 0) {
 	        dc.error('oldChild to be replaced is out of bound');
@@ -4356,23 +4402,52 @@
 	    }
 	    this.emit('onReplaceChild', index, oldChild, newChild);
 	    newChild = toComponent(newChild);
+	    return this._replaceChild(index, oldChild, newChild);
+	  },
+	  _replaceChild: function(index, oldChild, newChild) {
+	    var children;
+	    children = this.children;
 	    if (oldChild === newChild) {
 	      return this;
 	    }
-	    delete dcidIndexMap[oldChild.dcid];
 	    children[index] = newChild;
-	    dcidIndexMap[newChild.dcid] = index;
-	    this.invalidate();
-	    oldChild.markRemovingDom(true);
+	    if (oldChild.holder === this) {
+	      oldChild.holder = null;
+	    }
+	    oldChild.markRemovingDom(this);
+	    delete this.updatingChildren[oldChild.dcid];
+	    newChild.setHolder(this);
 	    newChild.parentNode = oldChild.parentNode;
 	    newChild.nextNode = oldChild.nextNode;
 	    substractSet(this.family, oldChild.family);
 	    extendChildFamily(this.family, newChild);
 	    if (this.node) {
-	      binaryInsert(index, this.invalidIndexes);
+	      this.childNodes[index] = newChild.node;
+	      if (!newChild.node || !newChild.valid) {
+	        this.invalidateContent(newChild);
+	      }
+	      this.invalidateAttach(newChild);
 	      this.removingChildren[oldChild.dcid] = oldChild;
+	      this.updateChildrenFirstNode(newChild, index);
 	    }
 	    return this;
+	  },
+	  updateChildrenFirstNode: function(newChild, index) {
+	    if (this.childrenFirstNode) {
+	      if (newChild.firstNode) {
+	        if (index <= this.firstNodeIndex) {
+	          this.childrenFirstNode = newChild.firstNode;
+	          this.firstNodeIndex = index;
+	        }
+	      } else if (index === this.firstNodeIndex) {
+	        this.setFollowingChildrenFirstNode(index);
+	      }
+	    } else {
+	      if (newChild.firstNode) {
+	        this.childrenFirstNode = newChild.firstNode;
+	        this.firstNodeIndex = index;
+	      }
+	    }
 	  },
 	  setChildren: function(startIndex, newChildren) {
 	    var child, children, i, n, oldChildrenLength, _i, _len;
@@ -4394,16 +4469,12 @@
 	    return this;
 	  },
 	  setLength: function(newLength) {
-	    var children, insertLocation, last;
+	    var children, last;
 	    children = this.children;
 	    if (newLength >= children.length) {
 	      return this;
 	    } else {
 	      last = children.length - 1;
-	      if (this.node) {
-	        insertLocation = binarySearch(newLength, this.invalidIndexes);
-	        this.invalidIndexes = this.invalidIndexes.slice(0, insertLocation);
-	      }
 	      while (last >= newLength) {
 	        this.removeChild(last);
 	        last--;
@@ -4412,25 +4483,114 @@
 	    }
 	  },
 	  invalidateContent: function(child) {
-	    this.valid = false;
-	    this.contentValid = false;
-	    this.node && binaryInsert(this.dcidIndexMap[child.dcid], this.invalidIndexes);
-	    return this.holder && this.holder.invalidateContent(this);
+	    this.updatingChildren[child.dcid] = child;
+	    if (this.valid) {
+	      this.valid = false;
+	      this.holder && this.holder.invalidateContent(this);
+	    }
+	    return this;
+	  },
+	  attachChildren: function() {
+	    var childParentNode;
+	    childParentNode = this.childParentNode;
+	    if (!childParentNode || !this.attachValid) {
+	      this.attachValid = true;
+	      if (this.isList) {
+	        this.childParentNode = this.parentNode;
+	        this.childrenNextNode = this.nextNode;
+	      } else if (!this.childParentNode) {
+	        this.childParentNode = this.node;
+	        this.childrenNextNode = null;
+	      }
+	      if (this.childParentNode !== this.childNodes.parentNode) {
+	        if (!childParentNode) {
+	          this.emit('willAttach');
+	          this.attachEachChildren();
+	          this.emit('didAttach');
+	        }
+	      } else {
+	        this.attachInvalidChildren();
+	      }
+	    }
+	  },
+	  attachEachChildren: function() {
+	    var child, children, i, length, nextNode, parentNode;
+	    parentNode = this.childParentNode;
+	    children = this.children;
+	    if (length = children.length) {
+	      nextNode = this.childrenNextNode;
+	      i = length - 1;
+	      while (child = children[i]) {
+	        child.setHolder(this);
+	        child.parentNode = parentNode;
+	        child.setNextNode(nextNode);
+	        child.attachParent();
+	        nextNode = child.firstNode || nextNode;
+	        i--;
+	      }
+	      child = children[0];
+	      this.childNodes.parentNode = parentNode;
+	    }
+	  },
+	  attachInvalidChildren: function() {
+	    var attachParentIndexes, child, children, i, listIndex, nextNode, parentNode, prevIndex;
+	    attachParentIndexes = this.attachParentIndexes;
+	    if (attachParentIndexes.length) {
+	      this.attachParentIndexes = [];
+	      if (parentNode = this.childParentNode) {
+	        nextNode = this.childrenNextNode;
+	        children = this.children;
+	        i = attachParentIndexes.length - 1;
+	        prevIndex = children.length - 1;
+	        while (i >= 0) {
+	          listIndex = attachParentIndexes[i];
+	          setNextNodes(children, nextNode, prevIndex, listIndex);
+	          child = children[listIndex];
+	          child.setHolder(this);
+	          child.parentNode = parentNode;
+	          child.attachParent();
+	          nextNode = child.firstNode || child.nextNode;
+	          prevIndex = listIndex - 1;
+	          i--;
+	        }
+	        setNextNodes(children, nextNode, prevIndex, 0);
+	        this.childNodes.parentNode = parentNode;
+	      }
+	    }
+	  },
+	  propagateChildNextNode: function(child, nextNode) {
+	    var children, index;
+	    children = this.children;
+	    if (isComponent(child)) {
+	      index = children.indexOf(child) - 1;
+	    } else {
+	      index = child - 1;
+	    }
+	    while (child = children[index]) {
+	      child.setNextNode(nextNode);
+	      if (child.firstNode) {
+	        return;
+	      }
+	      index--;
+	    }
+	    if (!this.isTag && this.holder) {
+	      this.holder.propagateChildNextNode(this, nextNode);
+	    }
 	  }
 	};
 
 
 /***/ },
-/* 31 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Func, TransformComponent, funcString, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(26);
+	toComponent = __webpack_require__(18);
 
-	TransformComponent = __webpack_require__(24);
+	TransformComponent = __webpack_require__(16);
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -4475,10 +4635,10 @@
 
 
 /***/ },
-/* 32 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var BaseComponent, ListMixin, Tag, attrToPropName, classFn, cloneObject, dc, directiveRegistry, domEventHandler, domField, domValue, extend, flow, funcString, mixin, newLine, react, refreshComponents, styleFrom, toComponentArray, updating, _ref, _ref1, _ref2, _ref3,
+	var BaseComponent, ListMixin, Tag, addHandlerToCallbackArray, attrToPropName, binaryInsert, classFn, cloneObject, dc, directiveRegistry, domEventHandler, domField, domValue, extend, flow, funcString, mixin, newLine, react, refreshComponents, styleFrom, toComponentArray, _ref, _ref1, _ref2, _ref3,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  __slice = [].slice;
@@ -4491,18 +4651,24 @@
 
 	directiveRegistry = __webpack_require__(1).directiveRegistry;
 
-	_ref1 = __webpack_require__(33), classFn = _ref1.classFn, styleFrom = _ref1.styleFrom, domEventHandler = _ref1.domEventHandler, attrToPropName = _ref1.attrToPropName, updating = _ref1.updating;
+	_ref1 = __webpack_require__(31), classFn = _ref1.classFn, styleFrom = _ref1.styleFrom, domEventHandler = _ref1.domEventHandler, attrToPropName = _ref1.attrToPropName, addHandlerToCallbackArray = _ref1.addHandlerToCallbackArray;
 
-	BaseComponent = __webpack_require__(16);
+	BaseComponent = __webpack_require__(20);
 
 	_ref2 = __webpack_require__(4), funcString = _ref2.funcString, newLine = _ref2.newLine, cloneObject = _ref2.cloneObject;
 
 	_ref3 = __webpack_require__(6), flow = _ref3.flow, react = _ref3.react;
 
-	toComponentArray = __webpack_require__(29);
+	toComponentArray = __webpack_require__(27);
+
+	binaryInsert = __webpack_require__(4).binaryInsert;
 
 	module.exports = Tag = (function(_super) {
 	  __extends(Tag, _super);
+
+	  Tag.prototype.FakeTag = function() {
+	    return Tag;
+	  };
 
 	  function Tag(tagName, attrs, children) {
 	    if (attrs == null) {
@@ -4550,8 +4716,10 @@
 	    this.style = {};
 	    this.boundStyle = {};
 	    this['invalidateStyle'] = {};
-	    this.hasActiveDomEvents = false;
-	    this.domEventCallbackMap = {};
+	    this.hasActiveDomEvents = this.hasActiveDomEvents || false;
+	    if (!this.domEventCallbackMap) {
+	      this.domEventCallbackMap = {};
+	    }
 	    this.eventUpdateConfig = {};
 	  };
 
@@ -4740,50 +4908,40 @@
 	  };
 
 	  Tag.prototype.bind = function(eventNames, handler, before) {
-	    var eventName, _i, _len;
+	    var eventName, isBefore, _i, _len, _ref4;
+	    if (!this.domEventCallbackMap) {
+	      this.domEventCallbackMap = {};
+	    }
 	    if (arguments.length === 1) {
 	      for (eventName in eventNames) {
 	        handler = eventNames[eventName];
-	        this.bindOne(eventName, handler);
+	        this.bind(eventName, handler);
 	      }
 	    } else {
-	      if (!this.domEventCallbackMap) {
-	        this.domEventCallbackMap = {};
-	      }
-	      eventNames = eventNames.split('\s+');
+	      _ref4 = eventNames.split(/\s*:\s*/), eventNames = _ref4[0], isBefore = _ref4[1];
+	      eventNames = eventNames.split(/\s+/);
 	      for (_i = 0, _len = eventNames.length; _i < _len; _i++) {
 	        eventName = eventNames[_i];
-	        this.bindOne(eventName, handler, before);
+	        this.bindOne(eventName, handler, before || isBefore);
 	      }
 	    }
 	    return this;
 	  };
 
 	  Tag.prototype.bindOne = function(eventName, handler, before) {
-	    var domEventCallbackMap, domEventCallbacks, index;
+	    var domEventCallbackMap, domEventCallbacks;
 	    if (eventName.slice(0, 2) !== 'on') {
 	      eventName = 'on' + eventName;
 	    }
-	    domEventCallbackMap = this.domEventCallbackMap;
-	    if (!(domEventCallbacks = domEventCallbackMap[eventName])) {
-	      domEventCallbackMap[eventName] = [handler];
-	      if (this.node) {
-	        this.node[eventName] = domEventHandler;
-	      } else {
-	        this.hasActiveDomEvents = true;
-	        this.hasActiveProperties = true;
-	      }
+	    domEventCallbackMap = this.domEventCallbackMap || (this.domEventCallbackMap = {});
+	    domEventCallbacks = domEventCallbackMap[eventName] || (domEventCallbackMap[eventName] = []);
+	    if (this.node) {
+	      this.node[eventName] = domEventHandler;
 	    } else {
-	      index = domEventCallbacks.indexOf(handler);
-	      if (index >= 0) {
-	        return this;
-	      }
-	      if (before) {
-	        domEventCallbacks.unshift.call(domEventCallbacks, handler);
-	      } else {
-	        domEventCallbacks.push.call(domEventCallbacks, handler);
-	      }
+	      this.hasActiveDomEvents = true;
+	      this.hasActiveProperties = true;
 	    }
+	    addHandlerToCallbackArray(handler, domEventCallbacks, before);
 	    return this;
 	  };
 
@@ -4925,40 +5083,49 @@
 	    return this.showHide(false, test, display);
 	  };
 
+	  Tag.prototype.refreshDom = function(oldBaseComponent) {
+	    this.renderDom(oldBaseComponent);
+	    this.attachParent();
+	  };
+
 	  Tag.prototype.createDom = function() {
-	    var child, children, node, _i, _len;
-	    this.node = node = this.namespace ? document.createElementNS(this.namespace, this.tagName) : document.createElement(this.tagName);
+	    var node;
+	    this.node = this.firstNode = node = this.namespace ? document.createElementNS(this.namespace, this.tagName) : document.createElement(this.tagName);
 	    node.component = this;
-	    this.node = node;
-	    this.firstNode = node;
-	    this.hasActiveProperties && this.updateProperties();
-	    children = this.children;
-	    for (_i = 0, _len = children.length; _i < _len; _i++) {
-	      child = children[_i];
-	      child.parentNode = node;
-	    }
-	    this.childrenNextNode = null;
-	    this.childNodes = [];
+	    this.updateProperties();
 	    this.createChildrenDom();
+	    this.attachChildren();
+	    this.removeChildrenDom();
 	    return node;
 	  };
 
 	  Tag.prototype.updateDom = function() {
-	    var children, index, invalidIndexes, node, _i, _len;
-	    this.hasActiveProperties && this.updateProperties();
-	    children = this.children, node = this.node, invalidIndexes = this.invalidIndexes;
-	    for (_i = 0, _len = invalidIndexes.length; _i < _len; _i++) {
-	      index = invalidIndexes[_i];
-	      if (children[index]) {
-	        children[index].parentNode = node;
-	      }
-	    }
+	    this.updateProperties();
 	    this.updateChildrenDom();
-	    return node;
+	    this.attachChildren();
+	    this.removeChildrenDom();
+	    return this.node;
+	  };
+
+	  Tag.prototype.invalidateAttach = function(child) {
+	    var index;
+	    index = this.children.indexOf(child);
+	    binaryInsert(index, this.attachParentIndexes);
+	    if (this.holder) {
+	      if (this.attachValid && this.valid) {
+	        this.holder.invalidateContent(this);
+	      }
+	      this.valid = false;
+	      this.attachValid = false;
+	    }
+	    return this;
 	  };
 
 	  Tag.prototype.updateProperties = function() {
 	    var cacheNodeAttrs, cacheProps, cacheStyle, callbackList, className, classValue, elementStyle, eventName, node, nodeAttrs, prop, props, style, value, _ref4;
+	    if (!this.hasActiveProperties) {
+	      return;
+	    }
 	    this.hasActiveProperties = false;
 	    node = this.node, className = this.className;
 	    if (!className.valid) {
@@ -5012,7 +5179,7 @@
 	  };
 
 	  Tag.prototype.clone = function(options) {
-	    var attrs, domEventCallbacks, eventName, result, _ref4;
+	    var FakeTag, attrs, domEventCallbacks, eventName, result, _ref4;
 	    attrs = {
 	      className: this.className.clone(),
 	      style: extend({}, this.cacheStyle, this.style)
@@ -5023,7 +5190,8 @@
 	      domEventCallbacks = _ref4[eventName];
 	      attrs[eventName] = domEventCallbacks.slice(0);
 	    }
-	    result = new Tag(this.tagName, attrs, []);
+	    FakeTag = this.FakeTag();
+	    result = new FakeTag(this.tagName, attrs, []);
 	    result.__proto__ = this.__proto__;
 	    result.constructor = this.constructor;
 	    result.cloneChildrenFrom(this, options);
@@ -5085,35 +5253,35 @@
 
 	mixin = __webpack_require__(4).mixin;
 
-	ListMixin = __webpack_require__(30);
+	ListMixin = __webpack_require__(28);
 
 	mixin(Tag.prototype, ListMixin);
 
 
 /***/ },
-/* 33 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports, extend;
 
 	extend = __webpack_require__(7);
 
-	module.exports = exports = extend({}, __webpack_require__(19), __webpack_require__(21), __webpack_require__(22));
+	module.exports = exports = extend({}, __webpack_require__(22), __webpack_require__(24), __webpack_require__(25));
 
-	exports.classFn = __webpack_require__(20);
+	exports.classFn = __webpack_require__(23);
 
 
 /***/ },
-/* 34 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var BaseComponent, Comment, Text, domValue, funcString, newLine, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	BaseComponent = __webpack_require__(16);
+	BaseComponent = __webpack_require__(20);
 
-	Text = __webpack_require__(18);
+	Text = __webpack_require__(21);
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
 
@@ -5168,20 +5336,70 @@
 
 
 /***/ },
-/* 35 */
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var BaseComponent, Cdata, Text, domValue, funcString, newLine, _ref,
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	BaseComponent = __webpack_require__(20);
+
+	Text = __webpack_require__(21);
+
+	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine;
+
+	domValue = __webpack_require__(5).domValue;
+
+	module.exports = Cdata = (function(_super) {
+	  __extends(Cdata, _super);
+
+	  function Cdata(text) {
+	    Cdata.__super__.constructor.call(this, text);
+	  }
+
+
+	  /*
+	    this operation is not supported in html document
+	   */
+
+	  Cdata.prototype.createDom = function() {
+	    this.node = document.createCDATASection(domValue(this.text, this));
+	    return this.node;
+	  };
+
+	  Cdata.prototype.updateDom = function() {
+	    this.text && (this.node.data = domValue(this.text, this));
+	    return this.node;
+	  };
+
+	  Cdata.prototype.toString = function(indent, addNewLine) {
+	    if (indent == null) {
+	      indent = 2;
+	    }
+	    return newLine("<CDATA " + (funcString(this.text)) + "/>", indent, addNewLine);
+	  };
+
+	  return Cdata;
+
+	})(Text);
+
+
+/***/ },
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Html, HtmlMixin, ListMixin, Tag, domField, domValue, extend, funcString, method, mixin, newLine, setText, _fn, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	Tag = __webpack_require__(32);
+	Tag = __webpack_require__(30);
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, mixin = _ref.mixin;
 
 	_ref1 = __webpack_require__(5), domValue = _ref1.domValue, domField = _ref1.domField;
 
-	setText = __webpack_require__(19).setText;
+	setText = __webpack_require__(22).setText;
 
 	module.exports = Html = (function(_super) {
 	  __extends(Html, _super);
@@ -5238,6 +5456,7 @@
 	    }
 	  },
 	  initListMixin: function() {},
+	  attachChildren: function() {},
 	  createDom: function() {
 	    var node, text;
 	    this.textValid = true;
@@ -5278,7 +5497,7 @@
 	  }
 	};
 
-	ListMixin = __webpack_require__(30);
+	ListMixin = __webpack_require__(28);
 
 	_fn = function(method) {
 	  return Html.prototype[method] = function() {
@@ -5295,14 +5514,14 @@
 
 
 /***/ },
-/* 36 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var ObjectDefineProperty, TestComponent, TransformComponent, funcString, intersect, newLine, renew, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	TransformComponent = __webpack_require__(24);
+	TransformComponent = __webpack_require__(16);
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
@@ -5385,22 +5604,22 @@
 
 
 /***/ },
-/* 37 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var If, ObjectDefineProperty, TestComponent, funcString, intersect, mergeIf, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(26);
+	toComponent = __webpack_require__(18);
 
-	TestComponent = __webpack_require__(36);
+	TestComponent = __webpack_require__(35);
 
 	_ref = __webpack_require__(4), funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
 	renew = __webpack_require__(6).renew;
 
-	mergeIf = __webpack_require__(38);
+	mergeIf = __webpack_require__(37);
 
 	ObjectDefineProperty = Object.defineProperty;
 
@@ -5464,20 +5683,20 @@
 
 
 /***/ },
-/* 38 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var List, Nothing, Tag, domEventHandlerFromArray, emptyEventCallback, exports, extend, flow, flowIf, mergeIf, mergeIfChild, mergeIfChildren, mergeIfClassFn, mergeIfEvents, mergeIfProps;
 
 	extend = __webpack_require__(7);
 
-	Tag = __webpack_require__(32);
+	Tag = __webpack_require__(30);
 
-	List = __webpack_require__(28);
+	List = __webpack_require__(26);
 
-	Nothing = __webpack_require__(27);
+	Nothing = __webpack_require__(19);
 
-	domEventHandlerFromArray = __webpack_require__(33).domEventHandlerFromArray;
+	domEventHandlerFromArray = __webpack_require__(31).domEventHandlerFromArray;
 
 	flow = __webpack_require__(9);
 
@@ -5485,7 +5704,7 @@
 
 	exports = module.exports = mergeIf = function(test, then_, else_, recursive) {
 	  var If, children, className, component, elseTransform, events, props, style, thenTransform, transform;
-	  If = __webpack_require__(37);
+	  If = __webpack_require__(36);
 	  if (then_ === else_) {
 	    return then_;
 	  } else if (then_.constructor === Tag && else_.constructor === Tag && then_.tagName === else_.tagName && then_.namespace === else_.namespace) {
@@ -5521,7 +5740,7 @@
 	mergeIfChild = function(test, then_, else_, recursive) {
 	  var If;
 	  if (!recursive && (then_.isList || else_.isList)) {
-	    If = __webpack_require__(37);
+	    If = __webpack_require__(36);
 	    return new If(test, then_, else_, false, false, true);
 	  } else {
 	    return mergeIf(test, then_, else_, recursive);
@@ -5606,16 +5825,16 @@
 
 
 /***/ },
-/* 39 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Case, TestComponent, foreach, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(26);
+	toComponent = __webpack_require__(18);
 
-	TestComponent = __webpack_require__(36);
+	TestComponent = __webpack_require__(35);
 
 	_ref = __webpack_require__(4), foreach = _ref.foreach, funcString = _ref.funcString, newLine = _ref.newLine, intersect = _ref.intersect;
 
@@ -5681,16 +5900,16 @@
 
 
 /***/ },
-/* 40 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Pick, TransformComponent, extend, newLine, toComponent,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(26);
+	toComponent = __webpack_require__(18);
 
-	TransformComponent = __webpack_require__(24);
+	TransformComponent = __webpack_require__(16);
 
 	newLine = __webpack_require__(4).newLine;
 
@@ -5772,16 +5991,16 @@
 
 
 /***/ },
-/* 41 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Defer, FULFILL, INIT, REJECT, TransformComponent, extend, funcString, intersect, newLine, renew, toComponent, _ref,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	toComponent = __webpack_require__(26);
+	toComponent = __webpack_require__(18);
 
-	TransformComponent = __webpack_require__(24);
+	TransformComponent = __webpack_require__(16);
 
 	extend = __webpack_require__(7);
 
@@ -5861,7 +6080,7 @@
 
 
 /***/ },
-/* 42 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Case, Comment, Component, Defer, Func, Html, If, List, Nothing, Pick, Tag, Text, attrsChildren, defaultItemFunction, each, every, getEachArgs, isArray, isAttrs, isComponent, isEachObjectSystemKey, isEven, isObject, list, renew, tag, toComponent, toTagChildren, watchItems, _each, _ref, _ref1, _ref2,
@@ -6208,7 +6427,7 @@
 
 
 /***/ },
-/* 43 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var extend, getBindProp, input, inputTypes, isAttrs, tag, tagName, tagNames, type, _fn, _fn1, _i, _j, _len, _len1, _ref, _ref1,
@@ -6216,7 +6435,7 @@
 
 	extend = __webpack_require__(7);
 
-	_ref = __webpack_require__(42), tag = _ref.tag, isAttrs = _ref.isAttrs;
+	_ref = __webpack_require__(41), tag = _ref.tag, isAttrs = _ref.isAttrs;
 
 	getBindProp = __webpack_require__(5).getBindProp;
 
@@ -6258,8 +6477,8 @@
 	  if (value != null) {
 	    component.prop(getBindProp(component), value);
 	    if (value.isDuplex) {
-	      component.bind('onchange', (function(event) {
-	        return value.call(this.component, this.value);
+	      component.bind('onchange', (function(event, node) {
+	        return value.call(this, node.value);
 	      }), 'before');
 	    }
 	  }
@@ -6293,8 +6512,8 @@
 	      }, attrs);
 	      component = tag('textarea', attrs);
 	      if (value.isDuplex) {
-	        component.bind('onchange', (function(event) {
-	          return value.call(this.component, this.value);
+	        component.bind('onchange', (function(event, node) {
+	          return value.call(this, node.value);
 	        }), 'before');
 	      }
 	    } else {
@@ -6306,8 +6525,8 @@
 	        value: attrs
 	      });
 	      if (attrs.isDuplex) {
-	        component.bind('onchange', (function(event) {
-	          return attrs.call(this.component, this.value);
+	        component.bind('onchange', (function(event, node) {
+	          return attrs.call(this, node.value);
 	        }), 'before');
 	      }
 	    } else {
@@ -6319,7 +6538,7 @@
 
 
 /***/ },
-/* 44 */
+/* 43 */
 /***/ function(module, exports) {
 
 	var DomcomError, dcError, slice, stackReg, stackReg2, stacktraceMessage,
@@ -6399,7 +6618,7 @@
 	  } else if (message instanceof Error) {
 	    throw message;
 	  } else {
-	    if (comopenent) {
+	    if (component) {
 	      console.log(component);
 	      console.log(message);
 	    } else {
@@ -6411,26 +6630,26 @@
 
 
 /***/ },
-/* 45 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var $hide, $show, _ref;
 
-	exports.$model = __webpack_require__(46);
+	exports.$model = __webpack_require__(45);
 
-	exports.$bind = __webpack_require__(47);
+	exports.$bind = __webpack_require__(46);
 
-	_ref = __webpack_require__(48), $show = _ref.$show, $hide = _ref.$hide;
+	_ref = __webpack_require__(47), $show = _ref.$show, $hide = _ref.$hide;
 
 	exports.$show = $show;
 
 	exports.$hide = $hide;
 
-	exports.$options = __webpack_require__(49);
+	exports.$options = __webpack_require__(48);
 
 
 /***/ },
-/* 46 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var getBindProp;
@@ -6443,8 +6662,8 @@
 	    props = comp.props;
 	    bindProp = getBindProp(comp);
 	    comp.setProp(bindProp, binding, props, 'Props');
-	    comp.bind(eventName || 'onchange', (function() {
-	      return binding(this[bindProp]);
+	    comp.bind(eventName || 'onchange', (function(event, node) {
+	      return binding(node[bindProp]);
 	    }), 'before');
 	    return comp;
 	  };
@@ -6452,7 +6671,7 @@
 
 
 /***/ },
-/* 47 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var getBindProp;
@@ -6468,7 +6687,7 @@
 
 
 /***/ },
-/* 48 */
+/* 47 */
 /***/ function(module, exports) {
 
 	
@@ -6491,16 +6710,16 @@
 
 
 /***/ },
-/* 49 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Tag, option, txt;
 
-	txt = __webpack_require__(42).txt;
+	txt = __webpack_require__(41).txt;
 
-	option = __webpack_require__(43).option;
+	option = __webpack_require__(42).option;
 
-	Tag = __webpack_require__(32);
+	Tag = __webpack_require__(30);
 
 	module.exports = function(items, attrs) {
 	  return function(comp) {
@@ -6521,7 +6740,7 @@
 
 
 /***/ },
-/* 50 */
+/* 49 */
 /***/ function(module, exports) {
 
 	var DomNode, Tag, makeComponentDelegationHandler, makeDelegationHandler, makeHolderDelegationHandler;
@@ -6588,7 +6807,7 @@
 
 
 /***/ },
-/* 51 */
+/* 50 */
 /***/ function(module, exports) {
 
 	var Tag, reNonUnit, unitAdd, unitDiv, unitMul, unitSub;

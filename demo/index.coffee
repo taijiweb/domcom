@@ -29,4 +29,4 @@ window.onload = ->
 #  demoIfEach()
 #  demoModelOnMultipleInput()
 
-  runDemo demoMap, 'choose web framework'
+  runDemo(demoMap, 'choose web framework')

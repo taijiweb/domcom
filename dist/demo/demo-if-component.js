@@ -7,7 +7,7 @@ module.exports = function() {
   x = see(0, parseNumber);
   return comp = list(text({
     onchange: function() {
-      x = parseInt(this.value);
+      x = parseInt(this.node.value);
       return comp.render();
     }
   }, x), if_(x, div(1), div(2)));
