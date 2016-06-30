@@ -1,3 +1,9 @@
+### 2016-6-30 v0.5.1 on github, npm
+* add api: dc.clean(): remove all components in dc.removingChildren
+* fix bugs in domcom/demo
+  wrong renderDom after the component is removed ( check component.removing and component.removed before calling renderDom in component.render())
+  the component is not refreshed after switching each3, each4 (caused by wrong component.valid, component.attachValid field)
+
 ### 2016-6-14
 * bug fix: core/index is removed
 
