@@ -6,7 +6,7 @@ Component, Tag, Text, List, If
 txt, list, func, if_, mergeIf
 a, p, span, text, div} = dc
 
-describe 'domcom/mergeIf', ->
+describe 'domcom/test-merge-if', ->
   afterEach ->
     dc.reset()
 
@@ -46,6 +46,7 @@ describe 'domcom/mergeIf', ->
 
     x 0
     comp.render()
+    dc.clean()
     expect(demoNode.innerHTML).to.equal '1'
 
   it 'should render mergeIf(x, new List([t1]), list(t2, t1))', ->
@@ -73,6 +74,7 @@ describe 'domcom/mergeIf', ->
     expect(demoNode.innerHTML).to.equal '<p>2</p>', 'mount'
     x 1
     comp.render()
+    dc.clean()
     expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1'
 
   it 'should also render mergeIf(x, p(t1), p(t2, t1))', ->
@@ -87,14 +89,17 @@ describe 'domcom/mergeIf', ->
 
     x 1
     comp.render()
+    dc.clean()
     expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1'
 
     x 0
     comp.render()
+    dc.clean()
     expect(demoNode.innerHTML).to.equal '<p>21</p>', 'update x 0'
 
     x 1
     comp.render()
+    dc.clean()
 
     expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1 again'
 

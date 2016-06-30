@@ -3,14 +3,15 @@ Tag, Text, Comment, Html
 If, Case, Func, List,
 Pick
 Nothing, Defer} = require('./base')
+
 {isEven} = require('dc-util')
+
+extend = require('extend')
 
 exports.isAttrs = isAttrs = (item) ->
   typeof item == 'object' && item!=null && !isComponent(item) && !(item instanceof Array)
 
 {isArray, isObject} = require('dc-util')
-
-{watchItems, isEachObjectSystemKey} = require('dc-watch-list')
 
 {renew} = require('lazy-flow')
 
@@ -116,128 +117,6 @@ exports.list = list = (attrs, lst...) ->
     lst.unshift(attrs)
     if lst.length==1 then toComponent(lst[0])
     else new List(lst)
-
-defaultItemFunction = (item) -> item
-
-# itemFunc:
-# (item, index, items, component) -> List component
-# (value, key, object, component) -> List component
-_each = (attrs, items, options) ->
-  if attrs
-    if attrs.tagName
-      tagName = attrs.tagName
-      delete attrs.tagName
-    else
-      tagName = 'div'
-    listComponent = new Tag(tagName, attrs, [])
-  else
-    listComponent = new List([])
-  listComponent.items = items
-
-  if typeof options == 'function'
-    listComponent.itemFunc = options
-    options = {}
-  else
-    options = options || {}
-    listComponent.itemFunc = options.itemFunc || defaultItemFunction
-
-  listComponent.separatorFunc = options.separatorFunc
-  listComponent.updateSuccChild = options.updateSuccChild
-  listComponent.updateSuccIndex = options.updateSuccIndex
-  listComponent.keyChildMap = keyChildMap = {}
-  if isArray(items)
-    listComponent.getItemComponent = getItemComponent = (item, itemIndex) ->
-      itemComponent = toComponent(listComponent.itemFunc(item, itemIndex, items, listComponent))
-      if listComponent.separatorFunc && itemIndex
-        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, item, items, listComponent))
-        itemComponent = new List([separatorComponent, itemComponent])
-      itemComponent.itemIndex = itemIndex
-      itemComponent
-  else
-    listComponent.getItemComponent = getItemComponent = (key, itemIndex) ->
-      value = items[key]
-      keyChildMap[key] = itemIndex
-      itemComponent = toComponent(listComponent.itemFunc(value, key, itemIndex, listComponent))
-      if listComponent.separatorFunc && itemIndex
-        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, value, key, listComponent))
-        itemComponent = new List([separatorComponent, itemComponent])
-      itemComponent.$watchingKey = key
-      itemComponent.itemIndex = itemIndex
-      itemComponent
-
-  children = []
-  if isArray(items)
-    for item, i in items
-      children.push(getItemComponent(item, i))
-  else
-    i = 0
-    for key of items
-      children.push(getItemComponent(key, i))
-      i++
-  listComponent.setChildren(0, children)
-
-getEachArgs = (args) ->
-  [attrs, items, options] = args
-  if args.length == 1
-    [null, attrs, {}]
-  else if args.length == 3
-    [attrs, items, options]
-  else
-    if typeof items == 'function'
-      [null, attrs, {itemFunc:items}]
-    else if isArray(items)
-      [attrs, items, {}]
-    else if isArray(attrs)
-      [null, attrs, items]
-    else if !items
-      # options = items; items = attrs
-      [null, attrs, {}]
-    else if !isObject(items)
-      throw new Error('wrong parameter')
-    else
-      for key of items
-        if items.hasOwnProperty(key)
-          continue
-        else if key.test(/itemFunc|separatorFunc|updateSuccChild|updateSuccIndex/)
-          return [null, attrs, items]
-      [attrs, items, {}]
-
-exports.every = every = (args...) ->
-  [attrs, items, options] = getEachArgs(args)
-  _each(attrs, items, options)
-
-exports.each = each = (args...) ->
-  [attrs, items, options] = getEachArgs(args)
-  listComponent = every(attrs, items, options)
-  watchItems(items, listComponent)
-
-exports.funcEach = (attrs, listFunc, options) ->
-  if typeof attrs == 'function'
-    options = listFunc
-    listFunc = attrs
-    attrs = null
-
-  items = listFunc()
-  if isArray(items)
-    items = items[...]
-  else
-    items = extend({}, items)
-  component = each(attrs, items, options)
-
-  updateItemsCallback =  ->
-    newItems = listFunc()
-    items.replaceAll(newItems)
-
-  if listFunc.onInvalidate
-    listFunc.onInvalidate updateItemsCallback
-  else
-    component.on 'willRenderDom', ->
-      if component.node
-        updateItemsCallback()
-    component.on 'didRenderDom', ->
-      component.invalidate()
-
-  component
 
 # promise is a Promise instance which have .then and .catch the two method
 # fulfill: (value, promise, component) ->

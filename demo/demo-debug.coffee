@@ -14,8 +14,10 @@ exports.demoIfEach = ->
   comp.mount()
   showingEach$ false
   comp.render()
+  dc.clean()
   showingEach$ true
   comp.render()
+  dc.clean()
 
 exports.demoModelOnMultipleInput =  ->
   a = {}

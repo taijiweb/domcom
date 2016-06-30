@@ -3,9 +3,7 @@
 {addEventListener, removeEventListener} = require('./dom-util')
 
 processProp = (props, cache, prop, value) ->
-  if !prop?
-    return props
-  else if !value?
+  if !value?
     if typeof prop == 'string'
       props[prop]
     else
@@ -28,21 +26,25 @@ module.exports = class DomNode
 
   prop: (prop, value) ->
     {node} = this
-    if node instanceof Node
+    if !arguments.length
+      node
+    else if node instanceof Node
       processProp(node, this.cacheProps, prop, value)
     else
       for n, i in node
         processProp(n, this.cacheProps[i], prop, value)
-    this
+      return
 
   css: (prop, value) ->
     node = this.node
-    if node instanceof Node
+    if !arguments.length
+      ndoe.style
+    else if node instanceof Node
       processProp(node.style, this.cacheStyle, prop, value)
     else
       for n, i in node
         processProp(n.style, this.cacheStyle[i], prop, value)
-    this
+      return
 
   bind: (eventNames, handler) ->
     node = this.node

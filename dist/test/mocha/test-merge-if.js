@@ -6,7 +6,7 @@ newDemoNode = require('./helper').newDemoNode;
 
 see = dc.see, flow = dc.flow, Component = dc.Component, Tag = dc.Tag, Text = dc.Text, List = dc.List, If = dc.If, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, mergeIf = dc.mergeIf, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
-describe('domcom/mergeIf', function() {
+describe('domcom/test-merge-if', function() {
   afterEach(function() {
     return dc.reset();
   });
@@ -49,6 +49,7 @@ describe('domcom/mergeIf', function() {
     expect(demoNode.innerHTML).to.equal('21', 'mount');
     x(0);
     comp.render();
+    dc.clean();
     return expect(demoNode.innerHTML).to.equal('1');
   });
   it('should render mergeIf(x, new List([t1]), list(t2, t1))', function() {
@@ -75,6 +76,7 @@ describe('domcom/mergeIf', function() {
     expect(demoNode.innerHTML).to.equal('<p>2</p>', 'mount');
     x(1);
     comp.render();
+    dc.clean();
     return expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1');
   });
   it('should also render mergeIf(x, p(t1), p(t2, t1))', function() {
@@ -88,12 +90,15 @@ describe('domcom/mergeIf', function() {
     expect(demoNode.innerHTML).to.equal('<p>21</p>', 'mount');
     x(1);
     comp.render();
+    dc.clean();
     expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1');
     x(0);
     comp.render();
+    dc.clean();
     expect(demoNode.innerHTML).to.equal('<p>21</p>', 'update x 0');
     x(1);
     comp.render();
+    dc.clean();
     return expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1 again');
   });
   it('should render mergeIf(x, p(t1), div(t2))', function() {

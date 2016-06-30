@@ -85,7 +85,8 @@ pluralize = function(test, item) {
 toggleCompleted = function(todo) {
   todo.completed = !todo.completed;
   save(todos);
-  return view.render();
+  view.render();
+  return dc.clean();
 };
 
 markAll = function() {
@@ -105,14 +106,16 @@ markAll = function() {
   }
   if (!valid) {
     save(todos);
-    return view.render();
+    view.render();
+    return dc.clean();
   }
 };
 
 editTodo = function(todo) {
   editingTodo = todo;
   originalTodo = extend({}, todo);
-  return view.render();
+  view.render();
+  return dc.clean();
 };
 
 removeTodo = function(todo) {
@@ -120,12 +123,14 @@ removeTodo = function(todo) {
   index = todos.indexOf(todo);
   todos.splice(index, 1);
   save(todos);
-  return view.render();
+  view.render();
+  return dc.clean();
 };
 
 revertEdits = function(todo) {
   todos[todos.indexOf(todo)] = originalTodo;
-  return view.render();
+  view.render();
+  return dc.clean();
 };
 
 clearCompletedTodos = function() {
@@ -141,7 +146,8 @@ clearCompletedTodos = function() {
   }
   if (!valid) {
     save(todos);
-    return view.render();
+    view.render();
+    return dc.clean();
   }
 };
 
@@ -160,7 +166,8 @@ text1 = text({
       completed: false
     });
     save(todos);
-    return view.render();
+    view.render();
+    return dc.clean();
   },
   autofocus: true
 });
@@ -214,7 +221,8 @@ todoItems = funcEach(getTodos, function(todo, index) {
       todo.title = node.value;
       save(todos);
       editingTodo = null;
-      return view.render();
+      view.render();
+      return dc.clean();
     },
     onfocus: function() {
       return todo === editingTodo;
@@ -303,6 +311,7 @@ window.runTodoMvc = function() {
   view.mount('#todo-app');
   return window.addEventListener('hashchange', function() {
     updateHash();
-    return view.render();
+    view.render();
+    return dc.clean();
   });
 };

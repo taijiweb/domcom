@@ -11,17 +11,17 @@ controls = require('domcom/demo/demo-controls')
 
 makeDomComponentTest = require('../makeDomComponentTest')
 
-{demoMap} = require('domcom/demo/util')
+{demoMap, runDemo} = require('domcom/demo/util')
 
 makeDomComponentTest(demoMap, "domcom/demoMap")
 #, 'auto width edit', false
 #, 'splitter', false
 
-describe 'demo', ->
+describe 'demo and todoMVC', ->
   afterEach ->
     dc.reset()
 
-  describe 'sum', ->
+  describe 'demo', ->
     it 'should construct and create components', ->
       {a$, b$, a_, b_} = bindings({a: 3, b: 2})
       x = text(a$); y = text(b$); z = p(t1 = txt(sum=flow.add a_, b_))
@@ -44,7 +44,6 @@ describe 'demo', ->
       comp.render()
       expect(z.node.innerHTML).to.equal '34', 'update'
 
-  describe 'combobox', ->
     it 'should process event property of child component', ->
       x = 0
       comp = div({}, c0=input({ onmouseenter: -> x = 1}), div({}, 'wawa'))
@@ -59,7 +58,6 @@ describe 'demo', ->
       c0.node.onmouseenter({type: 'mouseenter'})
       expect(x).to.equal 1
 
-  describe 'text model', ->
     it 'should text model by value', ->
       {a$} = bindings(m={a: 1})
       attrs = {onchange: -> comp.render()}
@@ -80,7 +78,6 @@ describe 'demo', ->
       expect(m.a).to.equal '3', 'm.a'
       expect(text2.node.value).to.equal '3', 'text2.node.value'
 
-  describe 'combo', ->
     it 'should combobox', ->
       showingItems = see false
       comp = null # do NOT remove this line, because comp is referenced in attrs
@@ -110,14 +107,29 @@ describe 'demo', ->
       opts[1].node.onclick({type: 'click'})
       expect(input1.node.value).to.equal('2')
 
-  describe 'controls', ->
     it 'should mount controls and others', ->
       comp = controls()
       comp.mount('#demo')
       expect(comp.node.length).to.equal(2)
       comp.unmount()
 
-  describe 'mount/unmount', ->
+    it 'should always switch demo', (done) ->
+      comp = runDemo(demoMap, 'each2')
+      sel = comp.children[0]
+      sel.node.value = 'each3'
+      sel.node.onchange({type: 'change'})
+      expect(comp.children[1].node.innerHTML).to.equal("<p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p>")
+      setTimeout((->
+        sel.node.value = 'each2'
+        sel.node.onchange({type: 'change'})
+        setTimeout((->
+          sel.node.value = 'each3'
+          sel.node.onchange({type: 'change'})
+          expect(comp.children[1].node.innerHTML).to.contain("<p>1</p><p>2</p><p>3</p><p>4</p>")
+          done()
+        ), 300)
+      ), 1100)
+
     it 'should mount/unmount sub component', ->
       div1 = div 'toggle me'
       buttons = list  \

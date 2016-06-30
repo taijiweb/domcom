@@ -1,7 +1,7 @@
 extend = require('extend')
 
 DomNode = require('./DomNode')
-{requestAnimationFrame, raf, isElement, addEventListener} = require('./dom-util')
+{addEventListener} = require('./dom-util')
 isComponent = require('./core/base/isComponent')
 
 module.exports = dc = (element, all) ->
@@ -48,7 +48,7 @@ dc.ready = ->
   return
 
 if typeof window != 'undefined'
-  document.addEventListener 'DOMContentLoaded', dc.ready, false
+  addEventListener document, 'DOMContentLoaded', dc.ready, false
   addEventListener document, 'DOMContentLoaded', ->
     window.$body = dc.$body = new DomNode(document.body)
 

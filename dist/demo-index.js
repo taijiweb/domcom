@@ -164,9 +164,9 @@
 	};
 
 	exports.eachDemo2 = function() {
-	  var comp, lst2;
+	  var lst2;
 	  lst2 = [1, 2];
-	  return comp = each(lst2, function(item) {
+	  return each(lst2, function(item) {
 	    return p(item);
 	  });
 	};
@@ -184,7 +184,8 @@
 	    }), 1000);
 	    return setTimeout((function() {
 	      lst3.setLength(4);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }), 2000);
 	  });
 	  return comp;
@@ -203,7 +204,8 @@
 	    }), 1000);
 	    return setTimeout((function() {
 	      lst4.setLength(4);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }), 2000);
 	  });
 	  return comp;
@@ -230,7 +232,8 @@
 	  prompt = label('Please choose: ');
 	  prefered = text({
 	    onchange: function() {
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  }, firstLetter$);
 	  frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember'];
@@ -269,7 +272,8 @@
 	      newFramework = node.value;
 	      frameworks.push(newFramework);
 	      firstLetter$(newFramework[0]);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  });
 	  choice = func(flow(firstLetter$, function() {
@@ -319,8 +323,10 @@
 	  comp.mount();
 	  showingEach$(false);
 	  comp.render();
+	  dc.clean();
 	  showingEach$(true);
-	  return comp.render();
+	  comp.render();
+	  return dc.clean();
 	};
 
 	exports.demoModelOnMultipleInput = function() {
@@ -456,7 +462,8 @@
 	  return comp = list(text({
 	    onchange: function() {
 	      x = parseInt(this.node.value);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  }, x), if_(x, div(1), div(2)));
 	};
@@ -466,7 +473,8 @@
 	  x = see(0, parseFloat);
 	  return comp = list(text({
 	    onchange: function() {
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  }, x), if_(x, div('It is not 0.'), div('It is 0 or NaN.')));
 	};
@@ -490,7 +498,8 @@
 	  indexInput = number({
 	    onchange: function() {
 	      x = parseInt(this.node.value);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  });
 	  lst = each([0, 1, 2, 3], function(item) {
@@ -516,7 +525,8 @@
 	  indexInput = number({
 	    onchange: function() {
 	      x = parseInt(this.node.value);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  });
 	  return comp = list(indexInput, func(function() {
@@ -624,19 +634,20 @@
 	list = dc.list, div = dc.div, see = dc.see, if_ = dc.if_;
 
 	module.exports = function() {
-	  var active, comp, div1;
+	  var active, if1;
 	  active = see(true);
-	  return comp = list(div({
+	  return list(div({
 	    onclick: function() {
 	      active(true);
-	      return div1.render();
+	      return if1.render();
 	    }
 	  }, 'mount'), div({
 	    onclick: function() {
 	      active(false);
-	      return div1.render();
+	      if1.render();
+	      return dc.clean();
 	    }
-	  }, 'unmount'), div1 = if_(active, div('toggle me')));
+	  }, 'unmount'), if1 = if_(active, div('toggle me')));
 	};
 
 

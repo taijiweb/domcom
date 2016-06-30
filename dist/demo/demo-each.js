@@ -9,9 +9,9 @@ exports.eachDemo1 = function() {
 };
 
 exports.eachDemo2 = function() {
-  var comp, lst2;
+  var lst2;
   lst2 = [1, 2];
-  return comp = each(lst2, function(item) {
+  return each(lst2, function(item) {
     return p(item);
   });
 };
@@ -29,7 +29,8 @@ exports.eachDemo3 = function() {
     }), 1000);
     return setTimeout((function() {
       lst3.setLength(4);
-      return comp.render();
+      comp.render();
+      return dc.clean();
     }), 2000);
   });
   return comp;
@@ -48,7 +49,8 @@ exports.eachDemo4 = function() {
     }), 1000);
     return setTimeout((function() {
       lst4.setLength(4);
-      return comp.render();
+      comp.render();
+      return dc.clean();
     }), 2000);
   });
   return comp;

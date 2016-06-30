@@ -8,18 +8,23 @@ dc = require('../../dc')
 
 module.exports = class Component
   constructor: ->
+
+    this.dcid = newDcid()
+
     # maybe this.listeners is be set in sub class's component.on(...) call in advance
-    # if that, keep it
+    # if that happens, keep it
     this.listeners = this.listeners || {}
+
     this.baseComponent = null
     this.parentNode = null
     this.nextNode = null
     this.node = null
-    this.destroyed = false
     this.holder = null
-    this.dcid = newDcid()
     this.valid = true
     this.attachValid = true
+    this.removing = false
+    this.removed = false
+    this.destroyed = false
     this.setReactive()
 
   _prepareMount: (mountNode, beforeNode) ->
@@ -51,6 +56,7 @@ module.exports = class Component
       this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.body
       this.nextNode = beforeNode || this.nextNode
       this.setHolder(dc)
+      this.clearRemoving()
       dc.rootComponentMap[this.dcid] = this
 
   create: (mountNode, beforeNode, forceRender) ->
@@ -80,68 +86,42 @@ module.exports = class Component
         if (prevNode = firstNode.previousSibling) && prevComponent = prevNode.component
           prevComponent.setNextNode(this.nextNode)
         this.removeNode()
-    else if holder.children
+    else if holder && holder.children
       holder.removeChild(this)
     else if holder
       dc.error('Should not remove the content of TransformComponent')
-    this
-
-  memoRemoving: (component) ->
-    holder = this.holder
-    if !holder || holder == dc
-      this.removingChildren[component.dcid] = component
-    else if this.isTag || this.isRenderHolder
-      this.removingChildren[component.dcid] = component
-    else
-      this.holder.memoRemoving(component)
-    return
-
-  # normally only Tag and List will have removingChildren
-  # but the removing component of TransformComponent will be added to TransformComponent.baseComponent
-  removeChildrenDom: ->
-    for _, child of this.removingChildren
-      child.removeDom()
-    this.removingChildren = {}
-    return
-
-  asRenderHolder: (isRenderHolder = true) ->
-    this.isRenderHolder = isRenderHolder
     this
 
   render: (forceRender) ->
     if !this.destroyed && (forceRender || dc.alwaysRender || !dc.renderBySystemLoop)
       if this.removing
         this.removeDom()
-      else
+      else if !this.removed
         this.refreshDom(this.baseComponent)
     this
 
-  renderHolder: (forceRender) ->
-    if this.holder
-      this.holder.render(forceRender)
-    else
-      this.render(forceRender)
-
   replace: (oldComponent, forceRender) ->
-    if this.destroyed || this == oldComponent
-      return
-    holder = oldComponent.holder
-    if holder && holder != dc
-      if holder.isTransformComponent
-        dc.error('Should not replace the content of TransformComponent')
-      else
-        # holder is List or Tag
-        holder.replaceChild(oldComponent, this)
-        holder.render(forceRender)
-    else if holder == dc
-      this.parentNode = oldComponent.parentNode
-      this.nextNode = oldComponent.nextNode
-      oldComponent.markRemovingDom(this)
-      this.setHolder(holder)
-      this.invalidate()
-      dc.rootComponentMap[this.dcid] = this
-      dc.rootComponentMap[oldComponent.dcid] = oldComponent
-      this.render(forceRender)
+    if !this.destroyed && this != oldComponent && !oldComponent.removing && !oldComponent.removed
+      holder = oldComponent.holder
+      if holder && holder != dc
+        if holder.isTransformComponent
+          dc.error('Should not replace the content of TransformComponent')
+        else
+          # holder is List or Tag
+          holder.replaceChild(oldComponent, this)
+          holder.render(forceRender)
+          oldComponent.removeDom()
+      else if holder == dc
+        this.parentNode = oldComponent.parentNode
+        this.nextNode = oldComponent.nextNode
+        oldComponent.markRemovingDom()
+        this.setHolder(holder)
+        this.invalidate()
+        dc.rootComponentMap[this.dcid] = this
+        dc.rootComponentMap[oldComponent.dcid] = oldComponent
+        this.render(forceRender)
+        oldComponent.removeDom()
+
     this
 
   ###
@@ -159,6 +139,11 @@ module.exports = class Component
     this
 
   destroy: ->
+    this.emit('willDestroy')
+    this.executeDestroy()
+    this.emit('didDestroy')
+
+  executeDestroy: ->
     this.unmount(true)
     this.destroyed = true
     this.listeners = null
@@ -172,13 +157,13 @@ module.exports = class Component
     if !(holder = this.holder)
       null
     else if children = holder.children
-      chilren[children.indexOf(this)]
+      children[children.indexOf(this) - 1]
 
   getNextComponent: ->
     if !(holder = this.holder)
       null
     else if children = holder.holder.children
-      children[children.indexOf(this)]
+      children[children.indexOf(this) - 1]
 
   setNextNode: (nextNode) ->
     this.nextNode = nextNode

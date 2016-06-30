@@ -3,7 +3,7 @@
 module.exports = ->
   x = 0
   comp = null
-  indexInput = number({onchange: -> x = parseInt(this.node.value); comp.render()})
+  indexInput = number({onchange: -> x = parseInt(this.node.value); comp.render(); dc.clean() })
   lst = each [0, 1, 2, 3], (item) ->
     div style: {display: -> if item==x then 'block' else 'none'},
       item
@@ -14,7 +14,7 @@ module.exports = ->
 module.exports = ->
   x = 0
   comp = null
-  indexInput = number({onchange: -> x = parseInt(this.node.value); comp.render()})
+  indexInput = number({onchange: -> x = parseInt(this.node.value); comp.render(); dc.clean() })
   comp = list(indexInput, func(-> if x>=0 && x<=3 then div x))
 
 # by using flow, it can be improved like below

@@ -23,8 +23,10 @@ exports.demoIfEach = function() {
   comp.mount();
   showingEach$(false);
   comp.render();
+  dc.clean();
   showingEach$(true);
-  return comp.render();
+  comp.render();
+  return dc.clean();
 };
 
 exports.demoModelOnMultipleInput = function() {

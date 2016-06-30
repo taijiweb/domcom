@@ -134,7 +134,8 @@
 	toggleCompleted = function(todo) {
 	  todo.completed = !todo.completed;
 	  save(todos);
-	  return view.render();
+	  view.render();
+	  return dc.clean();
 	};
 
 	markAll = function() {
@@ -154,14 +155,16 @@
 	  }
 	  if (!valid) {
 	    save(todos);
-	    return view.render();
+	    view.render();
+	    return dc.clean();
 	  }
 	};
 
 	editTodo = function(todo) {
 	  editingTodo = todo;
 	  originalTodo = extend({}, todo);
-	  return view.render();
+	  view.render();
+	  return dc.clean();
 	};
 
 	removeTodo = function(todo) {
@@ -169,12 +172,14 @@
 	  index = todos.indexOf(todo);
 	  todos.splice(index, 1);
 	  save(todos);
-	  return view.render();
+	  view.render();
+	  return dc.clean();
 	};
 
 	revertEdits = function(todo) {
 	  todos[todos.indexOf(todo)] = originalTodo;
-	  return view.render();
+	  view.render();
+	  return dc.clean();
 	};
 
 	clearCompletedTodos = function() {
@@ -190,7 +195,8 @@
 	  }
 	  if (!valid) {
 	    save(todos);
-	    return view.render();
+	    view.render();
+	    return dc.clean();
 	  }
 	};
 
@@ -209,7 +215,8 @@
 	      completed: false
 	    });
 	    save(todos);
-	    return view.render();
+	    view.render();
+	    return dc.clean();
 	  },
 	  autofocus: true
 	});
@@ -263,7 +270,8 @@
 	      todo.title = node.value;
 	      save(todos);
 	      editingTodo = null;
-	      return view.render();
+	      view.render();
+	      return dc.clean();
 	    },
 	    onfocus: function() {
 	      return todo === editingTodo;
@@ -352,7 +360,8 @@
 	  view.mount('#todo-app');
 	  return window.addEventListener('hashchange', function() {
 	    updateHash();
-	    return view.render();
+	    view.render();
+	    return dc.clean();
 	  });
 	};
 

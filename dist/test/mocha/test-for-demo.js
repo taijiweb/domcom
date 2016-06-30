@@ -1,4 +1,4 @@
-var Component, List, Tag, Text, a, bindings, button, classFn, controls, ddescribe, demoMap, div, duplex, each, expect, extendAttrs, flow, func, funcEach, idescribe, if_, iit, input, li, list, makeDomComponentTest, ndescribe, nit, p, see, span, styleFrom, text, txt, _ref;
+var Component, List, Tag, Text, a, bindings, button, classFn, controls, ddescribe, demoMap, div, duplex, each, expect, extendAttrs, flow, func, funcEach, idescribe, if_, iit, input, li, list, makeDomComponentTest, ndescribe, nit, p, runDemo, see, span, styleFrom, text, txt, _ref, _ref1;
 
 _ref = require('bdd-test-helper'), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, ddescribe = _ref.ddescribe;
 
@@ -8,21 +8,21 @@ controls = require('domcom/demo/demo-controls');
 
 makeDomComponentTest = require('../makeDomComponentTest');
 
-demoMap = require('domcom/demo/util').demoMap;
+_ref1 = require('domcom/demo/util'), demoMap = _ref1.demoMap, runDemo = _ref1.runDemo;
 
 makeDomComponentTest(demoMap, "domcom/demoMap");
 
-describe('demo', function() {
+describe('demo and todoMVC', function() {
   afterEach(function() {
     return dc.reset();
   });
-  describe('sum', function() {
-    return it('should construct and create components', function() {
-      var a$, a_, b$, b_, comp, sum, t1, x, y, z, _ref1;
-      _ref1 = bindings({
+  describe('demo', function() {
+    it('should construct and create components', function() {
+      var a$, a_, b$, b_, comp, sum, t1, x, y, z, _ref2;
+      _ref2 = bindings({
         a: 3,
         b: 2
-      }), a$ = _ref1.a$, b$ = _ref1.b$, a_ = _ref1.a_, b_ = _ref1.b_;
+      }), a$ = _ref2.a$, b$ = _ref2.b$, a_ = _ref2.a_, b_ = _ref2.b_;
       x = text(a$);
       y = text(b$);
       z = p(t1 = txt(sum = flow.add(a_, b_)));
@@ -49,8 +49,6 @@ describe('demo', function() {
       comp.render();
       return expect(z.node.innerHTML).to.equal('34', 'update');
     });
-  });
-  describe('combobox', function() {
     it('should process event property of child component', function() {
       var c0, comp, x;
       x = 0;
@@ -65,7 +63,7 @@ describe('demo', function() {
       });
       return expect(x).to.equal(1);
     });
-    return it('should process event property of child component with model directive', function() {
+    it('should process event property of child component with model directive', function() {
       var c0, comp, x;
       x = 0;
       comp = div({}, c0 = input({
@@ -80,8 +78,6 @@ describe('demo', function() {
       });
       return expect(x).to.equal(1);
     });
-  });
-  describe('text model', function() {
     it('should text model by value', function() {
       var a$, attrs, comp, m, text1, text2;
       a$ = bindings(m = {
@@ -101,7 +97,7 @@ describe('demo', function() {
       expect(m.a).to.equal('3', 'm.a');
       return expect(text2.node.value).to.equal('3', 'text2.node.value');
     });
-    return it('should text model by value and onchange', function() {
+    it('should text model by value and onchange', function() {
       var a$, attrs, comp, m, text1, text2;
       a$ = bindings(m = {
         a: 1
@@ -122,19 +118,17 @@ describe('demo', function() {
       expect(m.a).to.equal('3', 'm.a');
       return expect(text2.node.value).to.equal('3', 'text2.node.value');
     });
-  });
-  describe('combo', function() {
-    return it('should combobox', function() {
+    it('should combobox', function() {
       var attrs, comp, input1, item, items, opts, showingItems, value;
       showingItems = see(false);
       comp = null;
       value = see('');
       opts = (function() {
-        var _i, _len, _ref1, _results;
-        _ref1 = [1, 2];
+        var _i, _len, _ref2, _results;
+        _ref2 = [1, 2];
         _results = [];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          item = _ref1[_i];
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          item = _ref2[_i];
           _results.push((function(item) {
             return span({
               style: {
@@ -187,17 +181,37 @@ describe('demo', function() {
       });
       return expect(input1.node.value).to.equal('2');
     });
-  });
-  describe('controls', function() {
-    return it('should mount controls and others', function() {
+    it('should mount controls and others', function() {
       var comp;
       comp = controls();
       comp.mount('#demo');
       expect(comp.node.length).to.equal(2);
       return comp.unmount();
     });
-  });
-  describe('mount/unmount', function() {
+    it('should always switch demo', function(done) {
+      var comp, sel;
+      comp = runDemo(demoMap, 'each2');
+      sel = comp.children[0];
+      sel.node.value = 'each3';
+      sel.node.onchange({
+        type: 'change'
+      });
+      expect(comp.children[1].node.innerHTML).to.equal("<p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p>");
+      return setTimeout((function() {
+        sel.node.value = 'each2';
+        sel.node.onchange({
+          type: 'change'
+        });
+        return setTimeout((function() {
+          sel.node.value = 'each3';
+          sel.node.onchange({
+            type: 'change'
+          });
+          expect(comp.children[1].node.innerHTML).to.contain("<p>1</p><p>2</p><p>3</p><p>4</p>");
+          return done();
+        }), 300);
+      }), 1100);
+    });
     return it('should mount/unmount sub component', function() {
       var buttons, comp, div1;
       div1 = div('toggle me');

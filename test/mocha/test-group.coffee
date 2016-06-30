@@ -129,6 +129,18 @@ describe 'test-group: group component: List, each', ->
       expect(demoNode.innerHTML).to.equal '231'
       comp.unmount()
 
+    it 'should not renderDom after removing', ->
+      comp = list(t1=txt(1), t2=txt(2), t3=txt(3))
+      comp.mount(demoNode=newDemoNode('list'))
+      comp.removeChild(0)
+      comp.render()
+      expect(demoNode.innerHTML).to.equal('23')
+      expect(t1.node.parentNode).to.equal(null)
+      expect(t1.removed).to.equal(true)
+      t1.render()
+      expect(t1.node.parentNode).to.equal(null)
+      expect(demoNode.innerHTML).to.equal('23')
+
   describe 'each of array, object', ->
     it 'simple each for array', ->
       comp = every([1, 2], (item) -> item)
@@ -219,16 +231,20 @@ describe 'test-group: group component: List, each', ->
       expect(comp.node[1].innerHTML).to.equal 'simple'
       lst.setItem(0, 3)
       comp.render()
+      dc.clean()
       expect(comp.node[0].innerHTML).to.equal '3', 'update node 0'
       lst.setItem 1, 4
       comp.render()
+      dc.clean()
       expect(comp.node[1].innerHTML).to.equal '4', 'update node 1'
       expect(demoNode.innerHTML).to.equal '<p>3</p><p>4</p>', 'update innerHTML'
       lst.setItem 2, 5
       comp.render()
+      dc.clean()
       expect(comp.node[2].innerHTML).to.equal '5', 'update list[2] = 5'
       lst.setLength(0)
       comp.render()
+      dc.clean()
       expect(comp.children.length).to.equal 0, 'comp.children.length = 0'
       expect(comp.node.length).to.equal 0, 'node.length'
       comp.unmount()
@@ -250,6 +266,7 @@ describe 'test-group: group component: List, each', ->
       expect(comp.node[2].textContent).to.equal 'e'
       lst.setLength 0
       comp.render()
+      dc.clean()
       expect(comp.node.length).to.equal 0
       comp.unmount()
 
@@ -283,6 +300,7 @@ describe 'test-group: group component: List, each', ->
       expect(each1.node[0].textContent).to.equal '1'
       listItems.setItem(0, 2)
       comp.render()
+      dc.clean()
       expect(each1.parentNode).to.equal(span1.node)
       expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<span>2</span>'
@@ -376,14 +394,17 @@ describe 'test-group: group component: List, each', ->
       expect(comp.node.parentNode).to.equal demo2Node
       showingEach$ false
       comp.render()
+      dc.clean()
       expect(comp.node.parentNode).to.equal undefined
       expect(demo2Node.innerHTML).to.equal('')
       showingEach$ true
       comp.render()
+      dc.clean()
       expect(comp.node.parentNode).to.equal demo2Node
       expect(demo2Node.innerHTML).to.equal('1')
       showingEach$ false
       comp.render()
+      dc.clean()
       expect(demo2Node.innerHTML).to.equal('')
       expect(comp.node.parentNode).to.equal undefined
       comp.unmount()
@@ -397,14 +418,17 @@ describe 'test-group: group component: List, each', ->
       expect(comp.node.parentNode).to.equal demo2Node
       showingEach$ false
       comp.render()
+      dc.clean()
       expect(comp.node.parentNode).to.equal undefined
       expect(demo2Node.innerHTML).to.equal('')
       showingEach$ true
       comp.render()
+      dc.clean()
       expect(comp.node.parentNode).to.equal demo2Node
       expect(demo2Node.innerHTML).to.equal('12')
       showingEach$ false
       comp.render()
+      dc.clean()
       expect(demo2Node.innerHTML).to.equal('')
       expect(comp.node.parentNode).to.equal undefined
       comp.unmount()
@@ -446,11 +470,13 @@ describe 'test-group: group component: List, each', ->
       expect(comp.node[0].textContent).to.equal '1'
       x = 2
       comp.render()
+      dc.clean()
       expect(comp.node[0].textContent).to.equal('2', 'update 2')
       expect(comp.isList).to.equal(true)
       expect(demo2Node.innerHTML).to.equal('2', 'innerHTML')
       x = 3
       comp.render()
+      dc.clean()
       expect(comp.node[0].textContent).to.equal('3', 'update 3')
       expect(demo2Node.innerHTML).to.equal('3', 'innerHTML')
       comp.unmount()
@@ -467,6 +493,7 @@ describe 'test-group: group component: List, each', ->
       expect(each2.node[0].textContent).to.equal '1'
       x = 2
       comp.render()
+      dc.clean()
       expect(demo2Node.innerHTML).to.equal('<div>2</div>')
       expect(each1.parentNode).to.equal(comp.node)
       expect(each2.node[0].textContent).to.equal('2')
@@ -486,6 +513,7 @@ describe 'test-group: group component: List, each', ->
       expect(each2.node[0].textContent).to.equal '1'
       x = 2
       comp.render()
+      dc.clean()
       expect(demo2Node.innerHTML).to.equal('2')
       expect(each1.parentNode).to.equal(each1.parentNode)
       expect(each2.node[0].textContent).to.equal('2')
@@ -500,6 +528,7 @@ describe 'test-group: group component: List, each', ->
       expect(each1.node[0].textContent).to.equal '1'
       x = 2
       comp.render()
+      dc.clean()
       expect(each1.parentNode).to.equal(span1.node)
       expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<div><span>2</span></div>'
@@ -513,6 +542,7 @@ describe 'test-group: group component: List, each', ->
       expect(each1.node[0].textContent).to.equal '1'
       x = 2
       comp.render()
+      dc.clean()
       expect(each1.parentNode).to.equal(span1.node)
       expect(each1.node[0].textContent).to.equal('2')
       expect(comp.node.innerHTML).to.equal '<span>2</span>'
@@ -526,7 +556,9 @@ describe 'test-group: group component: List, each', ->
       expect(demo2Node.innerHTML).to.equal('text 1 2')
       items = [3]
       comp.render()
+      dc.clean()
       expect(demo2Node.innerHTML).to.equal('text 3', 1)
       comp.render()
+      dc.clean()
       expect(demo2Node.innerHTML).to.equal('text 3', 2)
 

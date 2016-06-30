@@ -3,17 +3,18 @@ var div, if_, list, see;
 list = dc.list, div = dc.div, see = dc.see, if_ = dc.if_;
 
 module.exports = function() {
-  var active, comp, div1;
+  var active, if1;
   active = see(true);
-  return comp = list(div({
+  return list(div({
     onclick: function() {
       active(true);
-      return div1.render();
+      return if1.render();
     }
   }, 'mount'), div({
     onclick: function() {
       active(false);
-      return div1.render();
+      if1.render();
+      return dc.clean();
     }
-  }, 'unmount'), div1 = if_(active, div('toggle me')));
+  }, 'unmount'), if1 = if_(active, div('toggle me')));
 };

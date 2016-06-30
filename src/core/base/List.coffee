@@ -21,7 +21,6 @@ module.exports = exports = class List extends BaseComponent
   refreshDom: (oldBaseComponent) ->
     this.renderDom()
     this.attachChildren()
-    this.removeChildrenDom()
     this
 
   createDom: ->
@@ -35,22 +34,33 @@ module.exports = exports = class List extends BaseComponent
     this.firstNode = this.childrenFirstNode
     this.node
 
-  markRemovingDom: (holder) ->
-    if this.childParentNode && this.firstNode && this.firstNode.parentNode == this.childParentNode
-      this.removing = true
-      for child in this.children
-        child.markRemoving(holder)
-      holder.memoRemoving(this)
+  markRemovingDom: ->
+    this.removing = true
+    this.holder = null
+    for child in this.children
+      child.markRemoving()
+    dc.removingChildren[this.dcid] = this
     this
 
   markRemoving: ->
-    if this.childParentNode && this.node
-      this.removing = true
-      for child in this.children
-        child.markRemoving()
+    this.removing = true
+    for child in this.children
+      child.markRemoving()
     return
 
+  clearRemoving: ->
+    this.removing = this.removed = false
+    for child in this.children
+      child.clearRemoving()
+    return
+
+  # removeDom: ->
+    # this method is coded in BaseComponent.removeDom
+    # the case for component.isList is considered there
+
   removeNode: ->
+    this.removing = false
+    this.removed = true
     this.node.parentNode = null
     this.childParentNode = null
     for child in this.children
@@ -66,7 +76,15 @@ module.exports = exports = class List extends BaseComponent
         this.holder.invalidateAttach(this)
     this
 
-  attachParent: ListMixin.attachChildren
+  attachParent: ->
+    node = this.node
+    parentNode = this.parentNode
+    nextNode = this.nextNode
+    this.removing = false
+    if parentNode && (parentNode != node.parentNode || nextNode != node.nextSibling)
+      this.emit('willAttach')
+      ListMixinAttachChildren.call(this)
+      this.emit('didAttach')
 
   setNextNode: (nextNode) ->
     this.nextNode = nextNode
@@ -95,3 +113,4 @@ module.exports = exports = class List extends BaseComponent
       s += newLine('</List>', indent, true)
 
 mixin(List.prototype, ListMixin)
+ListMixinAttachChildren = ListMixin.attachChildren

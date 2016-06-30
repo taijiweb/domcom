@@ -11,6 +11,7 @@ BaseComponent = require('./BaseComponent')
 {flow, react} = require('lazy-flow')
 toComponentArray = require('./toComponentArray')
 {binaryInsert} = require('dc-util')
+{createElement, cacheElement} = require('dc-util/element-pool')
 
 module.exports = class Tag extends BaseComponent
 
@@ -29,6 +30,7 @@ module.exports = class Tag extends BaseComponent
     tagName = tagName || 'div'
     this.tagName = tagName.toLowerCase()
     this.namespace = attrs.namespace
+    this.poolLabel = this.generatePoolLabel()
 
     # initChildren must put before extendAttrs
     this.children = toComponentArray(children)
@@ -333,24 +335,20 @@ module.exports = class Tag extends BaseComponent
     return
 
   createDom: ->
-    this.node = this.firstNode = node =
-      if this.namespace
-        document.createElementNS(this.namespace, this.tagName)
-      else
-        document.createElement(this.tagName)
+    this.node = this.firstNode = node = createElement(this.namespace, this.tagName, this.poolLabel)
     node.component = this
 
     this.updateProperties()
     this.createChildrenDom()
     this.attachChildren()
-    this.removeChildrenDom()
+    this.valid = !this.hasActiveProperties && !this.updatingChildren.length # && !this.attachParentIndexes.length
     node
 
   updateDom: ->
     this.updateProperties()
     this.updateChildrenDom()
     this.attachChildren()
-    this.removeChildrenDom()
+    this.valid = !this.hasActiveProperties && !this.updatingChildren.length # && !this.attachParentIndexes.length
     this.node
 
   invalidateAttach: (child) ->
@@ -408,6 +406,20 @@ module.exports = class Tag extends BaseComponent
     this.hasActiveDomEvents = false
 
     return
+
+  setPoolLabel: (poolLabel) ->
+    this.poolLabel = poolLabel
+    this
+
+  generatePoolLabel: -> ''
+
+  destroy: ->
+    if this.poolLabel && node = this.node
+      cacheElement(node, this.poolLabel)
+    super()
+    if this.poolLabel && node
+      node.innerHTML = ''
+    this
 
   clone: (options) ->
     attrs = {className: this.className.clone(), style: extend({}, this.cacheStyle, this.style)}

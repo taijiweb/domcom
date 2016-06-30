@@ -6,7 +6,6 @@ module.exports = class BaseComponent extends Component
     super()
     this.isBaseComponent = true
     this.removing = false
-    this.removingChildren = {}
     # the line below is moved from ListMixin
     # because the removing component of TransformComponent will be added to TransformComponent.content
     this.baseComponent = this
@@ -14,14 +13,13 @@ module.exports = class BaseComponent extends Component
   refreshDom: (oldBaseComponent) ->
     this.renderDom()
     this.attachParent()
-    this.removeChildrenDom()
     this
 
   renderDom: (oldBaseComponent) ->
     this.emit('willRenderDom')
 
     if oldBaseComponent && oldBaseComponent != this
-      oldBaseComponent.markRemovingDom(this)
+      oldBaseComponent.markRemovingDom()
 
     this.renderBaseComponent(oldBaseComponent)
 
@@ -40,8 +38,9 @@ module.exports = class BaseComponent extends Component
       if this.holder
         this.holder.invalidateAttach(this)
     else
-      if !this.valid || this.isTag
-        this.valid = true
+      valid = this.valid
+      this.valid = true
+      if !valid || this.isTag
         this.updateDom()
 
     return
@@ -55,20 +54,23 @@ module.exports = class BaseComponent extends Component
 
   attachChildren: ->
 
-  markRemovingDom: (holder) ->
-    if this.parentNode && this.firstNode && this.firstNode.parentNode == this.parentNode
-      this.removing = true
-      holder.memoRemoving(this)
+  markRemovingDom: ->
+    this.removing = true
+    this.holder = null
+    dc.removingChildren[this.dcid] = this
     this
 
   markRemoving: ->
-    if this.parentNode && this.node
-      this.removing = true
+    this.removing = true
     return
+
+  clearRemoving: ->
+    this.removing = this.removed = false
 
   removeDom: ->
     if this.removing
       this.removing = false
+      this.removed = true
       this.emit('willDetach')
       if this.isList
         this.node.parentNode = null
@@ -82,6 +84,7 @@ module.exports = class BaseComponent extends Component
 
   removeNode: ->
     this.removing = false
+    this.removed = true
     if node = this.node
       node.parentNode && node.parentNode.removeChild(node)
     return
@@ -95,16 +98,12 @@ module.exports = class BaseComponent extends Component
     this.removing = false
 
     if parentNode && (parentNode != node.parentNode || nextNode != node.nextSibling)
+      this.emit('willAttach')
       parentNode.insertBefore(node, nextNode)
+      this.emit('didAttach')
 
     return
 
   attachParent: ->
-    if this.node.parentNode
-      this.emit('willAttach')
-      this.executeAttachParent()
-      this.emit('didAttach')
-    else
-      this.executeAttachParent()
-
+    this.executeAttachParent()
     this.node

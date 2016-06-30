@@ -2,9 +2,6 @@ exports.domEventHandler = (event) ->
   if component = this.component
     eventType = 'on' + event.type
 
-#    if eventType == 'onkeydown' && event.which == 65 || event.which > 200
-#      console.log(event)
-
     domEventCallbacks = component.domEventCallbackMap[eventType]
     for fn in domEventCallbacks
       result = fn.call(component, event, this)
@@ -12,6 +9,7 @@ exports.domEventHandler = (event) ->
     if componentMap = component.eventUpdateConfig[eventType]
       for _, comp of componentMap
         comp.render()
+      dc.clean()
 
     if event
       if !event.executeDefault && event.preventDefault

@@ -9,7 +9,8 @@ module.exports = function() {
   indexInput = number({
     onchange: function() {
       x = parseInt(this.node.value);
-      return comp.render();
+      comp.render();
+      return dc.clean();
     }
   });
   lst = each([0, 1, 2, 3], function(item) {
@@ -35,7 +36,8 @@ module.exports = function() {
   indexInput = number({
     onchange: function() {
       x = parseInt(this.node.value);
-      return comp.render();
+      comp.render();
+      return dc.clean();
     }
   });
   return comp = list(indexInput, func(function() {

@@ -25,17 +25,14 @@ module.exports = class TransformComponent extends Component
     this
 
   invalidateTransform: ->
-    this.transformValid = false
-    this.invalidate()
-
-  invalidateAttachOnRemove: (child, nextNode) ->
-    if this.holder
-      this.holder.invalidateAttachOnRemove(this, nextNode)
+    if this.transformValid
+      this.transformValid = false
+      this.invalidate()
+    this
 
   refreshDom: (oldBaseComponent) ->
     this.renderDom(oldBaseComponent)
     this.attachParent()
-    this.removeChildrenDom()
 
   renderDom: (oldBaseComponent) ->
     this.emit('willRenderDom')
@@ -47,6 +44,7 @@ module.exports = class TransformComponent extends Component
       if content && content.holder == this
         this.content.holder = null
       this.content = this.getContentComponent()
+      this.content.clearRemoving()
     content = this.content
     content.holder = this
     content.parentNode = this.parentNode
@@ -62,17 +60,38 @@ module.exports = class TransformComponent extends Component
     this.emit('didRenderDom')
     this
 
-  markRemovingDom: (holder) ->
-    if this.baseComponent
-      holder.markRemovingChild(this.baseComponent)
+  markRemovingDom: ->
+    this.removing = true
+    this.holder = null
+    dc.removingChildren[this.dcid] = this
+    this.content.markRemoving()
     this
 
   markRemoving: ->
-    this.baseComponent.markRemoving()
+    this.removing = true
+    this.content.markRemoving()
+    return
+
+  clearRemoving: ->
+    this.removing = this.removed = false
+    if this.content
+      this.content.clearRemoving()
     return
 
   removeDom: ->
-    this.baseComponent.removeDom()
+    if this.removing
+      this.removing = false
+      this.removed = true
+      if this.content
+        this.content.removeDom()
+    this
+
+  removeNode: ->
+    this.removing = false
+    this.removed = true
+    if this.content
+      this.content.removeNode()
+    return
 
   attachParent: ->
     if !this.attachValid
@@ -85,5 +104,5 @@ module.exports = class TransformComponent extends Component
 
   propagateChildNextNode: (child, nextNode) ->
     if this.holder
-      this.holder.propagateChildNextNode(child, nextNode)
+      this.holder.propagateChildNextNode(this, nextNode)
     return

@@ -84,6 +84,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
 
       x 0
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal '1', 'update'
 
     it 'should render if_(x, t1, list(t2, t1))', ->
@@ -93,12 +94,15 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       comp.mount(demoNode=newDemoNode('if-ref'))
       expect(demoNode.innerHTML).to.equal '21', 'mount'
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal '21', 'update'
       x 1
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal '1', 'update x 1'
       x 0
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal '21', 'update x 0'
 
     it 'should render if_(x, p(t1), list(p(t2), t1))', ->
@@ -109,12 +113,15 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(demoNode.innerHTML).to.equal '<p>2</p>1', 'mount'
       x 1
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1'
       x 0
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal('<p>2</p>1', 'update x 0')
       x 1
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1 again'
 
     it 'should render if_(x, p(t1), div(t2))', ->
@@ -125,12 +132,15 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(demoNode.innerHTML).to.equal '<div>1</div>', 'mount'
       x 1
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1'
       x 0
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal '<div>1</div>', 'update x 0'
       x 1
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal '<p>1</p>', 'update x 1 again'
 
     it 'should render p(if_(x, p(t1), list(p(t2), t1)))', ->
@@ -140,15 +150,19 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       comp.mount()
       expect(comp.node.innerHTML).to.equal '<p>2</p>1', 'mount'
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal '<p>2</p>1', 'update'
       x 1
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal '<p>1</p>', 'update x 1'
       x 0
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal '<p>2</p>1', 'update x 0'
       x 1
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal '<p>1</p>', 'update x 1 again'
 
     it 'should render if_(x, p(t1), p list(p(t2), t1))', ->
@@ -159,9 +173,11 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(p2.node.innerHTML).to.equal '<p>2</p>1', 'mount'
       x 1
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal '1', 'update x 1'
       x 0
       comp.render()
+      dc.clean()
       expect(p2.node.innerHTML).to.equal '<p>2</p>1', 'update x 2'
 
     it 'should render if_(x, div(1), div(2))', ->
@@ -172,9 +188,11 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(comp.node.innerHTML).to.equal '2', 'mount'
       x 1
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal '1', 'first update'
       x 0
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal '2', 'second update'
 
     it 'should create and update if_ with attrs',  ->
@@ -192,6 +210,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(comp.props.fakeProp).to.equal x, 'see invalidate fakeProp'
       expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties'
       comp.render()
+      dc.clean()
       expect(comp.node.fakeProp).to.equal 1, 'update fakeProp'
       expect(comp.node.childNodes[0].innerHTML).to.equal '1', 'update innerHTML'
       expect(comp.node.childNodes[0]).to.equal c1.node
@@ -206,6 +225,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(demo2Node.innerHTML).to.equal('<p>2</p><p>3</p>', 'mount')
       x 1
       comp.render()
+      dc.clean()
       expect(pIf.node.innerHTML).to.equal '1' , 'pif update'
       expect(demo2Node.innerHTML).to.equal '<p>1</p><p>3</p>', 'demo2Node update'
       expect(comp.node[0].innerHTML).to.equal '1', 'comp update'
@@ -222,6 +242,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(c0.parentNode).to.equal comp.parentNode
       x 1
       comp.render()
+      dc.clean()
       expect(c0.parentNode).to.equal comp.parentNode
       expect(c0.node.innerHTML).to.equal '1'
       expect(c2.node.innerHTML).to.equal '2'
@@ -235,9 +256,11 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(pIf.node.innerHTML).to.equal '2'
       x 1
       comp.render()
+      dc.clean()
       expect(pIf.node.innerHTML).to.equal '1'
       x 0
       comp.render()
+      dc.clean()
       expect(pIf.node.innerHTML).to.equal '2'
 
     it 'should process embedded if 2-2', ->
@@ -248,9 +271,11 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(pIf.node.innerHTML).to.equal '2'
       x 1
       comp.render()
+      dc.clean()
       expect(pIf.node.innerHTML).to.equal '1'
       x 0
       comp.render()
+      dc.clean()
       expect(pIf.node.innerHTML).to.equal '2'
 
     it 'should process embedded if 2-3', ->
@@ -260,15 +285,17 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(pIf.node.textContent).to.equal '2'
       x 1
       comp.render()
+      dc.clean()
       expect(pIf.node.textContent).to.equal '1'
       x 0
       comp.render()
+      dc.clean()
       expect(pIf.node.textContent).to.equal '2'
 
     it 'should process event in embedded if 2-4', ->
       x = see 0
       pIf = if_(x, div(1), div(2))
-      comp = list(t1=text({onchange: -> x parseInt(this.node.value); comp.render()}, x), pIf)
+      comp = list(t1=text({onchange: -> x parseInt(this.node.value); comp.render(); dc.clean()}, x), pIf)
       comp.mount()
       expect(pIf.node.innerHTML).to.equal '2'
       t1.node.value = 1
@@ -280,7 +307,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
 
     it 'should process event in embedded if 2-5', ->
       x = see 0
-      comp = list(t1=text({onchange: -> x parseInt(this.node.value); comp.render()}, 1), pIf = if_(x, div(1), div(2)))
+      comp = list(t1=text({onchange: -> x parseInt(this.node.value); comp.render(); dc.clean()}, 1), pIf = if_(x, div(1), div(2)))
       comp.mount()
       expect(pIf.node.innerHTML).to.equal '2'
       t1.node.value = 1
@@ -292,7 +319,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
 
     it 'should process event in embedded if 2-6', ->
       x = see 0
-      comp = list(t1=text({onchange: -> x parseInt(this.node.value); comp.render()}, x), pIf = if_(x, div(1), div(2)))
+      comp = list(t1=text({onchange: -> x parseInt(this.node.value); comp.render(); dc.clean()}, x), pIf = if_(x, div(1), div(2)))
       comp.mount()
       expect(pIf.node.innerHTML).to.equal '2'
       t1.node.value = 1
@@ -313,9 +340,11 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(demoNode.innerHTML).to.equal '1234'
       x 0
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal '4123'
       x 1
       comp.render()
+      dc.clean()
       expect(demoNode.innerHTML).to.equal '1234'
 
   describe 'Case', ->
@@ -327,6 +356,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(comp.node.textContent).to.equal 'others'
       x 1
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal 'a'
 
     it 'should create and render forceCase', ->
@@ -336,6 +366,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(comp.node.textContent).to.equal 'others'
       comp.test = 1
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal 'a'
 
     it 'should create and render array case_', ->
@@ -346,6 +377,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(comp.node.textContent).to.equal 'others'
       x 1
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal 'b'
 
   describe 'Func', ->
@@ -356,6 +388,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       comp.render()
       expect(comp.node.textContent).to.equal '12'
       comp.render()
+      dc.clean()
       expect(comp.node.textContent).to.equal '12'
 
     it 'p(-> a))', ->
@@ -386,9 +419,11 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(comp.node.textContent).to.equal 'others'
       x 1
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal '1'
       x 2
       comp.render()
+      dc.clean()
       expect(comp.node.innerHTML).to.equal '2'
 
     it 'should update func with attrs',  ->
@@ -401,6 +436,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(comp.node.childNodes[0].textContent).to.equal('1')
       x 2
       comp.render()
+      dc.clean()
       expect(comp.node.fakeProp).to.equal 2
       expect(comp.node.childNodes[0].textContent).to.equal '2'
 
@@ -417,6 +453,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(comp.node.textContent).to.equal '1'
       x 2
       comp.render()
+      dc.clean()
       expect(comp.node.textContent).to.equal('2')
 
   describe 'Pick', ->
@@ -431,6 +468,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       host.content = 2
       expect(x).to.equal 'called'
       comp.render()
+      dc.clean()
       expect(comp.node.textContent).to.equal '2'
 
     it 'pick(host, "content", 1) by setContent', ->
@@ -443,6 +481,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       comp.setContent 2
       expect(x).to.equal 'called'
       comp.render()
+      dc.clean()
       expect(comp.node.textContent).to.equal '2'
 
     it 'pick(host, "activeContent", 1)', ->
@@ -455,6 +494,7 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       host.activeContent = 2
       expect(x).to.equal 'called'
       comp.render()
+      dc.clean()
       expect(comp.node.textContent).to.equal '2'
 
     it 'pick(host, "activeContent", 1) by setContent', ->
@@ -467,4 +507,5 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       comp.setContent 2
       expect(x).to.equal 'called'
       comp.render()
+      dc.clean()
       expect(comp.node.textContent).to.equal '2'

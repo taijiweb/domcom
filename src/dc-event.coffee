@@ -23,11 +23,11 @@ module.exports = dcEventMixin =
     if !arguments.length
       this.listeners = {}
     else if arguments.length==1
-      {listeners} = this
+      listeners = this.listeners
       for event in event.split(/\s*,\s*|\s+/)
         listeners[event] = null
     else
-      {listeners} = this
+      listeners = this.listeners
       for event in event.split(/\s*,\s*|\s+/)
         callbacks = listeners[event]
         if callbacks && (index = callbacks.indexOf(callback)) >= 0
@@ -42,12 +42,14 @@ module.exports = dcEventMixin =
       callback.apply(this, args)
     this.on(event, onceCallback)
 
-  emit:(event, args...) ->
-    if this.destroyed
-      return this
-    if callbacks = this.listeners[event]
-      for callback in callbacks then callback.apply(this, args)
-    else
-      if method = this[event]
-        method.apply(this, args)
+  emit: (event, args...) ->
+    if !this.destroyed
+      if this.listeners && callbacks = this.listeners[event]
+        # need to be copied, because onceCallback will be removed from this.listeners[event]
+        callbacks = callbacks.slice()
+        for callback in callbacks
+          callback.apply(this, args)
+      else
+        if method = this['on'+event]
+          method.apply(this, args)
     this

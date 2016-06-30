@@ -4,7 +4,14 @@ module.exports = ->
   firstLetter$ = see 'd',  (x) -> x.toLowerCase()
   comp = null
   prompt = label 'Please choose: '
-  prefered = text {onchange: -> comp.render()}, firstLetter$
+  prefered = text(
+    {
+      onchange: ->
+        comp.render()
+        dc.clean()
+    },
+    firstLetter$
+  )
 
   frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember']
 #  items =  for item in frameworks then div "#{item[0]}. #{item}"  # (1)
@@ -34,11 +41,16 @@ module.exports = ->
   items = each frameworks, (item) -> div "#{item[0]}. #{item}"
 
   prompt2 = label 'add some others: '
-  added = text onchange: (event, node) ->
-    newFramework = node.value
-    frameworks.push newFramework
-    firstLetter$ newFramework[0]
-    comp.render()
+  added = text(
+    {
+      onchange: (event, node) ->
+        newFramework = node.value
+        frameworks.push newFramework
+        firstLetter$ newFramework[0]
+        comp.render()
+        dc.clean()
+    }
+  )
 
   choice = func flow firstLetter$, ->
     firstLetter = firstLetter$()

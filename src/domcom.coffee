@@ -10,30 +10,27 @@ dc.extend = extend = require('extend')
 dc.EventMixin = require('./dc-event')
 
 extend(dc, dc.flow = require('lazy-flow'))
-
 require('lazy-flow/addon')
-
 dc.bindings = dc.flow.bindings
-
 require('dc-watch-list')
 
 extend(dc,
-
   require('dc-util'),
-
   require('./dom-util'),
   require('./dc-render'),
 
-  # component
+  # components
   require('./core'),
 
   require('./dc-error')
 )
 
-extend(dc, dc.builtinDirectives = require('./directives/index'))
-
+dc.property = require('./core/property')
+dc.builtinDirectives = require('./directives/index')
 extend(dc,
-  require('./core/property')
+  dc.property
+  dc.builtinDirectives
 )
+
 
 

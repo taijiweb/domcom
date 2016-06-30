@@ -14,7 +14,7 @@ module.exports = class Nothing extends BaseComponent
 
   renderDom: (oldBaseComponent) ->
     if oldBaseComponent
-      oldBaseComponent.markRemovingDom(this)
+      oldBaseComponent.markRemovingDom()
     this.valid = true
     this.node = []
 
@@ -24,8 +24,7 @@ module.exports = class Nothing extends BaseComponent
   attachParent:  -> this.node
   attachChildren: -> this.node
 
-  markRemovingDom: (holder) -> this
-  markRemoving: ->
+  markRemovingDom: -> this
   removeDom: -> this
   removeNode: ->
 

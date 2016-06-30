@@ -51,6 +51,7 @@ toggleCompleted = (todo) ->
   todo.completed = !todo.completed
   save todos
   view.render()
+  dc.clean()
 
 markAll = ->
   if allChecked() then completed = false
@@ -65,21 +66,25 @@ markAll = ->
   if !valid
     save(todos)
     view.render()
+    dc.clean()
 
 editTodo = (todo) ->
   editingTodo = todo
   originalTodo = extend {}, todo
   view.render()
+  dc.clean()
 
 removeTodo = (todo) ->
   index = todos.indexOf todo
   todos.splice index, 1
   save todos
   view.render()
+  dc.clean()
 
 revertEdits = (todo) ->
   todos[todos.indexOf(todo)] = originalTodo
   view.render()
+  dc.clean()
 
 clearCompletedTodos = ->
   valid = true
@@ -94,6 +99,7 @@ clearCompletedTodos = ->
   if !valid
     save todos
     view.render()
+    dc.clean()
 
 #######################################################################################################################
 # view
@@ -107,6 +113,7 @@ text1 = text {
     todos.push title: node.value, completed: false
     save todos
     view.render()
+    dc.clean()
   autofocus:true }
 
 todoHeader = header id: "header",
@@ -127,7 +134,7 @@ todoItems = funcEach getTodos, (todo, index) ->
         className: "edit"
         trim: "false"
         value: bind todo, "title"
-        onblur: (event, node) -> todo.title = node.value; save(todos); editingTodo = null; view.render()
+        onblur: (event, node) -> todo.title = node.value; save(todos); editingTodo = null; view.render(); dc.clean()
         onfocus: -> todo == editingTodo
         onkeyup: onEscapeFn( -> revertEdits(todo) ) }
 
@@ -185,3 +192,4 @@ window.runTodoMvc = ->
   window.addEventListener 'hashchange',  ->
     updateHash()
     view.render()
+    dc.clean()

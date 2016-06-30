@@ -2,14 +2,23 @@
 
 module.exports = ->
   active = see true
-  comp = list(
-    div({ onclick: ->
-            active true
-            div1.render()
-    }, 'mount'),
-    div({ onclick: ->
-      active false;
-      div1.render()
-    }, 'unmount'),
-    div1 = if_(active, div('toggle me'))
+  list(
+    div(
+      {
+        onclick: ->
+          active true
+          if1.render()
+    },
+      'mount'
+    ),
+    div(
+      {
+        onclick: ->
+          active false
+          if1.render()
+          dc.clean()
+      },
+      'unmount'
+    ),
+    if1 = if_(active, div('toggle me'))
   )

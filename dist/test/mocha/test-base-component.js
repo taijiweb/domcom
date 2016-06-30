@@ -34,6 +34,7 @@ describe("test-base-component", function() {
       d = new Tag('div', {}, [p1]);
       expect(d.baseComponent).to.equal(d);
       expect(d.children[0]).to.be["instanceof"](Tag);
+      expect(d.children[0]).to.equal(p1);
       d.mount();
       return expect(d.baseComponent.baseComponent).to.equal(d);
     });
@@ -87,7 +88,7 @@ describe("test-base-component", function() {
       expect(comp.node.tagName).to.equal('PRE');
       return expect(comp.node.getAttribute('space')).to.equal('');
     });
-    it('should mount  tag with attribute', function() {
+    it('should mount tag with attribute', function() {
       p = new Tag('p', {
         className: classFn('some class'),
         style: styleFrom("width:1px;")

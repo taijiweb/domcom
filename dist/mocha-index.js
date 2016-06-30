@@ -357,25 +357,23 @@
 	  return react(method);
 	};
 
-	lazy = function(computation) {
-	  var cacheValue, method;
-	  cacheValue = null;
-	  method = function() {
-	    if (!arguments.length) {
-	      if (!method.valid) {
-	        method.valid = true;
-	        return cacheValue = computation.call(this);
-	      } else {
-	        return cacheValue;
+	lazy = function(method) {
+	  react(method);
+	  method.invalidate = function() {
+	    var callback, _i, _len, _ref1;
+	    if (method.invalidateCallbacks) {
+	      _ref1 = method.invalidateCallbacks;
+	      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+	        callback = _ref1[_i];
+	        callback();
 	      }
-	    } else {
-	      throw new Error('flow.lazy is not allowed to accept arguments');
 	    }
+	    return method;
 	  };
 	  method.toString = function() {
-	    return "lazy: " + (funcString(computation));
+	    return "lazy: " + (funcString(method));
 	  };
-	  return react(method);
+	  return method;
 	};
 
 	module.exports = flow = function() {
@@ -1931,6 +1929,7 @@
 	      d = new Tag('div', {}, [p1]);
 	      expect(d.baseComponent).to.equal(d);
 	      expect(d.children[0]).to.be["instanceof"](Tag);
+	      expect(d.children[0]).to.equal(p1);
 	      d.mount();
 	      return expect(d.baseComponent.baseComponent).to.equal(d);
 	    });
@@ -1984,7 +1983,7 @@
 	      expect(comp.node.tagName).to.equal('PRE');
 	      return expect(comp.node.getAttribute('space')).to.equal('');
 	    });
-	    it('should mount  tag with attribute', function() {
+	    it('should mount tag with attribute', function() {
 	      p = new Tag('p', {
 	        className: classFn('some class'),
 	        style: styleFrom("width:1px;")
@@ -2163,9 +2162,9 @@
 
 /***/ },
 /* 14 */
-/*!***************************!*\
-  !*** ./~/extend/index.js ***!
-  \***************************/
+/*!**************************!*\
+  !*** ../extend/index.js ***!
+  \**************************/
 /***/ function(module, exports) {
 
 	var hasOwn = Object.prototype.hasOwnProperty;
@@ -2848,6 +2847,7 @@
 	      expect(demoNode.innerHTML).to.equal('21', 'mount');
 	      x(0);
 	      comp.render();
+	      dc.clean();
 	      return expect(demoNode.innerHTML).to.equal('1', 'update');
 	    });
 	    it('should render if_(x, t1, list(t2, t1))', function() {
@@ -2859,12 +2859,15 @@
 	      comp.mount(demoNode = newDemoNode('if-ref'));
 	      expect(demoNode.innerHTML).to.equal('21', 'mount');
 	      comp.render();
+	      dc.clean();
 	      expect(demoNode.innerHTML).to.equal('21', 'update');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(demoNode.innerHTML).to.equal('1', 'update x 1');
 	      x(0);
 	      comp.render();
+	      dc.clean();
 	      return expect(demoNode.innerHTML).to.equal('21', 'update x 0');
 	    });
 	    it('should render if_(x, p(t1), list(p(t2), t1))', function() {
@@ -2877,12 +2880,15 @@
 	      expect(demoNode.innerHTML).to.equal('<p>2</p>1', 'mount');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1');
 	      x(0);
 	      comp.render();
+	      dc.clean();
 	      expect(demoNode.innerHTML).to.equal('<p>2</p>1', 'update x 0');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      return expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1 again');
 	    });
 	    it('should render if_(x, p(t1), div(t2))', function() {
@@ -2894,12 +2900,15 @@
 	      expect(demoNode.innerHTML).to.equal('<div>1</div>', 'mount');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1');
 	      x(0);
 	      comp.render();
+	      dc.clean();
 	      expect(demoNode.innerHTML).to.equal('<div>1</div>', 'update x 0');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      return expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1 again');
 	    });
 	    it('should render p(if_(x, p(t1), list(p(t2), t1)))', function() {
@@ -2911,15 +2920,19 @@
 	      comp.mount();
 	      expect(comp.node.innerHTML).to.equal('<p>2</p>1', 'mount');
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.innerHTML).to.equal('<p>2</p>1', 'update');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.innerHTML).to.equal('<p>1</p>', 'update x 1');
 	      x(0);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.innerHTML).to.equal('<p>2</p>1', 'update x 0');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.innerHTML).to.equal('<p>1</p>', 'update x 1 again');
 	    });
 	    it('should render if_(x, p(t1), p list(p(t2), t1))', function() {
@@ -2932,9 +2945,11 @@
 	      expect(p2.node.innerHTML).to.equal('<p>2</p>1', 'mount');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.innerHTML).to.equal('1', 'update x 1');
 	      x(0);
 	      comp.render();
+	      dc.clean();
 	      return expect(p2.node.innerHTML).to.equal('<p>2</p>1', 'update x 2');
 	    });
 	    it('should render if_(x, div(1), div(2))', function() {
@@ -2946,9 +2961,11 @@
 	      expect(comp.node.innerHTML).to.equal('2', 'mount');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.innerHTML).to.equal('1', 'first update');
 	      x(0);
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.innerHTML).to.equal('2', 'second update');
 	    });
 	    it('should create and update if_ with attrs', function() {
@@ -2970,6 +2987,7 @@
 	      expect(comp.props.fakeProp).to.equal(x, 'see invalidate fakeProp');
 	      expect(comp.hasActiveProperties).to.equal(true, 'hasActiveProperties');
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.fakeProp).to.equal(1, 'update fakeProp');
 	      expect(comp.node.childNodes[0].innerHTML).to.equal('1', 'update innerHTML');
 	      return expect(comp.node.childNodes[0]).to.equal(c1.node);
@@ -2985,6 +3003,7 @@
 	      expect(demo2Node.innerHTML).to.equal('<p>2</p><p>3</p>', 'mount');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(pIf.node.innerHTML).to.equal('1', 'pif update');
 	      expect(demo2Node.innerHTML).to.equal('<p>1</p><p>3</p>', 'demo2Node update');
 	      return expect(comp.node[0].innerHTML).to.equal('1', 'comp update');
@@ -3002,6 +3021,7 @@
 	      expect(c0.parentNode).to.equal(comp.parentNode);
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(c0.parentNode).to.equal(comp.parentNode);
 	      expect(c0.node.innerHTML).to.equal('1');
 	      expect(c2.node.innerHTML).to.equal('2');
@@ -3016,9 +3036,11 @@
 	      expect(pIf.node.innerHTML).to.equal('2');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(pIf.node.innerHTML).to.equal('1');
 	      x(0);
 	      comp.render();
+	      dc.clean();
 	      return expect(pIf.node.innerHTML).to.equal('2');
 	    });
 	    it('should process embedded if 2-2', function() {
@@ -3030,9 +3052,11 @@
 	      expect(pIf.node.innerHTML).to.equal('2');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(pIf.node.innerHTML).to.equal('1');
 	      x(0);
 	      comp.render();
+	      dc.clean();
 	      return expect(pIf.node.innerHTML).to.equal('2');
 	    });
 	    it('should process embedded if 2-3', function() {
@@ -3043,9 +3067,11 @@
 	      expect(pIf.node.textContent).to.equal('2');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(pIf.node.textContent).to.equal('1');
 	      x(0);
 	      comp.render();
+	      dc.clean();
 	      return expect(pIf.node.textContent).to.equal('2');
 	    });
 	    it('should process event in embedded if 2-4', function() {
@@ -3055,7 +3081,8 @@
 	      comp = list(t1 = text({
 	        onchange: function() {
 	          x(parseInt(this.node.value));
-	          return comp.render();
+	          comp.render();
+	          return dc.clean();
 	        }
 	      }, x), pIf);
 	      comp.mount();
@@ -3077,7 +3104,8 @@
 	      comp = list(t1 = text({
 	        onchange: function() {
 	          x(parseInt(this.node.value));
-	          return comp.render();
+	          comp.render();
+	          return dc.clean();
 	        }
 	      }, 1), pIf = if_(x, div(1), div(2)));
 	      comp.mount();
@@ -3099,7 +3127,8 @@
 	      comp = list(t1 = text({
 	        onchange: function() {
 	          x(parseInt(this.node.value));
-	          return comp.render();
+	          comp.render();
+	          return dc.clean();
 	        }
 	      }, x), pIf = if_(x, div(1), div(2)));
 	      comp.mount();
@@ -3127,9 +3156,11 @@
 	      expect(demoNode.innerHTML).to.equal('1234');
 	      x(0);
 	      comp.render();
+	      dc.clean();
 	      expect(demoNode.innerHTML).to.equal('4123');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      return expect(demoNode.innerHTML).to.equal('1234');
 	    });
 	  });
@@ -3147,6 +3178,7 @@
 	      expect(comp.node.textContent).to.equal('others');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.innerHTML).to.equal('a');
 	    });
 	    it('should create and render forceCase', function() {
@@ -3161,6 +3193,7 @@
 	      expect(comp.node.textContent).to.equal('others');
 	      comp.test = 1;
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.innerHTML).to.equal('a');
 	    });
 	    return it('should create and render array case_', function() {
@@ -3172,6 +3205,7 @@
 	      expect(comp.node.textContent).to.equal('others');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.innerHTML).to.equal('b');
 	    });
 	  });
@@ -3186,6 +3220,7 @@
 	      comp.render();
 	      expect(comp.node.textContent).to.equal('12');
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.textContent).to.equal('12');
 	    });
 	    it('p(-> a))', function() {
@@ -3225,9 +3260,11 @@
 	      expect(comp.node.textContent).to.equal('others');
 	      x(1);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.innerHTML).to.equal('1');
 	      x(2);
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.innerHTML).to.equal('2');
 	    });
 	    it('should update func with attrs', function() {
@@ -3244,6 +3281,7 @@
 	      expect(comp.node.childNodes[0].textContent).to.equal('1');
 	      x(2);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.fakeProp).to.equal(2);
 	      return expect(comp.node.childNodes[0].textContent).to.equal('2');
 	    });
@@ -3266,6 +3304,7 @@
 	      expect(comp.node.textContent).to.equal('1');
 	      x(2);
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.textContent).to.equal('2');
 	    });
 	  });
@@ -3285,6 +3324,7 @@
 	      host.content = 2;
 	      expect(x).to.equal('called');
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.textContent).to.equal('2');
 	    });
 	    it('pick(host, "content", 1) by setContent', function() {
@@ -3302,6 +3342,7 @@
 	      comp.setContent(2);
 	      expect(x).to.equal('called');
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.textContent).to.equal('2');
 	    });
 	    it('pick(host, "activeContent", 1)', function() {
@@ -3317,6 +3358,7 @@
 	      host.activeContent = 2;
 	      expect(x).to.equal('called');
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.textContent).to.equal('2');
 	    });
 	    return it('pick(host, "activeContent", 1) by setContent', function() {
@@ -3332,6 +3374,7 @@
 	      comp.setContent(2);
 	      expect(x).to.equal('called');
 	      comp.render();
+	      dc.clean();
 	      return expect(comp.node.textContent).to.equal('2');
 	    });
 	  });
@@ -3353,7 +3396,7 @@
 
 	see = dc.see, flow = dc.flow, Component = dc.Component, Tag = dc.Tag, Text = dc.Text, List = dc.List, If = dc.If, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, mergeIf = dc.mergeIf, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
-	describe('domcom/mergeIf', function() {
+	describe('domcom/test-merge-if', function() {
 	  afterEach(function() {
 	    return dc.reset();
 	  });
@@ -3396,6 +3439,7 @@
 	    expect(demoNode.innerHTML).to.equal('21', 'mount');
 	    x(0);
 	    comp.render();
+	    dc.clean();
 	    return expect(demoNode.innerHTML).to.equal('1');
 	  });
 	  it('should render mergeIf(x, new List([t1]), list(t2, t1))', function() {
@@ -3422,6 +3466,7 @@
 	    expect(demoNode.innerHTML).to.equal('<p>2</p>', 'mount');
 	    x(1);
 	    comp.render();
+	    dc.clean();
 	    return expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1');
 	  });
 	  it('should also render mergeIf(x, p(t1), p(t2, t1))', function() {
@@ -3435,12 +3480,15 @@
 	    expect(demoNode.innerHTML).to.equal('<p>21</p>', 'mount');
 	    x(1);
 	    comp.render();
+	    dc.clean();
 	    expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1');
 	    x(0);
 	    comp.render();
+	    dc.clean();
 	    expect(demoNode.innerHTML).to.equal('<p>21</p>', 'update x 0');
 	    x(1);
 	    comp.render();
+	    dc.clean();
 	    return expect(demoNode.innerHTML).to.equal('<p>1</p>', 'update x 1 again');
 	  });
 	  it('should render mergeIf(x, p(t1), div(t2))', function() {
@@ -3722,7 +3770,7 @@
 	      comp.unmount();
 	      return expect(demoNode.innerHTML).to.equal('', 3);
 	    });
-	    return it('list(txt(1), txt(2), txt(3)) and move child', function() {
+	    it('list(txt(1), txt(2), txt(3)) and move child', function() {
 	      var demoNode, t1, t2, t3;
 	      comp = list(t1 = txt(1), t2 = txt(2), t3 = txt(3));
 	      comp.mount(demoNode = newDemoNode('list'));
@@ -3737,6 +3785,19 @@
 	      comp.render();
 	      expect(demoNode.innerHTML).to.equal('231');
 	      return comp.unmount();
+	    });
+	    return it('should not renderDom after removing', function() {
+	      var demoNode, t1, t2, t3;
+	      comp = list(t1 = txt(1), t2 = txt(2), t3 = txt(3));
+	      comp.mount(demoNode = newDemoNode('list'));
+	      comp.removeChild(0);
+	      comp.render();
+	      expect(demoNode.innerHTML).to.equal('23');
+	      expect(t1.node.parentNode).to.equal(null);
+	      expect(t1.removed).to.equal(true);
+	      t1.render();
+	      expect(t1.node.parentNode).to.equal(null);
+	      return expect(demoNode.innerHTML).to.equal('23');
 	    });
 	  });
 	  describe('each of array, object', function() {
@@ -3868,16 +3929,20 @@
 	      expect(comp.node[1].innerHTML).to.equal('simple');
 	      lst.setItem(0, 3);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node[0].innerHTML).to.equal('3', 'update node 0');
 	      lst.setItem(1, 4);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node[1].innerHTML).to.equal('4', 'update node 1');
 	      expect(demoNode.innerHTML).to.equal('<p>3</p><p>4</p>', 'update innerHTML');
 	      lst.setItem(2, 5);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node[2].innerHTML).to.equal('5', 'update list[2] = 5');
 	      lst.setLength(0);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.children.length).to.equal(0, 'comp.children.length = 0');
 	      expect(comp.node.length).to.equal(0, 'node.length');
 	      return comp.unmount();
@@ -3910,6 +3975,7 @@
 	      expect(comp.node[2].textContent).to.equal('e');
 	      lst.setLength(0);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.length).to.equal(0);
 	      return comp.unmount();
 	    });
@@ -3964,6 +4030,7 @@
 	      expect(each1.node[0].textContent).to.equal('1');
 	      listItems.setItem(0, 2);
 	      comp.render();
+	      dc.clean();
 	      expect(each1.parentNode).to.equal(span1.node);
 	      expect(each1.node[0].textContent).to.equal('2');
 	      expect(comp.node.innerHTML).to.equal('<span>2</span>');
@@ -4093,14 +4160,17 @@
 	      expect(comp.node.parentNode).to.equal(demo2Node);
 	      showingEach$(false);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.parentNode).to.equal(void 0);
 	      expect(demo2Node.innerHTML).to.equal('');
 	      showingEach$(true);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.parentNode).to.equal(demo2Node);
 	      expect(demo2Node.innerHTML).to.equal('1');
 	      showingEach$(false);
 	      comp.render();
+	      dc.clean();
 	      expect(demo2Node.innerHTML).to.equal('');
 	      expect(comp.node.parentNode).to.equal(void 0);
 	      return comp.unmount();
@@ -4117,14 +4187,17 @@
 	      expect(comp.node.parentNode).to.equal(demo2Node);
 	      showingEach$(false);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.parentNode).to.equal(void 0);
 	      expect(demo2Node.innerHTML).to.equal('');
 	      showingEach$(true);
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node.parentNode).to.equal(demo2Node);
 	      expect(demo2Node.innerHTML).to.equal('12');
 	      showingEach$(false);
 	      comp.render();
+	      dc.clean();
 	      expect(demo2Node.innerHTML).to.equal('');
 	      expect(comp.node.parentNode).to.equal(void 0);
 	      return comp.unmount();
@@ -4183,11 +4256,13 @@
 	      expect(comp.node[0].textContent).to.equal('1');
 	      x = 2;
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node[0].textContent).to.equal('2', 'update 2');
 	      expect(comp.isList).to.equal(true);
 	      expect(demo2Node.innerHTML).to.equal('2', 'innerHTML');
 	      x = 3;
 	      comp.render();
+	      dc.clean();
 	      expect(comp.node[0].textContent).to.equal('3', 'update 3');
 	      expect(demo2Node.innerHTML).to.equal('3', 'innerHTML');
 	      return comp.unmount();
@@ -4211,6 +4286,7 @@
 	      expect(each2.node[0].textContent).to.equal('1');
 	      x = 2;
 	      comp.render();
+	      dc.clean();
 	      expect(demo2Node.innerHTML).to.equal('<div>2</div>');
 	      expect(each1.parentNode).to.equal(comp.node);
 	      expect(each2.node[0].textContent).to.equal('2');
@@ -4239,6 +4315,7 @@
 	      expect(each2.node[0].textContent).to.equal('1');
 	      x = 2;
 	      comp.render();
+	      dc.clean();
 	      expect(demo2Node.innerHTML).to.equal('2');
 	      expect(each1.parentNode).to.equal(each1.parentNode);
 	      expect(each2.node[0].textContent).to.equal('2');
@@ -4262,6 +4339,7 @@
 	      expect(each1.node[0].textContent).to.equal('1');
 	      x = 2;
 	      comp.render();
+	      dc.clean();
 	      expect(each1.parentNode).to.equal(span1.node);
 	      expect(each1.node[0].textContent).to.equal('2');
 	      expect(comp.node.innerHTML).to.equal('<div><span>2</span></div>');
@@ -4284,6 +4362,7 @@
 	      expect(each1.node[0].textContent).to.equal('1');
 	      x = 2;
 	      comp.render();
+	      dc.clean();
 	      expect(each1.parentNode).to.equal(span1.node);
 	      expect(each1.node[0].textContent).to.equal('2');
 	      expect(comp.node.innerHTML).to.equal('<span>2</span>');
@@ -4304,8 +4383,10 @@
 	      expect(demo2Node.innerHTML).to.equal('text 1 2');
 	      items = [3];
 	      comp.render();
+	      dc.clean();
 	      expect(demo2Node.innerHTML).to.equal('text 3', 1);
 	      comp.render();
+	      dc.clean();
 	      return expect(demo2Node.innerHTML).to.equal('text 3', 2);
 	    });
 	  });
@@ -5043,7 +5124,7 @@
   \*****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Component, List, Tag, Text, a, bindings, button, classFn, controls, ddescribe, demoMap, div, duplex, each, expect, extendAttrs, flow, func, funcEach, idescribe, if_, iit, input, li, list, makeDomComponentTest, ndescribe, nit, p, see, span, styleFrom, text, txt, _ref;
+	var Component, List, Tag, Text, a, bindings, button, classFn, controls, ddescribe, demoMap, div, duplex, each, expect, extendAttrs, flow, func, funcEach, idescribe, if_, iit, input, li, list, makeDomComponentTest, ndescribe, nit, p, runDemo, see, span, styleFrom, text, txt, _ref, _ref1;
 
 	_ref = __webpack_require__(/*! bdd-test-helper */ 2), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, ddescribe = _ref.ddescribe;
 
@@ -5053,21 +5134,21 @@
 
 	makeDomComponentTest = __webpack_require__(/*! ../makeDomComponentTest */ 25);
 
-	demoMap = __webpack_require__(/*! domcom/demo/util */ 26).demoMap;
+	_ref1 = __webpack_require__(/*! domcom/demo/util */ 26), demoMap = _ref1.demoMap, runDemo = _ref1.runDemo;
 
 	makeDomComponentTest(demoMap, "domcom/demoMap");
 
-	describe('demo', function() {
+	describe('demo and todoMVC', function() {
 	  afterEach(function() {
 	    return dc.reset();
 	  });
-	  describe('sum', function() {
-	    return it('should construct and create components', function() {
-	      var a$, a_, b$, b_, comp, sum, t1, x, y, z, _ref1;
-	      _ref1 = bindings({
+	  describe('demo', function() {
+	    it('should construct and create components', function() {
+	      var a$, a_, b$, b_, comp, sum, t1, x, y, z, _ref2;
+	      _ref2 = bindings({
 	        a: 3,
 	        b: 2
-	      }), a$ = _ref1.a$, b$ = _ref1.b$, a_ = _ref1.a_, b_ = _ref1.b_;
+	      }), a$ = _ref2.a$, b$ = _ref2.b$, a_ = _ref2.a_, b_ = _ref2.b_;
 	      x = text(a$);
 	      y = text(b$);
 	      z = p(t1 = txt(sum = flow.add(a_, b_)));
@@ -5094,8 +5175,6 @@
 	      comp.render();
 	      return expect(z.node.innerHTML).to.equal('34', 'update');
 	    });
-	  });
-	  describe('combobox', function() {
 	    it('should process event property of child component', function() {
 	      var c0, comp, x;
 	      x = 0;
@@ -5110,7 +5189,7 @@
 	      });
 	      return expect(x).to.equal(1);
 	    });
-	    return it('should process event property of child component with model directive', function() {
+	    it('should process event property of child component with model directive', function() {
 	      var c0, comp, x;
 	      x = 0;
 	      comp = div({}, c0 = input({
@@ -5125,8 +5204,6 @@
 	      });
 	      return expect(x).to.equal(1);
 	    });
-	  });
-	  describe('text model', function() {
 	    it('should text model by value', function() {
 	      var a$, attrs, comp, m, text1, text2;
 	      a$ = bindings(m = {
@@ -5146,7 +5223,7 @@
 	      expect(m.a).to.equal('3', 'm.a');
 	      return expect(text2.node.value).to.equal('3', 'text2.node.value');
 	    });
-	    return it('should text model by value and onchange', function() {
+	    it('should text model by value and onchange', function() {
 	      var a$, attrs, comp, m, text1, text2;
 	      a$ = bindings(m = {
 	        a: 1
@@ -5167,19 +5244,17 @@
 	      expect(m.a).to.equal('3', 'm.a');
 	      return expect(text2.node.value).to.equal('3', 'text2.node.value');
 	    });
-	  });
-	  describe('combo', function() {
-	    return it('should combobox', function() {
+	    it('should combobox', function() {
 	      var attrs, comp, input1, item, items, opts, showingItems, value;
 	      showingItems = see(false);
 	      comp = null;
 	      value = see('');
 	      opts = (function() {
-	        var _i, _len, _ref1, _results;
-	        _ref1 = [1, 2];
+	        var _i, _len, _ref2, _results;
+	        _ref2 = [1, 2];
 	        _results = [];
-	        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	          item = _ref1[_i];
+	        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+	          item = _ref2[_i];
 	          _results.push((function(item) {
 	            return span({
 	              style: {
@@ -5232,17 +5307,37 @@
 	      });
 	      return expect(input1.node.value).to.equal('2');
 	    });
-	  });
-	  describe('controls', function() {
-	    return it('should mount controls and others', function() {
+	    it('should mount controls and others', function() {
 	      var comp;
 	      comp = controls();
 	      comp.mount('#demo');
 	      expect(comp.node.length).to.equal(2);
 	      return comp.unmount();
 	    });
-	  });
-	  describe('mount/unmount', function() {
+	    it('should always switch demo', function(done) {
+	      var comp, sel;
+	      comp = runDemo(demoMap, 'each2');
+	      sel = comp.children[0];
+	      sel.node.value = 'each3';
+	      sel.node.onchange({
+	        type: 'change'
+	      });
+	      expect(comp.children[1].node.innerHTML).to.equal("<p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p>");
+	      return setTimeout((function() {
+	        sel.node.value = 'each2';
+	        sel.node.onchange({
+	          type: 'change'
+	        });
+	        return setTimeout((function() {
+	          sel.node.value = 'each3';
+	          sel.node.onchange({
+	            type: 'change'
+	          });
+	          expect(comp.children[1].node.innerHTML).to.contain("<p>1</p><p>2</p><p>3</p><p>4</p>");
+	          return done();
+	        }), 300);
+	      }), 1100);
+	    });
 	    return it('should mount/unmount sub component', function() {
 	      var buttons, comp, div1;
 	      div1 = div('toggle me');
@@ -5591,9 +5686,9 @@
 	};
 
 	exports.eachDemo2 = function() {
-	  var comp, lst2;
+	  var lst2;
 	  lst2 = [1, 2];
-	  return comp = each(lst2, function(item) {
+	  return each(lst2, function(item) {
 	    return p(item);
 	  });
 	};
@@ -5611,7 +5706,8 @@
 	    }), 1000);
 	    return setTimeout((function() {
 	      lst3.setLength(4);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }), 2000);
 	  });
 	  return comp;
@@ -5630,7 +5726,8 @@
 	    }), 1000);
 	    return setTimeout((function() {
 	      lst4.setLength(4);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }), 2000);
 	  });
 	  return comp;
@@ -5657,7 +5754,8 @@
 	  prompt = label('Please choose: ');
 	  prefered = text({
 	    onchange: function() {
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  }, firstLetter$);
 	  frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember'];
@@ -5696,7 +5794,8 @@
 	      newFramework = node.value;
 	      frameworks.push(newFramework);
 	      firstLetter$(newFramework[0]);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  });
 	  choice = func(flow(firstLetter$, function() {
@@ -5746,8 +5845,10 @@
 	  comp.mount();
 	  showingEach$(false);
 	  comp.render();
+	  dc.clean();
 	  showingEach$(true);
-	  return comp.render();
+	  comp.render();
+	  return dc.clean();
 	};
 
 	exports.demoModelOnMultipleInput = function() {
@@ -5883,7 +5984,8 @@
 	  return comp = list(text({
 	    onchange: function() {
 	      x = parseInt(this.node.value);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  }, x), if_(x, div(1), div(2)));
 	};
@@ -5893,7 +5995,8 @@
 	  x = see(0, parseFloat);
 	  return comp = list(text({
 	    onchange: function() {
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  }, x), if_(x, div('It is not 0.'), div('It is 0 or NaN.')));
 	};
@@ -5917,7 +6020,8 @@
 	  indexInput = number({
 	    onchange: function() {
 	      x = parseInt(this.node.value);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  });
 	  lst = each([0, 1, 2, 3], function(item) {
@@ -5943,7 +6047,8 @@
 	  indexInput = number({
 	    onchange: function() {
 	      x = parseInt(this.node.value);
-	      return comp.render();
+	      comp.render();
+	      return dc.clean();
 	    }
 	  });
 	  return comp = list(indexInput, func(function() {
@@ -6051,19 +6156,20 @@
 	list = dc.list, div = dc.div, see = dc.see, if_ = dc.if_;
 
 	module.exports = function() {
-	  var active, comp, div1;
+	  var active, if1;
 	  active = see(true);
-	  return comp = list(div({
+	  return list(div({
 	    onclick: function() {
 	      active(true);
-	      return div1.render();
+	      return if1.render();
 	    }
 	  }, 'mount'), div({
 	    onclick: function() {
 	      active(false);
-	      return div1.render();
+	      if1.render();
+	      return dc.clean();
 	    }
-	  }, 'unmount'), div1 = if_(active, div('toggle me')));
+	  }, 'unmount'), if1 = if_(active, div('toggle me')));
 	};
 
 

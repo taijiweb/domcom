@@ -3,10 +3,11 @@
 isComponent = require('./core/base/isComponent')
 
 if typeof window != 'undefined'
-  for vendor in  ['ms', 'moz','webkit','o']
-    if window.requestAnimationFrame = window[vendor + 'RequestAnimationFrame']
-      window.cancelAnimationFrame = window[vendor + 'CancelAnimationFrame'] || window[vendor + 'CancelRequestAnimationFrame']
-      break
+  if !window.requestAnimationFrame
+    for vendor in  ['webkit', 'ms', 'moz','o']
+      if window.requestAnimationFrame = window[vendor + 'RequestAnimationFrame']
+        window.cancelAnimationFrame = window[vendor + 'CancelAnimationFrame'] || window[vendor + 'CancelRequestAnimationFrame']
+        break
   if !window.requestAnimationFrame
     lastTime = 0
     window.requestAnimationFrame = (callback) ->
@@ -28,6 +29,7 @@ dc.reset = ->
   dc.renderBySystemLoop = false
   dc.listeners = {}
   dc.rootComponentMap = {}
+  dc.removingChildren = {}
 
 dc.reset()
 
@@ -61,31 +63,28 @@ dc.renderWhen =  (component, events, options) ->
 
   else if component == window.setInterval
     {test, clear, components} = options
-    for component in components
-      component.asRenderHolder()
     handler = null
 
     callback = ->
       if !test || test()
         for component in components
           component.render()
+        dc.clean()
       if clear && clear()
         clearInterval handler
 
     handler = setInterval(callback, events || 16)
 
   else if component == setTimeout
-    for component in options.component
-      component.asRenderHolder()
     callback = ->
       for component in options.component
         component.render()
+      dc.clean()
     setTimeout(callback, events)
 
   return
 
 renderWhenComponentEvent = (component, event, components) ->
-  component.asRenderHolder()
   if event[...2]!='on'
     event = 'on'+event
   componentMap = component.eventUpdateConfig[event] || component.eventUpdateConfig[event] = {}
@@ -116,9 +115,10 @@ dc.invalidateAttach = ->
 
 dc.propagateChildNextNode = (child, nextNode) ->
 
-dc.invalidateAttachOnRemove = (child) ->
-  firstNode = child.firstNode
-  if (prevNode = firstNode.previousSibling) && prevComponent = prevNode.component
-    prevComponent.setNextNode(this.nextNode)
+dc.removingChildren = {}
+dc.clean = ->
+  for _, component of dc.removingChildren
+    component.removeDom()
+  dc.removingChildren = {}
   return
 

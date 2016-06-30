@@ -5,18 +5,24 @@ if typeof window != 'undefined'
     domElement
 
 exports.getBindProp = (component)  ->
-  {tagName} = component
-  if !tagName then throw new Error 'trying to bind a Component which is not a Tag'
-  else if tagName=='textarea' || tagName=='select' then return 'value'
-  else if component.props.type=='checkbox' then return 'checked'
-  else return 'value'
+  tagName = component.tagName
+  if !tagName
+    throw new Error 'trying to bind a Component which is not a Tag'
+  else if tagName=='textarea' || tagName=='select'
+    'value'
+  else if component.props.type=='checkbox'
+    'checked'
+  else
+    'value'
 
 if typeof window != 'undefined'
   # add browser compatability for addEventListener and removeEventListener in ie 6, 7, 8
   if document.addEventListener
-    exports.addEventListener = (node, name, handler) ->
-      node.addEventListener(name, handler, false)
+
+    exports.addEventListener = (node, name, handler, useCapture) ->
+      node.addEventListener(name, handler, useCapture)
       return
+
     exports.removeEventListener = (node, name, handler) ->
       node.removeEventListener(name, handler)
       return
@@ -25,14 +31,17 @@ if typeof window != 'undefined'
     exports.addEventListener = (node, name, handler) ->
       node.attachEvent(name, handler)
       return
+
     exports.removeEventListener = (node, name, handler) ->
       node.detachEvent(name, handler)
       return
 
   # Returns true if it is a DOM element
   exports.isElement = (item) ->
-    if typeof HTMLElement == "object" then item instanceof HTMLElement
-    else item && typeof item == "object" && item != null && item.nodeType == 1 && typeof item.nodeName=="string"
+    if typeof HTMLElement == "object"
+      item instanceof HTMLElement
+    else
+      item && typeof item == "object" && item != null && item.nodeType == 1 && typeof item.nodeName=="string"
 
 {renew} = require('lazy-flow')
 
