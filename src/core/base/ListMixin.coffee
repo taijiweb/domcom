@@ -204,7 +204,7 @@ module.exports =
       if index < 0
         dc.error('child to be removed is not in the children')
     else if child >= children.length || child < 0
-      dc.error('child to be removed is out of bound')
+      dc.error('child(' + child + ') to be removed is out of range')
     else
       index = child
       child = children[index]
@@ -252,7 +252,7 @@ module.exports =
         dc.error('oldChild to be replaced is not in the children')
     else
       if oldChild >= children.length || oldChild < 0
-        dc.error('oldChild to be replaced is out of bound')
+        dc.error('oldChild(' + oldChild + ') to be replaced is out of range')
       index = oldChild
       oldChild = children[index]
 

@@ -141,6 +141,15 @@ describe 'test-group: group component: List, each', ->
       expect(t1.node.parentNode).to.equal(null)
       expect(demoNode.innerHTML).to.equal('23')
 
+  describe 'Tag', ->
+    it 'should have correct nextNode', ->
+      comp = div(div1 = div(txt(1), t2 = txt(2), t3 = txt(3)), div2 = div(t4 = txt(4), t5 = txt(5), txt(6)))
+      comp.mount()
+      # should not let one component occurs in the different place of the dom
+      div1.insertChildAfter(t5, t2)
+      comp.render()
+      expect(-> comp.render()).to.throw()
+
   describe 'each of array, object', ->
     it 'simple each for array', ->
       comp = every([1, 2], (item) -> item)

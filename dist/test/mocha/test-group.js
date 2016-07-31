@@ -168,6 +168,18 @@ describe('test-group: group component: List, each', function() {
       return expect(demoNode.innerHTML).to.equal('23');
     });
   });
+  describe('Tag', function() {
+    return it('should have correct nextNode', function() {
+      var div1, div2, t2, t3, t4, t5;
+      comp = div(div1 = div(txt(1), t2 = txt(2), t3 = txt(3)), div2 = div(t4 = txt(4), t5 = txt(5), txt(6)));
+      comp.mount();
+      div1.insertChildAfter(t5, t2);
+      comp.render();
+      return expect(function() {
+        return comp.render();
+      }).to["throw"]();
+    });
+  });
   describe('each of array, object', function() {
     it('simple each for array', function() {
       var demoNode;
