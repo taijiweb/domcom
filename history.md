@@ -1,3 +1,8 @@
+### 2016-7-31 v0.5.2 on github, npm
+* addEventListenerMap: for oncompositionstart like events, use node.addEventListener(eventName, domEventHandler), instead of node[eventName] = domEventHandler
+* fix a bug caused by missing this.valid = true in List.updateDom
+* use Component.valid, remove Text.textValid
+
 ### 2016-6-30 v0.5.1 on github, npm
 * add api: dc.clean(): remove all components in dc.removingChildren
 * fix bugs in domcom/demo
