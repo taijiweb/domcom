@@ -24,12 +24,14 @@ module.exports = exports = class List extends BaseComponent
     this
 
   createDom: ->
+    this.valid = true
     this.node = this.childNodes
     this.createChildrenDom()
     this.firstNode = this.childrenFirstNode
     this.node
 
   updateDom: ->
+    this.valid = true
     this.updateChildrenDom()
     this.firstNode = this.childrenFirstNode
     this.node

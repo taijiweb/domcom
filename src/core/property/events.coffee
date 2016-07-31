@@ -22,6 +22,15 @@ exports.domEventHandler = (event) ->
   else
     result
 
+# the event in addEventListenerMap do not execute node[eventName]
+# e.g. https://developer.mozilla.org/en/docs/Web/Events/compositionstart
+# [2] The event was fired in versions of Gecko before 9.0, but didn't have the DOM Level 3 attributes and methods.
+# so it's necessary to addEventListener
+exports.addEventListenerMap = addEventListenerMap = {}
+# todo: finish the full list
+for eventName in 'compositionstart compositionupdate compositionend'.split(/\s/)
+  addEventListenerMap['on' + eventName] = true
+
 exports.domEventHandlerFromArray = (callbackArray) ->
   (event) ->
     for fn in callbackArray
@@ -52,12 +61,16 @@ exports.addHandlerToCallbackArray = (handler, callbacks, before) ->
   if before
     callback = handler.pop()
     while callback
+      if !callback
+        dc.error('addHandlerToCallbackArray: callback is undefined')
       index = callbacks.indexOf(callback)
       if index <= 0
         callbacks.unshift(callback)
       callback = handler.pop()
   else
     for callback in handler
+      if !callback
+        dc.error('addHandlerToCallbackArray: callback is undefined')
       index = callbacks.indexOf(callback)
       if index <= 0
         callbacks.push(callback)

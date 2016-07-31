@@ -5,7 +5,7 @@ extend = require('extend')
 classFn = require('../property/classFn')
 {styleFrom} = require('../property/style')
 {attrToPropName} = require('../property/attrs')
-{domEventHandler, addHandlerToCallbackArray} = require('../property/events')
+{domEventHandler, addEventListenerMap, addHandlerToCallbackArray} = require('../property/events')
 BaseComponent = require('./BaseComponent')
 {funcString, newLine, cloneObject} = require('dc-util')
 {flow, react} = require('lazy-flow')
@@ -237,12 +237,22 @@ module.exports = class Tag extends BaseComponent
     this
 
   bindOne: (eventName, handler, before) ->
+    if !handler
+      dc.error('Tag.bind: handler is undefined for event: '+ eventName)
+
     if eventName[...2]!='on'
       eventName = 'on'+eventName
     domEventCallbackMap = this.domEventCallbackMap || this.domEventCallbackMap = {}
     domEventCallbacks = domEventCallbackMap[eventName] || domEventCallbackMap[eventName] = []
     if this.node
-      this.node[eventName] = domEventHandler
+      # the event in addEventListenerMap do not execute node[eventName]
+      # e.g. https://developer.mozilla.org/en/docs/Web/Events/compositionstart
+      # [2] The event was fired in versions of Gecko before 9.0, but didn't have the DOM Level 3 attributes and methods.
+      # so it's necessary to addEventListener
+      if addEventListenerMap[eventName]
+        node.addEventListener(eventName[2...], domEventHandler)
+      else
+        this.node[eventName] = domEventHandler
     else
       this.hasActiveDomEvents = true
       this.hasActiveProperties = true
@@ -261,7 +271,9 @@ module.exports = class Tag extends BaseComponent
         domEventCallbacks.splice(index, 1)
         if !domEventCallbacks.length
           domEventCallbackMap[eventName] = null
-          this.node && this.node[prop] = null
+          if node = this.node
+            node[prop] = null
+            node.removeEventListener(domEventHandler)
     this
 
   addClass: (items...) ->
@@ -281,21 +293,29 @@ module.exports = class Tag extends BaseComponent
   show: (display) ->
     if typeof display == 'function'
       display = display()
-      if !display? then display = ''
-    if !display? then this.setProp('display', 'block', this.style, 'Style')
-    else if display=='visible' then this.setProp('visibility', 'visible', this.style, 'Style')
-    else this.setProp('display', display, this.style, 'Style')
-    this.render()
+      if !display?
+        display = ''
+
+    if !display?
+      this.setProp('display', 'block', this.style, 'Style')
+    else if display=='visible'
+      this.setProp('visibility', 'visible', this.style, 'Style')
+    else
+      this.setProp('display', display, this.style, 'Style')
     this
 
   hide: (display) ->
     if typeof display == 'function'
       display = display()
-      if !display? then display = ''
-    if !display then this.setProp('display', 'none', this.style, 'Style')
-    else if display=='hidden' then this.setProp('visibility', 'hidden', this.style, 'Style')
-    else this.setProp('display', display, this.style, 'Style')
-    this.render()
+      if !display?
+        display = ''
+
+    if !display
+      this.setProp('display', 'none', this.style, 'Style')
+    else if display=='hidden'
+      this.setProp('visibility', 'hidden', this.style, 'Style')
+    else
+      this.setProp('display', display, this.style, 'Style')
     this
 
   showHide: (status, test, display) ->
@@ -335,6 +355,7 @@ module.exports = class Tag extends BaseComponent
     return
 
   createDom: ->
+    this.valid = true
     this.node = this.firstNode = node = createElement(this.namespace, this.tagName, this.poolLabel)
     node.component = this
 
@@ -345,6 +366,7 @@ module.exports = class Tag extends BaseComponent
     node
 
   updateDom: ->
+    this.valid = true
     this.updateProperties()
     this.updateChildrenDom()
     this.attachChildren()
@@ -402,7 +424,14 @@ module.exports = class Tag extends BaseComponent
     if this.hasActiveDomEvents
       for eventName, callbackList of this.domEventCallbackMap
         if callbackList && callbackList.length
-          node[eventName] = domEventHandler
+          # the event in addEventListenerMap do not execute node[eventName]
+          # e.g. https://developer.mozilla.org/en/docs/Web/Events/compositionstart
+          # [2] The event was fired in versions of Gecko before 9.0, but didn't have the DOM Level 3 attributes and methods.
+          # so it's necessary to addEventListener
+          if addEventListenerMap[eventName]
+            node.addEventListener(eventName[2...], domEventHandler)
+          else
+            node[eventName] = domEventHandler
     this.hasActiveDomEvents = false
 
     return
