@@ -33,14 +33,11 @@ module.exports = class BaseComponent extends Component
       if this.holder
         this.holder.invalidateAttach(this)
     if !this.node
-      this.valid = true
       this.createDom()
       if this.holder
         this.holder.invalidateAttach(this)
     else
-      valid = this.valid
-      this.valid = true
-      if !valid || this.isTag
+      if !this.valid || this.isTag
         this.updateDom()
 
     return

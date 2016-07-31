@@ -10,7 +10,9 @@ else
   hasTextContent = false
 
 exports = module.exports = class Text extends BaseComponent
+
   isText: true
+
   constructor: (text) ->
     super()
     this.setText(text)
@@ -29,10 +31,10 @@ exports = module.exports = class Text extends BaseComponent
     this.family[this.dcid] = true
     this
 
-  setText:setText
+  setText: setText
 
   createDom: ->
-    this.textValid = true
+    this.valid = true
     text = domValue(this.text, this)
     node = document.createTextNode(text)
     node.component = this
@@ -42,18 +44,15 @@ exports = module.exports = class Text extends BaseComponent
 
   updateDom: ->
     node = this.node
-    if this.textValid
-      return node
+    this.valid = true
+    text = domValue(this.text, this)
+    if hasTextContent
+      if text != node.textContent
+        node.textContent = text
     else
-      this.textValid = true
-      text = domValue(this.text, this)
-      if hasTextContent
-        if text != node.textContent
-          node.textContent = text
-      else
-        if text != node.innerText
-          node.innerText = text
-      node
+      if text != node.innerText
+        node.innerText = text
+    node
     
   clone: ->
     result = new this.constructor(this.text)

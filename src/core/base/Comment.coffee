@@ -10,7 +10,7 @@ module.exports = class Comment extends Text
     super(text)
 
   createDom: ->
-    this.textValid = true
+    this.valid = true
     text = domValue(this.text, this)
     node = document.createComment(text)
     this.node = this.firstNode = node
@@ -18,10 +18,7 @@ module.exports = class Comment extends Text
     this.node
 
   updateDom: ->
-    if this.textValid
-      return this.node
-
-    this.textValid = true
+    this.valid = true
     text = domValue(this.text, this)
     if text != this.cacheText
       parentNode = node.parentNode

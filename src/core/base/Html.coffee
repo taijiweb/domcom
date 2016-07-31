@@ -60,7 +60,7 @@ Html.HtmlMixin = HtmlMixin = {
   attachChildren: ->
 
   createDom: ->
-    this.textValid = true
+    this.valid = true
     this.node = this.firstNode = node = document.createElement(this.tagName)
     node.component = this
     this.updateProperties()
@@ -71,10 +71,7 @@ Html.HtmlMixin = HtmlMixin = {
     this
 
   updateDom: ->
-    if this.textValid
-      return this
-
-    this.textValid = true
+    this.valid = true
     text = domValue(this._text, this)
     if this.transform
       text = this.transform(text)

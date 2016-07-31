@@ -72,13 +72,11 @@ exports.setText = (text) ->
     if this._text == text
       return this
 
-    this.textValid = false
     this._text = text
 
     me = this
     if typeof text == 'function'
       text.onInvalidate ->
-        me.textValid = false
         me.invalidate()
     this.invalidate()
     this
