@@ -9,6 +9,8 @@ module.exports = dcEventMixin =
         for eventName, callback of event
           this.on(eventName, callback)
     else
+      if !callback
+        dc.error('Component.on: callback is undefined for event: '+ event)
       if !(listeners = this.listeners)
         this.listeners = listeners = {}
       for event in event.split(/\s*,\s*|\s+/)
@@ -37,6 +39,8 @@ module.exports = dcEventMixin =
     this
 
   once: (event, callback) ->
+    if !callback
+      dc.error('Component.once: callback is undefined for event: '+ event)
     onceCallback = (args...) ->
       this.off(event, onceCallback)
       callback.apply(this, args)

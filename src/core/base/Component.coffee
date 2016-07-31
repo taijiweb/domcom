@@ -125,17 +125,14 @@ module.exports = class Component
     this
 
   ###
-  component.renderWhen components, events
+  component.renderWhen components, events, options
   component.renderWhen setInterval, interval, options
   component.renderWhen setTimeout, interval, options
   ###
-  renderWhen: (component, events, options) ->
-    if isArray(component) || isComponent(component)
-      options = [this]
-    else
-      options = options || {}
-      options.components = [this]
-    dc.renderWhen(component, events, options)
+  renderWhen: (cause, events, options) ->
+    options = options || {}
+    options.target = [this]
+    dc.renderWhen(cause, events, options)
     this
 
   destroy: ->

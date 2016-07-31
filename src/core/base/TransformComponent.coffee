@@ -64,12 +64,14 @@ module.exports = class TransformComponent extends Component
     this.removing = true
     this.holder = null
     dc.removingChildren[this.dcid] = this
-    this.content.markRemoving()
+    if this.content
+      this.content.markRemoving()
     this
 
   markRemoving: ->
     this.removing = true
-    this.content.markRemoving()
+    if this.content
+      this.content.markRemoving()
     return
 
   clearRemoving: ->

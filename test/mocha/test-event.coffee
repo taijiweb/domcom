@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe, ddescribe} = require('bdd-test-helper')
 
-{fakeEvent} = require('./helper')
+{fakeEvent} = require('domcom/test/mocha/helper')
 
 {duplex, see
 classFn, styleFrom

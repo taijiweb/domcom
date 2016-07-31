@@ -135,7 +135,7 @@
 	    }), a_ = _ref3.a_, b_ = _ref3.b_;
 	    r = flow.neg(a_);
 	    expect(r()).to.equal(-4, 'neg');
-	    r = flow.no(a_);
+	    r = flow.not(a_);
 	    expect(r()).to.equal(false, 'not');
 	    r = flow.abs(flow.neg(a_));
 	    expect(r()).to.equal(4, 'abs neg');
@@ -1064,7 +1064,7 @@
 	  });
 	};
 
-	flow.no = flow.not = flow.not_ = function(x) {
+	flow.not = function(x) {
 	  return unary(x, function(x) {
 	    return !x;
 	  });
@@ -3800,6 +3800,18 @@
 	      return expect(demoNode.innerHTML).to.equal('23');
 	    });
 	  });
+	  describe('Tag', function() {
+	    return it('should have correct nextNode', function() {
+	      var div1, div2, t2, t3, t4, t5;
+	      comp = div(div1 = div(txt(1), t2 = txt(2), t3 = txt(3)), div2 = div(t4 = txt(4), t5 = txt(5), txt(6)));
+	      comp.mount();
+	      div1.insertChildAfter(t5, t2);
+	      comp.render();
+	      return expect(function() {
+	        return comp.render();
+	      }).to["throw"]();
+	    });
+	  });
 	  describe('each of array, object', function() {
 	    it('simple each for array', function() {
 	      var demoNode;
@@ -4556,7 +4568,7 @@
 
 	_ref = __webpack_require__(/*! bdd-test-helper */ 2), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, ddescribe = _ref.ddescribe;
 
-	fakeEvent = __webpack_require__(/*! ./helper */ 13).fakeEvent;
+	fakeEvent = __webpack_require__(/*! domcom/test/mocha/helper */ 13).fakeEvent;
 
 	duplex = dc.duplex, see = dc.see, classFn = dc.classFn, styleFrom = dc.styleFrom, model = dc.model, show = dc.show, Tag = dc.Tag, Text = dc.Text, List = dc.List, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, txt = dc.txt, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, button = dc.button, input = dc.input;
 

@@ -51,18 +51,25 @@ dc.rafRender = rafRender = ->
 
 # dc.renderWhen component, events, options
 # dc.renderWhen setInterval, interval, {clear: -> clearInterval test}
-dc.renderWhen =  (component, events, options) ->
+# dc.renderWhen setTimeout, interval
+dc.renderWhen =  (cause, events, options) ->
+
+  components = options.target
+
   if typeof events == 'string'
     events = events.split(/\s+/)
-  if isComponent(component)
-    component = [component]
-  if component instanceof Array
-    for comp in component
-      for event in events
-        renderWhenComponentEvent(comp, event, options)
 
-  else if component == window.setInterval
-    {test, clear, components} = options
+  if isComponent(cause)
+    cause = [cause]
+
+  if cause instanceof Array
+    for comp in cause
+      for event in events
+        renderWhenComponentEvent(comp, event, components)
+
+  else if cause == window.setInterval
+
+    {test, clear} = options
     handler = null
 
     callback = ->
@@ -75,11 +82,12 @@ dc.renderWhen =  (component, events, options) ->
 
     handler = setInterval(callback, events || 16)
 
-  else if component == setTimeout
+  else if cause == setTimeout
     callback = ->
-      for component in options.component
+      for component in components
         component.render()
       dc.clean()
+
     setTimeout(callback, events)
 
   return

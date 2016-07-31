@@ -18,7 +18,7 @@ exports.fakeEvent = (targetNode, type='click', keyCodeOrOptions) ->
   else
     extend(
       {
-        target:targetNode
+        target: targetNode
         type
         preventDefault: ->
         stopPropagation: ->
