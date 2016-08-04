@@ -36,36 +36,22 @@ exports.extendAttrs = (attrs, obj, options={}) ->
 
   attrs
 
-exports.overAttrs = overAttrs = (attrs, obj) ->
-  if !obj
-    attrs = extend({}, attrs)
-    if attrs.style then attrs.style = extend({}, styleFrom(attrs.style))
-    attrs
-  else if !attrs then obj
-  else
-    for key, value of attrs
-      if !obj[key]? then obj[key] = value
-      if key=='style' then obj[key] = overAttrs(attrs[key], obj[key])
-    obj
-
 attrPropNameMap = {'for':'htmlFor'}
 
 exports.attrToPropName = (name) ->
-  if newName=attrPropNameMap[name]
-    return newName
-
-  pieces = name.split('-')
-
-  if pieces.length==1
-    return name
-
-  i = 1
-  len = pieces.length
-  while i<len
-    pieces[i] = pieces[i][0].toUpperCase()+pieces[i][1...]
-    i++
-
-  pieces.join('')
+  if newName = attrPropNameMap[name]
+    newName
+  else
+    pieces = name.split('-')
+    if pieces.length==1
+      name
+    else
+      i = 1
+      len = pieces.length
+      while i < len
+        pieces[i] = pieces[i][0].toUpperCase()+pieces[i][1...]
+        i++
+      pieces.join('')
 
 exports.setText = (text) ->
     text = domField(text, this)
