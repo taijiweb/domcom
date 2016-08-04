@@ -140,7 +140,7 @@ describe("delegate event", function() {
     x = 0;
     comp = list([child = p()]);
     comp.mount();
-    child.delegateByHolder('click');
+    child.delegateToHolder('click');
     comp.do_click = function() {
       return x = 1;
     };
@@ -152,7 +152,7 @@ describe("delegate event", function() {
     x = 0;
     comp = div(lst = list([child = p()]));
     comp.mount();
-    comp.delegateByHolder('click');
+    comp.delegateToHolder('click');
     lst.do_click = function() {
       return x = 1;
     };
@@ -165,7 +165,7 @@ describe("delegate event", function() {
     x = 0;
     comp = div(lst = list([child = p()]));
     comp.mount();
-    comp.delegateByComponent('click', lst);
+    comp.delegateToComponent('click', lst);
     lst.do_click = function() {
       return x = 1;
     };

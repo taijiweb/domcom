@@ -107,7 +107,7 @@ describe "delegate event", ->
     x = 0
     comp = list([child = p()])
     comp.mount()
-    child.delegateByHolder('click')
+    child.delegateToHolder('click')
     comp.do_click = -> x = 1
     child.node.onclick(fakeEvent(child.node))
     expect(x).to.equal 1
@@ -116,7 +116,7 @@ describe "delegate event", ->
     x = 0
     comp = div(lst = list([child = p()]))
     comp.mount()
-    comp.delegateByHolder('click')
+    comp.delegateToHolder('click')
     lst.do_click = -> x = 1
     comp.node.onclick(fakeEvent(child.node))
     expect(child.node.onclick).to.be.null
@@ -126,7 +126,7 @@ describe "delegate event", ->
     x = 0
     comp = div(lst = list([child = p()]))
     comp.mount()
-    comp.delegateByComponent('click', lst)
+    comp.delegateToComponent('click', lst)
     lst.do_click = -> x = 1
     comp.node.onclick(fakeEvent(child.node))
     expect(child.node.onclick).to.be.null

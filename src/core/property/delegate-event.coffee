@@ -1,21 +1,18 @@
 Tag = require('../base/Tag')
-DomNode = require('../../DomNode')
 
-exports.makeDelegationHandler = makeDelegationHandler = ->
+# delegate to component.prefix_XXX method
+delegateToMethodHandler = (prefix = 'do_') ->
   (event) ->
     targetNode = event.target
     targetComponent = targetNode.component
-    targetComponent['do_'+event.type](event)
+    targetComponent[prefix + event.type](event)
 
-Tag.prototype.delegate = DomNode.prototype.delegate =
-  (events, delegationHandler=makeDelegationHandler()) ->
-    this.bind(events, delegationHandler)
-
-exports.makeHolderDelegationHandler = makeHolderDelegationHandler = ->
+# delegate until holder...holder.do_XXX method
+delegateToHolderHandler = (prefix) ->
   (event) ->
     targetNode = event.target
     targetComponent = targetNode.component
-    method = 'do_'+event.type
+    method = prefix + event.type
     while targetComponent
       handler = targetComponent[method]
       if handler
@@ -28,17 +25,25 @@ exports.makeHolderDelegationHandler = makeHolderDelegationHandler = ->
         targetComponent = targetComponent.holder
     return
 
-Tag.prototype.delegateByHolder = DomNode.prototype.delegateByHolder =
-  (events, delegationHandler=makeHolderDelegationHandler()) ->
-    this.bind(events, delegationHandler)
-
-
-makeComponentDelegationHandler = (component) ->
+# delegate to the given component.prefix_XXX method
+delegateToComponentHandler = (component, prefix) ->
   (event) ->
-    if handler = component['do_'+event.type]
+    if handler = component[prefix + event.type]
       handler.call(component, event)
     return
 
-Tag.prototype.delegateByComponent = DomNode.prototype.delegateByComponent =
-  (events, component) ->
-    this.bind(events, makeComponentDelegationHandler(component))
+# delegate to component.prefix_XXX method
+Tag.prototype.delegate = (events, delegationHandler) ->
+  if typeof delegationHandler != 'function'
+    delegationHandler = delegateToMethodHandler(delegationHandler)
+  this.bind(events, delegationHandler)
+
+# delegate until holder...holder.prefix_XXX method
+Tag.prototype.delegateToHolder = (events, prefix = 'do_') ->
+  delegationHandler = delegateToHolderHandler(prefix)
+  this.bind(events, delegationHandler)
+
+# delegate to the given component.prefix_XXX method
+Tag.prototype.delegateToComponent = (events, component, prefix = 'do_') ->
+  delegationHandler = delegateToComponentHandler(component, prefix)
+  this.bind(events, delegationHandler)
