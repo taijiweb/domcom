@@ -27,7 +27,8 @@ module.exports = class Tag extends BaseComponent
 
     this.isTag = true
 
-    tagName = tagName || 'div'
+    tagName = tagName || attrs.tagName || 'div'
+    delete attrs.tagName
     this.tagName = tagName.toLowerCase()
     this.namespace = attrs.namespace
     this.poolLabel = this.generatePoolLabel()
@@ -345,9 +346,6 @@ module.exports = class Tag extends BaseComponent
     method.onInvalidate fn
     this.style = style
     this
-
-  showOn: (test, display) -> this.showHide(true, test, display)
-  hideOn: (test, display) -> this.showHide(false, test, display)
 
   refreshDom: (oldBaseComponent) ->
     this.renderDom(oldBaseComponent)
