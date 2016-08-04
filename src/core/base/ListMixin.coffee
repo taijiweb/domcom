@@ -228,7 +228,7 @@ module.exports =
     if child.holder == this
       child.holder = null
 
-    this
+    child
     
   setFollowingChildrenFirstNode: (index) ->
     children = this.children
