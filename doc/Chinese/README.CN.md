@@ -24,7 +24,7 @@
 
     // 并非必须，但是推荐采用某种工具(如babel)支持ES6，特别是解构语法。
 
-    {list, text, p, flow, see} = dc
+    const {list, text, p, flow, see} = dc
 
     // 否则就需象下面这样写代码，不太理想：
 
@@ -34,24 +34,24 @@
     demoSum = function() {
       var a, b, comp, p1, t1, t2;
 
-      a = see(1);
-      b = see(2);
+      a$ = see(1);
+      b$ = see(2);
 
       comp = list((t1 = text({
-        value: a,
-        onchange() { return a(this.value * 1); } // ES 6
+        value: a$,
+        onchange(event, node) { return a$(node.value * 1); } // ES 6
 
-        // onchange: function() { return a(this.value * 1) } // ES5
+        // onchange: function(event, node) { return a$(node.value * 1) } // ES5
 
       })), (t2 = text({
-        value: b,
-        onchange() { return b(this.value * 1); } // ES 6
+        value: b$,
+        onchange(event, node) { return b$(node.value * 1); } // ES 6
 
-        // onchange: function() { return b(this.value * 1);}  // ES5
+        // onchange: function(event, node) { return b$(node.value * 1);}  // ES5
 
-      })), p1 = p(flow.add(a, b)));
+      })), p1 = p(flow.add(a$, b$)));
 
-      dc.renderWhen([t1, t2], 'change', p1);
+      p1.renderWhen([t1, t2], 'change');
 
       return comp.mount();
     };
@@ -64,14 +64,14 @@
 
     demoSum = ->
 
-        a = see 1; b = see 2
+        a$ = see 1; b$ = see 2
 
         comp = list \
-            (t1 = text value: a, onchange: -> a @value*1),
-            (t2 = text value: b, onchange: -> b @value*1),
-            p1 = p flow.add a, b
+            (t1 = text value: a$, onchange: (event, node) -> a$ node.value*1),
+            (t2 = text value: b$, onchange: (event, node) -> b$ node.value*1),
+            p1 = p flow.add a$, b$
 
-        dc.renderWhen [t1, t2], 'change', p1
+        p1.renderWhen [t1, t2], 'change'
 
         comp.mount()
 

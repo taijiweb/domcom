@@ -8,21 +8,27 @@
 
     domcom    ...................................  // the web framework to provide dom component
     |- src/   ...................................  // the coffee-script source code folder
-    |  |- domcom.coffee    .......................  // the index file to enable require this folder as domcom package, include basic domcom and it's addon content
-    |  |- domcom-basic.coffee    .................  // the index file to the basic domcom, does not include the addon content
-    |  |- domcom-addon.coffee    ................  // the index file for addon modules: builtins, directives, etc.
+    |  |- domcom.coffee    ......................  // the index file to enable require this folder as domcom package
     |  |- dc.coffee    ..........................  // the methods and properties which belong to dc directly
-    |  |- config.coffee    ......................  // config file for dc
-    |  |- util.coffee    ........................  // utilities for dc (UPDATE: removed and published as dc-util, imported to domcom)
+    |  |- dc-render.coffee    ...................  // render method properties for dc
+    |  |- dc-event.coffee    ....................  // component event system 
+    |  |- dc-util.coffee    .....................  // some utilties for domcom
+    |  |                                             (UPDATE: has been moved to the npm package dc-util, and imported to domcom)
+    |  |- dom-util.coffee    ....................  // some utilties about dom
     |  |- DomNode.coffee    .....................  // DomNode class, which provide an interface similar to jQuery for operating the dom node
-    |  |- extend.coffee    ......................  // the extend function
     |  |- core/    ..............................  // the core implementation to domcom component
     |  |  |- instantiate.coffee    ..............  // convenient utilities to generate components, the same as "new ComponentX(...) "
     |  |  |- tag.coffee    ......................  // convenient utilities to generate Tag component, the same as "new Tag("tagName", ...)"
-    |  |  |- property.coffee    .................  // some utilities to process Tag properties and events
+    |  |  |- property    ........................  // some utilities to process Tag properties and events
+    |  |  |  |- attrs.coffee    .................  // utilities to process attrs of Tag component
+    |  |  |  |- classFn.coffee    ...............  // classFn for tag component, to process class(className)
+    |  |  |  |- style.coffee    .................  // styles utilities
+    |  |  |  |- css-arith.coffee    .............  // css arith function
+    |  |  |  |- events.coffee    ................  // Tag component's dom event utilties
+    |  |  |  |- delegate-event.coffee   .........  // utilities to process event delegation
     |  |  |- index.coffee    ....................  // the index file to enable requiring core/ folder
     |  |  |- base/    ...........................  // base classes and derived classes for domcom component
-    |  |  |  |- component.coffee    .............  // Component base class for all component classes
+    |  |  |  |- Component.coffee    .............  // Component base class for all component classes
     |  |  |  |- BaseComponent.coffee    .........  // BaseComponent base class  for all base component classes
     |  |  |  |- TransformComponent.coffee  ......  // TransformComponent base class  for all transform component classes
     |  |  |  |- List.coffee    ..................  // List base component class
@@ -34,6 +40,7 @@
     |  |  |  |- If.coffee    ....................  // If transform component class, new If(test, then_, else_)
     |  |  |  |- Case.coffee    ..................  // Case transform component class, new Case(test, hashMap, else_)
     |  |  |  |- Cond.coffee    ..................  // Cond transform component class, new Cond(testComponents, else_)
+    |  |  |  |- Pick.coffee    ..................  // Pick transform component class, new Pick(host, field, initialContent)
     |  |  |  |- Func.coffee    ..................  // Func transform component class, new Func(func)
     |  |  |  |- Each.coffee    ..................  // Each transform component class, new Each(items, itemFn, options)
     |  |  |  |- route.coffee    .................  // Route transform component class, route(routeList..., otherwise, baseIndex)
@@ -43,68 +50,75 @@
     |  |  |  \- index.coffee    .................  // the index file to enable requiring core/base/ folder
     |  |  |
     |  |- flow/    ..............................  // the utilities to generate reactive functions 
-    |  |  |                                        // UPDATE: removed and published as lazy-flow, lazy-flow-at and dc-watch-list, imported to domcom
+    |  |  |                                        // (UPDATE: removed and published as npm packages lazy-flow, lazy-flow-at and dc-watch-list, and is imported to domcom)
     |  |  |- index.coffee    ....................  // some frequently used reative functions
     |  |  |- watch-list.coffee    ...............  // flow.watchEachList and flow.watchEachObject to play with Each component
     |  |  \- addon.coffee    ....................  // more reactive functions and utilities
     |  |
-    |  |- directives/    ........................   // some bultin directive definitions
-    |  |  |- show-hide.coffee    ................   // $show and $hide directives
-    |  |  |- model.coffee    ....................   // $model directive
-    |  |  |- bind.coffee     ....................   // $bind directive
-    |  |  |- options.coffee    ..................   // $options directive
-    |  |  |- splitter.coffee    .................   // $splitter directive
-    |  |  |- blink.coffee    ....................   // $blink direcitve
-    |  |  \- index.coffee    ....................   // the index file to enable requiring directives/ folder
+    |  |- directives/    ........................  // some bultin directive definitions
+    |  |  |- show-hide.coffee    ................  // $show and $hide directives
+    |  |  |- model.coffee    ....................  // $model directive
+    |  |  |- bind.coffee     ....................  // $bind directive
+    |  |  |- options.coffee    ..................  // $options directive
+    |  |  |- splitter.coffee    .................  // $splitter directive 
+    |  |  |                                           (UPDATE: has been moved to the npm package dc-controls)
+    |  |  |- blink.coffee    ....................  // $blink direcitve 
+    |  |  |                                           (UPDATE: has been moved to the npm package dc-controls)
+    |  |  \- index.coffee    ....................  // the index file to enable requiring directives/ folder
     |  |
-    |  |- builtins/    ..........................   // some bultin component definitions
-    |  |  |- accordion.coffee    ................   // accordion implementation based on domcom
-    |  |  |- triangle.coffee    ....................   // triangle icon by css in four directions
-    |  |  |- autoWidthEdit.coffee    ............   // text input tag element which automatic changing its width according the inputed text
-    |  |  |- combo.coffee    ....................   // two implementatinos for comboBox edit
-    |  |  |- dialog.coffee    ...................   // a simple dialog implementation based on bootstrap css
-    |  |  \- index.coffee    ....................   // the index file to enable requiring builtins/ folder
+    |  |- builtins/    ..........................  // some bultin component definitions
+    |  |  |                                            (UPDATE: has been moved to the npm package dc-controls)
+    |  |  |- accordion.coffee    ................  // accordion implementation based on domcom
+    |  |  |- triangle.coffee    .................  // triangle icon by css in four directions
+    |  |  |- autoWidthEdit.coffee    ............  // text input tag element which automatic changing its width according the inputed text
+    |  |  |- combo.coffee    ....................  // two implementatinos for comboBox edit
+    |  |  |- dialog.coffee    ...................  // a simple dialog implementation based on bootstrap css
+    |  |  \- index.coffee    ....................  // the index file to enable requiring builtins/ folder
     |  |
-    |- doc    ...................................   // document folder
-    |  |- api-referenc  .........................   // API references
-    |  |- class-hierarchy.md   ...................   // class hierarchy
-    |  |- package-directory.md   ................   // package directory hierarchy
-    |  \- Chinese    ............................   // Chinese document
-    |     |- README.CN.md    .......................// README for github and npm, in Chinese
-    |     |- 介绍和辅导教程.md    ................. // introduction and tutorial (Chinese)
-    |     |- 概念和原理.md  .....................   // Concepts and theory (Chinese)
+    |- doc    ...................................  // document folder
+    |  |- api-reference.md  .....................  // API references(English)
+    |  |- api-type-description.md  ..............  // type description for API references(English)
+    |  |- class-hierarchy.md   ..................  // class hierarchy(English)
+    |  |- package-directory.md   ................  // package directory hierarchy(English)
+    |  \- Chinese    ............................  // Chinese document
+    |     |- README.CN.md    ....................  // README for github and npm, in Chinese
+    |     |- 介绍和辅导教程.md    .................  // introduction and tutorial (Chinese)
+    |     |- 概念和原理.md  ......................   // Concepts and theory (Chinese)
     |     |- API参考.md  ........................   // API references (Chinese)
-    |     |- 类层次参考.md  .....................   // class hierarchy (Chinese)
-    |     |- 目录结构.md  .......................   // package directory hierarchy (Chinese)
-    |     |- 文件夹和模块介绍.md  ...............   // introduction to folder and module (Chinese)
-    |     |- 速查表.md  .........................   // cheatsheet (Chinese)
-    |     |- 从React到Domcom.md  ................   // declaration to release (Chinese)
-    |     |- 常问问题.md  .......................   // frequently asked questions (Chinese)
+    |     |- 类层次参考.md  ......................   // class hierarchy (Chinese)
+    |     |- 目录结构.md  ........................   // package directory hierarchy (Chinese)
+    |     |- 文件夹和模块介绍.md  ..................  // introduction to folder and module (Chinese)
+    |     |- 速查表.md  ..........................  // cheatsheet (Chinese)
+    |     |- 从React到Domcom.md  .................  // declaration to release (Chinese)
+    |     |- 常问问题.md  ........................   // frequently asked questions (Chinese)
     |
     |- test/    .................................   // test folder
-    |  |- mocha/    ..............................  // mocha test coffee-script folder
+    |  |- mocha/    .............................   // mocha test coffee-script folder
     |  |  |- test-accordion.coffee    ...........   // tests for accordion component
+    |  |  |                                            (UPDATE: has been moved to the npm package dc-controls)
     |  |  |- test-base-component.coffee    ......   // tests for base component
     |  |  |- test-component.coffee    ...........   // tests for component
-    |  |  |- test-component-event.coffee    .....   // tests for component, aka Component.on, Component.off, Component.emit
+    |  |  |- test-event.coffee    ...............   // tests for component event, aka Component.on, Component.off, Component.emit
     |  |  |- test-for-demo.coffeev    ...........   // tests for some content in demo, including todoMVC, for debugging the demos
     |  |  |- test-dc.coffee    ..................   // tests for utilities which are direclty hooked on dc
     |  |  |- test-flow.coffee    ................   // tests for reactive functions in flow/
-    |  |  |- test-event.coffee    ...............   // tests for event on Tag component
     |  |  |- test-singleton.coffee    ...........   // tests for If, Case, Func and Pick component
     |  |  |- test-group.coffee    ...............   // tests for List, Each component
+    |  |  |- test-merge-if.coffee    ............   // tests for merged If component ( a kind of Tag component or List component merged from If component) 
     |  |  |- test-directive.coffee    ...........   // tests for the directives
     |  |  |- test-property.coffee    ............   // tests for properties of Tag component
     |  |  |- test-ref-clone.coffee    ...........   // tests for references and clone to component
     |  |  |- test-route.coffee    ...............   // tests for Route component
     |  |  |- test-toString.coffee    ............   // tests toString of component classes
-    |  |  |- test-util.coffee    ................   // tests for dc/util module
+    |  |  |- test-util.coffee    ................   // tests for dc-util module
+    |  |  |                                            (UPDATE: has been moved to the npm package dc-util)
     |  |  |- helper.coffee    ...................   // some helper functions for testing
     |  |  \- index.coffee    ....................   // the index file for all tests, used in mocha-runner.html and mocha-runner-dist.html
     |  |
+    |  |- makeDomComponentTest.coffee    ........   // the utility makeDomComponentTest
     |  |- mocha-runner.html    ..................   // mocha runner html for test, using webpack-hot-server
     |  |- mocha-runner-dist.html    .............   // mocha runner html for test, using the js fiels in dist/ folder
-    |  |- 1.html    .............................   // just used as draft for trying html while developping
+    |  |- mocha-test.css    .....................   // css for mocha test
     |  |
     |- demo/    .................................   // demo folder
     |  |- todomvc/    ...........................   // todoMVC sample folder
@@ -115,11 +129,15 @@
     |  |
     |  |- app.css    ............................   // css for demo, used in index.html
     |  |- demo-accordion.coffee    ..............   // demo for accordion
+    |  |                                               (UPDATE: has been moved to the npm package dc-controls)
     |  |- demo-auto-width-edit.coffee    ........   // demo for automatic width <input, type="text"> component
+    |  |                                               (UPDATE: has been moved to the npm package dc-controls)
     |  |- demo-builtins.coffee    ...............   // demo for some builtins
+    |  |                                               (UPDATE: has been moved to the npm package dc-controls)
     |  |- demo-controls.coffee    ...............   // demo for some controls
     |  |- demo-counter.coffee    ................   // demo for a simple counter
     |  |- demo-dialog.coffee    .................   // demo for a simple dialog
+    |  |                                               (UPDATE: has been moved to the npm package dc-controls)
     |  |- demo-each.coffee    ...................   // demo for some each components
     |  |- demo-event.coffee    ..................   // demo for Tag event
     |  |- demo-if-component.coffee    ...........   // demo for If component
@@ -129,6 +147,7 @@
     |  |- demo-sum.coffee    ....................   // demo for sum
     |  |- demo-switch-1-2-3-4.coffee    .........   // demo for switch 1 2 3 4
     |  |- demo-text-model.coffee    .............   // demo text input with $model directive
+    |  |- util.coffee   .........................   // some utilities for demos
     |  |- index.coffee    .......................   // the index file to start all demos
     |  |- index.html    .........................   // index.html for the demo, using webpack-hot-server
     |  \- index-dist.html    ....................   // index.html for the demo, using the code in dist/ folder
@@ -136,8 +155,6 @@
     |- dist    ..................................  // distribution folder
     |  |- domcom.js    ..........................  // full domcom distribution, include basic domcom and addon, development version, in most time it's better to use this file
     |  |- domcom.min.js    ......................  // minified full domcom distribution, include basic domcom and addon, production version, in most time it's better to use this file
-    |  |- domcom-basic.js    ....................  // basic domcom distribution, development version
-    |  |- domcom-basic.min.js    ................  // minified basic domcom distribution, production version
     |  |- mocha-index.js    .....................  // the index file for tests based on mocha, using webpack-hot-server
     |  |- mocha-index.min.js    .................  // the index file for tests based on mocha, using the code in dist/ folder
     |  |- demo-index.js    ......................  // the index file for demos, using webpack-hot-server

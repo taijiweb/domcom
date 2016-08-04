@@ -58,19 +58,19 @@ In javascript:
 
       comp = list((t1 = text({
         value: a$,
-        onchange() { return a$(this.value * 1); } // ES 6
+        onchange(event, node) { return a$(node.value * 1); } // ES 6
 
-        // onchange: function() { return a$(this.value * 1) } // ES5
+        // onchange: function(event, node) { return a$(node.value * 1) } // ES5
 
       })), (t2 = text({
         value: b$,
-        onchange() { return b$(this.value * 1); } // ES 6
+        onchange(event, node) { return b$(node.value * 1); } // ES 6
 
-        // onchange: function() { return b$(this.value * 1);}  // ES5
+        // onchange: function(event, node) { return b$(node.value * 1);}  // ES5
 
       })), p1 = p(flow.add(a$, b$)));
 
-      comp.renderWhen([t1, t2], 'change');
+      p1.renderWhen([t1, t2], 'change');
 
       return comp.mount();
     };
@@ -86,11 +86,11 @@ In coffee-script(recommended):
         a$ = see 1; b$ = see 2
 
         comp = list \
-            (t1 = text value: a$, onchange: -> a$ @value*1),
-            (t2 = text value: b$, onchange: -> b$ @value*1),
+            (t1 = text value: a$, onchange: (event, node) -> a$ node.value*1),
+            (t2 = text value: b$, onchange: (event, node) -> b$ node.value*1),
             p1 = p flow.add a$, b$
 
-        comp.renderWhen [t1, t2], 'change'
+        p1.renderWhen [t1, t2], 'change'
 
         comp.mount()
 

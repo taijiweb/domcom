@@ -46,7 +46,7 @@ github.com/taijiweb/domcom
 
 * 无需依赖，无需不可变数据结构，无需浏览器或语言补丁，无需搭配程序库,无需补充解决方案
 
-  Domcom自身具有比较适度的代码规模，当前最小化大约60K+。因为框架在更新检测以及数据传递上采用的机制，使得它可以更灵活地使用数据，没有使用不可变数据结构的硬性需求。框架的实现代码不涉及任何非主流的、尖端的浏览器或javascript语言特性。这些方面使得Domcom无需依赖，无需浏览器或语言补丁，无需搭配程序库,无需补充解决方案即可以解决应用程序的通常需求。因为Domcom已经全面彻底地代理Dom，连angular那种通过指令直接操作Dom的需求都已经消失，因此即使是jQuery这样的库都变得不再必要。、
+  Domcom自身具有比较适度的代码规模，当前最小化大约80K+。因为框架在更新检测以及数据传递上采用的机制，使得它可以更灵活地使用数据，没有使用不可变数据结构的额外需求。框架的实现代码不涉及任何非主流的、尖端的浏览器或javascript语言特性。这些方面使得Domcom无需依赖，无需浏览器或语言补丁，无需搭配程序库,无需补充解决方案即可以解决应用程序的通常需求。因为Domcom已经全面彻底地代理Dom，连angular那种通过指令直接操作Dom的需求都已经消失，因此即使是jQuery这样的库都变得不再必要。、
 
 * 不需要模板语言
 
@@ -60,7 +60,7 @@ github.com/taijiweb/domcom
 
   或者使用cdn
 
-    http://cdn.jsdelivr.net/domcom/0.1.1/domcom.min.js
+    http://cdn.jsdelivr.net/domcom/x.y.z/domcom.min.js
 
   [Github项目地址](https://www.github.com/taijiweb/domcom)
 
@@ -82,7 +82,7 @@ github.com/taijiweb/domcom
 
   [速查表](https://github.com/taijiweb/domcom/blob/master/doc/Chinese/速查表.md)：熟悉Domcom的API，常用技巧和惯用法。
 
-  [常问问题](https://github.com/taijiweb/domcom/blob/master/doc/Chinese/常问问题.md)：大家经常想了解的一些关于Domcom的问题。
+  [常见问题](https://github.com/taijiweb/domcom/blob/master/doc/Chinese/常问问题.md)：大家经常想了解的一些关于Domcom的问题。
 
   [doc/](https://github.com/taijiweb/domcom/blob/master/doc)文件夹还有更多的文档内容。
 
