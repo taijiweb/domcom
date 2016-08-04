@@ -101,8 +101,8 @@ module.exports = exports = class List extends BaseComponent
         break
     return
 
-  clone: (arg) ->
-    result = new List(this.cloneChildren(arg))
+  clone: (options) ->
+    result = new List(this.cloneChildren(options))
     result.constructor = this.constructor
     result.copyEventListeners(this)
 

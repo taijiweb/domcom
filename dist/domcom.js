@@ -1485,6 +1485,12 @@
 	  });
 	};
 
+	flow.max = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return Math.max(x, y);
+	  });
+	};
+
 	flow.and = function(x, y) {
 	  return binary(x, y, function(x, y) {
 	    return x && y;
@@ -2295,7 +2301,7 @@
 
 	exports.txt = function(attrs, text) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Text(text)]);
+	    return new Tag(null, attrs, [new Text(text)]);
 	  } else {
 	    return new Text(attrs);
 	  }
@@ -2303,9 +2309,17 @@
 
 	exports.comment = function(attrs, text) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Comment(text)]);
+	    return new Tag(null, attrs, [new Comment(text)]);
 	  } else {
 	    return new Comment(attrs);
+	  }
+	};
+
+	exports.cdata = function(attrs, text) {
+	  if (isAttrs(attrs)) {
+	    return new Tag(null, attrs, [new Cdata(text)]);
+	  } else {
+	    return new Cdata(attrs);
 	  }
 	};
 
@@ -2315,7 +2329,7 @@
 
 	exports.if_ = function(attrs, test, then_, else_, merge, recursive) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new If(test, then_, else_, merge, recursive)]);
+	    return new Tag(null, attrs, [new If(test, then_, else_, merge, recursive)]);
 	  } else {
 	    return new If(attrs, test, then_, merge, recursive);
 	  }
@@ -2323,7 +2337,7 @@
 
 	exports.forceIf = function(attrs, test, then_, else_) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new If(test, then_, else_, true, false, true)]);
+	    return new Tag(null, attrs, [new If(test, then_, else_, true, false, true)]);
 	  } else {
 	    return new If(attrs, test, then_, true, false, true);
 	  }
@@ -2331,7 +2345,7 @@
 
 	exports.mergeIf = function(attrs, test, then_, else_, recursive) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new If(test, then_, else_, true, recursive)]);
+	    return new Tag(null, attrs, [new If(test, then_, else_, true, recursive)]);
 	  } else {
 	    return new If(attrs, test, then_, true, recursive);
 	  }
@@ -2339,7 +2353,7 @@
 
 	exports.recursiveIf = function(attrs, test, then_, else_) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new If(test, then_, else_, true, true)]);
+	    return new Tag(null, attrs, [new If(test, then_, else_, true, true)]);
 	  } else {
 	    return new If(attrs, test, then_, true, true);
 	  }
@@ -2347,7 +2361,7 @@
 
 	exports.case_ = function(attrs, test, map, else_) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Case(test, map, else_)]);
+	    return new Tag(null, attrs, [new Case(test, map, else_)]);
 	  } else {
 	    return new Case(attrs, test, map);
 	  }
@@ -2355,7 +2369,7 @@
 
 	exports.forceCase = function(attrs, test, map, else_) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Case(test, map, else_, true)]);
+	    return new Tag(null, attrs, [new Case(test, map, else_, true)]);
 	  } else {
 	    return new Case(attrs, test, map, true);
 	  }
@@ -2369,7 +2383,7 @@
 	      condComponents.push(else_);
 	      else_ = null;
 	    }
-	    return new Tag('div', attrs, [new Cond(condComponents, else_)]);
+	    return new Tag(null, attrs, [new Cond(condComponents, else_)]);
 	  } else {
 	    condComponents.unshift(attrs);
 	    if (!isEven(condComponents)) {
@@ -2382,7 +2396,7 @@
 
 	exports.func = function(attrs, fn) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Func(fn)]);
+	    return new Tag(null, attrs, [new Func(fn)]);
 	  } else {
 	    return new Func(attrs);
 	  }
@@ -2396,7 +2410,7 @@
 	  var attrs, lst;
 	  attrs = arguments[0], lst = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new List(lst)]);
+	    return new Tag(null, attrs, [new List(lst)]);
 	  } else {
 	    lst.unshift(attrs);
 	    if (lst.length === 1) {
@@ -2409,7 +2423,7 @@
 
 	exports.defer = function(attrs, promise, fulfill, reject, init) {
 	  if (isAttrs(attrs)) {
-	    return new Tag('div', attrs, [new Defer(promise, fulfill, reject, init)]);
+	    return new Tag(null, attrs, [new Defer(promise, fulfill, reject, init)]);
 	  } else {
 	    return new Defer(attrs, promise, fulfill, reject);
 	  }
@@ -3027,7 +3041,7 @@
   \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Component, dc, dcEventMixin, extend, flow, isArray, isComponent, newDcid, normalizeDomElement, _ref;
+	var Component, dc, dcEventMixin, extend, flow, flowBind, isArray, isComponent, newDcid, normalizeDomElement, _ref;
 
 	extend = __webpack_require__(/*! extend */ 3);
 
@@ -3036,6 +3050,8 @@
 	_ref = __webpack_require__(/*! dc-util */ 1), newDcid = _ref.newDcid, isArray = _ref.isArray;
 
 	flow = __webpack_require__(/*! lazy-flow */ 6).flow;
+
+	flowBind = flow.bind;
 
 	isComponent = __webpack_require__(/*! ./isComponent */ 7);
 
@@ -3095,11 +3111,6 @@
 	      this.clearRemoving();
 	      return dc.rootComponentMap[this.dcid] = this;
 	    }
-	  };
-
-	  Component.prototype.create = function(mountNode, beforeNode, forceRender) {
-	    this._prepareMount(mountNode, beforeNode);
-	    return this.render(forceRender);
 	  };
 
 
@@ -3223,7 +3234,7 @@
 	    var children, holder;
 	    if (!(holder = this.holder)) {
 	      return null;
-	    } else if (children = holder.holder.children) {
+	    } else if (children = holder.children) {
 	      return children[children.indexOf(this) - 1];
 	    }
 	  };
@@ -3266,7 +3277,7 @@
 	      _ref1 = this.reactMap;
 	      for (srcField in _ref1) {
 	        reactField = _ref1[srcField];
-	        reactive = flow.bind(this, srcField);
+	        reactive = flowBind(this, srcField);
 	        if (typeof reactField === 'string') {
 	          reactive.onInvalidate(function() {
 	            var reaction;
@@ -3678,7 +3689,7 @@
   \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var attrPropNameMap, classFn, domField, extend, extendEventValue, isComponent, overAttrs, styleFrom;
+	var attrPropNameMap, classFn, domField, extend, extendEventValue, isComponent, styleFrom;
 
 	extend = __webpack_require__(/*! extend */ 3);
 
@@ -3735,30 +3746,6 @@
 	  return attrs;
 	};
 
-	exports.overAttrs = overAttrs = function(attrs, obj) {
-	  var key, value;
-	  if (!obj) {
-	    attrs = extend({}, attrs);
-	    if (attrs.style) {
-	      attrs.style = extend({}, styleFrom(attrs.style));
-	    }
-	    return attrs;
-	  } else if (!attrs) {
-	    return obj;
-	  } else {
-	    for (key in attrs) {
-	      value = attrs[key];
-	      if (obj[key] == null) {
-	        obj[key] = value;
-	      }
-	      if (key === 'style') {
-	        obj[key] = overAttrs(attrs[key], obj[key]);
-	      }
-	    }
-	    return obj;
-	  }
-	};
-
 	attrPropNameMap = {
 	  'for': 'htmlFor'
 	};
@@ -3767,18 +3754,20 @@
 	  var i, len, newName, pieces;
 	  if (newName = attrPropNameMap[name]) {
 	    return newName;
+	  } else {
+	    pieces = name.split('-');
+	    if (pieces.length === 1) {
+	      return name;
+	    } else {
+	      i = 1;
+	      len = pieces.length;
+	      while (i < len) {
+	        pieces[i] = pieces[i][0].toUpperCase() + pieces[i].slice(1);
+	        i++;
+	      }
+	      return pieces.join('');
+	    }
 	  }
-	  pieces = name.split('-');
-	  if (pieces.length === 1) {
-	    return name;
-	  }
-	  i = 1;
-	  len = pieces.length;
-	  while (i < len) {
-	    pieces[i] = pieces[i][0].toUpperCase() + pieces[i].slice(1);
-	    i++;
-	  }
-	  return pieces.join('');
 	};
 
 	exports.setText = function(text) {
@@ -4237,9 +4226,9 @@
 	    }
 	  };
 
-	  List.prototype.clone = function(arg) {
+	  List.prototype.clone = function(options) {
 	    var result;
-	    result = new List(this.cloneChildren(arg));
+	    result = new List(this.cloneChildren(options));
 	    result.constructor = this.constructor;
 	    return result.copyEventListeners(this);
 	  };
@@ -4578,7 +4567,7 @@
 	    if (child.holder === this) {
 	      child.holder = null;
 	    }
-	    return this;
+	    return child;
 	  },
 	  setFollowingChildrenFirstNode: function(index) {
 	    var children, firstNode, length;
@@ -4911,7 +4900,8 @@
 	    }
 	    Tag.__super__.constructor.call(this);
 	    this.isTag = true;
-	    tagName = tagName || 'div';
+	    tagName = tagName || attrs.tagName || 'div';
+	    delete attrs.tagName;
 	    this.tagName = tagName.toLowerCase();
 	    this.namespace = attrs.namespace;
 	    this.poolLabel = this.generatePoolLabel();
@@ -5314,14 +5304,6 @@
 	    method.onInvalidate(fn);
 	    this.style = style;
 	    return this;
-	  };
-
-	  Tag.prototype.showOn = function(test, display) {
-	    return this.showHide(true, test, display);
-	  };
-
-	  Tag.prototype.hideOn = function(test, display) {
-	    return this.showHide(false, test, display);
 	  };
 
 	  Tag.prototype.refreshDom = function(oldBaseComponent) {
@@ -6500,34 +6482,28 @@
   \*************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var DomNode, Tag, makeComponentDelegationHandler, makeDelegationHandler, makeHolderDelegationHandler;
+	var Tag, delegateToComponentHandler, delegateToHolderHandler, delegateToMethodHandler;
 
 	Tag = __webpack_require__(/*! ../base/Tag */ 30);
 
-	DomNode = __webpack_require__(/*! ../../DomNode */ 4);
-
-	exports.makeDelegationHandler = makeDelegationHandler = function() {
+	delegateToMethodHandler = function(prefix) {
+	  if (prefix == null) {
+	    prefix = 'do_';
+	  }
 	  return function(event) {
 	    var targetComponent, targetNode;
 	    targetNode = event.target;
 	    targetComponent = targetNode.component;
-	    return targetComponent['do_' + event.type](event);
+	    return targetComponent[prefix + event.type](event);
 	  };
 	};
 
-	Tag.prototype.delegate = DomNode.prototype.delegate = function(events, delegationHandler) {
-	  if (delegationHandler == null) {
-	    delegationHandler = makeDelegationHandler();
-	  }
-	  return this.bind(events, delegationHandler);
-	};
-
-	exports.makeHolderDelegationHandler = makeHolderDelegationHandler = function() {
+	delegateToHolderHandler = function(prefix) {
 	  return function(event) {
 	    var handler, method, targetComponent, targetNode;
 	    targetNode = event.target;
 	    targetComponent = targetNode.component;
-	    method = 'do_' + event.type;
+	    method = prefix + event.type;
 	    while (targetComponent) {
 	      handler = targetComponent[method];
 	      if (handler) {
@@ -6544,24 +6520,38 @@
 	  };
 	};
 
-	Tag.prototype.delegateByHolder = DomNode.prototype.delegateByHolder = function(events, delegationHandler) {
-	  if (delegationHandler == null) {
-	    delegationHandler = makeHolderDelegationHandler();
-	  }
-	  return this.bind(events, delegationHandler);
-	};
-
-	makeComponentDelegationHandler = function(component) {
+	delegateToComponentHandler = function(component, prefix) {
 	  return function(event) {
 	    var handler;
-	    if (handler = component['do_' + event.type]) {
+	    if (handler = component[prefix + event.type]) {
 	      handler.call(component, event);
 	    }
 	  };
 	};
 
-	Tag.prototype.delegateByComponent = DomNode.prototype.delegateByComponent = function(events, component) {
-	  return this.bind(events, makeComponentDelegationHandler(component));
+	Tag.prototype.delegate = function(events, delegationHandler) {
+	  if (typeof delegationHandler !== 'function') {
+	    delegationHandler = delegateToMethodHandler(delegationHandler);
+	  }
+	  return this.bind(events, delegationHandler);
+	};
+
+	Tag.prototype.delegateToHolder = function(events, prefix) {
+	  var delegationHandler;
+	  if (prefix == null) {
+	    prefix = 'do_';
+	  }
+	  delegationHandler = delegateToHolderHandler(prefix);
+	  return this.bind(events, delegationHandler);
+	};
+
+	Tag.prototype.delegateToComponent = function(events, component, prefix) {
+	  var delegationHandler;
+	  if (prefix == null) {
+	    prefix = 'do_';
+	  }
+	  delegationHandler = delegateToComponentHandler(component, prefix);
+	  return this.bind(events, delegationHandler);
 	};
 
 
@@ -6700,21 +6690,11 @@
 	};
 
 	_each = function(attrs, items, options) {
-	  var EachClass, children, getItemComponent, i, item, key, keyChildMap, listComponent, tagName, _i, _len;
+	  var EachClass, children, getItemComponent, i, item, key, keyChildMap, listComponent, _i, _len;
 	  if (attrs) {
-	    if (attrs.tagName) {
-	      tagName = attrs.tagName;
-	      delete attrs.tagName;
-	    } else {
-	      tagName = 'div';
-	    }
-	    if (attrs.EachClass) {
-	      EachClass = attrs.EachClass;
-	      delete attrs.EachClass;
-	    } else {
-	      EachClass = Tag;
-	    }
-	    listComponent = new EachClass(tagName, attrs, []);
+	    EachClass = attrs.EachClass || Tag;
+	    delete attrs.EachClass;
+	    listComponent = new EachClass(null, attrs, []);
 	  } else {
 	    EachClass = items.EachClass || List;
 	    listComponent = new EachClass([]);
@@ -6747,9 +6727,9 @@
 	      var itemComponent, separatorComponent, value;
 	      value = items[key];
 	      keyChildMap[key] = itemIndex;
-	      itemComponent = toComponent(listComponent.itemFunc(value, key, itemIndex, listComponent));
+	      itemComponent = toComponent(listComponent.itemFunc(value, key, itemIndex, items, listComponent));
 	      if (listComponent.separatorFunc && itemIndex) {
-	        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, value, key, listComponent));
+	        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, value, key, items, listComponent));
 	        itemComponent = new List([separatorComponent, itemComponent]);
 	      }
 	      itemComponent.$watchingKey = key;
@@ -6823,15 +6803,15 @@
 	  return watchItems(items, listComponent);
 	};
 
-	exports.funcEach = function(attrs, listFunc, options) {
+	exports.funcEach = function(attrs, itemsFunc, options) {
 	  var EachClass, component, items, updateItemsCallback;
 	  if (typeof attrs === 'function') {
-	    options = listFunc;
-	    listFunc = attrs;
+	    options = itemsFunc;
+	    itemsFunc = attrs;
 	    attrs = null;
-	    EachClass = listFunc.EachClass;
+	    EachClass = itemsFunc.EachClass;
 	  }
-	  items = listFunc();
+	  items = itemsFunc();
 	  if (isArray(items)) {
 	    items = items.slice(0);
 	  } else {
@@ -6843,11 +6823,11 @@
 	  component = each(attrs, items, options);
 	  updateItemsCallback = function() {
 	    var newItems;
-	    newItems = listFunc();
+	    newItems = itemsFunc();
 	    return items.replaceAll(newItems);
 	  };
-	  if (listFunc.onInvalidate) {
-	    listFunc.onInvalidate(updateItemsCallback);
+	  if (itemsFunc.onInvalidate) {
+	    itemsFunc.onInvalidate(updateItemsCallback);
 	  } else {
 	    component.on('willRenderDom', function() {
 	      if (component.node) {

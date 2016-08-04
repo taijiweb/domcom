@@ -1128,6 +1128,12 @@
 	  });
 	};
 
+	flow.max = function(x, y) {
+	  return binary(x, y, function(x, y) {
+	    return Math.max(x, y);
+	  });
+	};
+
 	flow.and = function(x, y) {
 	  return binary(x, y, function(x, y) {
 	    return x && y;
@@ -4706,7 +4712,7 @@
 	    x = 0;
 	    comp = list([child = p()]);
 	    comp.mount();
-	    child.delegateByHolder('click');
+	    child.delegateToHolder('click');
 	    comp.do_click = function() {
 	      return x = 1;
 	    };
@@ -4718,7 +4724,7 @@
 	    x = 0;
 	    comp = div(lst = list([child = p()]));
 	    comp.mount();
-	    comp.delegateByHolder('click');
+	    comp.delegateToHolder('click');
 	    lst.do_click = function() {
 	      return x = 1;
 	    };
@@ -4731,7 +4737,7 @@
 	    x = 0;
 	    comp = div(lst = list([child = p()]));
 	    comp.mount();
-	    comp.delegateByComponent('click', lst);
+	    comp.delegateToComponent('click', lst);
 	    lst.do_click = function() {
 	      return x = 1;
 	    };

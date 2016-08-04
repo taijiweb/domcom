@@ -12,21 +12,9 @@ defaultItemFunction = (item) -> item
 _each = (attrs, items, options) ->
 
   if attrs
-
-    if attrs.tagName
-      tagName = attrs.tagName
-      delete attrs.tagName
-    else
-      tagName = 'div'
-
-    if attrs.EachClass
-      EachClass = attrs.EachClass
-      delete attrs.EachClass
-    else
-      EachClass = Tag
-
-    listComponent = new EachClass(tagName, attrs, [])
-
+    EachClass = attrs.EachClass || Tag
+    delete attrs.EachClass
+    listComponent = new EachClass(null, attrs, [])
   else
     EachClass = items.EachClass || List
     listComponent = new EachClass([])
@@ -59,9 +47,9 @@ _each = (attrs, items, options) ->
     listComponent.getItemComponent = getItemComponent = (key, itemIndex) ->
       value = items[key]
       keyChildMap[key] = itemIndex
-      itemComponent = toComponent(listComponent.itemFunc(value, key, itemIndex, listComponent))
+      itemComponent = toComponent(listComponent.itemFunc(value, key, itemIndex, items, listComponent))
       if listComponent.separatorFunc && itemIndex
-        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, value, key, listComponent))
+        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, value, key, items, listComponent))
         itemComponent = new List([separatorComponent, itemComponent])
       itemComponent.$watchingKey = key
       itemComponent.itemIndex = itemIndex
@@ -115,15 +103,15 @@ exports.each = each = (args...) ->
   listComponent = every(attrs, items, options)
   watchItems(items, listComponent)
 
-exports.funcEach = (attrs, listFunc, options) ->
+exports.funcEach = (attrs, itemsFunc, options) ->
 
   if typeof attrs == 'function'
-    options = listFunc
-    listFunc = attrs
+    options = itemsFunc
+    itemsFunc = attrs
     attrs = null
-    EachClass = listFunc.EachClass
+    EachClass = itemsFunc.EachClass
 
-  items = listFunc()
+  items = itemsFunc()
 
   if isArray(items)
     items = items[...]
@@ -137,11 +125,11 @@ exports.funcEach = (attrs, listFunc, options) ->
   component = each(attrs, items, options)
 
   updateItemsCallback =  ->
-    newItems = listFunc()
+    newItems = itemsFunc()
     items.replaceAll(newItems)
 
-  if listFunc.onInvalidate
-    listFunc.onInvalidate updateItemsCallback
+  if itemsFunc.onInvalidate
+    itemsFunc.onInvalidate updateItemsCallback
 
   else
     component.on 'willRenderDom', ->

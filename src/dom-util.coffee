@@ -8,9 +8,7 @@ exports.getBindProp = (component)  ->
   tagName = component.tagName
   if !tagName
     throw new Error 'trying to bind a Component which is not a Tag'
-  else if tagName=='textarea' || tagName=='select'
-    'value'
-  else if component.props.type=='checkbox'
+  else if tagName=='input' && component.props.type=='checkbox'
     'checked'
   else
     'value'

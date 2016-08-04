@@ -3,6 +3,7 @@ extend = require('extend')
 {normalizeDomElement} = require('../../dom-util')
 {newDcid, isArray} = require('dc-util')
 {flow} = require('lazy-flow')
+flowBind = flow.bind
 isComponent = require('./isComponent')
 dc = require('../../dc')
 
@@ -58,10 +59,6 @@ module.exports = class Component
       this.setHolder(dc)
       this.clearRemoving()
       dc.rootComponentMap[this.dcid] = this
-
-  create: (mountNode, beforeNode, forceRender) ->
-    this._prepareMount(mountNode, beforeNode)
-    this.render(forceRender)
 
   ### if mountNode is given, it should not be the node of any Component
   only use beforeNode if mountNode is given
@@ -159,7 +156,7 @@ module.exports = class Component
   getNextComponent: ->
     if !(holder = this.holder)
       null
-    else if children = holder.holder.children
+    else if children = holder.children
       children[children.indexOf(this) - 1]
 
   setNextNode: (nextNode) ->
@@ -188,7 +185,7 @@ module.exports = class Component
       me = this
       invalidateThis = -> me.invalidate()
       for srcField, reactField of this.reactMap
-        reactive = flow.bind(this, srcField)
+        reactive = flowBind(this, srcField)
         if typeof reactField == 'string'
           reactive.onInvalidate ->
             if reaction = me[reactField]
