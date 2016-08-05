@@ -94,7 +94,7 @@
 * big refactor
 
 ### 2015-8-9: v0.0.2 on github
-* add autoWidthEdit component
+* add autoWidthInput component
 
 ### 2015-8-9: v0.0.1 on github
 * the value of any property and other stuffs can be a function
