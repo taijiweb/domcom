@@ -32,7 +32,8 @@ dc.clearDirectives = ->
 dc.directives = (directiveName, directiveHandlerGenerator) ->
   if arguments.length==1
     for name, generator of directiveName
-      if name[0]!='$' then name = '$'+name
+      if name[0]!='$'
+        name = '$'+name
       directiveRegistry[name] = generator
   else
     if directiveName[0]!='$' then directiveName = '$'+directiveName

@@ -70,7 +70,7 @@
     |  |  |                                            (UPDATE: has been moved to the npm package dc-controls)
     |  |  |- accordion.coffee    ................  // accordion implementation based on domcom
     |  |  |- triangle.coffee    .................  // triangle icon by css in four directions
-    |  |  |- autoWidthInput.coffee    ............  // text input tag element which automatic changing its width according the inputed text
+    |  |  |- autoWidthInput.coffee    ...........  // text input tag element which automatic changing its width according the inputed text
     |  |  |- combo.coffee    ....................  // two implementatinos for comboBox edit
     |  |  |- dialog.coffee    ...................  // a simple dialog implementation based on bootstrap css
     |  |  \- index.coffee    ....................  // the index file to enable requiring builtins/ folder

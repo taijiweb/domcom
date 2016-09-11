@@ -20,6 +20,8 @@ The type decription is just an informal specification, to help us understand the
 
 Here the [] represents that the content can be omitted.The occurences of [...] in the function or method prototype of the following documents represent array type or optional content, according to the context.
 
+There are [some description about the types given in this document](https://github.com/taijiweb/domcom/blob/master/doc/api-type-description.md)
+
 ************************************************************************************************
 
 ## use domcom

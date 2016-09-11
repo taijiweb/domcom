@@ -50,9 +50,8 @@ setNextNodes = (children, nextNode, last, first) ->
 module.exports =
 
   initListMixin: ->
-    this.updatingChildren = []
-    this.attachingChildren = {}
-    this.attachParentIndexes = []
+    this.updatingIndexes = []
+    this.attachingIndexes = []
     this.childNodes = []
 
     this.family = family = {}
@@ -78,7 +77,7 @@ module.exports =
   createChildrenDom: ->
     node = this.childNodes
     firstNode = null
-    this.updatingChildren = []
+    this.updatingIndexes = []
     for child, index in this.children
       child.setHolder(this)
       child.renderDom(child.baseComponent)
@@ -91,11 +90,11 @@ module.exports =
     return
 
   updateChildrenDom: ->
-    updatingChildren = this.updatingChildren
-    this.updatingChildren = []
+    updatingIndexes = this.updatingIndexes
+    this.updatingIndexes = []
     node = this.childNodes
     children = this.children
-    for index in updatingChildren
+    for index in updatingIndexes
       child = children[index]
       child.setHolder(this)
       child.renderDom(child.baseComponent)
@@ -163,13 +162,13 @@ module.exports =
       this.childNodes.splice(index, 0, child.node)
       if !child.node || !child.valid
         this.valid = false
-        insertIndex(index, this.updatingChildren)
+        insertIndex(index, this.updatingIndexes)
         if this.holder
           this.holder.invalidateContent(this)
       if this.holder
         this.holder.invalidateAttach(this)
       this.attachValid = false
-      insertIndex(index, this.attachParentIndexes)
+      insertIndex(index, this.attachingIndexes)
 
       if child.firstNode && (!this.childrenFirstNode ||  index <= this.firstNodeIndex)
         this.childrenFirstNode = child.firstNode
@@ -209,18 +208,17 @@ module.exports =
       index = child
       child = children[index]
 
-    removeIndex(index, this.updatingChildren)
+    removeIndex(index, this.updatingIndexes)
 
     child = children[index]
     if this.node
       this.childNodes.splice(index, 1)
       if childFirstNode = child.firstNode
         if this.firstNodeIndex == index
-          this.setFollowingChildrenFirstNode(index)
-        if this.childParentNode && childFirstNode.parentNode == this.childParentNode
-          this.propagateChildNextNode(index, child.nextNode)
-          child.removeNode()
-      removeIndex(index, this.attachParentIndexes)
+          this.setFirstNodeWithFollowing(index)
+        this.linkNextNode(index, childFirstNode, child.nextNode)
+      child.markRemovingDom()
+      removeIndex(index, this.attachingIndexes)
 
     substractSet(this.family, child.family)
     children.splice(index, 1)
@@ -229,8 +227,24 @@ module.exports =
       child.holder = null
 
     child
+
+  removeRange: (start, stop) ->
+    children = this.children
+
+    last = children.length - 1
+    index = start
+    if index < 0
+      index = 0
+    if stop > last
+      stop = last
+
+    while index <= stop
+      this.removeChild(index)
+      index++
+
+    this
     
-  setFollowingChildrenFirstNode: (index) ->
+  setFirstNodeWithFollowing: (index) ->
     children = this.children
     length = children.length
     index++
@@ -296,7 +310,7 @@ module.exports =
           this.childrenFirstNode = newChild.firstNode
           this.firstNodeIndex = index
       else if index == this.firstNodeIndex
-        this.setFollowingChildrenFirstNode(index)        
+        this.setFirstNodeWithFollowing(index)        
     else
       if newChild.firstNode
         this.childrenFirstNode = newChild.firstNode
@@ -330,7 +344,7 @@ module.exports =
 
   invalidateContent: (child) ->
     index = this.children.indexOf(child)
-    binaryInsert(index, this.updatingChildren)
+    binaryInsert(index, this.updatingIndexes)
     if this.valid
       this.valid = false
       this.holder && this.holder.invalidateContent(this)
@@ -354,12 +368,12 @@ module.exports =
         this.childrenNextNode = null
 
       if this.childParentNode != this.childNodes.parentNode
-        this.attachEachChildren()
+        this.attachAllChildren()
       else
         this.attachInvalidChildren()
     return
 
-  attachEachChildren: ->
+  attachAllChildren: ->
     parentNode = this.childParentNode
     children = this.children
     if length = children.length
@@ -377,17 +391,17 @@ module.exports =
     return
 
   attachInvalidChildren: ->
-    attachParentIndexes = this.attachParentIndexes
-    if attachParentIndexes.length
-      this.attachParentIndexes = []
+    attachingIndexes = this.attachingIndexes
+    if attachingIndexes.length
+      this.attachingIndexes = []
 
       if parentNode = this.childParentNode
         nextNode = this.childrenNextNode
         children = this.children
-        i = attachParentIndexes.length - 1
+        i = attachingIndexes.length - 1
         prevIndex = children.length - 1
         while i >= 0
-          listIndex = attachParentIndexes[i]
+          listIndex = attachingIndexes[i]
           setNextNodes(children, nextNode, prevIndex, listIndex)
           child = children[listIndex]
           child.setHolder(this)
@@ -417,3 +431,27 @@ module.exports =
       this.holder.propagateChildNextNode(this, nextNode)
 
     return
+
+  linkNextNode: (child, oldNode, nextNode) ->
+    children = this.children
+
+    if isComponent(child)
+      index = children.indexOf(child) - 1
+    else
+      index = child - 1
+
+    while index >= 0
+      child = children[index]
+      if child.nextNode == oldNode
+        child.setNextNode(nextNode)
+      else
+        return
+      index--
+
+    if !this.isTag && this.holder
+      this.holder.linkNextNode(this, oldNode, nextNode)
+
+    return
+
+
+

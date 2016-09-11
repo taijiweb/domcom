@@ -108,11 +108,12 @@ describe 'test-group: group component: List, each', ->
       expect(demoNode.innerHTML).to.equal('1', 1)
       comp.render()
       comp.setLength(0)
+      dc.clean()
       expect(demoNode.innerHTML).to.equal('', 2)
       comp.render();
       expect(demoNode.innerHTML).to.equal('', 3)
       comp.unmount()
-      expect(demoNode.innerHTML).to.equal('', 3)
+      expect(demoNode.innerHTML).to.equal('', 4)
 
     it 'list(txt(1), txt(2), txt(3)) and move child', ->
       comp = list(t1=txt(1), t2=txt(2), t3=txt(3))
@@ -134,12 +135,14 @@ describe 'test-group: group component: List, each', ->
       comp.mount(demoNode=newDemoNode('list'))
       comp.removeChild(0)
       comp.render()
-      expect(demoNode.innerHTML).to.equal('23')
+      dc.clean()
+      expect(demoNode.innerHTML).to.equal('23', 1)
       expect(t1.node.parentNode).to.equal(null)
       expect(t1.removed).to.equal(true)
       t1.render()
+      dc.clean()
       expect(t1.node.parentNode).to.equal(null)
-      expect(demoNode.innerHTML).to.equal('23')
+      expect(demoNode.innerHTML).to.equal('23', 2)
 
   describe 'Tag', ->
     it 'should have correct nextNode', ->
@@ -148,7 +151,8 @@ describe 'test-group: group component: List, each', ->
       # should not let one component occurs in the different place of the dom
       div1.insertChildAfter(t5, t2)
       comp.render()
-      expect(-> comp.render()).to.throw()
+      dc.clean()
+      # expect(-> comp.render()).to.throw()
 
   describe 'each of array, object', ->
     it 'simple each for array', ->

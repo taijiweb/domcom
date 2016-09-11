@@ -72,6 +72,8 @@ module.exports = class Component
   unmount: (forceRender) ->
     this.emit('willUnmount')
     this.remove()
+    #this.removeNode()
+    dc.clean()
     this.emit('didUnmount')
 
   remove: ->
@@ -80,9 +82,7 @@ module.exports = class Component
       delete dc.rootComponentMap[this.dcid]
       firstNode = this.firstNode
       if firstNode && firstNode.parentNode
-        if (prevNode = firstNode.previousSibling) && prevComponent = prevNode.component
-          prevComponent.setNextNode(this.nextNode)
-        this.removeNode()
+        this.markRemovingDom()
     else if holder && holder.children
       holder.removeChild(this)
     else if holder
@@ -106,8 +106,8 @@ module.exports = class Component
         else
           # holder is List or Tag
           holder.replaceChild(oldComponent, this)
-          holder.render(forceRender)
-          oldComponent.removeDom()
+#          holder.render(forceRender)
+#          oldComponent.removeDom()
       else if holder == dc
         this.parentNode = oldComponent.parentNode
         this.nextNode = oldComponent.nextNode
@@ -115,9 +115,7 @@ module.exports = class Component
         this.setHolder(holder)
         this.invalidate()
         dc.rootComponentMap[this.dcid] = this
-        dc.rootComponentMap[oldComponent.dcid] = oldComponent
-        this.render(forceRender)
-        oldComponent.removeDom()
+        delete dc.rootComponentMap[oldComponent.dcid]
 
     this
 

@@ -132,11 +132,12 @@ describe('test-group: group component: List, each', function() {
       expect(demoNode.innerHTML).to.equal('1', 1);
       comp.render();
       comp.setLength(0);
+      dc.clean();
       expect(demoNode.innerHTML).to.equal('', 2);
       comp.render();
       expect(demoNode.innerHTML).to.equal('', 3);
       comp.unmount();
-      return expect(demoNode.innerHTML).to.equal('', 3);
+      return expect(demoNode.innerHTML).to.equal('', 4);
     });
     it('list(txt(1), txt(2), txt(3)) and move child', function() {
       var demoNode, t1, t2, t3;
@@ -160,12 +161,14 @@ describe('test-group: group component: List, each', function() {
       comp.mount(demoNode = newDemoNode('list'));
       comp.removeChild(0);
       comp.render();
-      expect(demoNode.innerHTML).to.equal('23');
+      dc.clean();
+      expect(demoNode.innerHTML).to.equal('23', 1);
       expect(t1.node.parentNode).to.equal(null);
       expect(t1.removed).to.equal(true);
       t1.render();
+      dc.clean();
       expect(t1.node.parentNode).to.equal(null);
-      return expect(demoNode.innerHTML).to.equal('23');
+      return expect(demoNode.innerHTML).to.equal('23', 2);
     });
   });
   describe('Tag', function() {
@@ -175,9 +178,7 @@ describe('test-group: group component: List, each', function() {
       comp.mount();
       div1.insertChildAfter(t5, t2);
       comp.render();
-      return expect(function() {
-        return comp.render();
-      }).to["throw"]();
+      return dc.clean();
     });
   });
   describe('each of array, object', function() {

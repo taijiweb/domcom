@@ -2089,18 +2089,21 @@
 	dc.reset();
 
 	dc.render = function(force) {
-	  var component, dcid, rootComponentMap, _j, _len1;
-	  dc.emit('willRender');
-	  if (!dc.valid) {
-	    dc.valid = true;
-	    rootComponentMap = dc.rootComponentMap;
-	    dc.rootComponentMap = {};
-	    for (component = _j = 0, _len1 = rootComponentMap.length; _j < _len1; component = ++_j) {
-	      dcid = rootComponentMap[component];
-	      component.render(true);
+	  var component, dcid, rootComponentMap;
+	  if (force || dc.alwaysRender || !dc.renderBySystemLoop) {
+	    dc.emit('willRender');
+	    if (!dc.valid) {
+	      dc.valid = true;
+	      rootComponentMap = dc.rootComponentMap;
+	      dc.rootComponentMap = {};
+	      for (dcid in rootComponentMap) {
+	        component = rootComponentMap[dcid];
+	        component.render(true);
+	      }
+	      dc.clean();
 	    }
+	    return dc.emit('didRender');
 	  }
-	  return dc.emit('didRender');
 	};
 
 	dc.rafRender = rafRender = function() {
@@ -2197,6 +2200,8 @@
 	dc.invalidateAttach = function() {};
 
 	dc.propagateChildNextNode = function(child, nextNode) {};
+
+	dc.linkNextNode = function(child, oldNode, nextNode) {};
 
 	dc.removingChildren = {};
 
@@ -3027,6 +3032,12 @@
 	    }
 	  };
 
+	  TransformComponent.prototype.linkNextNode = function(child, oldNode, nextNode) {
+	    if (this.holder) {
+	      this.holder.linkNextNode(this, oldNode, nextNode);
+	    }
+	  };
+
 	  return TransformComponent;
 
 	})(Component);
@@ -3126,20 +3137,18 @@
 	  Component.prototype.unmount = function(forceRender) {
 	    this.emit('willUnmount');
 	    this.remove();
+	    dc.clean();
 	    return this.emit('didUnmount');
 	  };
 
 	  Component.prototype.remove = function() {
-	    var firstNode, holder, prevComponent, prevNode;
+	    var firstNode, holder;
 	    holder = this.holder;
 	    if (!holder || holder === dc) {
 	      delete dc.rootComponentMap[this.dcid];
 	      firstNode = this.firstNode;
 	      if (firstNode && firstNode.parentNode) {
-	        if ((prevNode = firstNode.previousSibling) && (prevComponent = prevNode.component)) {
-	          prevComponent.setNextNode(this.nextNode);
-	        }
-	        this.removeNode();
+	        this.markRemovingDom();
 	      }
 	    } else if (holder && holder.children) {
 	      holder.removeChild(this);
@@ -3169,8 +3178,6 @@
 	          dc.error('Should not replace the content of TransformComponent');
 	        } else {
 	          holder.replaceChild(oldComponent, this);
-	          holder.render(forceRender);
-	          oldComponent.removeDom();
 	        }
 	      } else if (holder === dc) {
 	        this.parentNode = oldComponent.parentNode;
@@ -3179,9 +3186,7 @@
 	        this.setHolder(holder);
 	        this.invalidate();
 	        dc.rootComponentMap[this.dcid] = this;
-	        dc.rootComponentMap[oldComponent.dcid] = oldComponent;
-	        this.render(forceRender);
-	        oldComponent.removeDom();
+	        delete dc.rootComponentMap[oldComponent.dcid];
 	      }
 	    }
 	    return this;
@@ -3493,7 +3498,7 @@
 	        this.holder.invalidateAttach(this);
 	      }
 	    } else {
-	      if (!this.valid || this.isTag) {
+	      if (!this.valid) {
 	        this.updateDom();
 	      }
 	    }
@@ -3528,10 +3533,10 @@
 	  BaseComponent.prototype.removeDom = function() {
 	    var child, _i, _len, _ref;
 	    if (this.removing) {
-	      this.removing = false;
-	      this.removed = true;
 	      this.emit('willDetach');
 	      if (this.isList) {
+	        this.removing = false;
+	        this.removed = true;
 	        this.node.parentNode = null;
 	        this.childParentNode = null;
 	        _ref = this.children;
@@ -3556,7 +3561,7 @@
 	    }
 	  };
 
-	  BaseComponent.prototype.executeAttachParent = function() {
+	  BaseComponent.prototype.attachParent = function() {
 	    var nextNode, node, parentNode;
 	    node = this.node;
 	    parentNode = this.parentNode;
@@ -3567,11 +3572,7 @@
 	      parentNode.insertBefore(node, nextNode);
 	      this.emit('didAttach');
 	    }
-	  };
-
-	  BaseComponent.prototype.attachParent = function() {
-	    this.executeAttachParent();
-	    return this.node;
+	    return node;
 	  };
 
 	  return BaseComponent;
@@ -4185,7 +4186,7 @@
 	  List.prototype.invalidateAttach = function(child) {
 	    var index;
 	    index = this.children.indexOf(child);
-	    binaryInsert(index, this.attachParentIndexes);
+	    binaryInsert(index, this.attachingIndexes);
 	    if (this.attachValid) {
 	      this.attachValid = false;
 	      if (this.holder) {
@@ -4359,9 +4360,8 @@
 	module.exports = {
 	  initListMixin: function() {
 	    var child, family, i, _i, _len, _ref2;
-	    this.updatingChildren = [];
-	    this.attachingChildren = {};
-	    this.attachParentIndexes = [];
+	    this.updatingIndexes = [];
+	    this.attachingIndexes = [];
 	    this.childNodes = [];
 	    this.family = family = {};
 	    family[this.dcid] = true;
@@ -4391,7 +4391,7 @@
 	    var child, firstNode, firstNodeIndex, index, node, _i, _len, _ref2;
 	    node = this.childNodes;
 	    firstNode = null;
-	    this.updatingChildren = [];
+	    this.updatingIndexes = [];
 	    _ref2 = this.children;
 	    for (index = _i = 0, _len = _ref2.length; _i < _len; index = ++_i) {
 	      child = _ref2[index];
@@ -4407,13 +4407,13 @@
 	    this.firstNodeIndex = firstNodeIndex;
 	  },
 	  updateChildrenDom: function() {
-	    var child, children, index, node, updatingChildren, _i, _len;
-	    updatingChildren = this.updatingChildren;
-	    this.updatingChildren = [];
+	    var child, children, index, node, updatingIndexes, _i, _len;
+	    updatingIndexes = this.updatingIndexes;
+	    this.updatingIndexes = [];
 	    node = this.childNodes;
 	    children = this.children;
-	    for (_i = 0, _len = updatingChildren.length; _i < _len; _i++) {
-	      index = updatingChildren[_i];
+	    for (_i = 0, _len = updatingIndexes.length; _i < _len; _i++) {
+	      index = updatingIndexes[_i];
 	      child = children[index];
 	      child.setHolder(this);
 	      child.renderDom(child.baseComponent);
@@ -4489,7 +4489,7 @@
 	      this.childNodes.splice(index, 0, child.node);
 	      if (!child.node || !child.valid) {
 	        this.valid = false;
-	        insertIndex(index, this.updatingChildren);
+	        insertIndex(index, this.updatingIndexes);
 	        if (this.holder) {
 	          this.holder.invalidateContent(this);
 	        }
@@ -4498,7 +4498,7 @@
 	        this.holder.invalidateAttach(this);
 	      }
 	      this.attachValid = false;
-	      insertIndex(index, this.attachParentIndexes);
+	      insertIndex(index, this.attachingIndexes);
 	      if (child.firstNode && (!this.childrenFirstNode || index <= this.firstNodeIndex)) {
 	        this.childrenFirstNode = child.firstNode;
 	        this.firstNodeIndex = index;
@@ -4545,20 +4545,18 @@
 	      index = child;
 	      child = children[index];
 	    }
-	    removeIndex(index, this.updatingChildren);
+	    removeIndex(index, this.updatingIndexes);
 	    child = children[index];
 	    if (this.node) {
 	      this.childNodes.splice(index, 1);
 	      if (childFirstNode = child.firstNode) {
 	        if (this.firstNodeIndex === index) {
-	          this.setFollowingChildrenFirstNode(index);
+	          this.setFirstNodeWithFollowing(index);
 	        }
-	        if (this.childParentNode && childFirstNode.parentNode === this.childParentNode) {
-	          this.propagateChildNextNode(index, child.nextNode);
-	          child.removeNode();
-	        }
+	        this.linkNextNode(index, childFirstNode, child.nextNode);
 	      }
-	      removeIndex(index, this.attachParentIndexes);
+	      child.markRemovingDom();
+	      removeIndex(index, this.attachingIndexes);
 	    }
 	    substractSet(this.family, child.family);
 	    children.splice(index, 1);
@@ -4567,7 +4565,24 @@
 	    }
 	    return child;
 	  },
-	  setFollowingChildrenFirstNode: function(index) {
+	  removeRange: function(start, stop) {
+	    var children, index, last;
+	    children = this.children;
+	    last = children.length - 1;
+	    index = start;
+	    if (index < 0) {
+	      index = 0;
+	    }
+	    if (stop > last) {
+	      stop = last;
+	    }
+	    while (index <= stop) {
+	      this.removeChild(index);
+	      index++;
+	    }
+	    return this;
+	  },
+	  setFirstNodeWithFollowing: function(index) {
 	    var children, firstNode, length;
 	    children = this.children;
 	    length = children.length;
@@ -4637,7 +4652,7 @@
 	          this.firstNodeIndex = index;
 	        }
 	      } else if (index === this.firstNodeIndex) {
-	        this.setFollowingChildrenFirstNode(index);
+	        this.setFirstNodeWithFollowing(index);
 	      }
 	    } else {
 	      if (newChild.firstNode) {
@@ -4682,7 +4697,7 @@
 	  invalidateContent: function(child) {
 	    var index;
 	    index = this.children.indexOf(child);
-	    binaryInsert(index, this.updatingChildren);
+	    binaryInsert(index, this.updatingIndexes);
 	    if (this.valid) {
 	      this.valid = false;
 	      this.holder && this.holder.invalidateContent(this);
@@ -4712,13 +4727,13 @@
 	        this.childrenNextNode = null;
 	      }
 	      if (this.childParentNode !== this.childNodes.parentNode) {
-	        this.attachEachChildren();
+	        this.attachAllChildren();
 	      } else {
 	        this.attachInvalidChildren();
 	      }
 	    }
 	  },
-	  attachEachChildren: function() {
+	  attachAllChildren: function() {
 	    var child, children, i, length, nextNode, parentNode;
 	    parentNode = this.childParentNode;
 	    children = this.children;
@@ -4738,17 +4753,17 @@
 	    }
 	  },
 	  attachInvalidChildren: function() {
-	    var attachParentIndexes, child, children, i, listIndex, nextNode, parentNode, prevIndex;
-	    attachParentIndexes = this.attachParentIndexes;
-	    if (attachParentIndexes.length) {
-	      this.attachParentIndexes = [];
+	    var attachingIndexes, child, children, i, listIndex, nextNode, parentNode, prevIndex;
+	    attachingIndexes = this.attachingIndexes;
+	    if (attachingIndexes.length) {
+	      this.attachingIndexes = [];
 	      if (parentNode = this.childParentNode) {
 	        nextNode = this.childrenNextNode;
 	        children = this.children;
-	        i = attachParentIndexes.length - 1;
+	        i = attachingIndexes.length - 1;
 	        prevIndex = children.length - 1;
 	        while (i >= 0) {
-	          listIndex = attachParentIndexes[i];
+	          listIndex = attachingIndexes[i];
 	          setNextNodes(children, nextNode, prevIndex, listIndex);
 	          child = children[listIndex];
 	          child.setHolder(this);
@@ -4780,6 +4795,27 @@
 	    }
 	    if (!this.isTag && this.holder) {
 	      this.holder.propagateChildNextNode(this, nextNode);
+	    }
+	  },
+	  linkNextNode: function(child, oldNode, nextNode) {
+	    var children, index;
+	    children = this.children;
+	    if (isComponent(child)) {
+	      index = children.indexOf(child) - 1;
+	    } else {
+	      index = child - 1;
+	    }
+	    while (index >= 0) {
+	      child = children[index];
+	      if (child.nextNode === oldNode) {
+	        child.setNextNode(nextNode);
+	      } else {
+	        return;
+	      }
+	      index--;
+	    }
+	    if (!this.isTag && this.holder) {
+	      this.holder.linkNextNode(this, oldNode, nextNode);
 	    }
 	  }
 	};
@@ -5317,7 +5353,6 @@
 	    this.updateProperties();
 	    this.createChildrenDom();
 	    this.attachChildren();
-	    this.valid = !this.hasActiveProperties && !this.updatingChildren.length;
 	    return node;
 	  };
 
@@ -5326,20 +5361,17 @@
 	    this.updateProperties();
 	    this.updateChildrenDom();
 	    this.attachChildren();
-	    this.valid = !this.hasActiveProperties && !this.updatingChildren.length;
 	    return this.node;
 	  };
 
 	  Tag.prototype.invalidateAttach = function(child) {
 	    var index;
 	    index = this.children.indexOf(child);
-	    binaryInsert(index, this.attachParentIndexes);
-	    if (this.holder) {
-	      if (this.attachValid && this.valid) {
-	        this.holder.invalidateContent(this);
-	      }
+	    binaryInsert(index, this.attachingIndexes);
+	    this.attachValid = false;
+	    if (this.valid) {
 	      this.valid = false;
-	      this.attachValid = false;
+	      this.holder && this.holder.invalidateContent(this);
 	    }
 	    return this;
 	  };

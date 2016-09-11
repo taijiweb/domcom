@@ -315,6 +315,7 @@ describe("test-component", function() {
       comp1.mount(newDemoNode('replace-demo'));
       comp2 = div(2);
       comp2.replace(comp1);
+      dc.render(true);
       return expect(document.getElementById('replace-demo').innerHTML).to.equal('<div>2</div>');
     });
     it('should execute replace child component', function() {
@@ -324,6 +325,7 @@ describe("test-component", function() {
       expect(document.getElementById('replace-demo2').innerHTML).to.equal('<div><div>3</div></div>');
       comp2 = div(2);
       comp2.replace(comp3);
+      dc.render(true);
       return expect(document.getElementById('replace-demo2').innerHTML).to.equal('<div><div>2</div></div>');
     });
     return it('p(->12) ', function() {

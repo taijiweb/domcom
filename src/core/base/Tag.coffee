@@ -360,7 +360,6 @@ module.exports = class Tag extends BaseComponent
     this.updateProperties()
     this.createChildrenDom()
     this.attachChildren()
-    this.valid = !this.hasActiveProperties && !this.updatingChildren.length # && !this.attachParentIndexes.length
     node
 
   updateDom: ->
@@ -368,17 +367,15 @@ module.exports = class Tag extends BaseComponent
     this.updateProperties()
     this.updateChildrenDom()
     this.attachChildren()
-    this.valid = !this.hasActiveProperties && !this.updatingChildren.length # && !this.attachParentIndexes.length
     this.node
 
   invalidateAttach: (child) ->
     index = this.children.indexOf(child)
-    binaryInsert(index, this.attachParentIndexes)
-    if this.holder
-      if this.attachValid && this.valid
-        this.holder.invalidateContent(this)
+    binaryInsert(index, this.attachingIndexes)
+    this.attachValid = false
+    if this.valid
       this.valid = false
-      this.attachValid = false
+      this.holder && this.holder.invalidateContent(this)
     this
 
   updateProperties: ->

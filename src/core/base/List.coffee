@@ -71,7 +71,7 @@ module.exports = exports = class List extends BaseComponent
 
   invalidateAttach: (child) ->
     index = this.children.indexOf(child)
-    binaryInsert(index, this.attachParentIndexes)
+    binaryInsert(index, this.attachingIndexes)
     if this.attachValid
       this.attachValid = false
       if this.holder

@@ -108,3 +108,8 @@ module.exports = class TransformComponent extends Component
     if this.holder
       this.holder.propagateChildNextNode(this, nextNode)
     return
+
+  linkNextNode: (child, oldNode, nextNode) ->
+    if this.holder
+      this.holder.linkNextNode(this, oldNode, nextNode)
+    return

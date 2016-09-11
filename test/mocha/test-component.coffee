@@ -220,6 +220,7 @@ describe "test-component", ->
       comp1.mount(newDemoNode('replace-demo'))
       comp2 = div(2)
       comp2.replace(comp1)
+      dc.render(true)
       expect(document.getElementById('replace-demo').innerHTML).to.equal('<div>2</div>')
 
     it 'should execute replace child component', ->
@@ -228,6 +229,7 @@ describe "test-component", ->
       expect(document.getElementById('replace-demo2').innerHTML).to.equal('<div><div>3</div></div>')
       comp2 = div(2)
       comp2.replace(comp3)
+      dc.render(true)
       expect(document.getElementById('replace-demo2').innerHTML).to.equal('<div><div>2</div></div>')
 
     it 'p(->12) ', ->

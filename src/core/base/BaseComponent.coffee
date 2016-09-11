@@ -37,7 +37,7 @@ module.exports = class BaseComponent extends Component
       if this.holder
         this.holder.invalidateAttach(this)
     else
-      if !this.valid || this.isTag
+      if !this.valid
         this.updateDom()
 
     return
@@ -66,10 +66,10 @@ module.exports = class BaseComponent extends Component
 
   removeDom: ->
     if this.removing
-      this.removing = false
-      this.removed = true
       this.emit('willDetach')
       if this.isList
+        this.removing = false
+        this.removed = true
         this.node.parentNode = null
         this.childParentNode = null
         for child in this.children
@@ -86,8 +86,7 @@ module.exports = class BaseComponent extends Component
       node.parentNode && node.parentNode.removeChild(node)
     return
 
-  executeAttachParent: ->
-
+  attachParent: ->
     node = this.node
     parentNode = this.parentNode
     nextNode = this.nextNode
@@ -99,8 +98,5 @@ module.exports = class BaseComponent extends Component
       parentNode.insertBefore(node, nextNode)
       this.emit('didAttach')
 
-    return
+    node
 
-  attachParent: ->
-    this.executeAttachParent()
-    this.node

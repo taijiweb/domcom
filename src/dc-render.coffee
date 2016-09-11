@@ -34,14 +34,16 @@ dc.reset = ->
 dc.reset()
 
 dc.render = (force) ->
-  dc.emit('willRender')
-  if !dc.valid
-    dc.valid = true
-    rootComponentMap = dc.rootComponentMap
-    dc.rootComponentMap = {}
-    for dcid, component in rootComponentMap
-      component.render(true)
-  dc.emit('didRender')
+  if (force || dc.alwaysRender || !dc.renderBySystemLoop)
+    dc.emit('willRender')
+    if !dc.valid
+      dc.valid = true
+      rootComponentMap = dc.rootComponentMap
+      dc.rootComponentMap = {}
+      for dcid, component of rootComponentMap
+        component.render(true)
+      dc.clean()
+    dc.emit('didRender')
 
 dc.rafRender = rafRender = ->
   dc.renderBySystemLoop = true
@@ -122,6 +124,8 @@ dc.invalidateContent = (component) ->
 dc.invalidateAttach = ->
 
 dc.propagateChildNextNode = (child, nextNode) ->
+
+dc.linkNextNode = (child, oldNode, nextNode) ->
 
 dc.removingChildren = {}
 dc.clean = ->
