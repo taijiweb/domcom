@@ -188,7 +188,7 @@ describe('demo and todoMVC', function() {
       expect(comp.node.length).to.equal(2);
       return comp.unmount();
     });
-    it('should always switch demo', function(done) {
+    it('should always switch demo', function() {
       var comp, sel;
       comp = runDemo(demoMap, 'each2');
       sel = comp.children[0];
@@ -197,20 +197,15 @@ describe('demo and todoMVC', function() {
         type: 'change'
       });
       expect(comp.children[1].node.innerHTML).to.equal("<p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p>");
-      return setTimeout((function() {
-        sel.node.value = 'each2';
-        sel.node.onchange({
-          type: 'change'
-        });
-        return setTimeout((function() {
-          sel.node.value = 'each3';
-          sel.node.onchange({
-            type: 'change'
-          });
-          expect(comp.children[1].node.innerHTML).to.contain("<p>1</p><p>2</p><p>3</p><p>4</p>");
-          return done();
-        }), 300);
-      }), 1100);
+      sel.node.value = 'each2';
+      sel.node.onchange({
+        type: 'change'
+      });
+      sel.node.value = 'each3';
+      sel.node.onchange({
+        type: 'change'
+      });
+      return expect(comp.children[1].node.innerHTML).to.contain("<p>1</p><p>2</p><p>3</p><p>4</p>");
     });
     return it('should mount/unmount sub component', function() {
       var buttons, comp, div1;

@@ -2,6 +2,7 @@ Tag = require('./Tag')
 {funcString, newLine, mixin} = require('dc-util')
 {domValue, domField} = require('../../dom-util')
 {setText} = require('../property/attrs')
+{createElement} = require('dc-util/element-pool')
 
 # !!! Warning:
 # By default, Html does not escape to safe the html.
@@ -61,7 +62,7 @@ Html.HtmlMixin = HtmlMixin = {
 
   createDom: ->
     this.valid = true
-    this.node = this.firstNode = node = document.createElement(this.tagName)
+    this.node = this.firstNode = node = createElement(this.namespace, this.tagName, this.poolLabel)
     node.component = this
     this.updateProperties()
     text = domValue(this._text, this)
@@ -78,14 +79,23 @@ Html.HtmlMixin = HtmlMixin = {
 
     node = this.node
 
-    if text!=this.cacheText
+    namespace = this.namespace || "http://www.w3.org/1999/xhtml"
+    if this.tagName != this.node.tagName.toLowerCase() || namespace != this.node.namespaceURI
+      node = this.node
+      node.parentNode && node.parentNode.removeChild(node)
+      this.node = this.firstNode = node = createElement(this.namespace, this.tagName, this.poolLabel)
+      node.component = this
+      node.innerHTML = this.cacheText = text
+      this.holder.invalidateAttach(this)
+      this.restoreCacheProperties()
+
+    else if text != this.cacheText
       if node.childNodes.length >=2
         if node.parentNode
           this.removeNode()
         this.node = this.firstNode = node = node.cloneNode(false)
         node.component = this
       node.innerHTML =  text
-
       this.cacheText = text
 
     # this should be done after this.node is processed

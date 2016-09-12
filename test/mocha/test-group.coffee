@@ -151,7 +151,6 @@ describe 'test-group: group component: List, each', ->
       # should not let one component occurs in the different place of the dom
       div1.insertChildAfter(t5, t2)
       comp.render()
-      dc.clean()
       # expect(-> comp.render()).to.throw()
 
   describe 'each of array, object', ->

@@ -2197,7 +2197,7 @@
 	  dc.rootComponentMap[component.dcid] = component;
 	};
 
-	dc.invalidateAttach = function() {};
+	dc.invalidateAttach = function(child) {};
 
 	dc.propagateChildNextNode = function(child, nextNode) {};
 
@@ -3038,6 +3038,11 @@
 	    }
 	  };
 
+	  TransformComponent.prototype.resetAttach = function() {
+	    this.attachValid = false;
+	    return this.content.resetAttach();
+	  };
+
 	  return TransformComponent;
 
 	})(Component);
@@ -3511,6 +3516,10 @@
 	    } else {
 	      return this;
 	    }
+	  };
+
+	  BaseComponent.prototype.resetAttach = function() {
+	    return this.attachValid = false;
 	  };
 
 	  BaseComponent.prototype.attachChildren = function() {};
@@ -4194,6 +4203,16 @@
 	      }
 	    }
 	    return this;
+	  };
+
+	  List.prototype.resetAttach = function() {
+	    var child, _i, _len, _ref;
+	    this.attachValid = false;
+	    _ref = this.children;
+	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	      child = _ref[_i];
+	      child.resetAttach();
+	    }
 	  };
 
 	  List.prototype.attachParent = function() {
@@ -4973,7 +4992,6 @@
 	    this.style = {};
 	    this.boundStyle = {};
 	    this['invalidateStyle'] = {};
-	    this.hasActiveDomEvents = this.hasActiveDomEvents || false;
 	    if (!this.domEventCallbackMap) {
 	      this.domEventCallbackMap = {};
 	    }
@@ -5030,6 +5048,43 @@
 	        this.setProp(key, value, props, 'Props');
 	      }
 	    }
+	    return this;
+	  };
+
+	  Tag.prototype.restoreCacheProperties = function() {
+	    var key, nodeAttrs, props, style, value, _ref5, _ref6, _ref7;
+	    style = this.style, props = this.props, nodeAttrs = this.nodeAttrs;
+	    this.hasActiveProperties = true;
+	    if (this.className) {
+	      this.hasActiveProperties = true;
+	      this.cacheClassName = '';
+	      this.className.valid = false;
+	    }
+	    _ref5 = this.cachePropes;
+	    for (key in _ref5) {
+	      value = _ref5[key];
+	      if (props[key] == null) {
+	        this.hasActiveProps = true;
+	        props[key] = value;
+	      }
+	    }
+	    _ref6 = this.cacheStyle;
+	    for (key in _ref6) {
+	      value = _ref6[key];
+	      if (style[key] == null) {
+	        this.hasActiveStyle = true;
+	        style[key] = value;
+	      }
+	    }
+	    _ref7 = this.nodeAttrs;
+	    for (key in _ref7) {
+	      value = _ref7[key];
+	      if (nodeAttrs[key] == null) {
+	        this.hasActiveNodeAttrs = true;
+	        nodeAttrs[key] = value;
+	      }
+	    }
+	    this.hasActiveDomEvents = true;
 	    return this;
 	  };
 
@@ -5357,11 +5412,33 @@
 	  };
 
 	  Tag.prototype.updateDom = function() {
+	    var child, namespace, node, _i, _len, _ref5;
 	    this.valid = true;
-	    this.updateProperties();
-	    this.updateChildrenDom();
-	    this.attachChildren();
-	    return this.node;
+	    namespace = this.namespace || "http://www.w3.org/1999/xhtml";
+	    if (this.tagName !== this.node.tagName.toLowerCase() || namespace !== this.node.namespaceURI) {
+	      node = this.node;
+	      node.parentNode && node.parentNode.removeChild(node);
+	      this.node = this.firstNode = node = createElement(this.namespace, this.tagName, this.poolLabel);
+	      node.component = this;
+	      this.childParentNode = null;
+	      this.restoreCacheProperties();
+	      this.updateProperties();
+	      this.createChildrenDom();
+	      this.holder.invalidateAttach(this);
+	      _ref5 = this.children;
+	      for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
+	        child = _ref5[_i];
+	        child.resetAttach();
+	      }
+	      this.attachChildren();
+	      this.holder.propagateChildNextNode(this, node);
+	      return node;
+	    } else {
+	      this.updateProperties();
+	      this.updateChildrenDom();
+	      this.attachChildren();
+	      return this.node;
+	    }
 	  };
 
 	  Tag.prototype.invalidateAttach = function(child) {
@@ -5716,7 +5793,7 @@
   \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var Html, HtmlMixin, ListMixin, Tag, domField, domValue, extend, funcString, method, mixin, newLine, setText, _fn, _ref, _ref1,
+	var Html, HtmlMixin, ListMixin, Tag, createElement, domField, domValue, extend, funcString, method, mixin, newLine, setText, _fn, _ref, _ref1,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -5727,6 +5804,8 @@
 	_ref1 = __webpack_require__(/*! ../../dom-util */ 5), domValue = _ref1.domValue, domField = _ref1.domField;
 
 	setText = __webpack_require__(/*! ../property/attrs */ 22).setText;
+
+	createElement = __webpack_require__(/*! dc-util/element-pool */ 31).createElement;
 
 	module.exports = Html = (function(_super) {
 	  __extends(Html, _super);
@@ -5787,7 +5866,7 @@
 	  createDom: function() {
 	    var node, text;
 	    this.valid = true;
-	    this.node = this.firstNode = node = document.createElement(this.tagName);
+	    this.node = this.firstNode = node = createElement(this.namespace, this.tagName, this.poolLabel);
 	    node.component = this;
 	    this.updateProperties();
 	    text = domValue(this._text, this);
@@ -5798,14 +5877,23 @@
 	    return this;
 	  },
 	  updateDom: function() {
-	    var node, text;
+	    var namespace, node, text;
 	    this.valid = true;
 	    text = domValue(this._text, this);
 	    if (this.transform) {
 	      text = this.transform(text);
 	    }
 	    node = this.node;
-	    if (text !== this.cacheText) {
+	    namespace = this.namespace || "http://www.w3.org/1999/xhtml";
+	    if (this.tagName !== this.node.tagName.toLowerCase() || namespace !== this.node.namespaceURI) {
+	      node = this.node;
+	      node.parentNode && node.parentNode.removeChild(node);
+	      this.node = this.firstNode = node = createElement(this.namespace, this.tagName, this.poolLabel);
+	      node.component = this;
+	      node.innerHTML = this.cacheText = text;
+	      this.holder.invalidateAttach(this);
+	      this.restoreCacheProperties();
+	    } else if (text !== this.cacheText) {
 	      if (node.childNodes.length >= 2) {
 	        if (node.parentNode) {
 	          this.removeNode();

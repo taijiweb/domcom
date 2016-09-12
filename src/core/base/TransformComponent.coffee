@@ -113,3 +113,7 @@ module.exports = class TransformComponent extends Component
     if this.holder
       this.holder.linkNextNode(this, oldNode, nextNode)
     return
+
+  resetAttach: ->
+    this.attachValid = false
+    this.content.resetAttach()

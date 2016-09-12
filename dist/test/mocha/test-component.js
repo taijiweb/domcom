@@ -224,7 +224,10 @@ describe("test-component", function() {
       expect(comp.node.innerHTML).to.equal('2', 'update 2');
       ++count;
       comp.render();
-      return expect(comp.node.innerHTML).to.equal('3', 'update 3');
+      expect(comp.node.innerHTML).to.equal('3', 'update 3');
+      comp.tagName = 'div';
+      comp.render();
+      return expect(comp.node.innerHTML).to.equal('3', 'update 4');
     });
     it('should update bidirectional bind', function() {
       var a$, comp;
@@ -238,20 +241,19 @@ describe("test-component", function() {
       return expect(comp.node.value).to.equal("1");
     });
     it('should render tag 2', function() {
-      var comp, count, elm;
+      var comp, count;
       count = 1;
       comp = p(txt(function() {
         return count;
       }));
       comp.mount();
-      elm = comp.node;
-      expect(elm.innerHTML).to.equal('1');
+      expect(comp.node.innerHTML).to.equal('1');
       ++count;
       comp.render();
-      expect(elm.innerHTML).to.equal('2');
+      expect(comp.node.innerHTML).to.equal('2');
       ++count;
       comp.render();
-      return expect(elm.innerHTML).to.equal('3');
+      return expect(comp.node.innerHTML).to.equal('3');
     });
     it('should process text with bind', function() {
       var a_, b_, comp, _ref1;

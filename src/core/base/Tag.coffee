@@ -69,7 +69,7 @@ module.exports = class Tag extends BaseComponent
     this.boundStyle = {}
     this['invalidateStyle'] = {}
 
-    this.hasActiveDomEvents = this.hasActiveDomEvents || false
+    # this.hasActiveDomEvents
     if !this.domEventCallbackMap
       this.domEventCallbackMap = {}
     this.eventUpdateConfig = {}
@@ -122,6 +122,35 @@ module.exports = class Tag extends BaseComponent
         continue
 
       else this.setProp(key, value, props, 'Props')
+
+    this
+
+  restoreCacheProperties: ->
+    {style, props, nodeAttrs} = this
+
+    this.hasActiveProperties = true
+
+    if this.className
+      this.hasActiveProperties = true
+      this.cacheClassName = ''
+      this.className.valid = false
+
+    for key, value of this.cachePropes
+      if !props[key]?
+        this.hasActiveProps = true
+        props[key] = value
+
+    for key, value of this.cacheStyle
+      if !style[key]?
+        this.hasActiveStyle = true
+        style[key] = value
+
+    for key, value of this.nodeAttrs
+      if !nodeAttrs[key]?
+        this.hasActiveNodeAttrs = true
+        nodeAttrs[key] = value
+
+    this.hasActiveDomEvents = true
 
     this
 
@@ -356,7 +385,6 @@ module.exports = class Tag extends BaseComponent
     this.valid = true
     this.node = this.firstNode = node = createElement(this.namespace, this.tagName, this.poolLabel)
     node.component = this
-
     this.updateProperties()
     this.createChildrenDom()
     this.attachChildren()
@@ -364,10 +392,27 @@ module.exports = class Tag extends BaseComponent
 
   updateDom: ->
     this.valid = true
-    this.updateProperties()
-    this.updateChildrenDom()
-    this.attachChildren()
-    this.node
+    namespace = this.namespace || "http://www.w3.org/1999/xhtml"
+    if this.tagName != this.node.tagName.toLowerCase() || namespace != this.node.namespaceURI
+      node = this.node
+      node.parentNode && node.parentNode.removeChild(node)
+      this.node = this.firstNode = node = createElement(this.namespace, this.tagName, this.poolLabel)
+      node.component = this
+      this.childParentNode = null
+      this.restoreCacheProperties()
+      this.updateProperties()
+      this.createChildrenDom()
+      this.holder.invalidateAttach(this)
+      for child in this.children
+        child.resetAttach()
+      this.attachChildren()
+      this.holder.propagateChildNextNode(this, node)
+      node
+    else
+      this.updateProperties()
+      this.updateChildrenDom()
+      this.attachChildren()
+      this.node
 
   invalidateAttach: (child) ->
     index = this.children.indexOf(child)

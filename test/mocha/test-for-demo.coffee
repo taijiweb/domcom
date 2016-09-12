@@ -113,22 +113,17 @@ describe 'demo and todoMVC', ->
       expect(comp.node.length).to.equal(2)
       comp.unmount()
 
-    it 'should always switch demo', (done) ->
+    it 'should always switch demo', ->
       comp = runDemo(demoMap, 'each2')
       sel = comp.children[0]
       sel.node.value = 'each3'
       sel.node.onchange({type: 'change'})
       expect(comp.children[1].node.innerHTML).to.equal("<p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p>")
-      setTimeout((->
-        sel.node.value = 'each2'
-        sel.node.onchange({type: 'change'})
-        setTimeout((->
-          sel.node.value = 'each3'
-          sel.node.onchange({type: 'change'})
-          expect(comp.children[1].node.innerHTML).to.contain("<p>1</p><p>2</p><p>3</p><p>4</p>")
-          done()
-        ), 300)
-      ), 1100)
+      sel.node.value = 'each2'
+      sel.node.onchange({type: 'change'})
+      sel.node.value = 'each3'
+      sel.node.onchange({type: 'change'})
+      expect(comp.children[1].node.innerHTML).to.contain("<p>1</p><p>2</p><p>3</p><p>4</p>")
 
     it 'should mount/unmount sub component', ->
       div1 = div 'toggle me'

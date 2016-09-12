@@ -153,6 +153,9 @@ describe "test-component", ->
       ++count
       comp.render()
       expect(comp.node.innerHTML).to.equal('3', 'update 3')
+      comp.tagName = 'div'
+      comp.render()
+      expect(comp.node.innerHTML).to.equal('3', 'update 4')
 
     it 'should update bidirectional bind', ->
       {a$} = bindings({a: 1})
@@ -164,14 +167,13 @@ describe "test-component", ->
       count = 1
       comp = p(txt(-> count))
       comp.mount()
-      elm = comp.node
-      expect(elm.innerHTML).to.equal '1'
+      expect(comp.node.innerHTML).to.equal '1'
       ++count
       comp.render()
-      expect(elm.innerHTML).to.equal '2'
+      expect(comp.node.innerHTML).to.equal '2'
       ++count
       comp.render()
-      expect(elm.innerHTML).to.equal '3'
+      expect(comp.node.innerHTML).to.equal '3'
 
     it 'should process text with bind', ->
       {a_, b_} = bindings({a: 1, b: 2})

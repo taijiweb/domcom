@@ -2497,7 +2497,10 @@
 	      expect(comp.node.innerHTML).to.equal('2', 'update 2');
 	      ++count;
 	      comp.render();
-	      return expect(comp.node.innerHTML).to.equal('3', 'update 3');
+	      expect(comp.node.innerHTML).to.equal('3', 'update 3');
+	      comp.tagName = 'div';
+	      comp.render();
+	      return expect(comp.node.innerHTML).to.equal('3', 'update 4');
 	    });
 	    it('should update bidirectional bind', function() {
 	      var a$, comp;
@@ -2511,20 +2514,19 @@
 	      return expect(comp.node.value).to.equal("1");
 	    });
 	    it('should render tag 2', function() {
-	      var comp, count, elm;
+	      var comp, count;
 	      count = 1;
 	      comp = p(txt(function() {
 	        return count;
 	      }));
 	      comp.mount();
-	      elm = comp.node;
-	      expect(elm.innerHTML).to.equal('1');
+	      expect(comp.node.innerHTML).to.equal('1');
 	      ++count;
 	      comp.render();
-	      expect(elm.innerHTML).to.equal('2');
+	      expect(comp.node.innerHTML).to.equal('2');
 	      ++count;
 	      comp.render();
-	      return expect(elm.innerHTML).to.equal('3');
+	      return expect(comp.node.innerHTML).to.equal('3');
 	    });
 	    it('should process text with bind', function() {
 	      var a_, b_, comp, _ref1;
@@ -3817,8 +3819,7 @@
 	      comp = div(div1 = div(txt(1), t2 = txt(2), t3 = txt(3)), div2 = div(t4 = txt(4), t5 = txt(5), txt(6)));
 	      comp.mount();
 	      div1.insertChildAfter(t5, t2);
-	      comp.render();
-	      return dc.clean();
+	      return comp.render();
 	    });
 	  });
 	  describe('each of array, object', function() {
@@ -5335,7 +5336,7 @@
 	      expect(comp.node.length).to.equal(2);
 	      return comp.unmount();
 	    });
-	    it('should always switch demo', function(done) {
+	    it('should always switch demo', function() {
 	      var comp, sel;
 	      comp = runDemo(demoMap, 'each2');
 	      sel = comp.children[0];
@@ -5344,20 +5345,15 @@
 	        type: 'change'
 	      });
 	      expect(comp.children[1].node.innerHTML).to.equal("<p>1</p><p>2</p><p>3</p><p>4</p><p>5</p><p>6</p>");
-	      return setTimeout((function() {
-	        sel.node.value = 'each2';
-	        sel.node.onchange({
-	          type: 'change'
-	        });
-	        return setTimeout((function() {
-	          sel.node.value = 'each3';
-	          sel.node.onchange({
-	            type: 'change'
-	          });
-	          expect(comp.children[1].node.innerHTML).to.contain("<p>1</p><p>2</p><p>3</p><p>4</p>");
-	          return done();
-	        }), 300);
-	      }), 1100);
+	      sel.node.value = 'each2';
+	      sel.node.onchange({
+	        type: 'change'
+	      });
+	      sel.node.value = 'each3';
+	      sel.node.onchange({
+	        type: 'change'
+	      });
+	      return expect(comp.children[1].node.innerHTML).to.contain("<p>1</p><p>2</p><p>3</p><p>4</p>");
 	    });
 	    return it('should mount/unmount sub component', function() {
 	      var buttons, comp, div1;

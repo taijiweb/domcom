@@ -49,6 +49,9 @@ module.exports = class BaseComponent extends Component
     else
       this
 
+  resetAttach: ->
+    this.attachValid = false
+
   attachChildren: ->
 
   markRemovingDom: ->

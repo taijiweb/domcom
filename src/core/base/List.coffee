@@ -78,6 +78,12 @@ module.exports = exports = class List extends BaseComponent
         this.holder.invalidateAttach(this)
     this
 
+  resetAttach: ->
+    this.attachValid = false
+    for child in this.children
+      child.resetAttach()
+    return
+
   attachParent: ->
     node = this.node
     parentNode = this.parentNode

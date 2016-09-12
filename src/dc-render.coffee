@@ -121,7 +121,7 @@ dc.invalidateContent = (component) ->
   dc.rootComponentMap[component.dcid] = component
   return
 
-dc.invalidateAttach = ->
+dc.invalidateAttach = (child) ->
 
 dc.propagateChildNextNode = (child, nextNode) ->
 
