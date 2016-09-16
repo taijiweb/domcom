@@ -904,6 +904,7 @@
 	};
 
 	lazy = function(method) {
+	  var oldToString;
 	  react(method);
 	  method.invalidate = function() {
 	    var callback, _i, _len, _ref1;
@@ -916,8 +917,9 @@
 	    }
 	    return method;
 	  };
+	  oldToString = method.toString;
 	  method.toString = function() {
-	    return "lazy: " + (funcString(method));
+	    return "lazy: " + (oldToString.call(method));
 	  };
 	  return method;
 	};

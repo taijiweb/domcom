@@ -1,6 +1,6 @@
 {
   "name": "domcom",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "dom component",
   "keywords": [
     "domcom",
@@ -13,6 +13,7 @@
     "front end"
   ],
   "author": "Caoxingming",
+  "license": "MIT",
   "licenses": [
     {
       "type": "MIT",
