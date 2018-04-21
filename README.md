@@ -98,3 +98,4 @@ In coffee-script(recommended):
 
 ## LICENSE
 MIT, see [LICENSE](https://github.com/taijiweb/domcom/blob/master/LICENSE)
+ok.
