@@ -53,38 +53,38 @@
 
 	__webpack_require__(/*! lazy-flow-at/test-at */ 7);
 
-	__webpack_require__(/*! ./test-property */ 10);
+	__webpack_require__(/*! ./test-property */ 9);
 
-	__webpack_require__(/*! ./test-toString */ 11);
+	__webpack_require__(/*! ./test-toString */ 10);
 
-	__webpack_require__(/*! ./test-dc */ 12);
+	__webpack_require__(/*! ./test-dc */ 11);
 
-	__webpack_require__(/*! ./test-base-component */ 13);
+	__webpack_require__(/*! ./test-base-component */ 12);
 
-	__webpack_require__(/*! ./test-component */ 16);
+	__webpack_require__(/*! ./test-component */ 15);
 
-	__webpack_require__(/*! ./test-directive */ 17);
+	__webpack_require__(/*! ./test-directive */ 16);
 
-	__webpack_require__(/*! ./test-singleton */ 18);
+	__webpack_require__(/*! ./test-singleton */ 17);
 
-	__webpack_require__(/*! ./test-merge-if */ 19);
+	__webpack_require__(/*! ./test-merge-if */ 18);
 
-	__webpack_require__(/*! ./test-group */ 20);
+	__webpack_require__(/*! ./test-group */ 19);
 
-	__webpack_require__(/*! ./test-ref-clone */ 21);
+	__webpack_require__(/*! ./test-ref-clone */ 20);
 
-	__webpack_require__(/*! ./test-event */ 22);
+	__webpack_require__(/*! ./test-event */ 21);
 
-	__webpack_require__(/*! ./test-route */ 23);
+	__webpack_require__(/*! ./test-route */ 22);
 
-	__webpack_require__(/*! ./test-for-demo */ 24);
+	__webpack_require__(/*! ./test-for-demo */ 23);
 
 
 /***/ },
 /* 1 */
-/*!*************************************!*\
-  !*** ../lazy-flow/test-flow.coffee ***!
-  \*************************************/
+/*!**********************************!*\
+  !*** ./~/lazy-flow/test-flow.js ***!
+  \**********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var bind, bindings, ddescribe, duplex, expect, flow, idescribe, iit, ndescribe, nit, renew, see, seeAttrs, _ref, _ref1, _ref2;
@@ -248,33 +248,23 @@
 
 /***/ },
 /* 2 */
-/*!***********************************!*\
-  !*** ../bdd-test-helper/index.js ***!
-  \***********************************/
+/*!************************************!*\
+  !*** ./~/bdd-test-helper/index.js ***!
+  \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var chai;
-
 	if (typeof window === 'undefined') {
-	  chai = __webpack_require__(/*! chai */ 3);
+	    var chai = __webpack_require__(/*! chai */ 3);
 	} else {
-	  chai = window.chai;
+	    var chai = window.chai;
 	}
 
 	exports.expect = chai.expect;
 
 	exports.iit = it.only;
-
 	exports.idescribe = describe.only;
-
-	exports.nit = function() {};
-
-	exports.ndescribe = function() {};
-
-	exports.ddescribe = function(desc, test) {
-	  return test();
-	};
-
+	exports.nit = function () {};
+	exports.ndescribe = function () {};
 
 /***/ },
 /* 3 */
@@ -287,9 +277,9 @@
 
 /***/ },
 /* 4 */
-/*!*****************************!*\
-  !*** ../lazy-flow/index.js ***!
-  \*****************************/
+/*!******************************!*\
+  !*** ./~/lazy-flow/index.js ***!
+  \******************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var flow, funcString, lazy, newLine, react, renew, see, _ref,
@@ -715,9 +705,9 @@
 
 /***/ },
 /* 5 */
-/*!***************************!*\
-  !*** ../dc-util/index.js ***!
-  \***************************/
+/*!****************************!*\
+  !*** ./~/dc-util/index.js ***!
+  \****************************/
 /***/ function(module, exports) {
 
 	var dupStr, globalDcid, hasOwn, isArray,
@@ -1025,9 +1015,9 @@
 
 /***/ },
 /* 6 */
-/*!*********************************!*\
-  !*** ../lazy-flow/addon.coffee ***!
-  \*********************************/
+/*!******************************!*\
+  !*** ./~/lazy-flow/addon.js ***!
+  \******************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var binary, bind, duplex, flow, react, see, unary, _ref;
@@ -1291,9 +1281,9 @@
 
 /***/ },
 /* 7 */
-/*!**************************************!*\
-  !*** ../lazy-flow-at/test-at.coffee ***!
-  \**************************************/
+/*!***********************************!*\
+  !*** ./~/lazy-flow-at/test-at.js ***!
+  \***********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var ddescribe, expect, flow, idescribe, iit, ndescribe, nit, _ref;
@@ -1341,16 +1331,16 @@
 
 /***/ },
 /* 8 */
-/*!************************************!*\
-  !*** ../lazy-flow-at/index.coffee ***!
-  \************************************/
+/*!*********************************!*\
+  !*** ./~/lazy-flow-at/index.js ***!
+  \*********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var atMethod, bind, duplex, flow, funcString, invalidateBindPath, newLine, react, _ref, _ref1;
 
 	_ref = __webpack_require__(/*! dc-util */ 5), newLine = _ref.newLine, funcString = _ref.funcString;
 
-	_ref1 = flow = __webpack_require__(/*! lazy-flow */ 9), bind = _ref1.bind, duplex = _ref1.duplex, react = _ref1.react;
+	_ref1 = flow = __webpack_require__(/*! lazy-flow */ 4), bind = _ref1.bind, duplex = _ref1.duplex, react = _ref1.react;
 
 	module.exports = flow;
 
@@ -1491,441 +1481,6 @@
 
 /***/ },
 /* 9 */
-/*!********************************************!*\
-  !*** ../lazy-flow-at/~/lazy-flow/index.js ***!
-  \********************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	var flow, funcString, lazy, newLine, react, renew, see, _ref,
-	  __slice = [].slice;
-
-	_ref = __webpack_require__(/*! dc-util */ 5), newLine = _ref.newLine, funcString = _ref.funcString;
-
-	react = function(method) {
-	  if (method.invalidate) {
-	    return method;
-	  }
-	  method.valid = false;
-	  method.invalidateCallbacks = [];
-	  method.onInvalidate = function(callback) {
-	    var invalidateCallbacks;
-	    if (typeof callback !== 'function') {
-	      throw new Error("call back should be a function");
-	    }
-	    invalidateCallbacks = method.invalidateCallbacks || (method.invalidateCallbacks = []);
-	    return invalidateCallbacks.push(callback);
-	  };
-	  method.offInvalidate = function(callback) {
-	    var index, invalidateCallbacks;
-	    invalidateCallbacks = method.invalidateCallbacks;
-	    if (!invalidateCallbacks) {
-	      return;
-	    }
-	    index = invalidateCallbacks.indexOf(callback);
-	    if (index < 0) {
-	      return;
-	    }
-	    invalidateCallbacks.splice(index, 1);
-	    if (!invalidateCallbacks.length) {
-	      return method.invalidateCallbacks = null;
-	    }
-	  };
-	  method.invalidate = function() {
-	    var callback, _i, _len, _ref1;
-	    if (!method.valid) {
-	      return;
-	    }
-	    if (!method.invalidateCallbacks) {
-	      return;
-	    }
-	    _ref1 = method.invalidateCallbacks;
-	    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-	      callback = _ref1[_i];
-	      callback();
-	    }
-	    method.valid = false;
-	  };
-	  return method;
-	};
-
-	renew = function(computation) {
-	  var method;
-	  method = function() {
-	    var value;
-	    if (!arguments.length) {
-	      value = computation.call(this);
-	      method.valid = true;
-	      method.invalidate();
-	      return value;
-	    } else {
-	      throw new Error('flow.renew is not allowed to accept arguments');
-	    }
-	  };
-	  method.toString = function() {
-	    return "renew: " + (funcString(computation));
-	  };
-	  return react(method);
-	};
-
-	lazy = function(computation) {
-	  var cacheValue, method;
-	  cacheValue = null;
-	  method = function() {
-	    if (!arguments.length) {
-	      if (!method.valid) {
-	        method.valid = true;
-	        return cacheValue = computation.call(this);
-	      } else {
-	        return cacheValue;
-	      }
-	    } else {
-	      throw new Error('flow.lazy is not allowed to accept arguments');
-	    }
-	  };
-	  method.toString = function() {
-	    return "lazy: " + (funcString(computation));
-	  };
-	  return react(method);
-	};
-
-	module.exports = flow = function() {
-	  var cacheValue, computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
-	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
-	  if (!deps.length) {
-	    return react(computation);
-	  }
-	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
-	    dep = deps[_j];
-	    if (typeof dep === 'function' && !dep.invalidate) {
-	      reactive = react(function() {
-	        reactive.invalidate();
-	        return computation.call(this);
-	      });
-	      return reactive;
-	    }
-	  }
-	  cacheValue = null;
-	  reactive = react(function(value) {
-	    if (!arguments.length) {
-	      if (!reactive.valid) {
-	        reactive.valid = true;
-	        return cacheValue = computation.call(this);
-	      } else {
-	        return cacheValue;
-	      }
-	    } else {
-	      if (value === cacheValue) {
-	        return value;
-	      } else {
-	        cacheValue = computation.call(this, value);
-	        reactive.invalidate();
-	        return cacheValue;
-	      }
-	    }
-	  });
-	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
-	    dep = deps[_k];
-	    if (dep && dep.onInvalidate) {
-	      dep.onInvalidate(reactive.invalidate);
-	    }
-	  }
-	  reactive.toString = function() {
-	    return "flow: [" + (((function() {
-	      var _l, _len2, _results;
-	      _results = [];
-	      for (_l = 0, _len2 = deps.length; _l < _len2; _l++) {
-	        dep = deps[_l];
-	        _results.push(dep.toString());
-	      }
-	      return _results;
-	    })()).join(',')) + "] --> " + (funcString(computation));
-	  };
-	  return reactive;
-	};
-
-	flow.pipe = function() {
-	  var computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
-	  deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
-	  for (_j = 0, _len = deps.length; _j < _len; _j++) {
-	    dep = deps[_j];
-	    if (typeof dep === 'function' && !dep.invalidate) {
-	      reactive = react(function() {
-	        var args, _k, _len1;
-	        if (argumnets.length) {
-	          throw new Error("flow.pipe is not allow to have arguments");
-	        }
-	        reactive.invalidate();
-	        args = [];
-	        for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
-	          dep = deps[_k];
-	          if (typeof dep === 'function') {
-	            args.push(dep());
-	          } else {
-	            args.push(dep);
-	          }
-	        }
-	        return computation.apply(this, args);
-	      });
-	      return reactive;
-	    }
-	  }
-	  reactive = react(function() {
-	    var args, _k, _len1;
-	    args = [];
-	    for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
-	      dep = deps[_k];
-	      if (typeof dep === 'function') {
-	        args.push(dep());
-	      } else {
-	        args.push(dep);
-	      }
-	    }
-	    return computation.apply(this, args);
-	  });
-	  for (_k = 0, _len1 = deps.length; _k < _len1; _k++) {
-	    dep = deps[_k];
-	    if (dep && dep.onInvalidate) {
-	      dep.onInvalidate(reactive.invalidate);
-	    }
-	  }
-	  return reactive;
-	};
-
-	flow.react = react;
-
-	flow.lazy = lazy;
-
-	flow.renew = renew;
-
-	flow.lazy = lazy;
-
-	flow.flow = flow;
-
-	flow.see = see = function(value, transform) {
-	  var cacheValue, method;
-	  cacheValue = value;
-	  method = function(value) {
-	    if (!arguments.length) {
-	      method.valid = true;
-	      return cacheValue;
-	    } else {
-	      value = transform ? transform(value) : value;
-	      if (value !== cacheValue) {
-	        cacheValue = value;
-	        method.invalidate();
-	      }
-	      return value;
-	    }
-	  };
-	  method.isDuplex = true;
-	  method.toString = function() {
-	    return "see: " + value;
-	  };
-	  return react(method);
-	};
-
-	flow.seeN = function() {
-	  var computation, computations, _i, _len, _results;
-	  computations = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-	  _results = [];
-	  for (_i = 0, _len = computations.length; _i < _len; _i++) {
-	    computation = computations[_i];
-	    _results.push(see(computation));
-	  }
-	  return _results;
-	};
-
-	if (Object.defineProperty) {
-	  flow.bind = function(obj, attr, debugName) {
-	    var d, getter, set, setter;
-	    d = Object.getOwnPropertyDescriptor(obj, attr);
-	    if (d) {
-	      getter = d.get;
-	      set = d.set;
-	    }
-	    if (!getter || !getter.invalidate) {
-	      getter = function() {
-	        if (arguments.length) {
-	          throw new Error('should not set value on flow.bind');
-	        }
-	        getter.valid = true;
-	        return getter.cacheValue;
-	      };
-	      getter.cacheValue = obj[attr];
-	      setter = function(value) {
-	        if (value !== obj[attr]) {
-	          if (set) {
-	            set(value);
-	          }
-	          getter.invalidate();
-	          return getter.cacheValue = value;
-	        }
-	      };
-	      react(getter);
-	      getter.toString = function() {
-	        return "" + (debugName || 'm') + "[" + attr + "]";
-	      };
-	      Object.defineProperty(obj, attr, {
-	        get: getter,
-	        set: setter
-	      });
-	    }
-	    return getter;
-	  };
-	  flow.duplex = function(obj, attr, debugName) {
-	    var d, get, method, set;
-	    d = Object.getOwnPropertyDescriptor(obj, attr);
-	    if (d) {
-	      get = d.get, set = d.set;
-	    }
-	    if (!set || !set.invalidate) {
-	      method = function(value) {
-	        if (!arguments.length) {
-	          method.valid = true;
-	          return method.cacheValue;
-	        }
-	        if (value !== obj[attr]) {
-	          if (set) {
-	            set(value);
-	          }
-	          get && get.invalidate && get.invalidate();
-	          method.invalidate();
-	          return method.cacheValue = value;
-	        }
-	      };
-	      method.cacheValue = obj[attr];
-	      react(method);
-	      method.isDuplex = true;
-	      method.toString = function() {
-	        return "" + (debugName || 'm') + "[" + attr + "]";
-	      };
-	      Object.defineProperty(obj, attr, {
-	        get: method,
-	        set: method
-	      });
-	      return method;
-	    } else {
-	      return set;
-	    }
-	  };
-	} else {
-	  flow.bind = function(obj, attr, debugName) {
-	    var method, _dcBindMethodMap;
-	    _dcBindMethodMap = obj._dcBindMethodMap;
-	    if (!_dcBindMethodMap) {
-	      _dcBindMethodMap = obj._dcBindMethodMap = {};
-	    }
-	    if (!obj.dcSet$) {
-	      obj.dcSet$ = function(attr, value) {
-	        var _dcDuplexMethodMap;
-	        if (value !== obj[attr]) {
-	          _dcBindMethodMap && _dcBindMethodMap[attr] && _dcBindMethodMap[attr].invalidate();
-	          return (_dcDuplexMethodMap = this._dcDuplexMethodMap) && _dcDuplexMethodMap[attr] && _dcDuplexMethodMap[attr].invalidate();
-	        }
-	      };
-	    }
-	    method = _dcBindMethodMap[attr];
-	    if (!method) {
-	      method = _dcBindMethodMap[attr] = function() {
-	        method.valid = true;
-	        return obj[attr];
-	      };
-	      method.toString = function() {
-	        return "" + (debugName || 'm') + "[" + attr + "]";
-	      };
-	      react(method);
-	    }
-	    return method;
-	  };
-	  flow.duplex = function(obj, attr, debugName) {
-	    var method, _dcDuplexMethodMap;
-	    _dcDuplexMethodMap = obj._dcDuplexMethodMap;
-	    if (!_dcDuplexMethodMap) {
-	      _dcDuplexMethodMap = obj._dcDuplexMethodMap = {};
-	    }
-	    if (!obj.dcSet$) {
-	      obj.dcSet$ = function(attr, value) {
-	        var _dcBindMethodMap;
-	        if (value !== obj[attr]) {
-	          (_dcBindMethodMap = this._dcBindMethodMap) && _dcBindMethodMap[attr] && _dcBindMethodMap[attr].invalidate();
-	          _dcDuplexMethodMap && _dcDuplexMethodMap[attr] && _dcDuplexMethodMap[attr].invalidate();
-	        }
-	        return value;
-	      };
-	    }
-	    method = _dcDuplexMethodMap[attr];
-	    if (!method) {
-	      method = _dcDuplexMethodMap[attr] = function(value) {
-	        if (!arguments.length) {
-	          method.valid = true;
-	          return obj[attr];
-	        } else {
-	          return obj.dcSet$(attr, value);
-	        }
-	      };
-	      method.isDuplex = true;
-	      method.toString = function() {
-	        return "" + (debugName || 'm') + "[" + attr + "]";
-	      };
-	      react(method);
-	    }
-	    return method;
-	  };
-	}
-
-	flow.unary = function(x, unaryFn) {
-	  if (typeof x !== 'function') {
-	    return unaryFn(x);
-	  } else if (x.invalidate) {
-	    return flow(x, function() {
-	      return unaryFn(x());
-	    });
-	  } else {
-	    return function() {
-	      return unaryFn(x());
-	    };
-	  }
-	};
-
-	flow.binary = function(x, y, binaryFn) {
-	  if (typeof x === 'function' && typeof y === 'function') {
-	    if (x.invalidate && y.invalidate) {
-	      return flow(x, y, function() {
-	        return binaryFn(x(), y());
-	      });
-	    } else {
-	      return function() {
-	        return binaryFn(x(), y());
-	      };
-	    }
-	  } else if (typeof x === 'function') {
-	    if (x.invalidate) {
-	      return flow(x, function() {
-	        return binaryFn(x(), y);
-	      });
-	    } else {
-	      return function() {
-	        return binaryFn(x(), y);
-	      };
-	    }
-	  } else if (typeof y === 'function') {
-	    if (y.invalidate) {
-	      return flow(y, function() {
-	        return binaryFn(x, y());
-	      });
-	    } else {
-	      return function() {
-	        return binaryFn(x, y());
-	      };
-	    }
-	  } else {
-	    return binaryFn(x, y);
-	  }
-	};
-
-
-/***/ },
-/* 10 */
 /*!*****************************************!*\
   !*** ./test/mocha/test-property.coffee ***!
   \*****************************************/
@@ -2046,7 +1601,7 @@
 	    expect(x.valid).to.equal(false);
 	    return expect(x()).to.equal('a');
 	  });
-	  return it('should get class property in component', function() {
+	  it('should get class property in component', function() {
 	    var active, comp;
 	    active = see(true);
 	    comp = div({
@@ -2071,6 +1626,31 @@
 	    expect(comp.hasActiveProperties).to.equal(true, 'hasActiveProperties 3');
 	    comp.render();
 	    return expect(comp.node.className).to.equal('a', '3');
+	  });
+	  it('should get functional class property in component', function() {
+	    var active, comp;
+	    active = see(true);
+	    comp = div({
+	      "class": function() {
+	        return {
+	          a: 1,
+	          b: active
+	        };
+	      }
+	    });
+	    return expect(comp.className.call(comp)).to.equal('a b', 'first');
+	  });
+	  return it('should get false class property in component', function() {
+	    var active, comp;
+	    active = see(true);
+	    comp = div({
+	      "class": function() {
+	        return {
+	          a: false
+	        };
+	      }
+	    });
+	    return expect(comp.className.call(comp)).to.equal('', 'first');
 	  });
 	});
 
@@ -2237,7 +1817,7 @@
 
 
 /***/ },
-/* 11 */
+/* 10 */
 /*!*****************************************!*\
   !*** ./test/mocha/test-toString.coffee ***!
   \*****************************************/
@@ -2295,7 +1875,7 @@
 
 
 /***/ },
-/* 12 */
+/* 11 */
 /*!***********************************!*\
   !*** ./test/mocha/test-dc.coffee ***!
   \***********************************/
@@ -2330,7 +1910,7 @@
 
 
 /***/ },
-/* 13 */
+/* 12 */
 /*!***********************************************!*\
   !*** ./test/mocha/test-base-component.coffee ***!
   \***********************************************/
@@ -2340,7 +1920,7 @@
 
 	_ref = __webpack_require__(/*! bdd-test-helper */ 2), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
-	newDemoNode = __webpack_require__(/*! ./helper */ 14).newDemoNode;
+	newDemoNode = __webpack_require__(/*! ./helper */ 13).newDemoNode;
 
 	bindings = dc.bindings, see = dc.see, Tag = dc.Tag, Text = dc.Text, List = dc.List, txt = dc.txt, list = dc.list, p = dc.p, div = dc.div, Html = dc.Html, html = dc.html, classFn = dc.classFn, styleFrom = dc.styleFrom, Nothing = dc.Nothing;
 
@@ -2562,7 +2142,7 @@
 
 
 /***/ },
-/* 14 */
+/* 13 */
 /*!**********************************!*\
   !*** ./test/mocha/helper.coffee ***!
   \**********************************/
@@ -2570,7 +2150,7 @@
 
 	var extend;
 
-	extend = __webpack_require__(/*! extend */ 15);
+	extend = __webpack_require__(/*! extend */ 14);
 
 	exports.newDemoNode = function(id) {
 	  var node;
@@ -2604,15 +2184,16 @@
 
 
 /***/ },
-/* 15 */
-/*!**************************!*\
-  !*** ../extend/index.js ***!
-  \**************************/
+/* 14 */
+/*!***************************!*\
+  !*** ./~/extend/index.js ***!
+  \***************************/
 /***/ function(module, exports) {
+
+	'use strict';
 
 	var hasOwn = Object.prototype.hasOwnProperty;
 	var toStr = Object.prototype.toString;
-	var undefined;
 
 	var isArray = function isArray(arr) {
 		if (typeof Array.isArray === 'function') {
@@ -2623,33 +2204,31 @@
 	};
 
 	var isPlainObject = function isPlainObject(obj) {
-		'use strict';
 		if (!obj || toStr.call(obj) !== '[object Object]') {
 			return false;
 		}
 
-		var has_own_constructor = hasOwn.call(obj, 'constructor');
-		var has_is_property_of_method = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+		var hasOwnConstructor = hasOwn.call(obj, 'constructor');
+		var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
 		// Not own constructor property must be Object
-		if (obj.constructor && !has_own_constructor && !has_is_property_of_method) {
+		if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
 			return false;
 		}
 
 		// Own properties are enumerated firstly, so to speed up,
 		// if last one is own, then all properties are own.
 		var key;
-		for (key in obj) {}
+		for (key in obj) { /**/ }
 
-		return key === undefined || hasOwn.call(obj, key);
+		return typeof key === 'undefined' || hasOwn.call(obj, key);
 	};
 
 	module.exports = function extend() {
-		'use strict';
-		var options, name, src, copy, copyIsArray, clone,
-			target = arguments[0],
-			i = 1,
-			length = arguments.length,
-			deep = false;
+		var options, name, src, copy, copyIsArray, clone;
+		var target = arguments[0];
+		var i = 1;
+		var length = arguments.length;
+		var deep = false;
 
 		// Handle a deep copy situation
 		if (typeof target === 'boolean') {
@@ -2657,7 +2236,8 @@
 			target = arguments[1] || {};
 			// skip the boolean and the target
 			i = 2;
-		} else if ((typeof target !== 'object' && typeof target !== 'function') || target == null) {
+		}
+		if (target == null || (typeof target !== 'object' && typeof target !== 'function')) {
 			target = {};
 		}
 
@@ -2671,25 +2251,23 @@
 					copy = options[name];
 
 					// Prevent never-ending loop
-					if (target === copy) {
-						continue;
-					}
+					if (target !== copy) {
+						// Recurse if we're merging plain objects or arrays
+						if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+							if (copyIsArray) {
+								copyIsArray = false;
+								clone = src && isArray(src) ? src : [];
+							} else {
+								clone = src && isPlainObject(src) ? src : {};
+							}
 
-					// Recurse if we're merging plain objects or arrays
-					if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
-						if (copyIsArray) {
-							copyIsArray = false;
-							clone = src && isArray(src) ? src : [];
-						} else {
-							clone = src && isPlainObject(src) ? src : {};
+							// Never move original objects, clone them
+							target[name] = extend(deep, clone, copy);
+
+						// Don't bring in undefined values
+						} else if (typeof copy !== 'undefined') {
+							target[name] = copy;
 						}
-
-						// Never move original objects, clone them
-						target[name] = extend(deep, clone, copy);
-
-					// Don't bring in undefined values
-					} else if (copy !== undefined) {
-						target[name] = copy;
 					}
 				}
 			}
@@ -2700,9 +2278,8 @@
 	};
 
 
-
 /***/ },
-/* 16 */
+/* 15 */
 /*!******************************************!*\
   !*** ./test/mocha/test-component.coffee ***!
   \******************************************/
@@ -2712,7 +2289,7 @@
 
 	_ref = __webpack_require__(/*! bdd-test-helper */ 2), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, ddescribe = _ref.ddescribe;
 
-	newDemoNode = __webpack_require__(/*! ./helper */ 14).newDemoNode;
+	newDemoNode = __webpack_require__(/*! ./helper */ 13).newDemoNode;
 
 	bindings = dc.bindings, duplex = dc.duplex, flow = dc.flow, classFn = dc.classFn, styleFrom = dc.styleFrom, Tag = dc.Tag, Text = dc.Text, List = dc.List, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, txt = dc.txt, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, button = dc.button, input = dc.input;
 
@@ -3057,7 +2634,7 @@
 
 
 /***/ },
-/* 17 */
+/* 16 */
 /*!******************************************!*\
   !*** ./test/mocha/test-directive.coffee ***!
   \******************************************/
@@ -3189,7 +2766,7 @@
 
 
 /***/ },
-/* 18 */
+/* 17 */
 /*!******************************************!*\
   !*** ./test/mocha/test-singleton.coffee ***!
   \******************************************/
@@ -3199,7 +2776,7 @@
 
 	_ref = __webpack_require__(/*! bdd-test-helper */ 2), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
-	newDemoNode = __webpack_require__(/*! ./helper */ 14).newDemoNode;
+	newDemoNode = __webpack_require__(/*! ./helper */ 13).newDemoNode;
 
 	see = dc.see, flow = dc.flow, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, forceIf = dc.forceIf, If = dc.If, case_ = dc.case_, forceCase = dc.forceCase, func = dc.func, pick = dc.pick, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
@@ -3829,7 +3406,7 @@
 
 
 /***/ },
-/* 19 */
+/* 18 */
 /*!*****************************************!*\
   !*** ./test/mocha/test-merge-if.coffee ***!
   \*****************************************/
@@ -3839,7 +3416,7 @@
 
 	_ref = __webpack_require__(/*! bdd-test-helper */ 2), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
-	newDemoNode = __webpack_require__(/*! ./helper */ 14).newDemoNode;
+	newDemoNode = __webpack_require__(/*! ./helper */ 13).newDemoNode;
 
 	see = dc.see, flow = dc.flow, Component = dc.Component, Tag = dc.Tag, Text = dc.Text, List = dc.List, If = dc.If, txt = dc.txt, list = dc.list, func = dc.func, if_ = dc.if_, mergeIf = dc.mergeIf, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div;
 
@@ -4071,7 +3648,7 @@
 
 
 /***/ },
-/* 20 */
+/* 19 */
 /*!**************************************!*\
   !*** ./test/mocha/test-group.coffee ***!
   \**************************************/
@@ -4081,7 +3658,7 @@
 
 	_ref = __webpack_require__(/*! bdd-test-helper */ 2), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, newDemoNode = _ref.newDemoNode;
 
-	newDemoNode = __webpack_require__(/*! ./helper */ 14).newDemoNode;
+	newDemoNode = __webpack_require__(/*! ./helper */ 13).newDemoNode;
 
 	isComponent = dc.isComponent, Component = dc.Component, TransformComponent = dc.TransformComponent, Tag = dc.Tag, Text = dc.Text, txt = dc.txt, list = dc.list, List = dc.List, func = dc.func, if_ = dc.if_, case_ = dc.case_, func = dc.func, each = dc.each, every = dc.every, funcEach = dc.funcEach, accordionGroup = dc.accordionGroup, accordion = dc.accordion, a = dc.a, p = dc.p, span = dc.span, text = dc.text, div = dc.div, bind = dc.bind, pour = dc.pour, see = dc.see;
 
@@ -4853,7 +4430,7 @@
 
 
 /***/ },
-/* 21 */
+/* 20 */
 /*!******************************************!*\
   !*** ./test/mocha/test-ref-clone.coffee ***!
   \******************************************/
@@ -5005,7 +4582,7 @@
 
 
 /***/ },
-/* 22 */
+/* 21 */
 /*!**************************************!*\
   !*** ./test/mocha/test-event.coffee ***!
   \**************************************/
@@ -5015,7 +4592,7 @@
 
 	_ref = __webpack_require__(/*! bdd-test-helper */ 2), expect = _ref.expect, iit = _ref.iit, idescribe = _ref.idescribe, nit = _ref.nit, ndescribe = _ref.ndescribe, ddescribe = _ref.ddescribe;
 
-	fakeEvent = __webpack_require__(/*! domcom/test/mocha/helper */ 14).fakeEvent;
+	fakeEvent = __webpack_require__(/*! ./helper */ 13).fakeEvent;
 
 	duplex = dc.duplex, see = dc.see, classFn = dc.classFn, styleFrom = dc.styleFrom, model = dc.model, show = dc.show, Tag = dc.Tag, Text = dc.Text, List = dc.List, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, txt = dc.txt, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, button = dc.button, input = dc.input;
 
@@ -5190,7 +4767,7 @@
 
 
 /***/ },
-/* 23 */
+/* 22 */
 /*!**************************************!*\
   !*** ./test/mocha/test-route.coffee ***!
   \**************************************/
@@ -5223,7 +4800,7 @@
 	      route._processPiecePatterns(':_', params);
 	      return expect(params._).to.equal(true, ':_');
 	    });
-	    it('should match cureved re', function() {
+	    it('should match curved re', function() {
 	      var params, pat;
 	      params = {};
 	      pat = route._processPiecePatterns('(fd+=.)', params, 2);
@@ -5577,7 +5154,7 @@
 
 
 /***/ },
-/* 24 */
+/* 23 */
 /*!*****************************************!*\
   !*** ./test/mocha/test-for-demo.coffee ***!
   \*****************************************/
@@ -5589,11 +5166,11 @@
 
 	bindings = dc.bindings, duplex = dc.duplex, flow = dc.flow, see = dc.see, classFn = dc.classFn, styleFrom = dc.styleFrom, extendAttrs = dc.extendAttrs, Tag = dc.Tag, Text = dc.Text, List = dc.List, Component = dc.Component, list = dc.list, func = dc.func, if_ = dc.if_, txt = dc.txt, a = dc.a, p = dc.p, span = dc.span, text = dc.text, li = dc.li, div = dc.div, button = dc.button, input = dc.input, each = dc.each, funcEach = dc.funcEach;
 
-	controls = __webpack_require__(/*! domcom/demo/demo-controls */ 25);
+	controls = __webpack_require__(/*! ../../demo/demo-controls */ 24);
 
-	makeDomComponentTest = __webpack_require__(/*! ../makeDomComponentTest */ 26);
+	makeDomComponentTest = __webpack_require__(/*! ../makeDomComponentTest */ 25);
 
-	_ref1 = __webpack_require__(/*! domcom/demo/util */ 27), demoMap = _ref1.demoMap, runDemo = _ref1.runDemo;
+	_ref1 = __webpack_require__(/*! ../../demo/util */ 26), demoMap = _ref1.demoMap, runDemo = _ref1.runDemo;
 
 	makeDomComponentTest(demoMap, "domcom/demoMap");
 
@@ -5976,7 +5553,7 @@
 
 
 /***/ },
-/* 25 */
+/* 24 */
 /*!***********************************!*\
   !*** ./demo/demo-controls.coffee ***!
   \***********************************/
@@ -5999,7 +5576,7 @@
 
 
 /***/ },
-/* 26 */
+/* 25 */
 /*!******************************************!*\
   !*** ./test/makeDomComponentTest.coffee ***!
   \******************************************/
@@ -6058,7 +5635,7 @@
 
 
 /***/ },
-/* 27 */
+/* 26 */
 /*!**************************!*\
   !*** ./demo/util.coffee ***!
   \**************************/
@@ -6073,27 +5650,27 @@
 	  $model: dc.$model
 	});
 
-	_ref = __webpack_require__(/*! ./demo-each */ 28), eachDemo1 = _ref.eachDemo1, eachDemo2 = _ref.eachDemo2, eachDemo3 = _ref.eachDemo3, eachDemo4 = _ref.eachDemo4;
+	_ref = __webpack_require__(/*! ./demo-each */ 27), eachDemo1 = _ref.eachDemo1, eachDemo2 = _ref.eachDemo2, eachDemo3 = _ref.eachDemo3, eachDemo4 = _ref.eachDemo4;
 
-	chooseFramework = __webpack_require__(/*! ./demo-choose-web-framework */ 29);
+	chooseFramework = __webpack_require__(/*! ./demo-choose-web-framework */ 28);
 
-	_ref1 = __webpack_require__(/*! ./demo-debug */ 30), demoEachPush = _ref1.demoEachPush, demoIfEach = _ref1.demoIfEach, demoModelOnMultipleInput = _ref1.demoModelOnMultipleInput;
+	_ref1 = __webpack_require__(/*! ./demo-debug */ 29), demoEachPush = _ref1.demoEachPush, demoIfEach = _ref1.demoIfEach, demoModelOnMultipleInput = _ref1.demoModelOnMultipleInput;
 
 	exports.demoMap = {
 	  'choose web framework': chooseFramework,
-	  "show hide": __webpack_require__(/*! ./demo-show-hide */ 31),
-	  counter: __webpack_require__(/*! ./demo-counter */ 32),
-	  event: __webpack_require__(/*! ./demo-event */ 33),
-	  controls: __webpack_require__(/*! ./demo-controls */ 25),
-	  "if": __webpack_require__(/*! ./demo-if-component */ 34),
+	  "show hide": __webpack_require__(/*! ./demo-show-hide */ 30),
+	  counter: __webpack_require__(/*! ./demo-counter */ 31),
+	  event: __webpack_require__(/*! ./demo-event */ 32),
+	  controls: __webpack_require__(/*! ./demo-controls */ 24),
+	  "if": __webpack_require__(/*! ./demo-if-component */ 33),
 	  each1: eachDemo1,
 	  each2: eachDemo2,
 	  each3: eachDemo3,
 	  each4: eachDemo4,
-	  'switch 1 2 3 4': __webpack_require__(/*! ./demo-switch-1-2-3-4 */ 35),
-	  sum: __webpack_require__(/*! ./demo-sum */ 36),
-	  'text model': __webpack_require__(/*! ./demo-text-model */ 37),
-	  'mount/unmount': __webpack_require__(/*! ./demo-mount-unmount */ 38)
+	  'switch 1 2 3 4': __webpack_require__(/*! ./demo-switch-1-2-3-4 */ 34),
+	  sum: __webpack_require__(/*! ./demo-sum */ 35),
+	  'text model': __webpack_require__(/*! ./demo-text-model */ 36),
+	  'mount/unmount': __webpack_require__(/*! ./demo-mount-unmount */ 37)
 	};
 
 	exports.makeDemoComponent = makeDemoComponent = function(demoMap, initItem) {
@@ -6123,7 +5700,7 @@
 
 
 /***/ },
-/* 28 */
+/* 27 */
 /*!*******************************!*\
   !*** ./demo/demo-each.coffee ***!
   \*******************************/
@@ -6189,7 +5766,7 @@
 
 
 /***/ },
-/* 29 */
+/* 28 */
 /*!***********************************************!*\
   !*** ./demo/demo-choose-web-framework.coffee ***!
   \***********************************************/
@@ -6268,7 +5845,7 @@
 
 
 /***/ },
-/* 30 */
+/* 29 */
 /*!********************************!*\
   !*** ./demo/demo-debug.coffee ***!
   \********************************/
@@ -6319,7 +5896,7 @@
 
 
 /***/ },
-/* 31 */
+/* 30 */
 /*!************************************!*\
   !*** ./demo/demo-show-hide.coffee ***!
   \************************************/
@@ -6355,7 +5932,7 @@
 
 
 /***/ },
-/* 32 */
+/* 31 */
 /*!**********************************!*\
   !*** ./demo/demo-counter.coffee ***!
   \**********************************/
@@ -6386,7 +5963,7 @@
 
 
 /***/ },
-/* 33 */
+/* 32 */
 /*!********************************!*\
   !*** ./demo/demo-event.coffee ***!
   \********************************/
@@ -6422,7 +5999,7 @@
 
 
 /***/ },
-/* 34 */
+/* 33 */
 /*!***************************************!*\
   !*** ./demo/demo-if-component.coffee ***!
   \***************************************/
@@ -6457,7 +6034,7 @@
 
 
 /***/ },
-/* 35 */
+/* 34 */
 /*!*****************************************!*\
   !*** ./demo/demo-switch-1-2-3-4.coffee ***!
   \*****************************************/
@@ -6527,7 +6104,7 @@
 
 
 /***/ },
-/* 36 */
+/* 35 */
 /*!******************************!*\
   !*** ./demo/demo-sum.coffee ***!
   \******************************/
@@ -6574,7 +6151,7 @@
 
 
 /***/ },
-/* 37 */
+/* 36 */
 /*!*************************************!*\
   !*** ./demo/demo-text-model.coffee ***!
   \*************************************/
@@ -6599,7 +6176,7 @@
 
 
 /***/ },
-/* 38 */
+/* 37 */
 /*!****************************************!*\
   !*** ./demo/demo-mount-unmount.coffee ***!
   \****************************************/

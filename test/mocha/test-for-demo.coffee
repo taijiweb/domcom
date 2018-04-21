@@ -7,11 +7,11 @@ Component, list, func, if_, txt
 a, p, span, text, li, div, button, input
 each, funcEach} = dc
 
-controls = require('domcom/demo/demo-controls')
+controls = require('../../demo/demo-controls')
 
 makeDomComponentTest = require('../makeDomComponentTest')
 
-{demoMap, runDemo} = require('domcom/demo/util')
+{demoMap, runDemo} = require('../../demo/util')
 
 makeDomComponentTest(demoMap, "domcom/demoMap")
 #, 'auto width edit', false

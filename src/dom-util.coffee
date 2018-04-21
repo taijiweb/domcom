@@ -72,7 +72,8 @@ exports.domField = (value, component) ->
   else if !value.invalidate
     renew(value)
 
-  else value
+  else
+    value
 
 exports.domValue = (value, component) ->
   if !value?

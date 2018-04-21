@@ -87,6 +87,16 @@ describe "domcom/properties/classFn", ->
     comp.render()
     expect(comp.node.className).to.equal('a', '3')
 
+  it 'should get functional class property in component', ->
+    active = see true
+    comp = div({class:-> {a:1, b:active}})
+    expect(comp.className.call(comp)).to.equal('a b', 'first')
+
+  it 'should get false class property in component', ->
+    active = see true
+    comp = div({class:-> {a:false}})
+    expect(comp.className.call(comp)).to.equal('', 'first')
+
 describe 'domcom/properties/create', ->
   it 'should create properties', ->
     comp = p({value:bind({a: 1}, 'a')})

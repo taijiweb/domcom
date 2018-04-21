@@ -80,9 +80,9 @@
 
 /***/ },
 /* 1 */
-/*!***************************!*\
-  !*** ../dc-util/index.js ***!
-  \***************************/
+/*!****************************!*\
+  !*** ./~/dc-util/index.js ***!
+  \****************************/
 /***/ function(module, exports) {
 
 	var dupStr, globalDcid, hasOwn, isArray,
@@ -477,14 +477,15 @@
 
 /***/ },
 /* 3 */
-/*!**************************!*\
-  !*** ../extend/index.js ***!
-  \**************************/
+/*!***************************!*\
+  !*** ./~/extend/index.js ***!
+  \***************************/
 /***/ function(module, exports) {
+
+	'use strict';
 
 	var hasOwn = Object.prototype.hasOwnProperty;
 	var toStr = Object.prototype.toString;
-	var undefined;
 
 	var isArray = function isArray(arr) {
 		if (typeof Array.isArray === 'function') {
@@ -495,33 +496,31 @@
 	};
 
 	var isPlainObject = function isPlainObject(obj) {
-		'use strict';
 		if (!obj || toStr.call(obj) !== '[object Object]') {
 			return false;
 		}
 
-		var has_own_constructor = hasOwn.call(obj, 'constructor');
-		var has_is_property_of_method = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+		var hasOwnConstructor = hasOwn.call(obj, 'constructor');
+		var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
 		// Not own constructor property must be Object
-		if (obj.constructor && !has_own_constructor && !has_is_property_of_method) {
+		if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
 			return false;
 		}
 
 		// Own properties are enumerated firstly, so to speed up,
 		// if last one is own, then all properties are own.
 		var key;
-		for (key in obj) {}
+		for (key in obj) { /**/ }
 
-		return key === undefined || hasOwn.call(obj, key);
+		return typeof key === 'undefined' || hasOwn.call(obj, key);
 	};
 
 	module.exports = function extend() {
-		'use strict';
-		var options, name, src, copy, copyIsArray, clone,
-			target = arguments[0],
-			i = 1,
-			length = arguments.length,
-			deep = false;
+		var options, name, src, copy, copyIsArray, clone;
+		var target = arguments[0];
+		var i = 1;
+		var length = arguments.length;
+		var deep = false;
 
 		// Handle a deep copy situation
 		if (typeof target === 'boolean') {
@@ -529,7 +528,8 @@
 			target = arguments[1] || {};
 			// skip the boolean and the target
 			i = 2;
-		} else if ((typeof target !== 'object' && typeof target !== 'function') || target == null) {
+		}
+		if (target == null || (typeof target !== 'object' && typeof target !== 'function')) {
 			target = {};
 		}
 
@@ -543,25 +543,23 @@
 					copy = options[name];
 
 					// Prevent never-ending loop
-					if (target === copy) {
-						continue;
-					}
+					if (target !== copy) {
+						// Recurse if we're merging plain objects or arrays
+						if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+							if (copyIsArray) {
+								copyIsArray = false;
+								clone = src && isArray(src) ? src : [];
+							} else {
+								clone = src && isPlainObject(src) ? src : {};
+							}
 
-					// Recurse if we're merging plain objects or arrays
-					if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
-						if (copyIsArray) {
-							copyIsArray = false;
-							clone = src && isArray(src) ? src : [];
-						} else {
-							clone = src && isPlainObject(src) ? src : {};
+							// Never move original objects, clone them
+							target[name] = extend(deep, clone, copy);
+
+						// Don't bring in undefined values
+						} else if (typeof copy !== 'undefined') {
+							target[name] = copy;
 						}
-
-						// Never move original objects, clone them
-						target[name] = extend(deep, clone, copy);
-
-					// Don't bring in undefined values
-					} else if (copy !== undefined) {
-						target[name] = copy;
 					}
 				}
 			}
@@ -570,7 +568,6 @@
 		// Return the modified object
 		return target;
 	};
-
 
 
 /***/ },
@@ -833,9 +830,9 @@
 
 /***/ },
 /* 6 */
-/*!*****************************!*\
-  !*** ../lazy-flow/index.js ***!
-  \*****************************/
+/*!******************************!*\
+  !*** ./~/lazy-flow/index.js ***!
+  \******************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var flow, funcString, lazy, newLine, react, renew, see, _ref,
@@ -1380,9 +1377,9 @@
 
 /***/ },
 /* 9 */
-/*!*********************************!*\
-  !*** ../lazy-flow/addon.coffee ***!
-  \*********************************/
+/*!******************************!*\
+  !*** ./~/lazy-flow/addon.js ***!
+  \******************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var binary, bind, duplex, flow, react, see, unary, _ref;
@@ -1646,9 +1643,9 @@
 
 /***/ },
 /* 10 */
-/*!*********************************!*\
-  !*** ../dc-watch-list/index.js ***!
-  \*********************************/
+/*!**********************************!*\
+  !*** ./~/dc-watch-list/index.js ***!
+  \**********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var ListWatchMixin, ObjectWatchMixin, extend, flow, isArray, isEachObjectSystemKey, react, slice, watchList, watchObject,
@@ -3839,22 +3836,20 @@
 	  };
 	  processClassValue = function(name, value) {
 	    var oldValue;
-	    value = domField(value);
 	    oldValue = classMap[name];
 	    if (typeof oldValue === 'function') {
 	      oldValue.offInvalidate(method.invalidate);
 	    }
-	    if (!value && oldValue) {
+	    if (oldValue !== value) {
 	      method.invalidate();
-	      return delete classMap[name];
-	    } else {
-	      if (oldValue !== value) {
-	        method.invalidate();
-	        if (typeof value === 'function') {
-	          value.onInvalidate(method.invalidate);
-	        }
-	        return classMap[name] = value;
+	      if (typeof value === 'function' && value.onInvalidate) {
+	        value.onInvalidate(method.invalidate);
 	      }
+	    }
+	    if (value) {
+	      return classMap[name] = value;
+	    } else {
+	      return delete classMap[name];
 	    }
 	  };
 	  extendClassMap = function(items) {
@@ -3886,17 +3881,11 @@
 	        _ref = item.classMap;
 	        for (name in _ref) {
 	          value = _ref[name];
-	          if (typeof value !== 'function') {
-	            value = true;
-	          }
 	          processClassValue(name, value);
 	        }
 	      } else if (typeof item === 'object') {
 	        for (name in item) {
 	          value = item[name];
-	          if (typeof value !== 'function') {
-	            value = true;
-	          }
 	          processClassValue(name, value);
 	        }
 	      }
@@ -4947,19 +4936,25 @@
 	  };
 
 	  function Tag(tagName, attrs, children) {
-	    if (attrs == null) {
-	      attrs = {};
-	    }
 	    if (!(this instanceof Tag)) {
 	      throw 'should use new SubclassComponent(...) with the subclass of Tag';
 	    }
 	    Tag.__super__.constructor.call(this);
 	    this.isTag = true;
-	    tagName = tagName || attrs.tagName || 'div';
-	    delete attrs.tagName;
+	    if (tagName && typeof tagName === 'object') {
+	      if (!children) {
+	        children = attrs;
+	      }
+	      attrs = tagName;
+	      tagName = attrs && attrs.tagName;
+	      delete attrs.tagName;
+	    }
+	    tagName = tagName || 'div';
 	    this.tagName = tagName.toLowerCase();
 	    this.namespace = attrs.namespace;
 	    this.poolLabel = this.generatePoolLabel();
+	    children = children || attrs.children;
+	    delete attrs.children;
 	    this.children = toComponentArray(children);
 	    this.initListMixin();
 	    this.initProperties();
@@ -5013,6 +5008,9 @@
 	        }
 	      } else if (key === 'class' || key === 'className') {
 	        this.hasActiveProperties = true;
+	        if (typeof value === 'function') {
+	          value = value();
+	        }
 	        className.extend(value);
 	      } else if (key.slice(0, 2) === 'on') {
 	        if (!value) {
@@ -5139,7 +5137,9 @@
 
 	  Tag.prototype.setProp = function(prop, value, props, type) {
 	    var bound, fn, me, oldValue;
-	    prop = attrToPropName(prop);
+	    if (type !== 'NodeAttrs') {
+	      prop = attrToPropName(prop);
+	    }
 	    value = domField(value, this);
 	    oldValue = props[prop];
 	    if (value === oldValue) {
@@ -5619,9 +5619,9 @@
 
 /***/ },
 /* 31 */
-/*!**************************************!*\
-  !*** ../dc-util/element-pool.coffee ***!
-  \**************************************/
+/*!***************************************!*\
+  !*** ./~/dc-util/element-pool.coffee ***!
+  \***************************************/
 /***/ function(module, exports) {
 
 	var elementPool, nodeCount, nodeCountMax, poolLabelLimit;
@@ -6691,7 +6691,7 @@
 
 	getBindProp = __webpack_require__(/*! ../dom-util */ 5).getBindProp;
 
-	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section" + " svg iframe";
+	tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl" + " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object" + " ol optgroup option p param pre q samp script select small span strong style sub sup" + " table tbody td textarea tfoot th thead title tr tt ul var header footer section svg iframe" + " article aside bdi details dialog figcaption figure footer header main mark menuitem meter nav progress rp rt ruby summary time wbr";
 
 	tagNames = tagNames.split(' ');
 

@@ -19,7 +19,7 @@ describe 'route', ->
       expect(params.$).to.equal true, ':$'
       route._processPiecePatterns(':_', params)
       expect(params._).to.equal true, ':_'
-    it 'should match cureved re', ->
+    it 'should match curved re', ->
       params = {}
       pat = route._processPiecePatterns('(fd+=.)', params, 2)
       expect(pat[0][0].key).to.equal 2, '(fd+=.)'

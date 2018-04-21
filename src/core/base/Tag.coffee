@@ -18,7 +18,7 @@ module.exports = class Tag extends BaseComponent
   # used for Tag.clone(...)
   FakeTag: -> Tag
 
-  constructor: (tagName, attrs={}, children) ->
+  constructor: (tagName, attrs, children) ->
 
     if !(this instanceof Tag)
       throw 'should use new SubclassComponent(...) with the subclass of Tag'
@@ -26,12 +26,18 @@ module.exports = class Tag extends BaseComponent
     super()
 
     this.isTag = true
-
-    tagName = tagName || attrs.tagName || 'div'
-    delete attrs.tagName
+    if tagName && typeof tagName == 'object'
+      if !children
+        children = attrs
+      attrs = tagName
+      tagName = attrs && attrs.tagName
+      delete attrs.tagName
+    tagName = tagName || 'div'
     this.tagName = tagName.toLowerCase()
     this.namespace = attrs.namespace
     this.poolLabel = this.generatePoolLabel()
+    children = children || attrs.children
+    delete attrs.children
 
     # initChildren must put before extendAttrs
     this.children = toComponentArray(children)
@@ -90,6 +96,8 @@ module.exports = class Tag extends BaseComponent
 
       else if key=='class' || key=='className'
         this.hasActiveProperties = true
+        if typeof value == 'function'
+          value = value()
         className.extend(value)
 
       # dom event
@@ -186,7 +194,7 @@ module.exports = class Tag extends BaseComponent
     this
 
   setProp: (prop, value, props, type) ->
-    prop = attrToPropName(prop)
+    if type!='NodeAttrs' then prop = attrToPropName(prop)
     value = domField(value, this)
     oldValue = props[prop]
 

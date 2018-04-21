@@ -20,19 +20,17 @@ module.exports = exports = classFn = (items...) ->
       return
 
   processClassValue = (name, value) ->
-    value = domField(value)
     oldValue=classMap[name]
     if typeof oldValue == 'function'
       oldValue.offInvalidate method.invalidate
-    if !value && oldValue
+    if oldValue!=value # value is a function or true
       method.invalidate()
-      delete classMap[name]
+      if typeof value == 'function' && value.onInvalidate
+        value.onInvalidate method.invalidate
+    if value
+      classMap[name] = value
     else
-      if oldValue!=value # value is a function or true
-        method.invalidate()
-        if typeof value == 'function'
-          value.onInvalidate method.invalidate
-        classMap[name] = value
+      delete classMap[name]
 
   extendClassMap = (items) ->
     if !items then return
@@ -49,11 +47,9 @@ module.exports = exports = classFn = (items...) ->
       else if item && item.classMap
         # another classFn
         for name, value of item.classMap
-          if typeof value != 'function' then value = true
           processClassValue(name, value)
       else if typeof item =='object'
         for name, value of item
-          if typeof value != 'function' then value = true
           processClassValue(name, value)
 
     return
