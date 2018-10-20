@@ -1,4 +1,5 @@
-{flow, see, case_, each, every, func, list, div, label, text} = dc
+`let dc = global.dc`
+{flow, see, case_, each, every, func, list, div, label, text} = global.dc
 
 module.exports = ->
   firstLetter$ = see 'd',  (x) -> x.toLowerCase()
