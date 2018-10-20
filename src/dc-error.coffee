@@ -33,6 +33,7 @@ stacktraceMessage = (message, stackIndex = 1) ->
 
 exports.DomcomError = class DomcomError extends Error
   constructor: (@message, @component) ->
+    super()
 
   toString: ->
     if this.component

@@ -1,3 +1,4 @@
+gulp = require 'gulp'
 {task, from, dest, CombineStream, logTime} = require("gulp-task-helper")
 
 rename = require("gulp-rename")
@@ -8,7 +9,7 @@ renameFn = (path) -> path.extname = ".ts"
 renameJs = (fromFiles, toFolder) ->
   return from(fromFiles).pipelog(rename(renameFn)).pipe(dest(toFolder))
 
-task 'rename', (cb) ->
+gulp.task 'rename', (cb) ->
   streamList = [];
   streamList.push(renameJs('./src/**/*.js', './src'))
   streamList.push(renameJs('./test/**/*.js', './test'))

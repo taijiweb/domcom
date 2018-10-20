@@ -3,7 +3,7 @@ BaseComponent = require('./BaseComponent')
 
 module.exports = class Nothing extends BaseComponent
   constructor: ->
-    super
+    super()
 
     this.firstNode = null
     this.family = {}

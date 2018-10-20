@@ -1,4 +1,5 @@
-{task, logTime} = require("gulp-task-helper")
+gulp = require 'gulp'
+{logTime} = require("gulp-task-helper")
 
 webpack = require('webpack')
 
@@ -31,10 +32,10 @@ webpackDistribute = (mode) ->
     plugins.push new webpack.optimize.UglifyJsPlugin({minimize: true})
     runWebPack(domcomEntry, '[name].min.js', {path:'../dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
 
-task 'webpack-dist', () -> webpackDistribute('dist')
-task 'webpack-dev', () -> webpackDistribute('dev')
+gulp.task 'webpack-dist', () -> webpackDistribute('dist')
+gulp.task 'webpack-dev', () -> webpackDistribute('dev')
 
-task 'webpack-server', ->
+gulp.task 'webpack-server', ->
   webServerPlugins = [
     new webpack.HotModuleReplacementPlugin()
     new webpack.NoErrorsPlugin()

@@ -19,11 +19,9 @@ module.exports = class Tag extends BaseComponent
   FakeTag: -> Tag
 
   constructor: (tagName, attrs, children) ->
-
+    super()
     if !(this instanceof Tag)
       throw 'should use new SubclassComponent(...) with the subclass of Tag'
-
-    super()
 
     this.isTag = true
     if tagName && typeof tagName == 'object'

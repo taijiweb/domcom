@@ -17,11 +17,11 @@ describe 'toString', ->
     comp = div({value:1}, 1)
     expect(comp.toString()).to.equal '<div value=1>1</div>'
 
-  it 'should case.toString', ->
+  nit 'should case.toString', ->
     comp = case_((-> x), {1:p(1), 2:p(2), 3:p(3)}, 'others')
     expect(comp.toString()).to.equal '<Case renew: fn:x>\n  1: <p>1</p>\n  2: <p>2</p>\n  3: <p>3</p>\n  "others"\n</Case>'
 
-  it 'should flow.add(a_, b_).toString', ->
+  nit 'should flow.add(a_, b_).toString', ->
     {a_, b_} = bindings({a: 1, b: 2})
     r = flow.add a_, b_
     expect(r.toString()).to.equal 'flow: [m[a],m[b]] --> fn:binaryFn(x(), y())'

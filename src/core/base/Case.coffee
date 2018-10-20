@@ -11,6 +11,7 @@ module.exports = class Case extends TestComponent
         return toComponent(map[key])
       else
         return toComponent(else_)
+    super(test)
 
     foreach map, (value, index) ->
       map[index] = toComponent(value)
@@ -22,7 +23,6 @@ module.exports = class Case extends TestComponent
     this.family = family = intersect(families)
     family[this.dcid] = true
 
-    super(test)
 
   getContentComponent: ->
     this.map[this.getTestValue()] || this.else_

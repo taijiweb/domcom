@@ -1,7 +1,7 @@
+gulp = require 'gulp'
+
 runSequence = require('run-sequence')
 
-{task} = require("gulp-task-helper")
+gulp.task 'dev', (callback) -> runSequence 'clean', 'webpack-dev', callback
 
-task 'dev', (callback) -> runSequence 'clean', 'webpack-dev', callback
-
-task 'dist', (callback) -> runSequence 'clean', 'webpack-dist', 'coffee', callback
+gulp.task 'dist', (callback) -> runSequence 'clean', 'webpack-dist', 'coffee', callback

@@ -7,7 +7,7 @@ ObjectDefineProperty = Object.defineProperty
 module.exports = class TestComponent extends TransformComponent
 
   constructor: (test) ->
-    super
+    super()
     this.__cacheTest = null
     me = this
     this.invalidateHandler = -> me.invalidateTransform()

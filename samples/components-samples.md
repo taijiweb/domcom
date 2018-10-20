@@ -13,3 +13,6 @@
      model = {classes, styles}
      dc(div(model), model)
      dc(div(at(model), at(model))
+     dc.use('jquery') or by, backend
+     dc.use('react')
+     dc.use('vue')

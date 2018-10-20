@@ -1,3 +1,4 @@
+gulp = require 'gulp'
 {task, from, dest, CombineStream, logTime} = require("gulp-task-helper")
 
 coffee = require ('gulp-coffee')
@@ -5,7 +6,7 @@ coffee = require ('gulp-coffee')
 compileCoffee  = (fromFiles, toFolder) ->
   from(fromFiles, {cache:'coffee'}).pipelog(coffee({bare: true})).pipe(dest(toFolder))
 
-task 'coffee', (cb) ->
+gulp.task 'coffee', (cb) ->
   streamList = []
 
   streamList.push compileCoffee('./src/**/*.coffee', './lib')

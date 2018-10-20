@@ -1,6 +1,5 @@
-{task} = require('gulp-task-helper')
-
+gulp = require 'gulp'
 for tsk in 'clean coffee rename typescript remove webpack build-tasks'.split(/\s+/)
   require('./scripts/gulp-tasks/' + tsk)
 
-task 'default', ['webpack-server']
+gulp.task 'default', ['webpack-server']

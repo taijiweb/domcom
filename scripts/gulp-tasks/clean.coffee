@@ -1,5 +1,4 @@
-{task} = require("gulp-task-helper")
-
+gulp = require 'gulp'
 del = require('del')
 
 # !!! be careful !!!
@@ -7,4 +6,4 @@ del = require('del')
 
 # keep the code as simple as possible !!!
 
-task 'clean', (cb) -> del(['dist', 'lib'], cb)
+gulp.task 'clean', (cb) -> del(['dist', 'lib'], cb)

@@ -4,6 +4,11 @@ extend = require('extend')
 
 extend = require('extend')
 
+isComponent = require('./base/isComponent')
+Tag = require './base/Tag'
+{getBindProp} = require '../dom-util'
+
+
 exports.isAttrs = isAttrs = (item) ->
   typeof item == 'object' && item!=null && !isComponent(item) && !(item instanceof Array)
 

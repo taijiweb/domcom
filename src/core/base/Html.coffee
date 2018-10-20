@@ -16,6 +16,7 @@ Tag = require('./Tag')
 module.exports = class Html extends Tag
 
   constructor: (attrs, text, transform) ->
+
     if typeof attrs == 'string' || typeof attrs == 'function'
       transform = text
       text = attrs
@@ -28,9 +29,9 @@ module.exports = class Html extends Tag
       delete attrs.tagName
     else tagName = 'div'
 
+    super(tagName, attrs, [])
     this.initHtmlComponent(text, transform)
 
-    super(tagName, attrs, [])
 
   toString: (indent=2, addNewLine) ->
     newLine("<Html #{funcString(this._text)}/>", indent, addNewLine)

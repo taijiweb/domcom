@@ -11,7 +11,7 @@ REJECT = 2
 module.exports = class Defer extends TransformComponent
   constructor: (@promise, fulfill, reject, init) ->
 
-    super
+    super()
 
     this.fulfill = fulfill || (result) -> result
     treject = reject || (error) -> error

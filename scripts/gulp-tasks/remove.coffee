@@ -1,8 +1,9 @@
+gulp = require 'gulp'
 task = require("gulp-task-helper").task
 
 rimraf = require('rimraf')
 
-task 'remove', (cb) ->
+gulp.task 'remove', (cb) ->
   rimraf('./src/**/*.js', ->)
   rimraf('./src/**/*.ts', ->)
   rimraf('./test/**/*.js', ->)

@@ -8,6 +8,7 @@ build
 
 public
 
+.idea
 .tmp
 temp
 temp.*
@@ -16,6 +17,7 @@ temp.*
 .sass-cache
 db
 
+.idea/**/*.xml
 webpack.config.js
 *-.js
 *-.coffee

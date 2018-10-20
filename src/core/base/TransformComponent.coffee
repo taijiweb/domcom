@@ -5,7 +5,7 @@ module.exports = class TransformComponent extends Component
   isTransformComponent: true
 
   constructor: ->
-    super
+    super()
     this.transformValid = false
 
   invalidate: ->
