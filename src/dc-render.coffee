@@ -1,6 +1,6 @@
 {isArray} = require('dc-util')
 
-isComponent = require('./core/base/isComponent')
+isComponent = require('./core/components/isComponent')
 
 if typeof window != 'undefined'
   if !window.requestAnimationFrame
@@ -133,4 +133,3 @@ dc.clean = ->
     component.removeDom()
   dc.removingChildren = {}
   return
-

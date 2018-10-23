@@ -1,9 +1,12 @@
 extend = require('extend')
 
 module.exports = exports  = extend({},
-  require('./base'),
+  require('./components'),
   require('./property')
   require('./instantiate')
   require('./tag')
-  require('./each')
+  require('./each'),
+  {
+    model: require('./model')
+  }
 )

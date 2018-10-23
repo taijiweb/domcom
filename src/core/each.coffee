@@ -1,4 +1,4 @@
-{List, Tag, toComponent} = require('./base')
+{List, Tag, toComponent} = require('./components')
 
 {isArray, isObject} = require('dc-util')
 

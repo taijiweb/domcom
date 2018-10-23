@@ -1,8 +1,8 @@
 extend = require('extend')
 
-Tag = require('./base/Tag')
-List = require('./base/List')
-Nothing = require('./base/Nothing')
+Tag = require('./components/Tag')
+List = require('./components/List')
+Nothing = require('./components/Nothing')
 
 {domEventHandlerFromArray} = require('./property/events')
 
@@ -16,7 +16,7 @@ flowIf = flow.if_
 # and check test is a function
 exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
 
-  If = require('./base/If')
+  If = require('./components/If')
 
   if then_==else_
     return then_
@@ -66,7 +66,7 @@ exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
 mergeIfChild = (test, then_, else_, recursive) ->
   if !recursive && (then_.isList || else_.isList)
     # whether another is List or not, then_ and else_ should or could not be merged
-    If = require('./base/If')
+    If = require('./components/If')
     new If(test, then_, else_, false, false, true) # merge, recursive, forceIf
   else
     mergeIf(test, then_, else_, recursive)

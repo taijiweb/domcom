@@ -4,8 +4,8 @@ extend = require('extend')
 
 extend = require('extend')
 
-isComponent = require('./base/isComponent')
-Tag = require './base/Tag'
+isComponent = require('./components/isComponent')
+Tag = require './components/Tag'
 {getBindProp} = require '../dom-util'
 
 

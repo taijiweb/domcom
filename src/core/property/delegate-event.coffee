@@ -1,4 +1,4 @@
-Tag = require('../base/Tag')
+Tag = require('../components/Tag')
 
 # delegate to component.prefix_XXX method
 delegateToMethodHandler = (prefix = 'do_') ->
