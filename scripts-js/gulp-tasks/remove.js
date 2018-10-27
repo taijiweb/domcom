@@ -15,5 +15,6 @@ gulp.task('remove', function(cb) {
   rimraf('./demo/**/*.ts', function() {});
   rimraf('./scripts-coffee/**/*.js', function() {});
   rimraf('./scripts-coffee/**/*.ts', function() {});
-  return rimraf('./scripts-js', function() {});
+  rimraf('./scripts-js/**/*.js', function() {});
+  return cb();
 });

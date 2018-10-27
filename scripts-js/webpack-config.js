@@ -8,8 +8,9 @@ webpack = require("webpack");
 
 exports.makeConfig = makeConfig = function(entry, filename, options = {}, makingServer) {
   var config, plugins;
-  plugins = options.plugins || [new webpack.NoErrorsPlugin()];
+  plugins = options.plugins || [new webpack.NoEmitOnErrorsPlugin()];
   config = {
+    mode: options.mode || 'development',
     entry: entry,
     output: {
       path: path.join(__dirname, options.path || '../public'),
@@ -55,11 +56,13 @@ WebpackDevServer = require("webpack-dev-server");
 
 exports.makeWebpackDevServer = function(entry, filename, options = {}) {
   var compilerConfig, serverConfig, webpackCompiler, webpackDevServer;
-  options.plugins = options.plugins || [new webpack.HotModuleReplacementPlugin(), new webpack.NoErrorsPlugin()];
+  options.plugins = options.plugins || [new webpack.HotModuleReplacementPlugin(), new webpack.NoEmitOnErrorsPlugin()];
   compilerConfig = makeConfig(entry, filename, options);
   webpackCompiler = webpack(compilerConfig);
   serverConfig = {
-    contentBase: "http://localhost/",
+    proxy: {
+      '*': "http://localhost/"
+    },
     publicPath: options.publicPath || "/assets/",
     hot: true,
     quiet: false,

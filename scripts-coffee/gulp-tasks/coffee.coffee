@@ -11,7 +11,7 @@ gulp.task 'coffee', (cb) ->
 
   streamList.push compileCoffee('./src/**/*.coffee', './lib')
   # below is just for who prefer to reading javascript
-  streamList.push compileCoffee('.//scripts-coffee/**/*.coffee', './scripts-js')
+  streamList.push compileCoffee('./scripts-coffee/**/*.coffee', './scripts-js')
   streamList.push compileCoffee('./test/coffee/**/*.coffee', './test/js')
   streamList.push compileCoffee('./demo/coffee/**/*.coffee', './demo/js')
 
@@ -19,3 +19,10 @@ gulp.task 'coffee', (cb) ->
   #combineStream.end -> logTime('finish coffee')
 
   combineStream
+
+gulp.watch(['./src/**/*.coffee',
+'./scripts-coffee/**/*.coffee', 
+'./test/coffee/**/*.coffee', 
+'./demo/coffee/**/*.coffee'],
+ ['coffee'])
+

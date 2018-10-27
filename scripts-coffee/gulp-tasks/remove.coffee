@@ -12,4 +12,5 @@ gulp.task 'remove', (cb) ->
   rimraf('./demo/**/*.ts', ->)
   rimraf('./scripts-coffee/**/*.js', ->)
   rimraf('./scripts-coffee/**/*.ts', ->)
-  rimraf './scripts-js', ->
+  rimraf('./scripts-js/**/*.js', ->)
+  cb()

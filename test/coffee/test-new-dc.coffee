@@ -9,7 +9,11 @@ p, div, Html, html
 classFn, styleFrom,
 Nothing
 isComponent
+getters
 } = dc
+# {at} = getters
+
+import React from '../../lib/backend/React'
 
 {a_} = bindings({a: 1, b: 2})
 
@@ -23,5 +27,10 @@ describe "test-base-component", ->
       expect(isComponent(comp)).to.be.true
 
     it 'dc() chaining call', ->
-      comp = dc.div(at('x y')).data({x, y})
+      v = at('x y')
+      d = {x, y}
+      comp = dc.div(v).with(d)
 
+    it 'dc.react should be an backend', ->
+      dr = dc.react() #
+      expect(dr).to.be.instanceof(React)

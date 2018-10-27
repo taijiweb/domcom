@@ -36,12 +36,13 @@ runWebPack = function(entry, filename, options) {
 webpackDistribute = function(mode) {
   var plugins;
   plugins = [
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.LoaderOptionsPlugin({
       options: {}
     })
   ];
   runWebPack(domcomEntry, '[name].js', {
+    mode,
     path: '../dist',
     pathinfo: true,
     libraryTarget: 'umd',
@@ -49,16 +50,19 @@ webpackDistribute = function(mode) {
     plugins
   });
   runWebPack('./test/js/index', 'test.js', {
+    mode,
     path: '../dist',
     pathinfo: true,
     plugins
   });
   runWebPack('./demo/js/index', 'demo.js', {
+    mode,
     path: '../dist',
     pathinfo: true,
     plugins
   });
   runWebPack('./demo/js/todomvc', 'todomvc.js', {
+    mode,
     path: '../dist',
     pathinfo: true,
     plugins
@@ -68,6 +72,7 @@ webpackDistribute = function(mode) {
       minimize: true
     }));
     return runWebPack(domcomEntry, '[name].min.js', {
+      mode,
       path: '../dist',
       pathinfo: false,
       libraryTarget: 'umd',
@@ -78,7 +83,7 @@ webpackDistribute = function(mode) {
 };
 
 gulp.task('webpack-dist', function() {
-  return webpackDistribute('dist');
+  return webpackDistribute('production');
 });
 
 gulp.task('webpack-dev', function() {
@@ -87,7 +92,7 @@ gulp.task('webpack-dev', function() {
 
 gulp.task('webpack-server', function() {
   var webServerPlugins;
-  webServerPlugins = [new webpack.HotModuleReplacementPlugin(), new webpack.NoErrorsPlugin()];
+  webServerPlugins = [new webpack.HotModuleReplacementPlugin(), new webpack.NoEmitOnErrorsPlugin()];
   makeWebpackDevServer(["webpack/hot/dev-server", './lib/domcom'], 'domcom.js', {
     port: 8083,
     inline: true,
