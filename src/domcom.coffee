@@ -20,7 +20,7 @@ extend(dc,
   require('./dc-render'),
 
   # components
-  require('./components'),
+  require('./component'),
   require('./backend'),
 
   require('./dc-error')

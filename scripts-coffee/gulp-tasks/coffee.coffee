@@ -20,9 +20,5 @@ gulp.task 'coffee', (cb) ->
 
   combineStream
 
-gulp.watch(['./src/**/*.coffee',
-'./scripts-coffee/**/*.coffee', 
-'./test/coffee/**/*.coffee', 
-'./demo/coffee/**/*.coffee'],
- ['coffee'])
+
 

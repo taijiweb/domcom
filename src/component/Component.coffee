@@ -1,4 +1,5 @@
 extend = require('extend')
+import Emitter from '../Emtter'
 
 {normalizeDomElement} = require('../dom-util')
 {newDcid, isArray} = require('dc-util')
@@ -11,7 +12,7 @@ dc = require('../dc')
   所有部件的基类
 
 ###
-module.exports = class Component
+module.exports = class Component extends Emitter
   constructor: (template, model) ->
     this.view = null
     this.model = null

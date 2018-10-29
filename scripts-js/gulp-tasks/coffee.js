@@ -26,5 +26,3 @@ gulp.task('coffee', function(cb) {
   //combineStream.end -> logTime('finish coffee')
   return combineStream;
 });
-
-gulp.watch(['./src/**/*.coffee', './scripts-coffee/**/*.coffee', './test/coffee/**/*.coffee', './demo/coffee/**/*.coffee'], ['coffee']);

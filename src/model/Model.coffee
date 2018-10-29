@@ -1,3 +1,4 @@
+import Emitter from '../Emitter'
 ###
 部件数据模型
   模型依据部件产生数据获取器
@@ -5,13 +6,20 @@
   模型可组合，但是不可直接计算，因而不可以有运算符方法
   如果有运算符方法是产生模型表达式结构而非获取器。
 ###
-export default class model
-  constructor: (@component, @source, @getter) ->
+export default class model extends Emitter
+  constructor: (component, data, getter) ->
+    this.setComponent(component)
+    this.data = data
+    this.getter = getter
 
   get: ->
     return this.getter(this.source)
 
   compile: ->
+
+  ###
+    以下是一组组合运算符，用运算符组合出新的Model
+  ###
 
   add: ->
 

@@ -1,7 +1,7 @@
 import Angular from './Angular'
 import Html from './Html'
-import Html from './React'
-import Html from './Vue'
+import React from './React'
+import Vue from './Vue'
 
 export default {
   ng: -> new Angular()
