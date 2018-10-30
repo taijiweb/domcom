@@ -31,7 +31,7 @@ describe "test-base-component", ->
       d = {x, y}
       comp = dc.div(v).with(d)
 
-    iit 'dc.react should be an backend', ->
+    it 'dc.react should be an backend', ->
       debugger
       dr = dc.react() #
       expect(dr).to.be.instanceof(React)

@@ -1,6 +1,6 @@
 {isArray} = require('dc-util')
 
-isComponent = require('./components/isComponent')
+isComponent = require('./component/isComponent')
 
 if typeof window != 'undefined'
   if !window.requestAnimationFrame

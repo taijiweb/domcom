@@ -3,7 +3,7 @@
 
 ###
 export default class Backend
-  constructor()
+  constructor: ->
     if this instanceof Backend
       dc.error(new Error('Backend is an abstract Base Class;\n should not create the instance of Backend directly,\n use its Derived classes instead'))
     # 子类构造器应该增加tags属性用于创建标签部件
@@ -35,4 +35,3 @@ export default class Backend
   #创建部件DOM
   #大概不会作为公开API，计划被部件调用
   create:(component) ->
-    

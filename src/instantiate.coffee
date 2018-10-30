@@ -2,7 +2,7 @@
 Tag, Text, Comment, Html
 If, Case, Func, List,
 Pick
-Nothing, Defer} = require('./components')
+Nothing, Defer} = require('./component')
 
 {isEven} = require('dc-util')
 

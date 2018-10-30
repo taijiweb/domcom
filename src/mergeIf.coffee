@@ -1,8 +1,8 @@
 extend = require('extend')
 
-Tag = require('./components/Tag')
-List = require('./components/List')
-Nothing = require('./components/Nothing')
+Tag = require('./component/Tag')
+List = require('./component/List')
+Nothing = require('./component/Nothing')
 
 {domEventHandlerFromArray} = require('./property/events')
 
@@ -16,7 +16,7 @@ flowIf = flow.if_
 # and check test is a function
 exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
 
-  If = require('./components/If')
+  If = require('./component/If')
 
   if then_==else_
     return then_
@@ -66,7 +66,7 @@ exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
 mergeIfChild = (test, then_, else_, recursive) ->
   if !recursive && (then_.isList || else_.isList)
     # whether another is List or not, then_ and else_ should or could not be merged
-    If = require('./components/If')
+    If = require('./component/If')
     new If(test, then_, else_, false, false, true) # merge, recursive, forceIf
   else
     mergeIf(test, then_, else_, recursive)
@@ -122,7 +122,7 @@ mergeIfEvents = (test, thenEventCallbackMap, elseEventCallbackMap) ->
 
     if thenCallbackList = thenEventCallbackMap[eventName]
       thenHandler = domEventHandlerFromArray(thenCallbackList[...])
-    else 
+    else
       thenHandler = emptyEventCallback
 
     if elseCallbackList = elseEventCallbackMap[eventName]

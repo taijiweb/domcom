@@ -1,7 +1,7 @@
 extend = require('extend')
 
 module.exports = exports  = extend({},
-  require('./components'),
+  require('./component'),
   require('./property')
   require('./instantiate')
   require('./tag')
