@@ -1,5 +1,9 @@
 import Emitter from '../Emitter'
 export default class View extends Emitter
-  constructor: (component) ->
+  constructor: (component, info={}) ->
     super()
-    this.component = component
+    this.info = info
+    this.setComponent(component)
+
+  setComponent: (component) ->
+    for key, value of this.info

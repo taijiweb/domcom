@@ -3,13 +3,13 @@
 
 ###
 export default class Backend
-  constructor()
+  constructor: () ->
     if this instanceof Backend
       dc.error(new Error('Backend is an abstract Base Class;\n should not create the instance of Backend directly,\n use its Derived classes instead'))
     # 子类构造器应该增加tags属性用于创建标签部件
     #如backend.div(...)
 
-  #创建基于部件类的后端部
+  #创建基于部件类的部件，该部件将使用此后端管理Dom相关行为
   #假如dcreact是用于React的Backend子类实例
   #如 dcreact.by(SomeReactComponentClass)
   #创建一个使用SomeReactComponentClass的dc部件

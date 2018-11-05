@@ -15,7 +15,7 @@ exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
       pathinfo: if options.pathinfo? then options.pathinfo else true
       publicPath: options.publicPath || "/assets/",
 
-    resolve: {extensions: ['.js']}
+    resolve: {extensions: ['.js', '.coffee']}
 
     externals: { chai: "chai"}
 
@@ -29,6 +29,18 @@ exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
           test: /\.js$/,
           loader: 'babel-loader',
           options: {presets: ['env']}
+        },
+        {
+          test: /\.coffee$/,
+          use: [{
+            loader:'coffee-loader',
+            options:{ 
+              sourceMap: false, 
+              transpile: {
+                    presets: ['@babel/env']
+                  }
+              } 
+          }]
         }
       ]
 

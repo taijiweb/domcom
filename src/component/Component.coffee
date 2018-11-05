@@ -1,5 +1,5 @@
 extend = require('extend')
-import Emitter from '../Emtter'
+import Emitter from '../Emitter'
 
 {normalizeDomElement} = require('../dom-util')
 {newDcid, isArray} = require('dc-util')
@@ -14,6 +14,7 @@ dc = require('../dc')
 ###
 module.exports = class Component extends Emitter
   constructor: (template, model) ->
+    super()
     this.view = null
     this.model = null
     this.backend = null

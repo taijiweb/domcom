@@ -2,8 +2,8 @@ extend = require('extend')
 
 DomNode = require('./DomNode')
 {addEventListener} = require('./dom-util')
-isComponent = require('./components/isComponent')
-Component = require('./components/Component')
+isComponent = require('./component/isComponent')
+Component = require('./component/Component')
 
 ###
 # a utility to do almost everything

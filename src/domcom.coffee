@@ -27,7 +27,7 @@ extend(dc,
 )
 
 dc.property = require('./property')
-dc.builtinDirectives = require('./directives/index')
+dc.builtinDirectives = require('./directive/index')
 extend(dc,
   dc.property
   dc.builtinDirectives
