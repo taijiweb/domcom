@@ -8,6 +8,7 @@ import Emitter from '../Emitter'
 ###
 export default class model extends Emitter
   constructor: (component, data, getter) ->
+    super()
     this.setComponent(component)
     this.data = data
     this.getter = getter

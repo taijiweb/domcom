@@ -122,7 +122,7 @@ mergeIfEvents = (test, thenEventCallbackMap, elseEventCallbackMap) ->
 
     if thenCallbackList = thenEventCallbackMap[eventName]
       thenHandler = domEventHandlerFromArray(thenCallbackList[...])
-    else 
+    else
       thenHandler = emptyEventCallback
 
     if elseCallbackList = elseEventCallbackMap[eventName]

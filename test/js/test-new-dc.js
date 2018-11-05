@@ -29,7 +29,7 @@ describe("test-base-component", function() {
       d = {x, y};
       return comp = dc.div(v).with(d);
     });
-    return iit('dc.react should be an backend', function() {
+    return it('dc.react should be an backend', function() {
       debugger;
       var dr;
       dr = dc.react(); 
