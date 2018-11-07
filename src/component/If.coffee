@@ -6,7 +6,7 @@ mergeIf = require('../mergeIf')
 
 ObjectDefineProperty = Object.defineProperty
 
-module.exports = class If extends TestComponent
+export default class If extends TestComponent
   constructor: (test, then_, else_, merge, recursive, forceIf=false) ->
     if then_ == else_
       return toComponent then_
@@ -28,13 +28,10 @@ module.exports = class If extends TestComponent
     this.then_ = then_
     this.else_ = else_
 
-    this.family = family = intersect([then_.family, else_.family])
-    family[this.dcid] = true
-
     return this
 
   getContentComponent: ->
-    if this.getTestValue()
+    if this.test
       this.then_
     else
       this.else_

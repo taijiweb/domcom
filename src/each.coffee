@@ -1,4 +1,4 @@
-{List, Tag, toComponent} = require('./component')
+{List, Tag, toBlock} = require('./component')
 
 {isArray, isObject} = require('dc-util')
 
@@ -36,9 +36,9 @@ _each = (attrs, items, options) ->
 
   if isArray(items)
     listComponent.getItemComponent = getItemComponent = (item, itemIndex) ->
-      itemComponent = toComponent(listComponent.itemFunc(item, itemIndex, items, listComponent))
+      itemComponent = toBlock(listComponent.itemFunc(item, itemIndex, items, listComponent))
       if listComponent.separatorFunc && itemIndex
-        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, item, items, listComponent))
+        separatorComponent = toBlock(listComponent.separatorFunc(itemIndex, item, items, listComponent))
         itemComponent = new List([separatorComponent, itemComponent])
       itemComponent.itemIndex = itemIndex
       itemComponent
@@ -47,9 +47,9 @@ _each = (attrs, items, options) ->
     listComponent.getItemComponent = getItemComponent = (key, itemIndex) ->
       value = items[key]
       keyChildMap[key] = itemIndex
-      itemComponent = toComponent(listComponent.itemFunc(value, key, itemIndex, items, listComponent))
+      itemComponent = toBlock(listComponent.itemFunc(value, key, itemIndex, items, listComponent))
       if listComponent.separatorFunc && itemIndex
-        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, value, key, items, listComponent))
+        separatorComponent = toBlock(listComponent.separatorFunc(itemIndex, value, key, items, listComponent))
         itemComponent = new List([separatorComponent, itemComponent])
       itemComponent.$watchingKey = key
       itemComponent.itemIndex = itemIndex

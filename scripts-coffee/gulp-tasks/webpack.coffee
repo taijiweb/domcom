@@ -39,7 +39,7 @@ webpackDistribute = (mode) ->
 gulp.task 'webpack-dist', () -> webpackDistribute('production')
 gulp.task 'webpack-dev', () -> webpackDistribute('dev')
 
-gulp.task 'webpack-server', ->
+gulp.task 'wpserver', ->
   webServerPlugins = [
     new webpack.HotModuleReplacementPlugin()
     new webpack.NoEmitOnErrorsPlugin()

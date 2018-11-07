@@ -1,7 +1,7 @@
 {expect, iit, idescribe, nit, ndescribe, ddescribe} = require('bdd-test-helper')
 
 {see
-Component, TransformComponent, Tag, Text,
+Component, TranBlock, Tag, Text,
 txt, list, func, if_, case_, func, each
 a, p, span, text, div
 flow} = dc

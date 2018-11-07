@@ -9,7 +9,7 @@ if 'textContent' of document.documentElement
 else
   hasTextContent = false
 
-exports = module.exports = class Text extends BaseComponent
+export default class Text extends BaseComponent
 
   isText: true
 
@@ -59,3 +59,5 @@ exports = module.exports = class Text extends BaseComponent
     result.copyEventListeners(this)
 
   toString: (indent=2, addNewLine) -> newLine(funcString(this.text), indent, addNewLine)
+
+

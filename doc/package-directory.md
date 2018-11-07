@@ -45,8 +45,8 @@
     |  |  |  |- Each.coffee    ..................  // Each transform component class, new Each(items, itemFn, options)
     |  |  |  |- route.coffee    .................  // Route transform component class, route(routeList..., otherwise, baseIndex)
     |  |  |  |- Defer.coffee    .................  // Defer transform component class, new Defer(promise, fulfill, reject, init)
-    |  |  |  |- isComponent.coffee    ...........  // check whether an item is a component, isComponent(item)
-    |  |  |  |- toComponent.coffee    ...........  // convert anything to component, toComponent(item)
+    |  |  |  |- isBlock.coffee    ...........  // check whether an item is a component, isBlock(item)
+    |  |  |  |- toBlock.coffee    ...........  // convert anything to component, toBlock(item)
     |  |  |  \- index.coffee    .................  // the index file to enable requiring core/base/ folder
     |  |  |
     |  |- flow/    ..............................  // the utilities to generate reactive functions 

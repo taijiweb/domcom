@@ -12,13 +12,12 @@ dc = require('../dc')
   所有部件的基类
 
 ###
-module.exports = class Component extends Emitter
+export default class Component extends Emitter
   constructor: (template, model) ->
     super()
     this.view = null
     this.model = null
     this.backend = null
-    this.listeners = {} # 部件事件侦听方法映射
 
   ###
     设置部件模版 this.view
@@ -114,7 +113,7 @@ module.exports = class Component extends Emitter
     else if holder && holder.children
       holder.removeChild(this)
     else if holder
-      dc.error('Should not remove the content of TransformComponent')
+      dc.error('Should not remove the content of TranComponent')
     this
 
 
@@ -147,7 +146,7 @@ module.exports = class Component extends Emitter
       holder = oldComponent.holder
       if holder && holder != dc
         if holder.isTransformComponent
-          dc.error('Should not replace the content of TransformComponent')
+          dc.error('Should not replace the content of TranComponent')
         else
           # holder is List or Tag
           holder.replaceChild(oldComponent, this)
@@ -187,7 +186,7 @@ module.exports = class Component extends Emitter
     if this.node
       this.node.component = null
       this.node = null
-    this.baseComponent = null
+    this.BaseComponent = null
     this.parentNode = null
 
   getPrevComponent: ->

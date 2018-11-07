@@ -87,9 +87,9 @@ exports.domValue = (value, component) ->
     else
       value
 
-# family do not consider exceeding TransformComponent
-# a BaseComponent can have only one reference of one component in all of its family
-# it's the responsiblility of the user program of domcom to keep no conflicting reference while exceeding TransformComponent
+# family do not consider exceeding TranBlock
+# a BaseBlock can have only one reference of one component in all of its family
+# it's the responsiblility of the user program of domcom to keep no conflicting reference while exceeding TranBlock
 exports.extendChildFamily = (family, child) ->
   for dcid of child.family
     if family[dcid]

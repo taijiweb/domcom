@@ -20,7 +20,7 @@
   *
 ###
 
-TransformComponent = require('./TransformComponent')
+TranComponent = require('./TranComponent')
 isComponent = require('./isComponent')
 toComponent = require('./toComponent')
 {isEven, matchCurvedString} = require('dc-util')
@@ -90,7 +90,7 @@ navigate = (baseIndex) -> (path) ->
 
 route.to = navigate(0)
 
-route.Route = class Route extends TransformComponent
+route.Route = class Route extends TranComponent
   constructor: (@routeList, @otherwise, @baseIndex) ->
     super()
 

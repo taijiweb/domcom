@@ -5,7 +5,7 @@ Text = require('./Text')
 
 {domValue} = require('../dom-util')
 
-module.exports = class Cdata extends Text
+export default class Cdata extends Text
   constructor: (text) ->
     super(text)
 

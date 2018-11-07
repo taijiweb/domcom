@@ -5,7 +5,7 @@ Text = require('./Text')
 
 {domValue} = require('../dom-util')
 
-module.exports = class Comment extends Text
+export default class Comment extends Text
   constructor: (text) ->
     super(text)
 

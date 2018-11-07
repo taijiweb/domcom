@@ -2,7 +2,7 @@
 {newDemoNode} = require('./helper')
 
 {isComponent
-Component, TransformComponent, Tag, Text,
+Component, TranBlock, Tag, Text,
 txt, list, List, func, if_, case_, func, each, every, funcEach
 accordionGroup, accordion
 a, p, span, text, div

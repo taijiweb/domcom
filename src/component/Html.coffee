@@ -13,7 +13,7 @@ Tag = require('./Tag')
 # this is Html Component, which take some text as innerHTML
 # for <html> ... </html>, please use tagHtml instead
 
-module.exports = class Html extends Tag
+export default class Html extends Tag
 
   constructor: (attrs, text, transform) ->
 

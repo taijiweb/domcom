@@ -13,7 +13,7 @@ toComponentArray = require('./toComponentArray')
 {binaryInsert} = require('dc-util')
 {createElement, cacheElement} = require('dc-util/element-pool')
 
-module.exports = class Tag extends BaseComponent
+export default class Tag extends BaseComponent
 
   # used for Tag.clone(...)
   FakeTag: -> Tag
@@ -33,7 +33,6 @@ module.exports = class Tag extends BaseComponent
     tagName = tagName || 'div'
     this.tagName = tagName.toLowerCase()
     this.namespace = attrs.namespace
-    this.poolLabel = this.generatePoolLabel()
     children = children || attrs.children
     delete attrs.children
 

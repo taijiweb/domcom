@@ -2,7 +2,7 @@
 {newDemoNode} = require('./helper')
 
 {see, flow
-Component, TransformComponent, Tag, Text,
+Component, TranBlock, Tag, Text,
 txt, list, func, if_, forceIf, If, case_, forceCase, func,
 pick
 a, p, span, text, div} = dc

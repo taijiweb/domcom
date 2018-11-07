@@ -1,13 +1,13 @@
 Component = require('./Component')
 
-module.exports = class BaseComponent extends Component
+export default class BaseComponent extends Component
 
   constructor: ->
     super()
     this.isBaseComponent = true
     this.removing = false
     # the line below is moved from ListMixin
-    # because the removing component of TransformComponent will be added to TransformComponent.content
+    # because the removing Component of TranComponent will be added to TranComponent.content
     this.baseComponent = this
 
   refreshDom: (oldBaseComponent) ->

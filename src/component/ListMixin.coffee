@@ -80,7 +80,7 @@ module.exports =
     this.updatingIndexes = []
     for child, index in this.children
       child.setHolder(this)
-      child.renderDom(child.baseComponent)
+      child.renderDom(child.BaseComponent)
       node.push(child.node)
       if !firstNode && child.firstNode
         firstNode = child.firstNode
@@ -97,7 +97,7 @@ module.exports =
     for index in updatingIndexes
       child = children[index]
       child.setHolder(this)
-      child.renderDom(child.baseComponent)
+      child.renderDom(child.BaseComponent)
       index = children.indexOf(child)
       node[index] = child.node
       this.updateChildrenFirstNode(child, index)

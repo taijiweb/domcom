@@ -1,9 +1,9 @@
 toComponent = require('./toComponent')
-TransformComponent = require('./TransformComponent')
+TranComponent = require('./TranComponent')
 {funcString, newLine} = require('dc-util')
 {renew} = require('lazy-flow')
 
-module.exports = class Func extends TransformComponent
+export default class Func extends TranComponent
   constructor: (func) ->
     super()
 

@@ -1,12 +1,12 @@
 toComponent = require('./toComponent')
 
-TransformComponent = require('./TransformComponent')
+TranComponent = require('./TranComponent')
 
 {newLine} = require('dc-util')
 
 extend = require('extend')
 
-module.exports = class Pick extends TransformComponent
+export default class Pick extends TranComponent
   constructor: (@host, field, initialContent) ->
 
     super()

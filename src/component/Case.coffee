@@ -3,29 +3,17 @@ TestComponent = require('./TestComponent')
 {foreach, funcString, newLine, intersect} = require('dc-util')
 {renew} = require('lazy-flow')
 
-module.exports = class Case extends TestComponent
+export default class Case extends TestComponent
   constructor: (test, @map, else_, forceCase=false) ->
-
-    if !forceCase && typeof test != 'function'
-      if map.hasOwnPoperty(test)
-        return toComponent(map[key])
-      else
-        return toComponent(else_)
     super(test)
 
     foreach map, (value, index) ->
       map[index] = toComponent(value)
     this.else_ = toComponent(else_)
-
-    families = []
-    foreach map, (value) -> families.push(value.family)
-    families.push this.else_.family
-    this.family = family = intersect(families)
-    family[this.dcid] = true
-
+    return
 
   getContentComponent: ->
-    this.map[this.getTestValue()] || this.else_
+    this.map[this.test] || this.else_
 
   clone: ->
     cloneMap = foreach this.map, (value) -> value.clone()

@@ -13,6 +13,6 @@ runSequence = require('run-sequence')
 
 gulp.task 'js', (callback) -> runSequence 'clean', 'coffee', callback
 
-gulp.task 'dev', (callback) -> runSequence 'clean', 'remove', 'coffee', 'webpack-server', watchcb
+gulp.task 'dev', (callback) -> runSequence 'clean', 'webpack-server', watchcb
 
-gulp.task 'dist', (callback) -> runSequence 'clean', 'remove', 'coffee', 'remove', 'webpack-dist', callback
+gulp.task 'dist', (callback) -> runSequence 'clean', 'webpack-dist', callback

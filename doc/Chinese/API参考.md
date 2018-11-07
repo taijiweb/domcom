@@ -179,17 +179,17 @@ Domcom用部件管理dom节点，部件是框架的最核心概念。每个部�
 
 #### 部件辅助工具函数
 
-#### toComponent函数
+#### toBlock函数
 将任何项转化为部件。如果是部件，返回自身。如果是函数，返回文本部件，部件的文本域是该函数。如果是数组，返回列表部件。如果是promise，返回该promise的代理响应函数。如果是空值(null或undefined)，返回Nothing部件。其它情况返回文本部件。
-  > `toComponent(item:Any)`
+  > `toBlock(item:Any)`
 
-#### toComponentArray函数
+#### toBlockArray函数
   将任何项转化为部件数组。  
-  > `toComponentArray(item:Any)`
+  > `toBlockArray(item:Any)`
 
-#### isComponent函数
+#### isBlock函数
   判断任何项是否为部件。
-  > `isComponent(item:Any)`
+  > `isBlock(item:Any)`
 
 ***********************************************************
 
@@ -219,7 +219,7 @@ Domcom用部件管理dom节点，部件是框架的最核心概念。每个部�
 
 * **insertChild, insertChildBefore, insertChildAfter, pushChild, unshiftChild**  
   向children的index位置插入一个子部件child：
-  >  `component.indexChild(index:Index, child:toComponent)`
+  >  `component.indexChild(index:Index, child:toBlock)`
   
   以下方法都会调用insertChild。
   
@@ -230,10 +230,10 @@ Domcom用部件管理dom节点，部件是框架的最核心概念。每个部�
   >  `component.insertChildAfter(child, refChild)
   
   从children后面压入一个子部件child：
-  >  `component.pushChild(child:toComponent)`
+  >  `component.pushChild(child:toBlock)`
 
   从children前面压入一个子部件child：
-  >  `component.unshiftChild(child:toComponent)`
+  >  `component.unshiftChild(child:toBlock)`
 
 * **removeChild，shiftChild，popChild**  
   删除children中的子部件。
@@ -256,7 +256,7 @@ Domcom用部件管理dom节点，部件是框架的最核心概念。每个部�
 
 * **setChildren**  
   设置从children的index位置开始的一组位置的各个子部件分别为newChildren中对应的部件。
-  >  `component.setChildren(startIndex:Index, newChildren:[toComponent])`
+  >  `component.setChildren(startIndex:Index, newChildren:[toBlock])`
 
 * **setLength**  
   设置children的长度为newLength，从newLength开始所在位置的子部件将被删除。如果newLength大于等于children的原长度，此方法没有作用。
@@ -271,10 +271,10 @@ Domcom用部件管理dom节点，部件是框架的最核心概念。每个部�
 ##### 直接父类：BaseComponent，prototype混入ListMixn
 
 ##### 构造函数
-  >  new List(children: [toComponent])
+  >  new List(children: [toBlock])
 
 ##### 实例化函数
-  >  list(children...: [toComponent])
+  >  list(children...: [toBlock])
 
 ##### 示例
 	list(
@@ -292,7 +292,7 @@ Domcom用部件管理dom节点，部件是框架的最核心概念。每个部�
 
   options:  
   表项部件模板函数：  
-  >  itemFn应该返回部件，如果返回值不是部件，将被toComponent函数转化为部件。  
+  >  itemFn应该返回部件，如果返回值不是部件，将被toBlock函数转化为部件。
   >  itemFn:(item:Any, index:int, listComponent:List)，对应于数组列表。  
   >  itemFn:(value, key, index:int, listComponent:List) ，对应于对象。
     
@@ -318,11 +318,11 @@ Domcom用部件管理dom节点，部件是框架的最核心概念。每个部�
   >  new Tag(tagName, attrs, children)
 
 ##### 实例化函数
-  >  `tag(tagName:TagName，[attrs:Attrs][, children:[toComponent]...])`
-  >  `nstag(tagName:TagName，namespace, [attrs:Attrs][, children:[toComponent]...])`  
+  >  `tag(tagName:TagName，[attrs:Attrs][, children:[toBlock]...])`
+  >  `nstag(tagName:TagName，namespace, [attrs:Attrs][, children:[toBlock]...])`
   tagName是任何可以作为html标签名的字符串。如果tagName是null，则使用attrs.tagName，如果attrs.tagName不存在，默认为div。
 
-  >  `dcTagName([attrs:Attrs] [, children:[toComponent]...])`   
+  >  `dcTagName([attrs:Attrs] [, children:[toBlock]...])`
   dcTagName是可以实例化Tag部件的函数名，必须从dc名字空间引入之后方可使用，例如div, p, span, input, textarea, select等。
 
   >  `inputType([attrs:Attrs][, value:domField])`  
@@ -509,7 +509,7 @@ Html文档不支持CDATA，但是Xhtml和xml文档可以支持。
   空部件实例化不提供attrs:Attrs参数。
   
 ##### 说明
-  当toComponent(item)中item是null或undefined时，将创建空部件。    
+  当toBlock(item)中item是null或undefined时，将创建空部件。
   Nothing部件真正不对应任何Dom节点，其node成员是占位性质的空数组[]。当变换部件的内容部件变换到Nothing部件时，原先的部件将从Dom层次中移除。
 ***********************************************************
 
@@ -528,19 +528,19 @@ Html文档不支持CDATA，但是Xhtml和xml文档可以支持。
 ##### 直接基类：TransformComponent
 ##### 模块: Core/Base/If
 ##### 构造函数
-  >  `new(If test:Value|Reactive, then_:toComponent[, else_:toComponent], merge, recursive)`
+  >  `new(If test:Value|Reactive, then_:toBlock[, else_:toBlock], merge, recursive)`
   
 ##### 实例化函数
-  >  `if_([attrs:Attrs, ]test:Value|Reactive, then_:toComponent[, else_:toComponent], merge, recursive)`    
+  >  `if_([attrs:Attrs, ]test:Value|Reactive, then_:toBlock[, else_:toBlock], merge, recursive)`
   构造If部件。如果test是值而不是响应函数，则返回`then_`或`else_`。
   
-  >  `forceIf([attrs:Attrs, ]test:Value|Reactive, then_:toComponent[, else_:toComponent])`  
+  >  `forceIf([attrs:Attrs, ]test:Value|Reactive, then_:toBlock[, else_:toBlock])`
   总是构造If部件。
   
-  >  `mergeIf([attrs:Attrs, ]test:Value|Reactive, then_:toComponent[, else_:toComponent], recursive)`  
+  >  `mergeIf([attrs:Attrs, ]test:Value|Reactive, then_:toBlock[, else_:toBlock], recursive)`
   如果可能，合并`then_`和`else_`为一个部件。否则返回If部件。如果recursive为真则此过程递归执行。
   
-  >  `recursiveIf([attrs:Attrs, ]test:Value|Reactive, then_:toComponent[, else_:toComponent])`   
+  >  `recursiveIf([attrs:Attrs, ]test:Value|Reactive, then_:toBlock[, else_:toBlock])`
   如果可能，合并`then_`和`else_`为一个部件。否则返回If部件。此过程递归执行。
    
   `else_`是可以选的，如果`else_`参数没提供，则If部件的`else_`特性是Nothing部件。
@@ -559,14 +559,14 @@ Html文档不支持CDATA，但是Xhtml和xml文档可以支持。
 ##### 直接基类：TransformComponent
 ##### 构造函数
 
-  >  `new Case(test:Value|Reactive, caseMap:Hash[, else_:toComponent])`
+  >  `new Case(test:Value|Reactive, caseMap:Hash[, else_:toBlock])`
   
 ##### 实例化函数
 
-  >  `case_([attrs:Attrs, ]test:Value|Reactive, caseMap:Hash[, else_:toComponent])`  
+  >  `case_([attrs:Attrs, ]test:Value|Reactive, caseMap:Hash[, else_:toBlock])`
   构造Case部件。如果test是值而不是响应函数，则返回根据test选定的部件。
   
-  >  `forceCase([attrs:Attrs, ]test:Value|Reactive, caseMap:Hash[, else_:toComponent])`  
+  >  `forceCase([attrs:Attrs, ]test:Value|Reactive, caseMap:Hash[, else_:toBlock])`
   总是构造Case部件。
   
   `else_`是可以选的，如果`else_`参数没提供，则Case部件的`else_`特性是Nothing部件。
@@ -586,11 +586,11 @@ Html文档不支持CDATA，但是Xhtml和xml文档可以支持。
 ##### 模块: Core/Base/Pick
 ##### 直接基类：TransformComponent
 ##### 构造函数
-  >  `new Pick(test:Object, field:String[, intialContent:toComponent])`
+  >  `new Pick(test:Object, field:String[, intialContent:toBlock])`
   
 ##### 实例化函数
   pick不能接受attrs作为封包div的内容。因为host必须是对象。  
-  >  `pick(test:Object, field:String[, intialContent:toComponent])`
+  >  `pick(test:Object, field:String[, intialContent:toBlock])`
   
 ##### 示例
     pick(host={}, x, 1)
@@ -600,10 +600,10 @@ Html文档不支持CDATA，但是Xhtml和xml文档可以支持。
 多测试部件。类似于一组 if/else if/.../else。
 ##### 模块: Core/Base/Cond
 ##### 构造函数
-  >  `new Cond(testComponentPairList:[Reactive, toComponent, ...] [, else_:toComponent])`
+  >  `new Cond(testComponentPairList:[Reactive, toBlock, ...] [, else_:toBlock])`
   
 ##### 实例化函数
-  >  `cond(attrs:Attrs, testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent])`
+  >  `cond(attrs:Attrs, testComponentPairList:[Reactive, toBlock, ...][, else_:toBlock])`
 ***********************************************************
 
 ##### Func函数部件
@@ -628,10 +628,10 @@ Html文档不支持CDATA，但是Xhtml和xml文档可以支持。
   基本没有必要直接使用Route构造函数，使用route函数总是更方便。route附带有to方法，而Route则没有。
   
 ##### 实例化函数
-  >  `route(routeList:[RoutePattern, RouteHandler...], [otherwise：toComponent][, baseIndex])`   
+  >  `route(routeList:[RoutePattern, RouteHandler...], [otherwise：toBlock][, baseIndex])`
   其中，RoutePattern是路由模式字符串或者路由模式字符串及测试函数，路由模式字符串中可以包括包括查询字段名(冒号:引导的标识符)及正则表达式，通配符(`*`或`**`)及普通字符串。  
   RouteHandler是如下类型的函数：  
-  >  `(match:RouteMatchResult, childRoute: RouteInstantiateFunction) -> toComponent`  
+  >  `(match:RouteMatchResult, childRoute: RouteInstantiateFunction) -> toBlock`
   RouteMatchResult的类型如下：
     
     { 
@@ -663,17 +663,17 @@ Html文档不支持CDATA，但是Xhtml和xml文档可以支持。
 ##### 构造函数
     new Defer(  
         promise:Promise,  
-        fulfill:((value, promise, component) -> toComponent),
-        [reject: ((value, promise, component) -> toComponent),
-        [init:toComponent]]
+        fulfill:((value, promise, component) -> toBlock),
+        [reject: ((value, promise, component) -> toBlock),
+        [init:toBlock]]
     )
         
 ##### 实例化函数
     defer(attrs:Attrs,
         promise:Promise,
-        fulfill:((value, promise, component) -> toComponent),
-        [reject: ((value, promise, component) -> toComponent),
-        [init:toComponent]]
+        fulfill:((value, promise, component) -> toBlock),
+        [reject: ((value, promise, component) -> toBlock),
+        [init:toBlock]]
     )
     
 ***********************************************************

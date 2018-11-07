@@ -15,7 +15,7 @@ processProp = (props, cache, prop, value) ->
     if !cacheProps[prop]? || value!=cacheProps[prop]
       cacheProps[prop] = this.node[prop] = value
 
-module.exports = class DomNode
+export default class DomNode
   constructor: (@node) ->
     if node instanceof Node
       this.cacheProps = {}

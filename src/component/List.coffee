@@ -58,7 +58,7 @@ module.exports = exports = class List extends BaseComponent
 
   # removeDom: ->
     # this method is coded in BaseComponent.removeDom
-    # the case for component.isList is considered there
+    # the case for Component.isList is considered there
 
   removeNode: ->
     this.removing = false

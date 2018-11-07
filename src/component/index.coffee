@@ -14,7 +14,7 @@ module.exports =
   Cdata: require('./Cdata')
   Html: require('./Html')
   Nothing: require('./Nothing')
-  TransformComponent: require('./TransformComponent')
+  TranComponent: require('./TranComponent')
   TestComponent: require('./TestComponent')
   If: require('./If')
   Case: require('./Case')

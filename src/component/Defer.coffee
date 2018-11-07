@@ -1,5 +1,5 @@
 toComponent = require('./toComponent')
-TransformComponent = require('./TransformComponent')
+TranComponent = require('./TranComponent')
 extend = require('extend')
 {funcString, newLine, intersect} = require('dc-util')
 {renew} = require('lazy-flow')
@@ -8,7 +8,7 @@ INIT = 0
 FULFILL = 1
 REJECT = 2
 
-module.exports = class Defer extends TransformComponent
+export default class Defer extends TranComponent
   constructor: (@promise, fulfill, reject, init) ->
 
     super()

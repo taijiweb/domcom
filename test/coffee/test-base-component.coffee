@@ -17,25 +17,25 @@ describe "test-base-component", ->
   afterEach ->
     dc.reset()
 
-  describe 'update baseComponent', ->
-    it 'should get baseComponent of List', ->
+  describe 'update BaseBlock', ->
+    it 'should get BaseBlock of List', ->
       comp = list([1, 2])
-      expect(comp.baseComponent).to.equal comp
+      expect(comp.BaseBlock).to.equal comp
 
     it 'should have correct children', ->
       comp = p(0)
       expect(comp.children[0].text).to.equal 0
 
-  describe 'process get baseComponent of Tag',  ->
+  describe 'process get BaseBlock of Tag',  ->
 
-    it 'should get baseComponent of two tags', ->
+    it 'should get BaseBlock of two tags', ->
       p1 = new Tag('p', {}, [])
       d = new Tag('div', {}, [p1])
-      expect(d.baseComponent).to.equal d
+      expect(d.BaseBlock).to.equal d
       expect(d.children[0]).to.be.instanceof Tag
       expect(d.children[0]).to.equal(p1)
       d.mount()
-      expect(d.baseComponent.baseComponent).to.equal d
+      expect(d.BaseBlock.BaseBlock).to.equal d
 
     it 'should text.valid to be true', ->
       comp = txt(1)

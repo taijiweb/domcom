@@ -1,9 +1,9 @@
 toComponent = require('./toComponent')
-TransformComponent = require('./TransformComponent')
+TranComponent = require('./TranComponent')
 {funcString, newLine} = require('dc-util')
 {renew} = require('lazy-flow')
 
-module.exports = class Cond extends TransformComponent
+export default class Cond extends TranComponent
   constructor: (testComponentPairs, else_) ->
     super()
 
@@ -30,9 +30,9 @@ module.exports = class Cond extends TransformComponent
     this
 
   getContentComponent: ->
-    for [test, component] in this.testComponentPairs
+    for [test, Component] in this.testComponentPairs
       if test()
-        return component
+        return Component
     this.else_
 
   clone: ->

@@ -153,23 +153,23 @@ This is the base class of all components. It provides the common method for comp
 
 #### component utilities
 
-#### toComponent
+#### toBlock
 
   Convert anything to component. If it is a component, return itself; if it is a function, return a Text Component, the text field is a reactive function; if it is an array, return a List component; if it is  a promise, return a proxy reactive function to the promise; if it is null or undefined, return a Nothing component; otherwise return a Text component.
 
-  > `toComponent(item:Any)`
+  > `toBlock(item:Any)`
 
-#### toComponentArray
+#### toBlockArray
 
   Convert anything to an array of component. 
 
-  > `toComponentArray(item:Any)`
+  > `toBlockArray(item:Any)`
 
-#### isComponent
+#### isBlock
 
   Check whether anything is a component.
 
-  > `isComponent(item:Any)`
+  > `isBlock(item:Any)`
 
 ***********************************************************
 
@@ -198,11 +198,11 @@ This is the base class of all components. It provides the common method for comp
 ##### subclasses: Tag
 
 ##### constructor
-  > new List(children: [toComponent])
+  > new List(children: [toBlock])
 
 ##### instantiate function
 
-  > list(children...: [toComponent])
+  > list(children...: [toBlock])
 
 ##### sample
 	list \
@@ -221,7 +221,7 @@ This is the base class of all components. It provides the common method for comp
   
   `each`, `funcEach` will watch the change in the array or object, and will always render the nodes according the uptodate data.
 
-  options.itemFn is called as component template function, which will return a component, if the return value is not component, it wil be converted to component by using toComponent function.
+  options.itemFn is called as component template function, which will return a component, if the return value is not component, it wil be converted to component by using toBlock function.
   
   Most of the instantiate funciton, like `list`, `every`, `each`, `funcEacn`, `txt`, `if_`, `case_`, `pick`, `cond`, `defer`, etc, can be automatically wrapped by a tag element by providing an attrs object.
 
@@ -233,20 +233,20 @@ This is the base class of all components. It provides the common method for comp
 
   Push a child compnent to the tail of List.children.
 
-  > `component.pushChild(child:toComponent)`
+  > `component.pushChild(child:toBlock)`
 
 
 * **unshiftChild**
 
   Unshift a child component to the front of List.children.
 
-  > `component.unshiftChild(child:toComponent)`
+  > `component.unshiftChild(child:toBlock)`
 
 * **insertChild**
 
   Insert a child component at the index location of List.children的index.
 
-  > `component.insertChild(refChild:Index|Component, child:toComponent)`
+  > `component.insertChild(refChild:Index|Component, child:toBlock)`
 
 * **removeChild**
 
@@ -258,7 +258,7 @@ This is the base class of all components. It provides the common method for comp
 
   replace the refChild with the new child component.
 
-  > `component.replaceChild(oldChild:Index|Component, newChild:toComponent)`
+  > `component.replaceChild(oldChild:Index|Component, newChild:toBlock)`
 
 * **setChildren**
 
@@ -266,7 +266,7 @@ This is the base class of all components. It provides the common method for comp
 
   > `component.setChildren(startIndex:Index, newChildren:[Any])`
   
-  The ite in newChildren will be converted by `toComponent`.
+  The ite in newChildren will be converted by `toBlock`.
 
 * **setLength**
 
@@ -287,7 +287,7 @@ This is the base class of all components. It provides the common method for comp
 
 ##### instantiate function
 
-  > `dcTagName([attrs:Attrs] [, children:[toComponent]...])`
+  > `dcTagName([attrs:Attrs] [, children:[toBlock]...])`
   
   dcTagName is a function which can instantiate a component, and it must be imported form the dc namespace before being used, e.g. div, p, span, input, textarea, select, etc.
 
@@ -297,7 +297,7 @@ This is the base class of all components. It provides the common method for comp
 
   On the complete list for dcTagName and inputType, please see src/core/tag.coffee.
 
-  > `tag(tagName:TagName [attrs:Attrs][, children:[toComponent]...])`
+  > `tag(tagName:TagName [attrs:Attrs][, children:[toBlock]...])`
 
   tagName is any string which can be used as a html tag.
 
@@ -476,7 +476,7 @@ This is the base class of all components. It provides the common method for comp
 
   Nothing component instantiate function is not provided attrs:Attrs parameter.
 
-  When item in toComponent(item) is null or undefined, Nothing component will be created.
+  When item in toBlock(item) is null or undefined, Nothing component will be created.
 
 ***********************************************************
 
@@ -506,11 +506,11 @@ This is the base class of all components. It provides the common method for comp
 
 ##### constructor function
 
-  >  `new If(test:ValueReactive, then_:toComponent[, else_:toComponent])`
+  >  `new If(test:ValueReactive, then_:toBlock[, else_:toBlock])`
 
 ##### instantiate function
 
-  >  `if_([attrs:Attrs, ]test:ValueReactive, then_:toComponent[, else_:toComponent])`
+  >  `if_([attrs:Attrs, ]test:ValueReactive, then_:toBlock[, else_:toBlock])`
 
   else_ is optional. If else_ is omitted, then the else_ field of If component will be Nothing component.
 
@@ -531,11 +531,11 @@ This is the base class of all components. It provides the common method for comp
 
 ##### constructor function
 
-  >  `new Case(test:ValueReactive, caseMap:Hash[, else_:toComponent])`
+  >  `new Case(test:ValueReactive, caseMap:Hash[, else_:toBlock])`
 
 ##### instantiate function
 
-  >  `case_([attrs:Attrs, ]test:ValueReactive, caseMap:Hash[, else_:toComponent])`
+  >  `case_([attrs:Attrs, ]test:ValueReactive, caseMap:Hash[, else_:toBlock])`
 
 ##### sample
 
@@ -557,13 +557,13 @@ This is the base class of all components. It provides the common method for comp
 
 ##### constructor function
 
-  >  `new Pick(host:Object, field:String [, initialContent:toComponent])`
+  >  `new Pick(host:Object, field:String [, initialContent:toBlock])`
 
 ##### instantiate function
 
   pick does not support "attrs" parameter, because host must be an object.
 
-  >  `pick(host:Object, field:String [, initialContent:toComponent])`
+  >  `pick(host:Object, field:String [, initialContent:toBlock])`
 
 ##### sample
 
@@ -577,11 +577,11 @@ This is the base class of all components. It provides the common method for comp
 
 ##### constructor function
 
-  >  `new Cond(testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent])`
+  >  `new Cond(testComponentPairList:[Reactive, toBlock, ...][, else_:toBlock])`
 
 ##### instantiate function
 
-  >  `cond(attrs:Attrs, testComponentPairList:[Reactive, toComponent, ...][, else_:toComponent])`
+  >  `cond(attrs:Attrs, testComponentPairList:[Reactive, toBlock, ...][, else_:toBlock])`
 
 
 ***********************************************************
@@ -619,13 +619,13 @@ This is the base class of all components. It provides the common method for comp
 
 ##### instantiate function
 
-  >  `route(routeList:[RoutePattern, RouteHandler...], [otherwise: toComponent][, baseIndex])`
+  >  `route(routeList:[RoutePattern, RouteHandler...], [otherwise: toBlock][, baseIndex])`
 
   RoutePattern is the route pattern string or the route pattern string and the test funciton. The route pattern string can include query field name(the identifer lead by colon:) and regexpt, the wildcard characters(* or **) and general string.
 
   RouteHandler is the function with the type below:
 
-  >  `(match:RouteMatchResult, childRoute: RouteInstantiateFunction) -> toComponent)`
+  >  `(match:RouteMatchResult, childRoute: RouteInstantiateFunction) -> toBlock)`
 
   RouteMatchResult's type is below:
     {
@@ -665,17 +665,17 @@ This is the base class of all components. It provides the common method for comp
 
   > new Defer
         promise:Promise
-        fulfill:((value, promise, component) -> toComponent)
-        [reject: ((value, promise, component) -> toComponent)
-        [init:toComponent]]
+        fulfill:((value, promise, component) -> toBlock)
+        [reject: ((value, promise, component) -> toBlock)
+        [init:toBlock]]
 
 ##### instantiate function
 
   > defer attrs:Attrs,
         promise:Promise
-        fulfill:((value, promise, component) -> toComponent)
-        [reject: ((value, promise, component) -> toComponent)
-        [init:toComponent]]
+        fulfill:((value, promise, component) -> toBlock)
+        [reject: ((value, promise, component) -> toBlock)
+        [init:toBlock]]
 
 ***********************************************************
 

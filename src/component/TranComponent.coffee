@@ -1,8 +1,8 @@
 Component = require('./Component')
 
-module.exports = class TransformComponent extends Component
+export default class TranComponent extends Component
 
-  isTransformComponent: true
+  isTranComponent: true
 
   constructor: ->
     super()
@@ -12,22 +12,6 @@ module.exports = class TransformComponent extends Component
     if this.valid
       this.valid = false
       this.holder && this.holder.invalidateContent(this)
-    this
-
-  invalidateContent: (content) ->
-    this.invalidate()
-
-  invalidateAttach: (content) ->
-    if this.attachValid
-      this.attachValid = false
-      if this.holder
-        this.holder.invalidateAttach(this)
-    this
-
-  invalidateTransform: ->
-    if this.transformValid
-      this.transformValid = false
-      this.invalidate()
     this
 
   refreshDom: (oldBaseComponent) ->
@@ -50,10 +34,10 @@ module.exports = class TransformComponent extends Component
     content.parentNode = this.parentNode
     content.nextNode = this.nextNode
     content.renderDom(oldBaseComponent)
-    baseComponent = content.baseComponent
-    this.baseComponent = baseComponent
-    this.node = baseComponent.node
-    this.firstNode = baseComponent.firstNode
+    BaseComponent = content.BaseComponent
+    this.BaseComponent = BaseComponent
+    this.node = BaseComponent.node
+    this.firstNode = BaseComponent.firstNode
     if !this.node.parentNode
       content.attachValid = false
       this.invalidateAttach(content)

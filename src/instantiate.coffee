@@ -1,4 +1,4 @@
-{Component, toComponent, isComponent,
+{Component, toBlock, isComponent,
 Tag, Text, Comment, Html
 If, Case, Func, List,
 Pick
@@ -127,13 +127,13 @@ exports.list = list = (attrs, lst...) ->
     new Tag(null, attrs, [new List(lst)])
   else
     lst.unshift(attrs)
-    if lst.length==1 then toComponent(lst[0])
+    if lst.length==1 then toBlock(lst[0])
     else new List(lst)
 
 # promise is a Promise instance which have .then and .catch the two method
 # fulfill: (value, promise, component) ->
 # reject: (reason, promise, component) ->
-# init: will be converted to component by toComponent
+# init: will be converted to component by toBlock
 exports.defer = (attrs, promise, fulfill, reject, init) ->
   if isAttrs(attrs)
     new Tag(null, attrs, [new Defer(promise, fulfill, reject, init)])

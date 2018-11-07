@@ -54,8 +54,8 @@
 * new component: Pick component (core/base/Pick )
 * change the behavior of the namespace for svg and math tag
 * refactor gulp scripts
-* new utility: toComponentList
-* add default arguments for List and Tag (by using toComponentList)
+* new utility: toBlockList
+* add default arguments for List and Tag (by using toBlockList)
 * getBaseComponent method back: [issue #1](github.com/taijiweb/domcom/issues/1)
 * decrease dom operation: [issure #5 ](https://github.com/taijiweb/domcom/issues/5)
 * add some tests on every, all, nItems, fix bug in it.

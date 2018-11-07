@@ -4,7 +4,7 @@
 
 以下是本文档函数原型说明中可能出现的一些类型:
 
-* item:toComponent:    代表item可以是任何值，但是item会经过toComponent(item)转换成合适的部件。
+* item:toBlock:    代表item可以是任何值，但是item会经过toBlock(item)转换成合适的部件。
 
 * value:domField:    代表value可以是任何值，但是value会经过domField(value)转换成适用的dom节点特性值。
 

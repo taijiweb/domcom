@@ -13,7 +13,7 @@ getters
 } = dc
 # {at} = getters
 
-import React from '../../lib/backend/React'
+import React from '../../src/backend/React'
 
 {a_} = bindings({a: 1, b: 2})
 
@@ -21,7 +21,7 @@ describe "test-base-component", ->
   afterEach ->
     dc.reset()
 
-  describe 'update baseComponent', ->
+  describe 'update BaseBlock', ->
     it 'should dc generate a component', ->
       comp = dc()
       expect(isComponent(comp)).to.be.true

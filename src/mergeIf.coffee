@@ -9,7 +9,7 @@ Nothing = require('./component/Nothing')
 flow = require('lazy-flow/addon')
 flowIf = flow.if_
 
-# do not need toComponent
+# do not need toBlock
 # do not need check whether test is a function
 # because mergeIf is called in If component constructor,
 # after then_, else_ was converted to component

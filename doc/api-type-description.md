@@ -4,7 +4,7 @@ These type description occurs in the api-reference.md, they are just some inform
 
 The following are some of the types which will occur in the prototype description:
 
-* item:toComponent:    item can be any value, but item will be converted to a proper component by toComponent(item)
+* item:toBlock:    item can be any value, but item will be converted to a proper component by toBlock(item)
 
 * value:domField:    value can be any value, but value will be converted to a property value of the dom node by domField(value)
 
