@@ -1,5 +1,5 @@
-gulp = require 'gulp'
-del = require('del')
+gulp from 'gulp'
+del from 'del'
 
 # !!! be careful !!!
 # do not remove the stuff by mistake !!!

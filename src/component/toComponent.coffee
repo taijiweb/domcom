@@ -1,7 +1,7 @@
-isComponent = require('./isComponent')
-Nothing = require('./Nothing')
-Text = require('./Text')
-{react} = require('lazy-flow')
+import isComponent from './isComponent'
+import Nothing from './Nothing'
+import Text from './Text'
+import {react} from 'lazy-flow'
 
 module.exports = toComponent = (item) ->
   if isComponent(item) then item

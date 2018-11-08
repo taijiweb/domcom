@@ -1,12 +1,12 @@
-extend = require('extend')
+import extend from 'extend'
 import Emitter from '../Emitter'
 
-{normalizeDomElement} = require('../dom-util')
+import {normalizeDomElement} from '../dom-util'
 {newDcid, isArray} = require('dc-util')
 {flow} = require('lazy-flow')
 flowBind = flow.bind
-isComponent = require('./isComponent')
-dc = require('../dc')
+import isComponent from './isComponent'
+import dc from '../dc'
 
 ###
   所有部件的基类
@@ -243,5 +243,5 @@ export default class Component extends Emitter
       srcListeners[event] && myListeners[event] = srcListeners[event].splice()
     this
 
-dcEventMixin = require('../dc-event')
+dcEventMixin from '../dc-event'
 extend(Component.prototype, dcEventMixin)

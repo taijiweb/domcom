@@ -1,4 +1,4 @@
-TranComponent = require('./TranComponent')
+import TranComponent from './TranComponent'
 
 export default class TestComponent extends TranComponent
 

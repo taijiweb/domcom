@@ -1,10 +1,8 @@
-toComponent = require('./toComponent')
+import toComponent from './toComponent'
 
-TranComponent = require('./TranComponent')
+import TranComponent from './TranComponent'
 
-{newLine} = require('dc-util')
-
-extend = require('extend')
+import {newLine} = require('dc-util')
 
 export default class Pick extends TranComponent
   constructor: (@host, field, initialContent) ->

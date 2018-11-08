@@ -1,17 +1,16 @@
-extend = require('extend')
-{refreshComponents} = dc = require('../dc')
-{domField, domValue} = require('../dom-util')
-{directiveRegistry} = require('../dc')
-classFn = require('../property/classFn')
-{styleFrom} = require('../property/style')
-{attrToPropName} = require('../property/attrs')
-{domEventHandler, addEventListenerMap, addHandlerToCallbackArray} = require('../property/events')
-BaseComponent = require('./BaseComponent')
-{funcString, newLine, cloneObject} = require('dc-util')
-{flow, react} = require('lazy-flow')
-toComponentArray = require('./toComponentArray')
-{binaryInsert} = require('dc-util')
-{createElement, cacheElement} = require('dc-util/element-pool')
+import {refreshComponents}, dc from '../dc'
+import {domField, domValue} from '../dom-util'
+import {directiveRegistry} from '../dc'
+import classFn from '../property/classFn'
+import {styleFrom} from '../property/style'
+import {attrToPropName} from '../property/attrs'
+import {domEventHandler, addEventListenerMap, addHandlerToCallbackArray} from '../property/events'
+import BaseComponent from './BaseComponent'
+import {funcString, newLine, cloneObject} = require('dc-util')
+import {flow, react} = require('lazy-flow')
+import toComponentArray from './toComponentArray'
+import {binaryInsert} = require('dc-util')
+import {createElement, cacheElement} = require('dc-util/element-pool')
 
 export default class Tag extends BaseComponent
 
@@ -540,5 +539,5 @@ export default class Tag extends BaseComponent
       s += newLine("</#{this.tagName}>", indent+2)
 
 {mixin} = require('dc-util')
-ListMixin = require('./ListMixin')
+ListMixin from './ListMixin'
 mixin(Tag.prototype, ListMixin)

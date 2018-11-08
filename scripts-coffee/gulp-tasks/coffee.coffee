@@ -1,5 +1,5 @@
-gulp = require 'gulp'
-{task, from, dest, CombineStream, logTime} = require("gulp-task-helper")
+gulp from 'gulp'
+{task, from, dest, CombineStream, logTime} from "gulp-task-helper"
 
 coffee = require ('gulp-coffee2')
 

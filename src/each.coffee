@@ -1,4 +1,4 @@
-{List, Tag, toBlock} = require('./component')
+import {List, Tag, toBlock}  from './component'
 
 {isArray, isObject} = require('dc-util')
 

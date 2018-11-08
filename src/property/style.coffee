@@ -1,4 +1,4 @@
-{cloneObject} = require('dc-util')
+import {cloneObject} from 'dc-util'
 
 exports.styleFrom = styleFrom = (value) ->
   if typeof value == 'string'

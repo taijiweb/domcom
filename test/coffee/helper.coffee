@@ -1,4 +1,4 @@
-extend = require('extend')
+import extend from 'extend'
 
 exports.newDemoNode = (id) ->
   node = document.createElement('div')

@@ -1,5 +1,5 @@
-toComponent = require('./toComponent')
-TranComponent = require('./TranComponent')
+import toComponent = require('./toComponent')
+import TranComponent = require('./TranComponent')
 {funcString, newLine} = require('dc-util')
 {renew} = require('lazy-flow')
 

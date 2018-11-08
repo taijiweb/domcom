@@ -1,9 +1,9 @@
-BaseComponent = require('./BaseComponent')
-Text = require('./Text')
+import BaseComponent from './BaseComponent'
+import Text from './Text'
 
 {funcString, newLine} = require('dc-util')
 
-{domValue} = require('../dom-util')
+import {domValue} from '../dom-util'
 
 export default class Cdata extends Text
   constructor: (text) ->

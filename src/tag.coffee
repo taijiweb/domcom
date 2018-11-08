@@ -1,12 +1,8 @@
-extend = require('extend')
+import {isEven} = require('dc-util')
 
-{isEven} = require('dc-util')
-
-extend = require('extend')
-
-isComponent = require('./component/isComponent')
-Tag = require './component/Tag'
-{getBindProp} = require './dom-util'
+import isComponent from './component/isComponent'
+import Tag from './component/Tag'
+import {getBindProp} from './dom-util'
 
 
 exports.isAttrs = isAttrs = (item) ->

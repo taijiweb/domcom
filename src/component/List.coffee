@@ -1,13 +1,13 @@
-BaseComponent = require('./BaseComponent')
+import BaseComponent = require('./BaseComponent')
 
-{newLine} = require('dc-util')
+import {newLine} = require('dc-util')
 
-toComponentArray = require('./toComponentArray')
+import toComponentArray = require('./toComponentArray')
 
-{mixin} = require('dc-util')
-ListMixin = require('./ListMixin')
+import {mixin} = require('dc-util')
+import ListMixin = require('./ListMixin')
 
-{binaryInsert} = require('dc-util')
+import {binaryInsert} = require('dc-util')
 
 module.exports = exports = class List extends BaseComponent
   constructor: (children) ->    

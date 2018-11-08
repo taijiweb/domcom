@@ -1,12 +1,10 @@
-{Component, toBlock, isComponent,
+import {Component, toBlock, isComponent,
 Tag, Text, Comment, Html
 If, Case, Func, List,
 Pick
-Nothing, Defer} = require('./component')
+Nothing, Defer} from './component'
 
 {isEven} = require('dc-util')
-
-extend = require('extend')
 
 exports.isAttrs = isAttrs = (item) ->
   typeof item == 'object' && item!=null && !isComponent(item) && !(item instanceof Array)
@@ -139,3 +137,10 @@ exports.defer = (attrs, promise, fulfill, reject, init) ->
     new Tag(null, attrs, [new Defer(promise, fulfill, reject, init)])
   else
     new Defer(attrs, promise, fulfill, reject)
+
+
+mvc = (view, model ) ->
+  return new MVC(view, model)
+
+export mvc
+

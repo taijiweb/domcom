@@ -1,9 +1,8 @@
-extend = require('extend')
-{isComponent} = require('../component/isComponent')
-{extendEventValue} = require('./events')
-classFn = require('./classFn')
-{styleFrom} = require('./style')
-{domField} = require('../dom-util')
+import {isComponent} from '../component/isComponent'
+import {extendEventValue} from './events'
+import classFn from './classFn'
+import {styleFrom} from './style'
+import {domField} from '../dom-util'
 
 exports.extendAttrs = (attrs, obj, options={}) ->
   if !obj then return attrs

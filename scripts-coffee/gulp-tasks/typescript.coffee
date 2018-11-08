@@ -1,6 +1,6 @@
 {task, from, dest, CombineStream, logTime} = require("gulp-task-helper")
 
-shell = require('shelljs');
+shell from 'shelljs'
 
 typescript = require ('gulp-typescript')
 compileTypescript  = (fromFiles, toFolder) ->

@@ -20,10 +20,10 @@
   *
 ###
 
-TranComponent = require('./TranComponent')
-isComponent = require('./isComponent')
-toComponent = require('./toComponent')
-{isEven, matchCurvedString} = require('dc-util')
+import TranComponent from './TranComponent'
+import isComponent from './isComponent'
+import toComponent from './toComponent'
+import {isEven, matchCurvedString} = require('dc-util')
 
 module.exports = route = (routeList..., otherwise, baseIndex) -> _route(routeList, otherwise, baseIndex, 0)
 

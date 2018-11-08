@@ -1,4 +1,4 @@
-{runDemo, demoMap} = require('./util')
+{runDemo, demoMap} from'./util')
 
 dc.alwaysRender = true
 

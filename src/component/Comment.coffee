@@ -1,9 +1,9 @@
-BaseComponent = require('./BaseComponent')
-Text = require('./Text')
+BaseComponent from './BaseComponent'
+Text from './Text'
 
 {funcString, newLine} = require('dc-util')
 
-{domValue} = require('../dom-util')
+import {domValue} from '../dom-util'
 
 export default class Comment extends Text
   constructor: (text) ->

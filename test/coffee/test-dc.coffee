@@ -1,6 +1,6 @@
 ###*test-component
 ###
-{expect, iit, idescribe, nit, ndescribe, rtimeout, rinterval} = require('bdd-test-helper')
+import {expect, iit, idescribe, nit, ndescribe, rtimeout, rinterval} = require('bdd-test-helper')
 
 {isComponent} = dc
 

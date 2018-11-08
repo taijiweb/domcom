@@ -1,6 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe, ddescribe} = require('bdd-test-helper')
 
-{fakeEvent} = require('./helper')
+{fakeEvent} from './helper'
 
 {duplex, see
 classFn, styleFrom

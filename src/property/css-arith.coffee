@@ -1,4 +1,4 @@
-Tag = require('../component/Tag')
+import Tag from '../component/Tag'
 
 reNonUnit = /[\d\s\.-]/g
 

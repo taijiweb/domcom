@@ -1,8 +1,8 @@
-toComponent = require('./toComponent')
-TestComponent = require('./TestComponent')
-{funcString, newLine, intersect} = require('dc-util')
-{renew} = require('lazy-flow')
-mergeIf = require('../mergeIf')
+import toComponent = require('./toComponent')
+import TestComponent = require('./TestComponent')
+import {funcString, newLine, intersect} = require('dc-util')
+import {renew} = require('lazy-flow')
+import mergeIf = require('../mergeIf')
 
 ObjectDefineProperty = Object.defineProperty
 

@@ -9,7 +9,7 @@ watchcb = ->
         './demo/coffee/**/*.coffee'
         ],
         ['coffee'])
-runSequence = require('run-sequence')
+runSequence  from 'run-sequence'
 
 gulp.task 'js', (callback) -> runSequence 'clean', 'coffee', callback
 

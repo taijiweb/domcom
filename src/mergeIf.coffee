@@ -1,10 +1,8 @@
-extend = require('extend')
+import Tag from './component/Tag'
+import List from './component/List'
+import Nothing from './component/Nothing'
 
-Tag = require('./component/Tag')
-List = require('./component/List')
-Nothing = require('./component/Nothing')
-
-{domEventHandlerFromArray} = require('./property/events')
+{domEventHandlerFromArray} from './property/events'
 
 flow = require('lazy-flow/addon')
 flowIf = flow.if_

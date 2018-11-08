@@ -1,8 +1,8 @@
-BaseComponent = require('./BaseComponent')
-{funcString, newLine, value, dynamic} = require('dc-util')
-{domField, domValue} = require('../dom-util')
+import BaseComponent from './BaseComponent')
+import {funcString, newLine, value, dynamic} from 'dc-util'
+import {domField, domValue}  from '../dom-util'
 
-{setText} = require('../property/attrs')
+import {setText} from '../property/attrs'
 
 if 'textContent' of document.documentElement
   hasTextContent = true

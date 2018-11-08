@@ -1,4 +1,4 @@
-toComponent = require('./toComponent')
+import toComponent from './toComponent'
 
 module.exports = toComponentArray = (item) ->
   if !item then []

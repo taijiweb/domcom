@@ -3,10 +3,10 @@
 
 dc.directives $options: dc.$options,  $model: dc.$model
 
-{eachDemo1, eachDemo2, eachDemo3, eachDemo4} = require('./demo-each')
-chooseFramework = require('./demo-choose-web-framework')
+{eachDemo1, eachDemo2, eachDemo3, eachDemo4} from'./demo-each')
+chooseFramework from'./demo-choose-web-framework')
 
-{demoEachPush, demoIfEach, demoModelOnMultipleInput} = require('./demo-debug')
+{demoEachPush, demoIfEach, demoModelOnMultipleInput} from'./demo-debug')
 
 exports.demoMap =
   'choose web framework':chooseFramework

@@ -1,4 +1,3 @@
-extend = require('extend')
 module.exports = exports  = extend({},
   require('./attrs'),
   require('./classFn')
@@ -8,4 +7,4 @@ module.exports = exports  = extend({},
   require('./delegate-event'),
 )
 
-exports.classFn = require('./classFn')
+exports.classFn from './classFn'

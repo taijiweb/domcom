@@ -1,4 +1,4 @@
-{isArray, substractSet} = require('dc-util')
+import {isArray, substractSet} = require('dc-util')
 
 isComponent = require('./isComponent')
 toComponent = require('./toComponent')

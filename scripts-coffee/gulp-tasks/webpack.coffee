@@ -1,9 +1,9 @@
-gulp = require 'gulp'
+gulp from 'gulp'
 {logTime} = require("gulp-task-helper")
 
-webpack = require('webpack')
+webpack from 'webpack'
 
-{makeConfig, makeWebpackDevServer} = require('../webpack-config')
+{makeConfig, makeWebpackDevServer} from '../webpack-config'
 
 onTaskDone = -> (err, stats) ->
   if err then console.log('Error', err)
@@ -11,7 +11,7 @@ onTaskDone = -> (err, stats) ->
   logTime("finished 'webpack'")
   return
 
-webpack = require("webpack")
+webpack from "webpack"
 #ClosureCompilerPlugin = require('webpack-closure-compiler')
 
 domcomEntry = {

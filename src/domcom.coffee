@@ -1,4 +1,4 @@
-module.exports = dc = require('./dc')
+import dc from './dc'
 
 if typeof window != 'undefined'
   window.dc = dc
@@ -32,6 +32,8 @@ extend(dc,
   dc.property
   dc.builtinDirectives
 )
+
+export default dc
 
 
 

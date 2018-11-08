@@ -1,4 +1,4 @@
-gulp = require 'gulp'
+gulp from 'gulp'
 {task, from, dest, CombineStream, logTime} = require("gulp-task-helper")
 
 rename = require("gulp-rename")

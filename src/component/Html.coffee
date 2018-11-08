@@ -1,8 +1,8 @@
-Tag = require('./Tag')
-{funcString, newLine, mixin} = require('dc-util')
+import Tag = require('./Tag')
+import {funcString, newLine, mixin} = require('dc-util')
 {domValue, domField} = require('../dom-util')
-{setText} = require('../property/attrs')
-{createElement} = require('dc-util/element-pool')
+import {setText} = require('../property/attrs')
+import {createElement} = require('dc-util/element-pool')
 
 # !!! Warning:
 # By default, Html does not escape to safe the html.

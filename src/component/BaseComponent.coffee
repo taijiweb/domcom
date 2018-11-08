@@ -1,4 +1,4 @@
-Component = require('./Component')
+import Component from './Component'
 
 export default class BaseComponent extends Component
 

@@ -1,8 +1,6 @@
-extend = require('extend')
-
-DomNode = require('./DomNode')
-{addEventListener} = require('./dom-util')
-Component = require('./component/Component')
+import DomNode from './DomNode'
+import {addEventListener} from './dom-util'
+import Component from './component/Component'
 
 ###
 # a utility to do almost everything

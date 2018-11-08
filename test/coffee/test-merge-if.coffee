@@ -1,5 +1,5 @@
-{expect, iit, idescribe, nit, ndescribe, newDemoNode} = require('bdd-test-helper')
-{newDemoNode} = require('./helper')
+import {expect, iit, idescribe, nit, ndescribe, newDemoNode} = require('bdd-test-helper')
+import {newDemoNode} from './helper'
 
 {see, flow
 Component, Tag, Text, List, If

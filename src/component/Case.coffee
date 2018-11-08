@@ -1,5 +1,5 @@
-toComponent = require('./toComponent')
-TestComponent = require('./TestComponent')
+toComponent from './toComponent'
+import TestComponent from './TestComponent'
 {foreach, funcString, newLine, intersect} = require('dc-util')
 {renew} = require('lazy-flow')
 
