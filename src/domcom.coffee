@@ -3,13 +3,13 @@ import dc from './dc'
 if typeof window != 'undefined'
   window.dc = dc
 
-# dc.DomNode = require('./DomNode')
+# dc.DomNode from './DomNode'
 
-dc.extend = extend = require('extend')
+dc.extend = extend from 'extend'
 
-dc.EventMixin = require('./dc-event')
+dc.EventMixin from './dc-event'
 
-extend(dc, dc.flow = require('lazy-flow'))
+extend(dc, dc.flow, require('lazy-flow'))
 require('lazy-flow/addon')
 dc.bindings = dc.flow.bindings
 require('dc-watch-list')
@@ -26,8 +26,8 @@ extend(dc,
   require('./dc-error')
 )
 
-dc.property = require('./property')
-dc.builtinDirectives = require('./directive/index')
+dc.property from './property'
+dc.builtinDirectives from './directive/index'
 extend(dc,
   dc.property
   dc.builtinDirectives

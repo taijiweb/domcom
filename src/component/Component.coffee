@@ -2,8 +2,8 @@ import extend from 'extend'
 import Emitter from '../Emitter'
 
 import {normalizeDomElement} from '../dom-util'
-{newDcid, isArray} = require('dc-util')
-{flow} = require('lazy-flow')
+import {newDcid, isArray} from 'dc-util'
+import {flow} from 'lazy-flow'
 flowBind = flow.bind
 import isComponent from './isComponent'
 import dc from '../dc'

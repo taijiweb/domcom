@@ -1,4 +1,4 @@
-import {react} = require('lazy-flow')
+import {react} from 'lazy-flow'
 import {domField} from '../dom-util'
 import {isArray} from 'dc-util'
 

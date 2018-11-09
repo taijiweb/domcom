@@ -41,7 +41,7 @@ if typeof window != 'undefined'
     else
       item && typeof item == "object" && item != null && item.nodeType == 1 && typeof item.nodeName=="string"
 
-{renew} = require('lazy-flow')
+import {renew} from 'lazy-flow'
 
 exports.domField = (value, component) ->
 

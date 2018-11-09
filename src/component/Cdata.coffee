@@ -1,7 +1,7 @@
 import BaseComponent from './BaseComponent'
 import Text from './Text'
 
-{funcString, newLine} = require('dc-util')
+import {funcString, newLine} from 'dc-util'
 
 import {domValue} from '../dom-util'
 

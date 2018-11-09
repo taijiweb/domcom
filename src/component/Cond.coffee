@@ -1,7 +1,7 @@
 import toComponent from './toComponent'
 import TranComponent from './TranComponent'
-{funcString, newLine} = require('dc-util')
-{renew} = require('lazy-flow')
+import {funcString, newLine} from 'dc-util'
+import {renew} from 'lazy-flow'
 
 export default class Cond extends TranComponent
   constructor: (testComponentPairs, else_) ->

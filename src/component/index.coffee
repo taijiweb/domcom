@@ -1,4 +1,4 @@
-import route = require('./route')
+import route from './route'
 
 module.exports =
   isComponent: require('./isComponent')

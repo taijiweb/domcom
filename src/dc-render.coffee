@@ -1,4 +1,4 @@
-import {isArray} = require('dc-util')
+import {isArray} from 'dc-util'
 
 isComponent from './component/isComponent'
 

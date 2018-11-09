@@ -2,7 +2,7 @@ import toComponent from './toComponent'
 
 import TranComponent from './TranComponent'
 
-import {newLine} = require('dc-util')
+import {newLine} from 'dc-util'
 
 export default class Pick extends TranComponent
   constructor: (@host, field, initialContent) ->

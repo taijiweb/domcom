@@ -2,9 +2,9 @@ import Tag from './component/Tag'
 import List from './component/List'
 import Nothing from './component/Nothing'
 
-{domEventHandlerFromArray} from './property/events'
+import {domEventHandlerFromArray} from './property/events'
 
-flow = require('lazy-flow/addon')
+flow from 'lazy-flow/addon'
 flowIf = flow.if_
 
 # do not need toBlock
@@ -14,7 +14,7 @@ flowIf = flow.if_
 # and check test is a function
 exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
 
-  If = require('./component/If')
+  If from './component/If'
 
   if then_==else_
     return then_
@@ -64,7 +64,7 @@ exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
 mergeIfChild = (test, then_, else_, recursive) ->
   if !recursive && (then_.isList || else_.isList)
     # whether another is List or not, then_ and else_ should or could not be merged
-    If = require('./component/If')
+    If from './component/If'
     new If(test, then_, else_, false, false, true) # merge, recursive, forceIf
   else
     mergeIf(test, then_, else_, recursive)

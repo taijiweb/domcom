@@ -1,7 +1,7 @@
-gulp from 'gulp'
-{task, from, dest, CombineStream, logTime} = require("gulp-task-helper")
+gulp = require 'gulp'
+{task, from, dest, CombineStream, logTime} = require "gulp-task-helper"
 
-rename = require("gulp-rename")
+rename = require "gulp-rename"
 
 renameFn = (path) -> path.extname = ".ts"
 

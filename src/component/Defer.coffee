@@ -1,7 +1,7 @@
 import toComponent from './toComponent'
 import TranComponent from './TranComponent'
-{funcString, newLine, intersect} = require('dc-util')
-{renew} = require('lazy-flow')
+import {funcString, newLine, intersect} from 'dc-util'
+import {renew} from 'lazy-flow'
 
 INIT = 0
 FULFILL = 1

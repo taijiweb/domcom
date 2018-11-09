@@ -1,6 +1,7 @@
-_ = require('lodash')
-path = require('path')
-webpack = require("webpack")
+_ = require 'lodash'
+path = require 'path'
+webpack = require "webpack"
+WebpackDevServer = require "webpack-dev-server"
 
 exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
   plugins = options.plugins || [ new webpack.NoEmitOnErrorsPlugin() ]
@@ -54,7 +55,6 @@ exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
       inline: true
   config
 
-WebpackDevServer = require("webpack-dev-server")
 exports.makeWebpackDevServer = (entry, filename, options={}) ->
 
   options.plugins = options.plugins || [

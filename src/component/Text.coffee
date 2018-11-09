@@ -1,6 +1,6 @@
-import BaseComponent from './BaseComponent')
+import BaseComponent from './BaseComponent'
 import {funcString, newLine, value, dynamic} from 'dc-util'
-import {domField, domValue}  from '../dom-util'
+import {domField, domValue} from '../dom-util'
 
 import {setText} from '../property/attrs'
 

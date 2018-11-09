@@ -1,4 +1,4 @@
-import {isEven} = require('dc-util')
+import {isEven} from 'dc-util')
 
 import isComponent from './component/isComponent'
 import Tag from './component/Tag'
@@ -8,7 +8,7 @@ import {getBindProp} from './dom-util'
 exports.isAttrs = isAttrs = (item) ->
   typeof item == 'object' && item!=null && !isComponent(item) && !(item instanceof Array)
 
-{isArray, isObject} = require('dc-util')
+{isArray, isObject} from 'dc-util')
 
 attrsChildren = (args) ->
   attrs = args[0]

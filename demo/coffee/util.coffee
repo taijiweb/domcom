@@ -3,10 +3,10 @@
 
 dc.directives $options: dc.$options,  $model: dc.$model
 
-{eachDemo1, eachDemo2, eachDemo3, eachDemo4} from'./demo-each')
-chooseFramework from'./demo-choose-web-framework')
+import {eachDemo1, eachDemo2, eachDemo3, eachDemo4} from'./demo-each'
+chooseFramework from'./demo-choose-web-framework'
 
-{demoEachPush, demoIfEach, demoModelOnMultipleInput} from'./demo-debug')
+import {demoEachPush, demoIfEach, demoModelOnMultipleInput} from './demo-debug'
 
 exports.demoMap =
   'choose web framework':chooseFramework

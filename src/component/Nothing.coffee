@@ -1,5 +1,5 @@
-import BaseComponent = require('./BaseComponent')
-import {newLine} = require('dc-util')
+import BaseComponent from './BaseComponent'
+import {newLine} from 'dc-util'
 
 export default class Nothing extends BaseComponent
   constructor: ->

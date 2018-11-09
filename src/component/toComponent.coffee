@@ -9,7 +9,7 @@ module.exports = toComponent = (item) ->
   else if typeof item == 'function' then new Text(item)
 
   else if item instanceof Array
-    List = require('./List') # avoid loop require
+    List = require('./List').default # avoid loop require
     new List(for e in item then toComponent(e))
 
   else if !item? then new Nothing()

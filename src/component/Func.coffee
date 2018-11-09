@@ -1,7 +1,7 @@
-import toComponent = require('./toComponent')
-import TranComponent = require('./TranComponent')
-{funcString, newLine} = require('dc-util')
-{renew} = require('lazy-flow')
+import toComponent from './toComponent'
+import TranComponent from './TranComponent'
+import {funcString, newLine} from 'dc-util'
+import {renew} from 'lazy-flow'
 
 export default class Func extends TranComponent
   constructor: (func) ->

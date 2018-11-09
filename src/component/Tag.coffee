@@ -1,4 +1,4 @@
-import {refreshComponents}, dc from '../dc'
+import dc, {refreshComponents} from '../dc'
 import {domField, domValue} from '../dom-util'
 import {directiveRegistry} from '../dc'
 import classFn from '../property/classFn'
@@ -6,11 +6,11 @@ import {styleFrom} from '../property/style'
 import {attrToPropName} from '../property/attrs'
 import {domEventHandler, addEventListenerMap, addHandlerToCallbackArray} from '../property/events'
 import BaseComponent from './BaseComponent'
-import {funcString, newLine, cloneObject} = require('dc-util')
-import {flow, react} = require('lazy-flow')
+import {funcString, newLine, cloneObject} from 'dc-util'
+import {flow, react} from 'lazy-flow'
 import toComponentArray from './toComponentArray'
-import {binaryInsert} = require('dc-util')
-import {createElement, cacheElement} = require('dc-util/element-pool')
+import {binaryInsert} from 'dc-util'
+import {createElement, cacheElement} from 'dc-util/element-pool'
 
 export default class Tag extends BaseComponent
 
@@ -538,6 +538,6 @@ export default class Tag extends BaseComponent
         s += children[0].toString(indent+2)
       s += newLine("</#{this.tagName}>", indent+2)
 
-{mixin} = require('dc-util')
+import {mixin} from 'dc-util'
 ListMixin from './ListMixin'
 mixin(Tag.prototype, ListMixin)

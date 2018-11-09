@@ -1,4 +1,4 @@
-import TestComponent = require('./TranComponent')
+import TestComponent from './TranComponent'
 
 export default class If extends TranComponent
   constructor: (view, model) ->

@@ -1,8 +1,8 @@
-import {List, Tag, toBlock}  from './component'
+import {List, Tag, toBlock} from './component'
 
-{isArray, isObject} = require('dc-util')
+{isArray, isObject} from 'dc-util'
 
-{watchItems, isEachObjectSystemKey} = require('dc-watch-list')
+{watchItems, isEachObjectSystemKey} from 'dc-watch-list'
 
 defaultItemFunction = (item) -> item
 

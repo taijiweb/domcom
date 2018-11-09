@@ -1,4 +1,4 @@
-{expect, iit, idescribe, nit, ndescribe, newDemoNode} = require('bdd-test-helper')
+import {expect, iit, idescribe, nit, ndescribe, newDemoNode} from 'bdd-test-helper'
 
 import {newDemoNode} from './helper'
 

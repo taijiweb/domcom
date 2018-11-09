@@ -1,8 +1,8 @@
-import Tag = require('./Tag')
-import {funcString, newLine, mixin} = require('dc-util')
-{domValue, domField} = require('../dom-util')
-import {setText} = require('../property/attrs')
-import {createElement} = require('dc-util/element-pool')
+import Tag from './Tag'
+import {funcString, newLine, mixin} from 'dc-util'
+import {domValue, domField} from '../dom-util'
+import {setText} from '../property/attrs'
+import {createElement} from 'dc-util/element-pool'
 
 # !!! Warning:
 # By default, Html does not escape to safe the html.
@@ -107,12 +107,12 @@ Html.HtmlMixin = HtmlMixin = {
 
 }
 
-ListMixin = require('./ListMixin')
+ListMixin from './ListMixin'
 for method of ListMixin
   do (method=method) ->
     Html.prototype[method] = ->
       dc.error("Html component has no children components, do not call ListMixin method(#{method}) on it")
 
-extend = require('extend')
+import extend from 'extend'
 
 extend(Html.prototype, HtmlMixin)

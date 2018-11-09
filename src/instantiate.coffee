@@ -4,14 +4,14 @@ If, Case, Func, List,
 Pick
 Nothing, Defer} from './component'
 
-{isEven} = require('dc-util')
+{isEven} from 'dc-util'
 
 exports.isAttrs = isAttrs = (item) ->
   typeof item == 'object' && item!=null && !isComponent(item) && !(item instanceof Array)
 
-{isArray, isObject} = require('dc-util')
+{isArray, isObject} from 'dc-util'
 
-{renew} = require('lazy-flow')
+{renew} from 'lazy-flow'
 
 attrsChildren = (args) ->
   attrs = args[0]
