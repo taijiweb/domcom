@@ -1,15 +1,15 @@
 import BaseComponent from './BaseComponent'
-import {funcString, newLine, value, dynamic} from 'dc-util'
-import {domField, domValue} from '../dom-util'
+{funcString, newLine, value, dynamic} = require 'dc-util'
+{domField, domValue} = require '../dom-util'
 
-import {setText} from '../property/attrs'
+{setText} = require '../property/attrs'
 
 if 'textContent' of document.documentElement
   hasTextContent = true
 else
   hasTextContent = false
 
-export default class Text extends BaseComponent
+export default module.exports = class Text extends BaseComponent
 
   isText: true
 

@@ -1,6 +1,6 @@
 import toComponent from './toComponent'
 
-export default  toComponentArray = (item) ->
+export default module.exports = toComponentArray = (item) ->
   if !item then []
 
   else if item instanceof Array

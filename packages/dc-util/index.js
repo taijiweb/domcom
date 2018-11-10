@@ -1,6 +1,9 @@
 var dupStr, globalDcid, hasOwn, isArray,
   __slice = [].slice;
 
+//export default
+let exports = module.exports = {}
+
 exports.isArray = isArray = function(item) {
   return Object.prototype.toString.call(item) === '[object Array]';
 };
@@ -299,3 +302,5 @@ exports.makeReactMap = function(description) {
   }
   return result;
 };
+
+export default exports

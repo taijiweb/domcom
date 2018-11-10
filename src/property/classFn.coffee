@@ -1,8 +1,8 @@
-import {react} from 'lazy-flow'
-import {domField} from '../dom-util'
-import {isArray} from 'dc-util'
+{react} = require 'lazy-flow'
+{domField} = require '../dom-util'
+{isArray} = require 'dc-util'
 
-export default classFn = (items...) ->
+export default module.exports = classFn = (items...) ->
   classMap = {}
 
   method = ->

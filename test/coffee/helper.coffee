@@ -1,5 +1,5 @@
 #export default
-exports = {}
+module.exports = exports = {}
 
 exports.newDemoNode = (id) ->
   node = document.createElement('div')

@@ -1,4 +1,4 @@
-import {expect, iit, idescribe, nit, ndescribe, ddescribe} from 'bdd-test-helper'
+{expect, iit, idescribe, nit, ndescribe, ddescribe} = require 'bdd-test-helper'
 
 {see
 Component, TranBlock, Tag, Text,

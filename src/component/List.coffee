@@ -1,15 +1,15 @@
 import BaseComponent from './BaseComponent'
 
-import {newLine} from 'dc-util'
+{newLine} = require 'dc-util'
 
 import toComponentArray from './toComponentArray'
 
-import {mixin} from 'dc-util'
+{mixin} = require 'dc-util'
 import ListMixin from './ListMixin'
 
-import {binaryInsert} from 'dc-util'
+{binaryInsert} = require 'dc-util'
 
-export default  exports = class List extends BaseComponent
+export default  module.exports =  class List extends BaseComponent
   constructor: (children) ->    
     super()
     this.children = toComponentArray(children)

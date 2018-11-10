@@ -1,6 +1,6 @@
 ###*test-component
 ###
-import {expect, iit, idescribe, nit, ndescribe, rtimeout, rinterval} from 'bdd-test-helper'
+{expect, iit, idescribe, nit, ndescribe, rtimeout, rinterval} = require 'bdd-test-helper'
 
 {isComponent} = dc
 
@@ -12,10 +12,12 @@ describe "test dc", ->
     nit 'should cache DomComponent', ->
       expect(dc(document)).to.equal dc(document)
 
-    it 'dc(document).bind should be a function', ->
+    nit 'dc(document).bind should be a function', ->
       x = 0
+      #now dc(...) will not generate ComNode
       dc(document).bind('onclick', -> x = 1)
 
 
-    it 'dc() chaining call', ->
+    nit 'dc() chaining call', ->
+      #pipe is a deprecated idea, will not to implement it.
       comp = dc.div(at('x y')).data({x, y})

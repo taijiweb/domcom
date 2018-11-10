@@ -2,6 +2,7 @@ var flow, funcString, lazy, newLine, react, renew, see, _ref,
   __slice = [].slice;
 
 _ref = require('dc-util'), newLine = _ref.newLine, funcString = _ref.funcString;
+debugger;
 
 react = function(method) {
   if (method.invalidate) {
@@ -84,7 +85,7 @@ lazy = function(method) {
   return method;
 };
 
-module.exports = flow = function() {
+flow = function() {
   var cacheValue, computation, dep, deps, reactive, _i, _j, _k, _len, _len1;
   deps = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), computation = arguments[_i++];
   if (!deps.length) {
@@ -417,3 +418,6 @@ flow.binary = function(x, y, binaryFn) {
     return binaryFn(x, y);
   }
 };
+
+module.exports = flow
+export default flow

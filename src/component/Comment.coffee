@@ -1,11 +1,11 @@
 import BaseComponent from './BaseComponent'
 import Text from './Text'
 
-import {funcString, newLine} from 'dc-util'
+{funcString, newLine} = require 'dc-util'
 
-import {domValue} from '../dom-util'
+{domValue} = require '../dom-util'
 
-export default class Comment extends Text
+export default module.exports = class Comment extends Text
   constructor: (text) ->
     super(text)
 

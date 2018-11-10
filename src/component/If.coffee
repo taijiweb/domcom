@@ -1,12 +1,12 @@
 import toComponent from './toComponent'
 import TestComponent from './TestComponent'
-import {funcString, newLine, intersect} from 'dc-util'
-import {renew} from 'lazy-flow'
+{funcString, newLine, intersect} = require 'dc-util'
+{renew} = require 'lazy-flow'
 import mergeIf from '../mergeIf'
 
 ObjectDefineProperty = Object.defineProperty
 
-export default class If extends TestComponent
+export default module.exports = class If extends TestComponent
   constructor: (test, then_, else_, merge, recursive, forceIf=false) ->
     if then_ == else_
       return toComponent then_

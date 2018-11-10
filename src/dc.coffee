@@ -1,5 +1,5 @@
 import DomNode from './DomNode'
-import {addEventListener} from './dom-util'
+{addEventListener} = require './dom-util'
 import Component from './component/Component'
 
 ###
@@ -13,7 +13,7 @@ import Component from './component/Component'
   # can be a functioin to generate the data
   # can also be an instance of class Model
 ###
-export default  dc = (template, model) ->
+export default module.exports = dc = (template, model) ->
   comp = new Component(template, model)
   return comp
 

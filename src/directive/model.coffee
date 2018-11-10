@@ -1,6 +1,6 @@
-import {getBindProp} from '../dom-util'
+{getBindProp} = require '../dom-util'
 
-export default  (binding, eventName) -> (comp) ->
+export default module.exports = (binding, eventName) -> (comp) ->
   {props} = comp
   bindProp = getBindProp(comp)
   comp.setProp(bindProp, binding, props, 'Props')

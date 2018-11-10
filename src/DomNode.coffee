@@ -1,6 +1,6 @@
-import {newLine} from 'dc-util'
+{newLine} = require 'dc-util'
 
-import {addEventListener, removeEventListener} from './dom-util'
+{addEventListener, removeEventListener} = require './dom-util'
 
 processProp = (props, cache, prop, value) ->
   if !value?
@@ -15,7 +15,7 @@ processProp = (props, cache, prop, value) ->
     if !cacheProps[prop]? || value!=cacheProps[prop]
       cacheProps[prop] = this.node[prop] = value
 
-export default class DomNode
+export default module.exports = class DomNode
   constructor: (@node) ->
     if node instanceof Node
       this.cacheProps = {}

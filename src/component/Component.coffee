@@ -1,8 +1,8 @@
 import Emitter from '../Emitter'
 
-import {normalizeDomElement} from '../dom-util'
-import {newDcid, isArray} from 'dc-util'
-import {flow} from 'lazy-flow'
+{normalizeDomElement} = require '../dom-util'
+{newDcid, isArray} = require 'dc-util'
+{flow} = require 'lazy-flow'
 flowBind = flow.bind
 import isComponent from './isComponent'
 import dc from '../dc'
@@ -11,7 +11,7 @@ import dc from '../dc'
   所有部件的基类
 
 ###
-export default class Component extends Emitter
+export default module.exports = class Component extends Emitter
   constructor: (template, model) ->
     super()
     this.view = null

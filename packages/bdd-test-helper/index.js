@@ -1,4 +1,6 @@
-let exports = {}
+//export default
+let exports = module.exports = {}
+
 if (typeof window === 'undefined') {
     var chai = require('chai');
 } else {

@@ -4,8 +4,6 @@ _ref = require('dc-util'), newLine = _ref.newLine, funcString = _ref.funcString;
 
 _ref1 = flow = require("lazy-flow"), bind = _ref1.bind, duplex = _ref1.duplex, react = _ref1.react;
 
-module.exports = flow;
-
 atMethod = function(method) {
   return function(root, path) {
     var len, reactive;
@@ -138,3 +136,6 @@ flow.paths = function(obj, pathPattern) {
   }
   return flowPaths;
 };
+
+module.exports = flow
+export default flow

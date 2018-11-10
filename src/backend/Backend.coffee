@@ -35,4 +35,7 @@ export default class Backend
   #创建部件DOM
   #大概不会作为公开API，计划被部件调用
   create:(component) ->
+
+module.exports = Backend
+
     

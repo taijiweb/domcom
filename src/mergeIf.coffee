@@ -2,22 +2,22 @@ import Tag from './component/Tag'
 import List from './component/List'
 import Nothing from './component/Nothing'
 
-import {domEventHandlerFromArray} from './property/events'
+{domEventHandlerFromArray} = require './property/events'
 
 import flow from 'lazy-flow/addon'
 flowIf = flow.if_
 
 #export default
-exports = {}
+module.exports = exports
 
-# do not need toBlock
+# do not need toComponent
 # do not need check whether test is a function
 # because mergeIf is called in If component constructor,
 # after then_, else_ was converted to component
 # and check test is a function
-exports.mergeIf = (test, then_, else_, recursive) ->
+module.exports = exports = mergeIf = (test, then_, else_, recursive) ->
 
-  If from './component/If'
+  If = require('./component/If')
 
   if then_==else_
     return then_

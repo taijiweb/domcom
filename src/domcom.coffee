@@ -7,28 +7,27 @@ if typeof window != 'undefined'
 
 # dc.DomNode from './DomNode'
 
-dc.EventMixin =require('./dc-event').default
+dc.EventMixin =require('./dc-event')
 
-#Object.assign(dc, dc.flow, require('lazy-flow'))
-#require('lazy-flow/addon')
-#dc.bindings = dc.flow.bindings
-#require('dc-watch-list')
+Object.assign(dc, dc.flow, require('lazy-flow'))
+require('lazy-flow/addon')
+dc.bindings = dc.flow.bindings
+require('dc-watch-list')
 import backend from './backend'
 
 Object.assign(dc,
   backend,
-  require('dc-util').default,
-  require('./dom-util').default,
-  require('./dc-render').default,
+  require('dc-util'),
+  require('./dom-util'),
+  require('./dc-render'),
 
   # components
-  require('./component').default,
-  require('./backend').default,
-  require('./instantiate').default,
+  require('./component'),
+  require('./backend'),
+  require('./instantiate'),
 
-  require('./dc-error').default
+  require('./dc-error')
 )
-debugger
 
 dc.property = property
 dc.builtinDirective = builtinDirective
@@ -37,7 +36,7 @@ Object.assign(dc,
   dc.builtinDirective
 )
 
-export default dc
+export default module.exports = dc
 
 
 

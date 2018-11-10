@@ -3,7 +3,7 @@ import Html from './Html'
 import React from './React'
 import Vue from './Vue'
 
-export default {
+module.exports = exports = {
   Angular,
   Html,
   React,
@@ -13,3 +13,5 @@ export default {
   react: -> new React()
   vue: -> new Vue()
 }
+
+export default exports

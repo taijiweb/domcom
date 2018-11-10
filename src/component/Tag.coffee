@@ -1,19 +1,17 @@
 import dc from '../dc'
-import {domField, domValue} from '../dom-util'
+{domField, domValue} = require '../dom-util'
 import classFn from '../property/classFn'
-{styleFrom} = require('../property/style').default
-{attrToPropName} = require('../property/attrs').default
-{domEventHandler, addEventListenerMap, addHandlerToCallbackArray} = require('../property/events').default
+{styleFrom} = require('../property/style')
+{attrToPropName} = require('../property/attrs')
+{domEventHandler, addEventListenerMap, addHandlerToCallbackArray} = require('../property/events')
 import BaseComponent from './BaseComponent'
-{funcString, newLine, cloneObject} = require('dc-util').default
-{flow, react} = require('lazy-flow').default
+{funcString, newLine, cloneObject} = require('dc-util')
+{flow, react} = require('lazy-flow')
 import toComponentArray from './toComponentArray'
-{binaryInsert} = require('dc-util').default
-{createElement, cacheElement}  = require('dc-util/element-pool').default
+{binaryInsert} = require('dc-util')
+{createElement, cacheElement}  = require('dc-util/element-pool')
 
-debugger
-
-export default class Tag extends BaseComponent
+export default module.exports = class Tag extends BaseComponent
 
   # used for Tag.clone(...)
   FakeTag: -> Tag
@@ -95,7 +93,7 @@ export default class Tag extends BaseComponent
         this.hasActiveProperties = true
         if typeof value == 'function'
           value = value()
-        className.Object.assign(value)
+        className.extend(value)
 
       # dom event
       else if key[..1]=='on'
@@ -305,7 +303,7 @@ export default class Tag extends BaseComponent
     this
 
   addClass: (items...) ->
-    this.className.Object.assign(items)
+    this.className.extend(items)
     if  this.node && !this.className.valid
       this.hasActiveProperties = true
       this.invalidate()
@@ -532,6 +530,7 @@ export default class Tag extends BaseComponent
         s += children[0].toString(indent+2)
       s += newLine("</#{this.tagName}>", indent+2)
 
-import {mixin} from 'dc-util'
+dcutil = require 'dc-util'
+{mixin} = dcutil
 import ListMixin from './ListMixin'
 mixin(Tag.prototype, ListMixin)

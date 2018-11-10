@@ -1,6 +1,6 @@
 import TranComponent from './TranComponent'
 
-export default class MVC extends TranComponent
+export default module.exports = class MVC extends TranComponent
   constructor: (view, model) ->
     super()
     this._view = view

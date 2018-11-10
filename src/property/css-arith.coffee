@@ -1,7 +1,7 @@
 import Tag from '../component/Tag'
 
 #export default
-exports = {}
+module.exports = exports = {}
 
 reNonUnit = /[\d\s\.-]/g
 

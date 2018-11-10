@@ -1,4 +1,4 @@
-import {runDemo, demoMap} from'./util'
+{runDemo, demoMap} = require './util'
 
 dc.alwaysRender = true
 

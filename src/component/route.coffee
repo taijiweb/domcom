@@ -23,9 +23,9 @@
 import TranComponent from './TranComponent'
 import isComponent from './isComponent'
 import toComponent from './toComponent'
-import {isEven, matchCurvedString} from 'dc-util'
+{isEven, matchCurvedString} = require 'dc-util'
 
-export default  route = (routeList..., otherwise, baseIndex) -> _route(routeList, otherwise, baseIndex, 0)
+export default module.exports = route = (routeList..., otherwise, baseIndex) -> _route(routeList, otherwise, baseIndex, 0)
 
 _route = (routeList, otherwise, baseIndex, defaultBaseIndex) ->
 

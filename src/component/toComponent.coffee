@@ -1,15 +1,15 @@
 import isComponent from './isComponent'
 import Nothing from './Nothing'
 import Text from './Text'
-import {react} from 'lazy-flow'
+{react} = require 'lazy-flow'
 
-export default  toComponent = (item) ->
+export default module.exports = toComponent = (item) ->
   if isComponent(item) then item
 
   else if typeof item == 'function' then new Text(item)
 
   else if item instanceof Array
-    List = require('./List').default # avoid loop require
+    List = require('./List') # avoid loop require
     new List(for e in item then toComponent(e))
 
   else if !item? then new Nothing()

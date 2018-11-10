@@ -1,9 +1,9 @@
 import toComponent from './toComponent'
 import TranComponent from './TranComponent'
-import {funcString, newLine} from 'dc-util'
-import {renew} from 'lazy-flow'
+{funcString, newLine} = require 'dc-util'
+{renew} = require 'lazy-flow'
 
-export default class Func extends TranComponent
+export default module.exports = class Func extends TranComponent
   constructor: (func) ->
     super()
 

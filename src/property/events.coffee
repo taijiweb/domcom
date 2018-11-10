@@ -1,5 +1,5 @@
 #export default
-exports = {}
+module.exports = exports = {}
 
 exports.domEventHandler = (event) ->
   if component = this.component

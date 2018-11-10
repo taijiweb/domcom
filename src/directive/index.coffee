@@ -1,11 +1,14 @@
 import $model from './model'
 import $bind from './bind'
-import {$show, $hide} from './show-hide'
+{$show, $hide} = require './show-hide'
 import $options from './options'
-export default {
+
+module.exports = {
   $model
   $bind
   $show
   $hide
   $options
 }
+
+export default module.exports

@@ -1,8 +1,8 @@
 import Tag from './Tag'
-import {funcString, newLine, mixin} from 'dc-util'
-import {domValue, domField} from '../dom-util'
-import {setText} from '../property/attrs'
-import {createElement} from 'dc-util/element-pool'
+{funcString, newLine, mixin} = require 'dc-util'
+{domValue, domField} = require '../dom-util'
+{setText} = require '../property/attrs'
+{createElement} = require 'dc-util/element-pool'
 
 # !!! Warning:
 # By default, Html does not escape to safe the html.
@@ -13,7 +13,7 @@ import {createElement} from 'dc-util/element-pool'
 # this is Html Component, which take some text as innerHTML
 # for <html> ... </html>, please use tagHtml instead
 
-export default class Html extends Tag
+export default module.exports = class Html extends Tag
 
   constructor: (attrs, text, transform) ->
 

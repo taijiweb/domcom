@@ -1,15 +1,15 @@
 import classFn from './classFn'
 
 #export default
-exports = {}
+module.exports = exports = {}
 
 Object.assign(exports,
-  require('./attrs').default,
-  require('./classFn').default
-  require('./style').default
-  require('./css-arith').default
-  require('./events').default,
-  require('./delegate-event').default,
+  require('./attrs'),
+  require('./classFn')
+  require('./style')
+  require('./css-arith')
+  require('./events'),
+  require('./delegate-event'),
   {classFn: classFn}
 )
 

@@ -1,6 +1,6 @@
-import {cloneObject} from 'dc-util'
+{cloneObject} = require 'dc-util'
 #export default
-exports = {}
+module.exports = exports = {}
 
 exports.styleFrom = styleFrom = (value) ->
   if typeof value == 'string'

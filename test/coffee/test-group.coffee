@@ -1,5 +1,5 @@
-import {expect, iit, idescribe, nit, ndescribe} from 'bdd-test-helper'
-import {newDemoNode} from './helper'
+{expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
+{newDemoNode} = require './helper'
 
 {isComponent
 Component, TranBlock, Tag, Text,

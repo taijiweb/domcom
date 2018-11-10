@@ -1,4 +1,4 @@
-import {expect, iit, idescribe, nit, ndescribe, ddescribe} from 'bdd-test-helper'
+{expect, iit, idescribe, nit, ndescribe, ddescribe} = require 'bdd-test-helper'
 
 {util
 bind, duplex, see
@@ -18,7 +18,7 @@ describe 'domcom/properties/utilities', ->
     x = attrToPropName("background-color")
     expect(x).to.equal 'backgroundColor'
 
-  iit 'cssAdd 1', ->
+  it 'cssAdd 1', ->
     comp = p({style:{width:'1px'}})
     result = comp.cssAdd('width', 2)
     expect(result).to.equal(comp)
@@ -60,13 +60,13 @@ describe "domcom/properties/classFn", ->
     expect(x.valid).to.equal false
     expect(x()).to.equal('a')
     expect(x.valid).to.equal true
-    x.Object.assign('a')
+    x.extend('a')
     expect(x.valid).to.equal true
     expect(x()).to.equal('a')
-    x.Object.assign('b')
+    x.extend('b')
     expect(x.valid).to.equal false
     expect(x()).to.equal('a b')
-    x.Object.assign('!b')
+    x.extend('!b')
     expect(x.valid).to.equal false
     expect(x()).to.equal('a')
 

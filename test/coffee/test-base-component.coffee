@@ -1,6 +1,6 @@
-import {expect, iit, idescribe, nit, ndescribe} from 'bdd-test-helper'
+{expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
 
-import {newDemoNode} from './helper'
+{newDemoNode} = require './helper'
 
 {
 bindings, see

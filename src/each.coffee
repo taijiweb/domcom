@@ -1,8 +1,8 @@
-import {List, Tag, toBlock} from './component'
+{List, Tag, toComponent} = require './component'
 
-import {isArray, isObject} from 'dc-util'
+{isArray, isObject} = require 'dc-util'
 
-import {watchItems, isEachObjectSystemKey} from 'dc-watch-list'
+{watchItems, isEachObjectSystemKey} = require 'dc-watch-list'
 
 #export default
 exports = {}
@@ -39,9 +39,9 @@ _each = (attrs, items, options) ->
 
   if isArray(items)
     listComponent.getItemComponent = getItemComponent = (item, itemIndex) ->
-      itemComponent = toBlock(listComponent.itemFunc(item, itemIndex, items, listComponent))
+      itemComponent = toComponent(listComponent.itemFunc(item, itemIndex, items, listComponent))
       if listComponent.separatorFunc && itemIndex
-        separatorComponent = toBlock(listComponent.separatorFunc(itemIndex, item, items, listComponent))
+        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, item, items, listComponent))
         itemComponent = new List([separatorComponent, itemComponent])
       itemComponent.itemIndex = itemIndex
       itemComponent
@@ -50,9 +50,9 @@ _each = (attrs, items, options) ->
     listComponent.getItemComponent = getItemComponent = (key, itemIndex) ->
       value = items[key]
       keyChildMap[key] = itemIndex
-      itemComponent = toBlock(listComponent.itemFunc(value, key, itemIndex, items, listComponent))
+      itemComponent = toComponent(listComponent.itemFunc(value, key, itemIndex, items, listComponent))
       if listComponent.separatorFunc && itemIndex
-        separatorComponent = toBlock(listComponent.separatorFunc(itemIndex, value, key, items, listComponent))
+        separatorComponent = toComponent(listComponent.separatorFunc(itemIndex, value, key, items, listComponent))
         itemComponent = new List([separatorComponent, itemComponent])
       itemComponent.$watchingKey = key
       itemComponent.itemIndex = itemIndex
@@ -143,4 +143,4 @@ exports.funcEach = (attrs, itemsFunc, options) ->
 
   component
 
-export default exports
+export default module.exports = exports

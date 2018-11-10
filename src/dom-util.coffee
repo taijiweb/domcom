@@ -1,7 +1,7 @@
-import {renew} from 'lazy-flow'
+{renew} = require 'lazy-flow'
 
 #export default
-exports = {}
+module.exports = exports = {}
 
 if typeof window != 'undefined'
   exports.normalizeDomElement = (domElement) ->
@@ -94,10 +94,10 @@ exports.domValue = (value, component) ->
 # a BaseBlock can have only one reference of one component in all of its family
 # it's the responsiblility of the user program of domcom to keep no conflicting reference while exceeding TranBlock
 exports.extendChildFamily = (family, child) ->
-  for dcid of child.family
-    if family[dcid]
-      throw new Error 'do not allow to have the same component to be referenced in different location of one List'
-    family[dcid] = true
+#  for dcid of child.family
+#    if family[dcid]
+#      throw new Error 'do not allow to have the same component to be referenced in different location of one List'
+#    family[dcid] = true
   return
 
 export default exports

@@ -1,16 +1,16 @@
-import {isEven} from 'dc-util'
+{isEven} = require 'dc-util'
 
 import isComponent from './component/isComponent'
 import Tag from './component/Tag'
-import {getBindProp} from './dom-util'
+{getBindProp} = require './dom-util'
 
 #export default
-exports = {}
+module.exports = exports = {}
 
 exports.isAttrs = isAttrs = (item) ->
   typeof item == 'object' && item!=null && !isComponent(item) && !(item instanceof Array)
 
-import {isArray, isObject} from 'dc-util'
+{isArray, isObject} = require 'dc-util'
 
 attrsChildren = (args) ->
   attrs = args[0]
@@ -56,7 +56,7 @@ exports.tagHtml = (args...) ->
 
 inputTypes = 'text checkbox radio date email number'.split(' ')
 
-exports.input = (type, attrs, value) ->
+exports.input = input = (type, attrs, value) ->
   if typeof type == 'object'
     value = attrs
     attrs = type

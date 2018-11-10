@@ -1,13 +1,13 @@
 import toComponent from './toComponent'
 import TranComponent from './TranComponent'
-import {funcString, newLine, intersect} from 'dc-util'
-import {renew} from 'lazy-flow'
+{funcString, newLine, intersect} = require 'dc-util'
+{renew} = require 'lazy-flow'
 
 INIT = 0
 FULFILL = 1
 REJECT = 2
 
-export default class Defer extends TranComponent
+export default module.exports = class Defer extends TranComponent
   constructor: (@promise, fulfill, reject, init) ->
 
     super()

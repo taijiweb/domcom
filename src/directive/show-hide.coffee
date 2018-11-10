@@ -11,4 +11,4 @@ exports.$show = showHide(true)
 
 exports.$hide = showHide(false)
 
-export default exports
+export default module.exports = exports

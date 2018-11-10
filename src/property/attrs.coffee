@@ -1,11 +1,11 @@
-import {isComponent} from '../component/isComponent'
-import {extendEventValue} from './events'
+{isComponent} = require '../component/isComponent'
+{extendEventValue} = require './events'
 import classFn from './classFn'
-import {styleFrom} from './style'
-import {domField} from '../dom-util'
+{styleFrom} = require './style'
+{domField} = require '../dom-util'
 
 #export default
-exports = {}
+module.exports = exports = {}
 
 exports.extendAttrs = (attrs, obj, options={}) ->
   if !obj then return attrs

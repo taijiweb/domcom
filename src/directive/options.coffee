@@ -1,9 +1,9 @@
-import {txt} from '../instantiate'
-import {option} from '../tag'
+{txt} = require '../instantiate'
+{option} = require '../tag'
 import Tag from '../component/Tag'
 
 # options directive，used for select tag
-export default  (items, attrs) -> (comp) ->
+export default module.exports = (items, attrs) -> (comp) ->
   if !(comp instanceof Tag) || comp.tagName!='select'
     throw new Error 'options should be only used in select tag'
   options = []

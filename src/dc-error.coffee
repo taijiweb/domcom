@@ -4,7 +4,7 @@ stackReg = /at\s+(.*)\s+\((.*):(\d*):(\d*)\)/gi
 stackReg2 = /at\s+()(.*):(\d*):(\d*)/gi
 
 #export default
-exports = {}
+module.exports = exports = {}
 
 stacktraceMessage = (message, stackIndex = 1) ->
   if message

@@ -7,7 +7,7 @@ isArray = require('dc-util').isArray;
 
 extend = require('extend');
 
-module.exports = flow;
+exports = flow;
 
 slice = Array.prototype.slice;
 

@@ -1,6 +1,6 @@
 import Component from './Component'
 
-export default class TranComponent extends Component
+export default module.exports = class TranComponent extends Component
 
   isTranComponent: true
 

@@ -1,11 +1,11 @@
 # if not using binarySearch, it's too expensive to update new index after inserting or removing child
-import {isArray, substractSet, binarySearch, binaryInsert} from 'dc-util'
+{isArray, substractSet, binarySearch, binaryInsert} = require 'dc-util'
 
 import isComponent from './isComponent'
 import toComponent from './toComponent'
 import Nothing from './Nothing'
 
-{extendChildFamily} = require('../dom-util').default
+{extendChildFamily} = require('../dom-util')
 
 insertIndex = (index, indexes) ->
   i = binarySearch(index, indexes)
@@ -46,7 +46,7 @@ setNextNodes = (children, nextNode, last, first) ->
       break
   return
 
-export default
+export default module.exports =
 
   initListMixin: ->
     this.updatingIndexes = []

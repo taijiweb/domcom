@@ -2,7 +2,7 @@
 Model, View, Component等很多类的基类
 管理注册／注销回调函数(on/once/off/offall)和事件发布(emit)
 ###
-export default class Emitter
+export default module.exports = class Emitter
   constructor: () ->
 
   ###注册事件

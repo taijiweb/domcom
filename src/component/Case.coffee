@@ -1,9 +1,9 @@
 import toComponent from './toComponent'
 import TestComponent from './TestComponent'
-import {foreach, funcString, newLine, intersect} from 'dc-util'
-import {renew} from 'lazy-flow'
+{foreach, funcString, newLine, intersect} = require 'dc-util'
+{renew} = require 'lazy-flow'
 
-export default class Case extends TestComponent
+export default module.exports = class Case extends TestComponent
   constructor: (test, @map, else_, forceCase=false) ->
     super(test)
 

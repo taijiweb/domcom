@@ -103,3 +103,4 @@ export default class BaseComponent extends Component
 
     node
 
+module.exports = BaseComponent

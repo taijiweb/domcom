@@ -1,4 +1,4 @@
-import {expect, iit, idescribe, nit, ndescribe, ddescribe} from 'bdd-test-helper'
+{expect, iit, idescribe, nit, ndescribe, ddescribe} = require 'bdd-test-helper'
 
 {bindings, duplex, flow, see
 classFn, styleFrom, extendAttrs
@@ -11,7 +11,7 @@ import controls from '../../demo/coffee/demo-controls'
 
 import makeDomComponentTest from '../makeDomComponentTest'
 
-import {demoMap, runDemo} from '../../demo/coffee/util'
+{demoMap, runDemo} = require '../../demo/coffee/util'
 
 makeDomComponentTest(demoMap, "domcom/demoMap")
 #, 'auto width edit', false

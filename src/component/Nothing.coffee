@@ -1,7 +1,7 @@
 import BaseComponent from './BaseComponent'
-import {newLine} from 'dc-util'
+{newLine} = require 'dc-util'
 
-export default class Nothing extends BaseComponent
+export default module.exports = class Nothing extends BaseComponent
   constructor: ->
     super()
 

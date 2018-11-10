@@ -1,5 +1,5 @@
-import {expect, iit, idescribe, nit, ndescribe} from 'bdd-test-helper'
-import {newDemoNode} from './helper'
+{expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
+{newDemoNode} = require './helper'
 
 {see, flow
 Component, Tag, Text, List, If
@@ -13,6 +13,7 @@ describe 'domcom/test-merge-if', ->
   it 'should construct mergeIf(x, t1, t2)', ->
     x = see 0
     t1 = txt 1; t2 = txt 2
+    debugger
     comp = mergeIf(x, t1, t2)
     expect(comp.isText).to.equal(true)
     comp.mount()

@@ -1,5 +1,5 @@
-import {expect, iit, idescribe, nit, ndescribe} from 'bdd-test-helper'
-import {newDemoNode} from './helper'
+{expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
+{newDemoNode} = require './helper'
 
 {see, flow
 Component, TranBlock, Tag, Text,
@@ -25,7 +25,9 @@ describe 'test-singleton: If, Case, Func, Pick, ...', ->
       expect(comp).to.not.equal t
       expect(comp.else_).to.equal t
 
-    it 'should compute if_((-> x), p(t), t).family', ->
+    nit 'should compute if_((-> x), p(t), t).family', ->
+      # will change the optimazation method
+      # change the method to avoid using mutiple same component in the  dom tree.
       t = txt(1)
       x = 0
       expect(if_((-> x),  p(t), t).family[t.dcid]).to.equal true

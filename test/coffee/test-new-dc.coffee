@@ -1,6 +1,6 @@
-import {expect, iit, idescribe, nit, ndescribe} from 'bdd-test-helper'
+{expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
 
-import {newDemoNode} from './helper'
+{newDemoNode} = require './helper'
 
 {
 Tag, Text, List, txt, list
@@ -18,7 +18,6 @@ describe "test-base-component", ->
   describe 'update BaseBlock', ->
     it 'should dc generate a component', ->
       comp = dc()
-      debugger
       expect(isComponent(comp)).to.be.true
 
     it 'dc() chaining call', ->
