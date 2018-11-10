@@ -18,7 +18,7 @@ describe 'domcom/properties/utilities', ->
     x = attrToPropName("background-color")
     expect(x).to.equal 'backgroundColor'
 
-  it 'cssAdd 1', ->
+  iit 'cssAdd 1', ->
     comp = p({style:{width:'1px'}})
     result = comp.cssAdd('width', 2)
     expect(result).to.equal(comp)
@@ -60,13 +60,13 @@ describe "domcom/properties/classFn", ->
     expect(x.valid).to.equal false
     expect(x()).to.equal('a')
     expect(x.valid).to.equal true
-    x.extend('a')
+    x.Object.assign('a')
     expect(x.valid).to.equal true
     expect(x()).to.equal('a')
-    x.extend('b')
+    x.Object.assign('b')
     expect(x.valid).to.equal false
     expect(x()).to.equal('a b')
-    x.extend('!b')
+    x.Object.assign('!b')
     expect(x.valid).to.equal false
     expect(x()).to.equal('a')
 
@@ -172,7 +172,7 @@ describe 'domcom/properties/style', ->
 
 describe 'domcom/properties/bind checkbox', ->
   it 'bidirectional bind checkbox', ->
-    dc.directives $model: dc.$model
+    dc.directive $model: dc.$model
     model1 = {a: 1}
     bb = duplex(model1, 'a')
     cbx = checkbox({$model:bb})

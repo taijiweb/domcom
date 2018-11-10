@@ -107,12 +107,10 @@ Html.HtmlMixin = HtmlMixin = {
 
 }
 
-ListMixin from './ListMixin'
+import ListMixin from './ListMixin'
 for method of ListMixin
   do (method=method) ->
     Html.prototype[method] = ->
       dc.error("Html component has no children components, do not call ListMixin method(#{method}) on it")
 
-import extend from 'extend'
-
-extend(Html.prototype, HtmlMixin)
+Object.assign(Html.prototype, HtmlMixin)

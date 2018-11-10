@@ -1,16 +1,17 @@
-import dc, {refreshComponents} from '../dc'
+import dc from '../dc'
 import {domField, domValue} from '../dom-util'
-import {directiveRegistry} from '../dc'
 import classFn from '../property/classFn'
-import {styleFrom} from '../property/style'
-import {attrToPropName} from '../property/attrs'
-import {domEventHandler, addEventListenerMap, addHandlerToCallbackArray} from '../property/events'
+{styleFrom} = require('../property/style').default
+{attrToPropName} = require('../property/attrs').default
+{domEventHandler, addEventListenerMap, addHandlerToCallbackArray} = require('../property/events').default
 import BaseComponent from './BaseComponent'
-import {funcString, newLine, cloneObject} from 'dc-util'
-import {flow, react} from 'lazy-flow'
+{funcString, newLine, cloneObject} = require('dc-util').default
+{flow, react} = require('lazy-flow').default
 import toComponentArray from './toComponentArray'
-import {binaryInsert} from 'dc-util'
-import {createElement, cacheElement} from 'dc-util/element-pool'
+{binaryInsert} = require('dc-util').default
+{createElement, cacheElement}  = require('dc-util/element-pool').default
+
+debugger
 
 export default class Tag extends BaseComponent
 
@@ -94,7 +95,7 @@ export default class Tag extends BaseComponent
         this.hasActiveProperties = true
         if typeof value == 'function'
           value = value()
-        className.extend(value)
+        className.Object.assign(value)
 
       # dom event
       else if key[..1]=='on'
@@ -111,13 +112,6 @@ export default class Tag extends BaseComponent
             for v in value
               # value is an array of handlers
               this.bindOne(key, v)
-
-      else if key[0]=='$'
-        # $directiveName: generator arguments list
-        generator = directiveRegistry[key]
-        if value instanceof Array then handler = generator.apply(null, value)
-        else handler = generator.apply(null, [value])
-        handler(this)
 
       else if key[..4] == 'attr_'
         this.setProp(key[5...], value, nodeAttrs, 'NodeAttrs')
@@ -311,7 +305,7 @@ export default class Tag extends BaseComponent
     this
 
   addClass: (items...) ->
-    this.className.extend(items)
+    this.className.Object.assign(items)
     if  this.node && !this.className.valid
       this.hasActiveProperties = true
       this.invalidate()
@@ -495,8 +489,8 @@ export default class Tag extends BaseComponent
     this
 
   clone: (options) ->
-    attrs = {className: this.className.clone(), style: extend({}, this.cacheStyle, this.style)}
-    extend(attrs, this.cacheProps, this.props, this.cacheNodeAttrs, this.nodeAttrs)
+    attrs = {className: this.className.clone(), style: Object.assign({}, this.cacheStyle, this.style)}
+    Object.assign(attrs, this.cacheProps, this.props, this.cacheNodeAttrs, this.nodeAttrs)
     for eventName, domEventCallbacks of this.domEventCallbackMap
       attrs[eventName] = domEventCallbacks[...]
 
@@ -539,5 +533,5 @@ export default class Tag extends BaseComponent
       s += newLine("</#{this.tagName}>", indent+2)
 
 import {mixin} from 'dc-util'
-ListMixin from './ListMixin'
+import ListMixin from './ListMixin'
 mixin(Tag.prototype, ListMixin)

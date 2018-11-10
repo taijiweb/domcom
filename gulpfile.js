@@ -10,4 +10,4 @@ for (i = 0, len = ref.length; i < len; i++) {
   require('./scripts-coffee/gulp-tasks/' + tsk);
 }
 
-gulp.task('default', ['webpack-server']);
+gulp.task('default', ['wpserver']);

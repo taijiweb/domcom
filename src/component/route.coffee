@@ -25,7 +25,7 @@ import isComponent from './isComponent'
 import toComponent from './toComponent'
 import {isEven, matchCurvedString} from 'dc-util'
 
-module.exports = route = (routeList..., otherwise, baseIndex) -> _route(routeList, otherwise, baseIndex, 0)
+export default  route = (routeList..., otherwise, baseIndex) -> _route(routeList, otherwise, baseIndex, 0)
 
 _route = (routeList, otherwise, baseIndex, defaultBaseIndex) ->
 

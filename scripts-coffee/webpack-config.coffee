@@ -16,8 +16,6 @@ exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
       pathinfo: if options.pathinfo? then options.pathinfo else true
       publicPath: options.publicPath || "/assets/",
 
-    resolve: {extensions: ['.js', '.coffee']}
-
     externals: { chai: "chai"}
 
     node: {fs: "empty"}
@@ -44,6 +42,16 @@ exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
           }]
         }
       ]
+
+    resolve:
+      extensions: ['.js', '.coffee']
+      alias:
+        "gulp-task-helper": path.resolve(__dirname, '../packages/gulp-task-helper/')
+        "bdd-test-helper": path.resolve(__dirname, '../packages/bdd-test-helper/')
+        "dc-util": path.resolve(__dirname, '../packages/dc-util/')
+        "lazy-flow": path.resolve(__dirname, '../packages/lazy-flow/')
+        "lazy-flow-at": path.resolve(__dirname, '../packages/lazy-flow-at/')
+        "dc-watch-list": path.resolve(__dirname, '../packages/dc-watch-list/')
 
     plugins: plugins
  

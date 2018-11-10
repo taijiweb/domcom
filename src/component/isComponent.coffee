@@ -2,4 +2,4 @@
 # tried, but it will fail under the module system
 # sometimes Component  from "path/to/Component")
 # is not the same as in the original Component
-module.exports = (item) -> item && item.render?
+export default  (item) -> item && item.render?

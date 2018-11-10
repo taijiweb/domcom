@@ -1,9 +1,9 @@
 {bind,
 section, h1, header, form, text, checkbox, div, ul, li, p, a, label, button, footer, strong, span
 funcEach, txt
-extend} = dc
+} = dc
 
-dc.directives $show: dc.$show
+dc.directive $show: dc.$show
 
 dc.alwaysRender = true
 
@@ -70,7 +70,7 @@ markAll = ->
 
 editTodo = (todo) ->
   editingTodo = todo
-  originalTodo = extend {}, todo
+  originalTodo = Object.assign {}, todo
   view.render()
   dc.clean()
 

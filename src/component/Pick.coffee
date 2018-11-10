@@ -20,7 +20,7 @@ export default class Pick extends TranComponent
     else
       this._content = host[field] = toComponent(host[field])
 
-    this.family = family = extend {}, this._content.family
+    this.family = family = Object.assign {}, this._content.family
     family[this.dcid] = true
 
     if Object.defineProperty

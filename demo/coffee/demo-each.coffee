@@ -1,6 +1,9 @@
 {list, each
 p, txt} = dc
 
+#export default
+exports = {}
+
 exports.eachDemo1 = ->
   lst1 = [1, 2]
   comp = list(lst1)
@@ -51,3 +54,5 @@ exports.eachDemo4 = ->
       2000
     )
   comp
+
+export default exports

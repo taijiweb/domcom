@@ -7,11 +7,11 @@ Component, list, func, if_, txt
 a, p, span, text, li, div, button, input
 each, funcEach} = dc
 
-controls from '../../demo/coffee/demo-controls'
+import controls from '../../demo/coffee/demo-controls'
 
-makeDomComponentTest from '../makeDomComponentTest'
+import makeDomComponentTest from '../makeDomComponentTest'
 
-{demoMap, runDemo} from '../../demo/util'
+import {demoMap, runDemo} from '../../demo/coffee/util'
 
 makeDomComponentTest(demoMap, "domcom/demoMap")
 #, 'auto width edit', false

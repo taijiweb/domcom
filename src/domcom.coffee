@@ -1,36 +1,40 @@
 import dc from './dc'
+import property from './property'
+import builtinDirective from './directive/index'
 
 if typeof window != 'undefined'
   window.dc = dc
 
 # dc.DomNode from './DomNode'
 
-dc.extend = extend from 'extend'
+dc.EventMixin =require('./dc-event').default
 
-dc.EventMixin from './dc-event'
+#Object.assign(dc, dc.flow, require('lazy-flow'))
+#require('lazy-flow/addon')
+#dc.bindings = dc.flow.bindings
+#require('dc-watch-list')
+import backend from './backend'
 
-extend(dc, dc.flow, require('lazy-flow'))
-require('lazy-flow/addon')
-dc.bindings = dc.flow.bindings
-require('dc-watch-list')
-
-extend(dc,
-  require('dc-util'),
-  require('./dom-util'),
-  require('./dc-render'),
+Object.assign(dc,
+  backend,
+  require('dc-util').default,
+  require('./dom-util').default,
+  require('./dc-render').default,
 
   # components
-  require('./component'),
-  require('./backend'),
+  require('./component').default,
+  require('./backend').default,
+  require('./instantiate').default,
 
-  require('./dc-error')
+  require('./dc-error').default
 )
+debugger
 
-dc.property from './property'
-dc.builtinDirectives from './directive/index'
-extend(dc,
+dc.property = property
+dc.builtinDirective = builtinDirective
+Object.assign(dc,
   dc.property
-  dc.builtinDirectives
+  dc.builtinDirective
 )
 
 export default dc

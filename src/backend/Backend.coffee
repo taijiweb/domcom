@@ -4,8 +4,8 @@
 ###
 export default class Backend
   constructor: () ->
-    if this instanceof Backend
-      dc.error(new Error('Backend is an abstract Base Class;\n should not create the instance of Backend directly,\n use its Derived classes instead'))
+#    if this instanceof Backend
+#      dc.error(new Error('Backend is an abstract Base Class;\n should not create the instance of Backend directly,\n use its Derived classes instead'))
     # 子类构造器应该增加tags属性用于创建标签部件
     #如backend.div(...)
 

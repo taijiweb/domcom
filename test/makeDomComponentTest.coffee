@@ -2,7 +2,7 @@ import {expect, iit, idescribe, nit, ndescribe, ddescribe} from 'bdd-test-helper
 
 {isComponent} = dc
 
-module.exports = (testModule, description, singleTestName, unmount=true) ->
+export default  (testModule, description, singleTestName, unmount=true) ->
   describe description, ->
     if singleTestName
       iit 'should '+singleTestName, ->

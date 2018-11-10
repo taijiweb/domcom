@@ -13,7 +13,7 @@ import Component from './component/Component'
   # can be a functioin to generate the data
   # can also be an instance of class Model
 ###
-module.exports = dc = (template, model) ->
+export default  dc = (template, model) ->
   comp = new Component(template, model)
   return comp
 

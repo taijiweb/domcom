@@ -1,10 +1,11 @@
-module.exports = exports  = extend({},
-  require('./component'),
-  require('./property')
-  require('./instantiate')
-  require('./tag')
-  require('./each'),
+import * as instantiate from './instantiate'
+export default  exports  = Object.assign({},
+  require('./component').default,
+  require('./property/index').default
+  instantiate
+  require('./tag').default
+  require('./each').default,
   {
-    model: require('./model')
+    model: require('./model').default
   }
 )

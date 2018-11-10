@@ -1,6 +1,6 @@
 import {isArray} from 'dc-util'
 
-isComponent from './component/isComponent'
+import isComponent from './component/isComponent'
 
 if typeof window != 'undefined'
   if !window.requestAnimationFrame

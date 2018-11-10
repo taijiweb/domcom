@@ -3,7 +3,6 @@ import {expect, iit, idescribe, nit, ndescribe} from 'bdd-test-helper'
 import {newDemoNode} from './helper'
 
 {
-bindings, see
 Tag, Text, List, txt, list
 p, div, Html, html
 classFn, styleFrom,
@@ -11,11 +10,6 @@ Nothing
 isComponent
 getters
 } = dc
-# {at} = getters
-
-import React from '../../src/backend/React'
-
-{a_} = bindings({a: 1, b: 2})
 
 describe "test-base-component", ->
   afterEach ->
@@ -24,14 +18,16 @@ describe "test-base-component", ->
   describe 'update BaseBlock', ->
     it 'should dc generate a component', ->
       comp = dc()
+      debugger
       expect(isComponent(comp)).to.be.true
 
     it 'dc() chaining call', ->
-      v = at('x y')
-      d = {x, y}
-      comp = dc.div(v).with(d)
+      data = {x:1, y:2}
+      view = (data) ->
+        {x, y} =  data
+        return div(div(x), div(y))
+      comp = dc.mvc(view, data)
 
     it 'dc.react should be an backend', ->
-      debugger
-      dr = dc.react() #
-      expect(dr).to.be.instanceof(React)
+      dr = dc.react()
+      expect(dr).to.be.instanceof(dc.React)

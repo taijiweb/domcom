@@ -1,4 +1,6 @@
 import {cloneObject} from 'dc-util'
+#export default
+exports = {}
 
 exports.styleFrom = styleFrom = (value) ->
   if typeof value == 'string'
@@ -28,3 +30,4 @@ exports.styleFrom = styleFrom = (value) ->
   else
     cloneObject(value)
 
+export default exports

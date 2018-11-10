@@ -1,25 +1,26 @@
 import route from './route'
 
-module.exports =
-  isComponent: require('./isComponent')
-  toComponent: require('./toComponent')
-  toComponentArray: require('./toComponentArray')
-  Component: require('./Component')
-  BaseComponent: require('./BaseComponent')
-  ListMixin: require('./ListMixin')
-  List: require('./List')
-  Tag: require('./Tag')
-  Text: require('./Text')
-  Comment: require('./Comment')
-  Cdata: require('./Cdata')
-  Html: require('./Html')
-  Nothing: require('./Nothing')
-  TranComponent: require('./TranComponent')
-  TestComponent: require('./TestComponent')
-  If: require('./If')
-  Case: require('./Case')
-  Func: require('./Func')
-  Pick: require('./Pick')
-  Defer: require('./Defer')
+export default
+  isComponent: require('./isComponent').default
+  toComponent: require('./toComponent').default
+  toComponentArray: require('./toComponentArray').default
+  Component: require('./Component').default
+  BaseComponent: require('./BaseComponent').default
+  ListMixin: require('./ListMixin').default
+  List: require('./List').default
+  Tag: require('./Tag').default
+  Text: require('./Text').default
+  Comment: require('./Comment').default
+  Cdata: require('./Cdata').default
+  Html: require('./Html').default
+  Nothing: require('./Nothing').default
+  TranComponent: require('./TranComponent').default
+  TestComponent: require('./TestComponent').default
+  If: require('./If').default
+  MVC: require('./MVC').default
+  Case: require('./Case').default
+  Func: require('./Func').default
+  Pick: require('./Pick').default
+  Defer: require('./Defer').default
   Route: route.Route
   route: route

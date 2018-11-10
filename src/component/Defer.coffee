@@ -47,4 +47,4 @@ export default class Defer extends TranComponent
       newLine('', indent, addNewLine) + funcString(this.reject) +  \
       this.init.toString(indent+2, true) + newLine('</Defer>', indent, true)
 
-extend Defer, {INIT, FULFILL, REJECT}
+Object.assign Defer, {INIT, FULFILL, REJECT}

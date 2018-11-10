@@ -3,7 +3,7 @@ import Nothing from './Nothing'
 import Text from './Text'
 import {react} from 'lazy-flow'
 
-module.exports = toComponent = (item) ->
+export default  toComponent = (item) ->
   if isComponent(item) then item
 
   else if typeof item == 'function' then new Text(item)

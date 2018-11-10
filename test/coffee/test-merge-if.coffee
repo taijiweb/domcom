@@ -1,4 +1,4 @@
-import {expect, iit, idescribe, nit, ndescribe, newDemoNode} from 'bdd-test-helper'
+import {expect, iit, idescribe, nit, ndescribe} from 'bdd-test-helper'
 import {newDemoNode} from './helper'
 
 {see, flow

@@ -1,4 +1,4 @@
-toComponent from './toComponent'
+import toComponent from './toComponent'
 import TestComponent from './TestComponent'
 import {foreach, funcString, newLine, intersect} from 'dc-util'
 import {renew} from 'lazy-flow'

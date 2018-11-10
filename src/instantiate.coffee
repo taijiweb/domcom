@@ -1,17 +1,24 @@
-import {Component, toBlock, isComponent,
+{Component, toBlock, isComponent,
 Tag, Text, Comment, Html
 If, Case, Func, List,
 Pick
-Nothing, Defer} from './component'
+Nothing, Defer,
+MVC
+} = require('./component').default
 
-{isEven} from 'dc-util'
+import {isEven} from 'dc-util'
+
+#export default
+exports = {}
 
 exports.isAttrs = isAttrs = (item) ->
   typeof item == 'object' && item!=null && !isComponent(item) && !(item instanceof Array)
 
-{isArray, isObject} from 'dc-util'
+import {isArray, isObject} from 'dc-util'
 
-{renew} from 'lazy-flow'
+import {renew} from 'lazy-flow'
+
+debugger
 
 attrsChildren = (args) ->
   attrs = args[0]
@@ -34,7 +41,7 @@ toTagChildren = (args) ->
   else
     args
 
-tag = exports.tag = (tagName, args...) ->
+exports.tag = tag = (tagName, args...) ->
   [attrs, children] = attrsChildren(args)
   new Tag(tagName, attrs, toTagChildren(children))
 
@@ -139,8 +146,8 @@ exports.defer = (attrs, promise, fulfill, reject, init) ->
     new Defer(attrs, promise, fulfill, reject)
 
 
-mvc = (view, model ) ->
+exports.mvc = (view, model ) ->
   return new MVC(view, model)
 
-export mvc
-
+Object.assign(exports, require('./tag').default)
+export default exports

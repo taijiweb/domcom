@@ -10,7 +10,7 @@ $show, $hide
 bindings, duplex
 see} = dc
 
-dc.directives dc.builtinDirectives
+dc.directive dc.builtinDirective
 
 {a$} = bindings({a: 1})
 

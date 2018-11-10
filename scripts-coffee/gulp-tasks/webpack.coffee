@@ -37,7 +37,7 @@ webpackDistribute = (mode) ->
     runWebPack(domcomEntry, '[name].min.js', {mode,path:'../dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
 
 gulp.task 'webpack-dist', () -> webpackDistribute('production')
-gulp.task 'webpack-dev', () -> webpackDistribute('dev')
+gulp.task 'webpack-dev', () -> webpackDistribute('development')
 
 gulp.task 'wpserver', ->
   webServerPlugins = [

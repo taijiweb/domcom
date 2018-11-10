@@ -1,4 +1,3 @@
-import extend from 'extend'
 import Emitter from '../Emitter'
 
 import {normalizeDomElement} from '../dom-util'
@@ -243,5 +242,5 @@ export default class Component extends Emitter
       srcListeners[event] && myListeners[event] = srcListeners[event].splice()
     this
 
-dcEventMixin from '../dc-event'
-extend(Component.prototype, dcEventMixin)
+import dcEventMixin from '../dc-event'
+Object.assign(Component.prototype, dcEventMixin)

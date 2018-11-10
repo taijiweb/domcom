@@ -2,7 +2,7 @@ import {react} from 'lazy-flow'
 import {domField} from '../dom-util'
 import {isArray} from 'dc-util'
 
-module.exports = exports = classFn = (items...) ->
+export default classFn = (items...) ->
   classMap = {}
 
   method = ->
@@ -71,5 +71,3 @@ module.exports = exports = classFn = (items...) ->
     newClassName.extend(method)
 
   method
-
-exports.classFn = classFn

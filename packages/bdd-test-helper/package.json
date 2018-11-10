@@ -1,0 +1,59 @@
+{
+  "_from": "bdd-test-helper@latest",
+  "_id": "bdd-test-helper@0.0.3",
+  "_inBundle": false,
+  "_integrity": "sha1-mKP7OghcZ4SJmpkIlJO+U3yecEA=",
+  "_location": "/bdd-test-helper",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "bdd-test-helper@latest",
+    "name": "bdd-test-helper",
+    "escapedName": "bdd-test-helper",
+    "rawSpec": "latest",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "http://registry.npm.taobao.org/bdd-test-helper/download/bdd-test-helper-0.0.3.tgz",
+  "_shasum": "98a3fb3a085c6784899a99089493be537c9e7040",
+  "_spec": "bdd-test-helper@latest",
+  "_where": "/Users/cxm/develop/domcom",
+  "author": {
+    "name": "Caoxingming"
+  },
+  "bugs": {
+    "url": "https://github.com/taijiweb/bdd-test-helper/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "chai": "~1.9.1"
+  },
+  "deprecated": false,
+  "description": "some helper functions for BDD / TDD with mocha and chai",
+  "devDependencies": {},
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "homepage": "https://github.com/taijiweb/bdd-test-helper",
+  "keywords": [
+    "chai",
+    "helper"
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/taijiweb/bdd-test-helper/master/LICENSE"
+    }
+  ],
+  "main": "lib/index.js",
+  "name": "bdd-test-helper",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/taijiweb/bdd-test-helper.git"
+  },
+  "version": "0.0.3"
+}

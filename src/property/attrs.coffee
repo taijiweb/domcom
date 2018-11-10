@@ -4,6 +4,9 @@ import classFn from './classFn'
 import {styleFrom} from './style'
 import {domField} from '../dom-util'
 
+#export default
+exports = {}
+
 exports.extendAttrs = (attrs, obj, options={}) ->
   if !obj then return attrs
   else if !attrs then return obj
@@ -17,7 +20,7 @@ exports.extendAttrs = (attrs, obj, options={}) ->
 
   style = styleFrom(attrs.style)
   if obj.style
-    attrs.style = extend style, obj.style
+    attrs.style = Object.assign style, obj.style
   else
     attrs.style = style
 
@@ -65,3 +68,5 @@ exports.setText = (text) ->
         me.invalidate()
     this.invalidate()
     this
+
+export default exports

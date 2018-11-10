@@ -1,0 +1,75 @@
+{
+  "_from": "lazy-flow@latest",
+  "_id": "lazy-flow@0.0.3",
+  "_inBundle": false,
+  "_integrity": "sha1-sem1hTwOqy+8lpwfb/DqYJpbPiw=",
+  "_location": "/lazy-flow",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "lazy-flow@latest",
+    "name": "lazy-flow",
+    "escapedName": "lazy-flow",
+    "rawSpec": "latest",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "http://registry.npm.taobao.org/lazy-flow/download/lazy-flow-0.0.3.tgz",
+  "_shasum": "b1e9b5853c0eab2fbc969c1f6ff0ea609a5b3e2c",
+  "_spec": "lazy-flow@latest",
+  "_where": "/Users/cxm/develop/domcom",
+  "author": {
+    "name": "Caoxingming"
+  },
+  "bugs": {
+    "url": "https://github.com/taijiweb/lazy-flow/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "lazy reactive function",
+  "devDependencies": {
+    "bdd-test-helper": "*",
+    "coffee-script": "1.8.0",
+    "del": "^2.0.2",
+    "gulp": "~3.8.10",
+    "gulp-cached": "~1.0.1",
+    "gulp-changed": "~1.0.0",
+    "gulp-coffee": "~2.2.0",
+    "gulp-copy": "0.0.2",
+    "gulp-mocha": "~1.1.0",
+    "gulp-plumber": "~0.6.5",
+    "gulp-rename": "~1.2.0",
+    "gulp-util": "~3.0.1",
+    "mocha": "1.14.0"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "homepage": "https://github.com/taijiweb/lazy-flow",
+  "keywords": [
+    "reactive"
+  ],
+  "license": "MIT",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/taijiweb/lazy-flow/master/LICENSE"
+    }
+  ],
+  "main": "index.js",
+  "name": "lazy-flow",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/taijiweb/lazy-flow.git"
+  },
+  "scripts": {
+    "dev": "gulp",
+    "test": "mocha test-*.js"
+  },
+  "version": "0.0.3"
+}

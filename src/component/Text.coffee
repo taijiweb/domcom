@@ -31,7 +31,9 @@ export default class Text extends BaseComponent
     this.family[this.dcid] = true
     this
 
-  setText: setText
+  setText: (text) ->
+    this.text = text
+    return this
 
   createDom: ->
     this.valid = true

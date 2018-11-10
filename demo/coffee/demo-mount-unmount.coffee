@@ -1,6 +1,6 @@
 {list, div, see, if_} = dc
 
-module.exports = ->
+export default  ->
   active = see true
   list(
     div(

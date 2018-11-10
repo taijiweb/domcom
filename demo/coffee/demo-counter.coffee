@@ -1,6 +1,6 @@
 {txt, p, see} = dc
 
-module.exports = ->
+export default  ->
   counter$ = see(counter = 0)
   p(txt(counter$))
     .on 'willAttach', ->

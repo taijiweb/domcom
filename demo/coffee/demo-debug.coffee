@@ -1,5 +1,8 @@
 {see, if_, list, each, div, p, text, duplex} = dc
 
+#export default
+exports = {}
+
 exports.demoEachPush = ->
   lst = [1, 2]
   comp = list each(lst, (item) -> p item), 'some other thing'
@@ -27,3 +30,5 @@ exports.demoModelOnMultipleInput =  ->
   list(text1, text2)
     .renderWhen([text1, text2], 'change')
     .mount()
+
+export default exports

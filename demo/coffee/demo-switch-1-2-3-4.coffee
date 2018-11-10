@@ -1,6 +1,6 @@
 {func, see, flow, each, list, div, number} = dc
 
-module.exports = ->
+->
   x = 0
   comp = null
   indexInput = number({onchange: -> x = parseInt(this.node.value); comp.render(); dc.clean() })
@@ -11,14 +11,14 @@ module.exports = ->
 
 # The above is just for demonstration
 # it can be implemented like below:
-module.exports = ->
+->
   x = 0
   comp = null
   indexInput = number({onchange: -> x = parseInt(this.node.value); comp.render(); dc.clean() })
   comp = list(indexInput, func(-> if x>=0 && x<=3 then div x))
 
 # by using flow, it can be improved like below
-module.exports = ->
+export default  ->
   x = see 0
   #comp = list(number(x).bind('change', -> comp.render()), pane=func(flow x, -> v = x(); if v>=0 and v<=3 then div v))
   #  comp = list(number(x).bind('change', pane.update.bind(pane)), pane=func(flow x, -> v = x(); if v>=0 and v<=3 then div v))

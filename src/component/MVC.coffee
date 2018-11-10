@@ -1,8 +1,8 @@
-import TestComponent from './TranComponent'
+import TranComponent from './TranComponent'
 
-export default class If extends TranComponent
+export default class MVC extends TranComponent
   constructor: (view, model) ->
     super()
-    this.view = view
-    this.model = model
+    this._view = view
+    this._model = model
 

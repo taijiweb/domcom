@@ -3,6 +3,9 @@ slice = [].slice
 stackReg = /at\s+(.*)\s+\((.*):(\d*):(\d*)\)/gi
 stackReg2 = /at\s+()(.*):(\d*):(\d*)/gi
 
+#export default
+exports = {}
+
 stacktraceMessage = (message, stackIndex = 1) ->
   if message
     if !dcError.prodution
@@ -59,3 +62,4 @@ exports.onerror = (message, component) ->
       console.log(message)
     throw new Error(message + ':\n' + stacktraceMessage())
 
+export default exports

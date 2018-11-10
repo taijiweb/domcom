@@ -1,7 +1,7 @@
 {list,
 a, checkbox, text, p} = dc
 
-module.exports = ->
+export default  ->
   propagation = a({onclick: -> alert('parent')},
     p({onclick: (event) -> alert('child'); event.continuePropagation = true}, 'propagation'))
   noPropagation = a({onclick: -> alert('parent')},

@@ -3,7 +3,7 @@ import {option} from '../tag'
 import Tag from '../component/Tag'
 
 # options directive，used for select tag
-module.exports = (items, attrs) -> (comp) ->
+export default  (items, attrs) -> (comp) ->
   if !(comp instanceof Tag) || comp.tagName!='select'
     throw new Error 'options should be only used in select tag'
   options = []

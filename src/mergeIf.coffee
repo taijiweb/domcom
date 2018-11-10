@@ -4,15 +4,18 @@ import Nothing from './component/Nothing'
 
 import {domEventHandlerFromArray} from './property/events'
 
-flow from 'lazy-flow/addon'
+import flow from 'lazy-flow/addon'
 flowIf = flow.if_
+
+#export default
+exports = {}
 
 # do not need toBlock
 # do not need check whether test is a function
 # because mergeIf is called in If component constructor,
 # after then_, else_ was converted to component
 # and check test is a function
-exports = module.exports = mergeIf = (test, then_, else_, recursive) ->
+exports.mergeIf = (test, then_, else_, recursive) ->
 
   If from './component/If'
 
@@ -105,7 +108,7 @@ mergeIfClassFn = (test, thenClassName, elseClassName) ->
   mergeIfProps(test, thenClassName.classMap, elseClassName.classMap)
 
 mergeIfProps = (test, thenProps, elseProps) ->
-  unified = extend({}, thenProps, elseProps)
+  unified = Object.assign({}, thenProps, elseProps)
   for prop of unified
     unified[prop] = flowIf(test, thenProps[prop], elseProps[prop])
   unified
@@ -114,7 +117,7 @@ emptyEventCallback = ->
 
 mergeIfEvents = (test, thenEventCallbackMap, elseEventCallbackMap) ->
 
-  unified = extend({}, thenEventCallbackMap, elseEventCallbackMap)
+  unified = Object.assign({}, thenEventCallbackMap, elseEventCallbackMap)
 
   for eventName of unified
 
@@ -135,3 +138,5 @@ mergeIfEvents = (test, thenEventCallbackMap, elseEventCallbackMap) ->
         elseHandler.call(this, event)
 
   unified
+
+export default exports

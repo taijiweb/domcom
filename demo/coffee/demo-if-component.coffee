@@ -1,6 +1,6 @@
 {list, if_, text, div, see } = dc
 
-module.exports = ->
+->
   x = see 0, parseNumber
   comp = list(
     text(
@@ -18,7 +18,7 @@ module.exports = ->
 #  comp = list(number({onchange: -> x = parseInt(this.node.value); comp.render()}, (->x) ), div(->x), if_((-> x), div(1), div(2)))
   # comp.mount()
 
-module.exports = ->
+export default  ->
   x = see 0, parseFloat
   comp = list(
     text(

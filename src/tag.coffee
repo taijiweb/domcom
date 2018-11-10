@@ -1,14 +1,16 @@
-import {isEven} from 'dc-util')
+import {isEven} from 'dc-util'
 
 import isComponent from './component/isComponent'
 import Tag from './component/Tag'
 import {getBindProp} from './dom-util'
 
+#export default
+exports = {}
 
 exports.isAttrs = isAttrs = (item) ->
   typeof item == 'object' && item!=null && !isComponent(item) && !(item instanceof Array)
 
-{isArray, isObject} from 'dc-util')
+import {isArray, isObject} from 'dc-util'
 
 attrsChildren = (args) ->
   attrs = args[0]
@@ -54,12 +56,12 @@ exports.tagHtml = (args...) ->
 
 inputTypes = 'text checkbox radio date email number'.split(' ')
 
-input = exports.input = (type, attrs, value) ->
+exports.input = (type, attrs, value) ->
   if typeof type == 'object'
     value = attrs
     attrs = type
     type = 'text'
-  attrs = extend({type:type}, attrs)
+  attrs = Object.assign({type:type}, attrs)
   component = tag('input', attrs)
   if value?
     component.prop(getBindProp(component), value)
@@ -81,7 +83,7 @@ for type in 'text checkbox radio date email tel number'.split(' ')
 exports.textarea = (attrs, value) ->
   if isAttrs(attrs)
     if  value?
-      attrs = extend({value:value}, attrs)
+      attrs = Object.assign({value:value}, attrs)
       component = tag('textarea', attrs)
       if value.isDuplex
         component.bind('onchange', ((event, node) -> value.call(this, node.value)), 'before')
@@ -95,3 +97,5 @@ exports.textarea = (attrs, value) ->
     else
       component = tag('textarea')
   component
+
+export default exports

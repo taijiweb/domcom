@@ -9,7 +9,7 @@ import ListMixin from './ListMixin'
 
 import {binaryInsert} from 'dc-util'
 
-module.exports = exports = class List extends BaseComponent
+export default  exports = class List extends BaseComponent
   constructor: (children) ->    
     super()
     this.children = toComponentArray(children)

@@ -1,3 +1,6 @@
+#export default
+exports = {}
+
 exports.domEventHandler = (event) ->
   if component = this.component
     eventType = 'on' + event.type
@@ -75,3 +78,5 @@ exports.addHandlerToCallbackArray = (handler, callbacks, before) ->
       if index <= 0
         callbacks.push(callback)
   return
+
+export default exports

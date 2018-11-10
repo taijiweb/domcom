@@ -1,0 +1,74 @@
+{
+  "_from": "dc-watch-list@latest",
+  "_id": "dc-watch-list@0.0.3",
+  "_inBundle": false,
+  "_integrity": "sha1-hmF0cOY/Gc2+XQTPZFZZRZvio3w=",
+  "_location": "/dc-watch-list",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "dc-watch-list@latest",
+    "name": "dc-watch-list",
+    "escapedName": "dc-watch-list",
+    "rawSpec": "latest",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "http://registry.npm.taobao.org/dc-watch-list/download/dc-watch-list-0.0.3.tgz",
+  "_shasum": "86617470e63f19cdbe5d04cf645659459be2a37c",
+  "_spec": "dc-watch-list@latest",
+  "_where": "/Users/cxm/develop/domcom",
+  "author": {
+    "name": "Caoxingming"
+  },
+  "bugs": {
+    "url": "https://github.com/taijiweb/dc-watch-list/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "watch generated list from array or object for Each component in domcom",
+  "devDependencies": {
+    "coffee-script": "1.8.0",
+    "del": "^2.0.2",
+    "gulp": "~3.8.10",
+    "gulp-cached": "~1.0.1",
+    "gulp-changed": "~1.0.0",
+    "gulp-coffee": "~2.2.0",
+    "gulp-copy": "0.0.2",
+    "gulp-mocha": "~1.1.0",
+    "gulp-plumber": "~0.6.5",
+    "gulp-rename": "~1.2.0",
+    "gulp-util": "~3.0.1",
+    "mocha": "1.14.0"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "homepage": "https://github.com/taijiweb/dc-watch-list",
+  "keywords": [
+    "domcom",
+    "reactive"
+  ],
+  "license": "MIT",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/taijiweb/dc-watch-list/master/LICENSE"
+    }
+  ],
+  "main": "index.js",
+  "name": "dc-watch-list",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/taijiweb/dc-watch-list.git"
+  },
+  "scripts": {
+    "dev": "gulp"
+  },
+  "version": "0.0.3"
+}

@@ -1,8 +1,11 @@
 import {List, Tag, toBlock} from './component'
 
-{isArray, isObject} from 'dc-util'
+import {isArray, isObject} from 'dc-util'
 
-{watchItems, isEachObjectSystemKey} from 'dc-watch-list'
+import {watchItems, isEachObjectSystemKey} from 'dc-watch-list'
+
+#export default
+exports = {}
 
 defaultItemFunction = (item) -> item
 
@@ -117,7 +120,7 @@ exports.funcEach = (attrs, itemsFunc, options) ->
     items = items[...]
 
   else
-    items = extend({}, items)
+    items = Object.assign({}, items)
 
   if EachClass
     items.EachClass = EachClass
@@ -139,3 +142,5 @@ exports.funcEach = (attrs, itemsFunc, options) ->
       component.invalidate()
 
   component
+
+export default exports

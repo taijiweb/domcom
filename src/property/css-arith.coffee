@@ -1,5 +1,8 @@
 import Tag from '../component/Tag'
 
+#export default
+exports = {}
+
 reNonUnit = /[\d\s\.-]/g
 
 exports.unitAdd = unitAdd = (x, y) ->
@@ -39,3 +42,4 @@ Tag.prototype.cssMul = (prop, value) ->
 Tag.prototype.cssDiv = (prop, value) ->
   this.css(prop, unitDiv(this.css(prop), value))
 
+export default exports

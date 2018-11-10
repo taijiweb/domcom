@@ -1,4 +1,5 @@
-import extend from 'extend'
+#export default
+exports = {}
 
 exports.newDemoNode = (id) ->
   node = document.createElement('div')
@@ -16,7 +17,7 @@ exports.fakeEvent = (targetNode, type='click', keyCodeOrOptions) ->
       stopPropagation: ->
     }
   else
-    extend(
+    Object.assign(
       {
         target: targetNode
         type
@@ -25,3 +26,5 @@ exports.fakeEvent = (targetNode, type='click', keyCodeOrOptions) ->
       },
       keyCodeOrOptions
     )
+
+export default exports

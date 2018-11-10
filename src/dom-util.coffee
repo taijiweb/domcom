@@ -1,3 +1,8 @@
+import {renew} from 'lazy-flow'
+
+#export default
+exports = {}
+
 if typeof window != 'undefined'
   exports.normalizeDomElement = (domElement) ->
     if typeof domElement == 'string'
@@ -16,7 +21,6 @@ exports.getBindProp = (component)  ->
 if typeof window != 'undefined'
   # add browser compatability for addEventListener and removeEventListener in ie 6, 7, 8
   if document.addEventListener
-
     exports.addEventListener = (node, name, handler, useCapture) ->
       node.addEventListener(name, handler, useCapture)
       return
@@ -35,13 +39,12 @@ if typeof window != 'undefined'
       return
 
   # Returns true if it is a DOM element
-  exports.isElement = (item) ->
-    if typeof HTMLElement == "object"
-      item instanceof HTMLElement
-    else
-      item && typeof item == "object" && item != null && item.nodeType == 1 && typeof item.nodeName=="string"
+exports.isElement = (item) ->
+  if typeof HTMLElement == "object"
+    item instanceof HTMLElement
+  else
+    item && typeof item == "object" && item != null && item.nodeType == 1 && typeof item.nodeName=="string"
 
-import {renew} from 'lazy-flow'
 
 exports.domField = (value, component) ->
 
@@ -96,3 +99,5 @@ exports.extendChildFamily = (family, child) ->
       throw new Error 'do not allow to have the same component to be referenced in different location of one List'
     family[dcid] = true
   return
+
+export default exports

@@ -1,7 +1,7 @@
 `let dc = global.dc`
 {flow, see, case_, each, every, func, list, div, label, text} = global.dc
 
-module.exports = ->
+->
   firstLetter$ = see 'd',  (x) -> x.toLowerCase()
   comp = null
   prompt = label 'Please choose: '
@@ -32,7 +32,7 @@ module.exports = ->
     items,
     div "You perfer ", choice, "."
 
-module.exports = ->
+export default  ->
   firstLetter$ = see 'd',  (x) -> x.toLowerCase()
   comp = null
   prompt = label 'Please choose: '

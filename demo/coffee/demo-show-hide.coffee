@@ -3,7 +3,7 @@ text, div, p, see, flow} = dc
 
 toggle = flow.toggle
 
-module.exports = ->
+export default  ->
   x = see true
   comp = list(
     div({ onclick: ->
