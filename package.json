@@ -28,7 +28,10 @@
     "url": "git://github.com/taijiweb/domcom.git"
   },
   "dependencies": {
-    "lazy-flow-at": "0.0.2"
+    "lazy-flow-at": "0.0.2",
+    "react": "^16.6.1",
+    "react-dom": "^16.6.1",
+    "vue": "^2.5.17"
   },
   "devDependencies": {
     "@babel/core": "^7.0",

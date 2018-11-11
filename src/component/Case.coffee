@@ -1,9 +1,9 @@
 import toComponent from './toComponent'
-import TestComponent from './TestComponent'
+import TranComponent from './TranComponent'
 {foreach, funcString, newLine, intersect} = require 'dc-util'
 {renew} = require 'lazy-flow'
 
-export default module.exports = class Case extends TestComponent
+export default module.exports = class Case extends TranComponent
   constructor: (test, @map, else_, forceCase=false) ->
     super(test)
 
@@ -12,8 +12,8 @@ export default module.exports = class Case extends TestComponent
     this.else_ = toComponent(else_)
     return
 
-  getContentComponent: ->
-    this.map[this.test] || this.else_
+  getContent: ->
+    return this.map[this.test] || this.else_
 
   clone: ->
     cloneMap = foreach this.map, (value) -> value.clone()

@@ -40,7 +40,7 @@ describe 'Component.refs, clone', ->
       x = 0
       expect(-> list(p(t), if_((-> x),  p(t), t))).to.throw Error
 
-    it 'should updateBaseComponent of if_((-> x), t=txt(1), t)', ->
+    it 'should updateBlock of if_((-> x), t=txt(1), t)', ->
       x = see 0
       comp = if_(x, t=txt(1), t)
       comp.mount()

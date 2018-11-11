@@ -21,19 +21,32 @@ export default module.exports = class Component extends Emitter
   ###
     设置部件模版 this.view
   ###
-  with: (@view) ->
+  view: (view) ->
+    this._view = view
     return this
 
   ###
     设置部件数据模型 this.model
   ###
-  data: (@model) ->
+  model: (model) ->
+    this._model = model
     return this
 
   ###
     设置部件后端 this.backend
   ###
   use: (@backend) ->
+    return this
+
+  ###
+    ## 更新部件
+    * 基本步骤
+      * 渲染部件
+      * dc清理：移除不应该继续在Dom中存在的Dom Node
+  ###
+  update: ->
+    this.render()
+    dc.clean()
     return this
 
   ###
@@ -44,15 +57,17 @@ export default module.exports = class Component extends Emitter
       * 更新dom
   ###
   render: ->
-    this.data = this.compute()
-    this.vdom = this.refresh()
-    this.update()
+    block = this.getBlock()
+    block.refresh()
     return this
 
   ###
     根据部件数据模型this.model计算即时数据映像this.data
   ###
-  compute: ->
+  getImage: ->
+    this.block = block = this.getBlock()
+    image = block.getImage()
+    return image
 
   _prepareMount: (mountNode, beforeNode) ->
     if mountNode && mountNode.component
@@ -185,7 +200,7 @@ export default module.exports = class Component extends Emitter
     if this.node
       this.node.component = null
       this.node = null
-    this.BaseComponent = null
+    this.Block = null
     this.parentNode = null
 
   getPrevComponent: ->

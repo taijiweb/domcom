@@ -1,4 +1,4 @@
-import BaseComponent from './BaseComponent'
+import Block from './Block'
 
 {newLine} = require 'dc-util'
 
@@ -9,7 +9,7 @@ import ListMixin from './ListMixin'
 
 {binaryInsert} = require 'dc-util'
 
-export default  module.exports =  class List extends BaseComponent
+export default  module.exports =  class List extends Block
   constructor: (children) ->    
     super()
     this.children = toComponentArray(children)
@@ -18,7 +18,7 @@ export default  module.exports =  class List extends BaseComponent
 
     return
 
-  refreshDom: (oldBaseComponent) ->
+  refreshDom: (oldBlock) ->
     this.renderDom()
     this.attachChildren()
     this
@@ -57,7 +57,7 @@ export default  module.exports =  class List extends BaseComponent
     return
 
   # removeDom: ->
-    # this method is coded in BaseComponent.removeDom
+    # this method is coded in Block.removeDom
     # the case for Component.isList is considered there
 
   removeNode: ->

@@ -1,7 +1,7 @@
-import BaseComponent from './BaseComponent'
+import Block from './Block'
 {newLine} = require 'dc-util'
 
-export default module.exports = class Nothing extends BaseComponent
+export default module.exports = class Nothing extends Block
   constructor: ->
     super()
 
@@ -12,9 +12,14 @@ export default module.exports = class Nothing extends BaseComponent
 
   invalidate: -> this
 
-  renderDom: (oldBaseComponent) ->
-    if oldBaseComponent
-      oldBaseComponent.markRemovingDom()
+  getImage: ->
+    this.block = this
+    this.image = this
+    return this
+
+  renderDom: (oldBlock) ->
+    if oldBlock
+      oldBlock.markRemovingDom()
     this.valid = true
     this.node = []
 

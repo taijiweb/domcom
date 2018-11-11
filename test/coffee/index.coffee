@@ -1,6 +1,8 @@
 dc.alwaysRender = true
 
 require('./test-new-dc')
+require('./test-vue-backend')
+require('./test-react-backend')
 
 require('lazy-flow/test-flow')
 require('lazy-flow-at/test-at')

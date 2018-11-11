@@ -2,47 +2,16 @@
 
 import isComponent from './component/isComponent'
 import Tag from './component/Tag'
-{getBindProp} = require './dom-util'
+{getBindProp, tagNames} = require './dom-util'
+{isArray, isObject} = require 'dc-util'
+{attrsChildren, toTagChildren, isAttrs} = require './component/util'
 
 #export default
 module.exports = exports = {}
 
-exports.isAttrs = isAttrs = (item) ->
-  typeof item == 'object' && item!=null && !isComponent(item) && !(item instanceof Array)
-
-{isArray, isObject} = require 'dc-util'
-
-attrsChildren = (args) ->
-  attrs = args[0]
-  if !args.length then [{}, []]
-  else if `attrs==null` then [{}, args.slice(1)]
-  else if attrs instanceof Array then [{}, args]
-  else if typeof attrs == 'function' then [{}, args]
-  else if typeof attrs == 'object'
-    if isComponent(attrs) then [{}, args]
-    else [attrs, args.slice(1)]
-  else [{}, args]
-
-toTagChildren = (args) ->
-  if !(args instanceof Array)
-    [args]
-  else if !args.length
-    []
-  else if args.length==1
-    toTagChildren(args[0])
-  else
-    args
-
 tag = (tagName, args...) ->
   [attrs, children] = attrsChildren(args)
   new Tag(tagName, attrs, toTagChildren(children))
-
-tagNames = "a abbr acronym address area b base bdo big blockquote body br button caption cite code col colgroup dd del dfn div dl"+
-    " dt em fieldset form h1 h2 h3 h4 h5 h6 head hr i img input ins kbd label legend li link map meta noscript object"+
-    " ol optgroup option p param pre q samp script select small span strong style sub sup"+
-    " table tbody td textarea tfoot th thead title tr tt ul var header footer section svg iframe" +
-    " article aside bdi details dialog figcaption figure footer header main mark menuitem meter nav progress rp rt ruby summary time wbr"
-tagNames = tagNames.split(' ')
 
 for tagName in tagNames
   do (tagName=tagName) -> exports[tagName] = (args...) ->

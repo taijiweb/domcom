@@ -14,11 +14,24 @@ export default module.exports = class TranComponent extends Component
       this.holder && this.holder.invalidateContent(this)
     this
 
-  refreshDom: (oldBaseComponent) ->
-    this.renderDom(oldBaseComponent)
+  getBlock: ->
+    content = this.getContent()
+    content.holder = this
+    content.parentNode = this.parentNode
+    this.block = block = content.getBlock()
+    block.hoder = this
+    block.parentNode = this.parentNode
+    return block
+
+  getContent: ->
+    # as an abstract base class, TranComponent does not know how to getContent
+    # should be overrided by sub class to give a concrete getContent method
+
+  refreshDom: (oldBlock) ->
+    this.renderDom(oldBlock)
     this.attachParent()
 
-  renderDom: (oldBaseComponent) ->
+  renderDom: (oldBlock) ->
     this.emit('willRenderDom')
     this.valid = true
     this.attachValid = true
@@ -33,11 +46,11 @@ export default module.exports = class TranComponent extends Component
     content.holder = this
     content.parentNode = this.parentNode
     content.nextNode = this.nextNode
-    content.renderDom(oldBaseComponent)
-    BaseComponent = content.BaseComponent
-    this.BaseComponent = BaseComponent
-    this.node = BaseComponent.node
-    this.firstNode = BaseComponent.firstNode
+    content.renderDom(oldBlock)
+    Block = content.Block
+    this.Block = Block
+    this.node = Block.node
+    this.firstNode = Block.firstNode
     if !this.node.parentNode
       content.attachValid = false
       this.invalidateAttach(content)

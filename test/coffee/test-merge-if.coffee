@@ -13,7 +13,6 @@ describe 'domcom/test-merge-if', ->
   it 'should construct mergeIf(x, t1, t2)', ->
     x = see 0
     t1 = txt 1; t2 = txt 2
-    debugger
     comp = mergeIf(x, t1, t2)
     expect(comp.isText).to.equal(true)
     comp.mount()

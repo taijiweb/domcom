@@ -1,12 +1,12 @@
 import toComponent from './toComponent'
-import TestComponent from './TestComponent'
+import TranComponent from './TranComponent'
 {funcString, newLine, intersect} = require 'dc-util'
 {renew} = require 'lazy-flow'
 import mergeIf from '../mergeIf'
 
 ObjectDefineProperty = Object.defineProperty
 
-export default module.exports = class If extends TestComponent
+export default module.exports = class If extends TranComponent
   constructor: (test, then_, else_, merge, recursive, forceIf=false) ->
     if then_ == else_
       return toComponent then_
@@ -30,11 +30,11 @@ export default module.exports = class If extends TestComponent
 
     return this
 
-  getContentComponent: ->
+  getContent: ->
     if this.test
-      this.then_
+      return this.then_
     else
-      this.else_
+      return this.else_
 
   clone: -> (new If(this.test, this.then_.clone(), this.else_.clone())).copyEventListeners(this)
 

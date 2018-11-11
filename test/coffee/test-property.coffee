@@ -75,6 +75,7 @@ describe "domcom/properties/classFn", ->
     comp = div({class:{a:1, b:active}})
     expect(comp.className.call(comp)).to.equal('a b', 'first')
     comp.className = classFn {a:1, b:active} # need be assign again before the call before affected the className and its invalid
+    console.log('comp.className.classMap', comp.className.classMap)
     expect(comp.className.valid).to.equal false, 'className.valid 1'
     expect(comp.hasActiveProperties).to.equal true, 'hasActiveProperties 1'
     comp.mount()

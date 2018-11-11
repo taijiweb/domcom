@@ -4,14 +4,14 @@ import classFn from '../property/classFn'
 {styleFrom} = require('../property/style')
 {attrToPropName} = require('../property/attrs')
 {domEventHandler, addEventListenerMap, addHandlerToCallbackArray} = require('../property/events')
-import BaseComponent from './BaseComponent'
+import Block from './Block'
 {funcString, newLine, cloneObject} = require('dc-util')
 {flow, react} = require('lazy-flow')
 import toComponentArray from './toComponentArray'
 {binaryInsert} = require('dc-util')
 {createElement, cacheElement}  = require('dc-util/element-pool')
 
-export default module.exports = class Tag extends BaseComponent
+export default module.exports = class Tag extends Block
 
   # used for Tag.clone(...)
   FakeTag: -> Tag
@@ -75,6 +75,11 @@ export default module.exports = class Tag extends BaseComponent
       this.domEventCallbackMap = {}
     this.eventUpdateConfig = {}
     return
+
+  getImage: ->
+    children = this.children.map((child) -> child.getImage())
+    Object.assign({}, this.props, {className:this.className.classMap, style:this.style})
+    return this.constructor(this.tagName, this.props, children)
 
   extendAttrs: (attrs)->
 
@@ -372,8 +377,8 @@ export default module.exports = class Tag extends BaseComponent
     this.style = style
     this
 
-  refreshDom: (oldBaseComponent) ->
-    this.renderDom(oldBaseComponent)
+  refreshDom: (oldBlock) ->
+    this.renderDom(oldBlock)
     this.attachParent()
     return
 
@@ -420,55 +425,37 @@ export default module.exports = class Tag extends BaseComponent
     this
 
   updateProperties: ->
-    if !this.hasActiveProperties
-      return
-
-    this.hasActiveProperties = false
-
     {node, className} = this
-    if !className.valid
-      classValue = className.call(this)
-      if classValue!=this.cacheClassName
-        this.cacheClassName = node.className = classValue
+    classValue = className.call(this)
+    node.className = classValue
 
-    if this.hasActiveNodeAttrs
-      {nodeAttrs, cacheNodeAttrs} = this
-      this.hasActiveNodeAttrs = false
-      for prop, value of nodeAttrs
-        delete nodeAttrs[prop]
-        value = domValue(value, this)
-        cacheNodeAttrs[prop] = node[prop] = value
-        node.setAttribute(prop, value)
+    {nodeAttrs} = this
+    this.hasActiveNodeAttrs = false
+    for prop, value of nodeAttrs
+      value = domValue(value, this)
+      node.setAttribute(prop, value)
 
-    if this.hasActiveProps
-      {props, cacheProps} = this
-      this.hasActiveProps = false
-      for prop, value of props
-        delete props[prop]
-        value = domValue(value, this)
-        cacheProps[prop] = node[prop] = value
+    {props} = this
+    for prop, value of props
+      alue = domValue(value, this)
+      node[prop] = value
 
-    if this.hasActiveStyle
-      {style, cacheStyle} = this
-      this.hasActiveStyle = false
-      elementStyle = node.style
-      for prop, value of style
-        delete style[prop]
-        value = domValue(value, this)
-        cacheStyle[prop] = elementStyle[prop] = value
+    {style} = this
+    elementStyle = node.style
+    for prop, value of style
+      value = domValue(value, this)
+      elementStyle[prop] = value
 
-    if this.hasActiveDomEvents
-      for eventName, callbackList of this.domEventCallbackMap
-        if callbackList && callbackList.length
-          # the event in addEventListenerMap do not execute node[eventName]
-          # e.g. https://developer.mozilla.org/en/docs/Web/Events/compositionstart
-          # [2] The event was fired in versions of Gecko before 9.0, but didn't have the DOM Level 3 attributes and methods.
-          # so it's necessary to addEventListener
-          if addEventListenerMap[eventName]
-            node.addEventListener(eventName[2...], domEventHandler)
-          else
-            node[eventName] = domEventHandler
-    this.hasActiveDomEvents = false
+    for eventName, callbackList of this.domEventCallbackMap
+      if callbackList && callbackList.length
+        # the event in addEventListenerMap do not execute node[eventName]
+        # e.g. https://developer.mozilla.org/en/docs/Web/Events/compositionstart
+        # [2] The event was fired in versions of Gecko before 9.0, but didn't have the DOM Level 3 attributes and methods.
+        # so it's necessary to addEventListener
+        if addEventListenerMap[eventName]
+          node.addEventListener(eventName[2...], domEventHandler)
+        else
+          node[eventName] = domEventHandler
 
     return
 

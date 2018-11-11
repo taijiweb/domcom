@@ -2,7 +2,6 @@ var flow, funcString, lazy, newLine, react, renew, see, _ref,
   __slice = [].slice;
 
 _ref = require('dc-util'), newLine = _ref.newLine, funcString = _ref.funcString;
-debugger;
 
 react = function(method) {
   if (method.invalidate) {

@@ -1,34 +1,46 @@
 import Component from './Component'
 
-export default class BaseComponent extends Component
+export default class Block extends Component
 
   constructor: ->
     super()
-    this.isBaseComponent = true
+    this.isBlock = true
     this.removing = false
     # the line below is moved from ListMixin
     # because the removing Component of TranComponent will be added to TranComponent.content
     this.baseComponent = this
 
-  refreshDom: (oldBaseComponent) ->
+  getImage: ->
+    # as an abstract base class , Block class do not know how to getImage
+    # should be overrided by subclass for a concrete getImage method.
+    dc.error('as an abstract base class , Block class do not know how to getImage, \nshould be overrided by subclass for a concrete getImage method.')
+
+  getBlock: ->
+    return this
+
+  refresh: ->
+    this.image = this.getImage()
+    this.refreshDom()
+
+  refreshDom: (oldBlock) ->
     this.renderDom()
     this.attachParent()
     this
 
-  renderDom: (oldBaseComponent) ->
+  renderDom: (oldBlock) ->
     this.emit('willRenderDom')
 
-    if oldBaseComponent && oldBaseComponent != this
-      oldBaseComponent.markRemovingDom()
+    if oldBlock && oldBlock != this
+      oldBlock.markRemovingDom()
 
-    this.renderBaseComponent(oldBaseComponent)
+    this.renderBlock(oldBlock)
 
     this.emit('didRenderDom')
 
     this
 
-  renderBaseComponent: (oldBaseComponent) ->
-    if oldBaseComponent && oldBaseComponent != this
+  renderBlock: (oldBlock) ->
+    if oldBlock && oldBlock != this
       this.attachValid = false
       if this.holder
         this.holder.invalidateAttach(this)
@@ -103,4 +115,4 @@ export default class BaseComponent extends Component
 
     node
 
-module.exports = BaseComponent
+module.exports = Block

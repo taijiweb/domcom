@@ -17,7 +17,8 @@ export default module.exports = class Func extends TranComponent
 
     this
 
-  getContentComponent: -> toComponent(this.func())
+  getContent: ->
+    return toComponent(this.func())
 
   clone: ->
     (new Func(this.func))

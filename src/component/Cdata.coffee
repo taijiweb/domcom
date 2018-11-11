@@ -1,4 +1,4 @@
-import BaseComponent from './BaseComponent'
+import Block from './Block'
 import Text from './Text'
 
 {funcString, newLine} = require 'dc-util'

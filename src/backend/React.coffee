@@ -1,10 +1,24 @@
 import Backend from './Backend'
+
+import ReactBlock from '../component/ReactBlock'
+{tagNames} = require '../dom-util'
+{attrsChildren, toTagChildren} = require '../component/util'
+
 export default class React extends Backend
   name: 'React'
   constructor: () ->
     super()
-    # 增加用于引用React Tag标签的属性，以创建React基本标签部件
-    # 如dcreact.div
+    me = this
+    tagNames.forEach (tagName) ->
+      me[tagName] = (args...) ->
+        [props, children] = attrsChildren(args)
+        children = toTagChildren(children)
+        return new ReactBlock(tagName, props, children)
+    return this
+
+  by: (ReactClass) ->
+    return (props, children) ->
+      return new ReactBlock(ReactClass, props, children)
 
 module.exports = React
 

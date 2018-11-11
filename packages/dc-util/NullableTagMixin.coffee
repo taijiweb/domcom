@@ -1,8 +1,8 @@
-{TransformComponentMixin, Tag, Nothing, BaseComponent, ListMixin} = dc
+{TransformComponentMixin, Tag, Nothing, Block, ListMixin} = dc
 
-BaseComponentAttachParent =  BaseComponent.prototype.attachParent
-BaseComponentRemoveNode =  BaseComponent.prototype.removeNode
-BaseComponentRenderBaseComponent = BaseComponent.prototype.renderBaseComponent
+BlockAttachParent =  Block.prototype.attachParent
+BlockRemoveNode =  Block.prototype.removeNode
+BlockRenderBlock = Block.prototype.renderBlock
 
 module.exports = exports =  NullableTagMixin =
 
@@ -11,12 +11,12 @@ module.exports = exports =  NullableTagMixin =
     this.tagNode = null
     this.nothingNode = []
 
-  renderBaseComponent: (oldBaseComponent) ->
+  renderBlock: (oldBlock) ->
 
     if !this.isHidden()
       nodeChanged = !this.tagNode || this.node != this.tagNode
       this.node = this.tagNode
-      BaseComponentRenderBaseComponent.call(this, oldBaseComponent)
+      BlockRenderBlock.call(this, oldBlock)
       this.tagNode = nextNode = this.node
       if nodeChanged
         this.holder.propagateChildNextNode(this, nextNode)
@@ -34,10 +34,10 @@ module.exports = exports =  NullableTagMixin =
 
   attachParent: ->
     if !this.isHidden()
-      BaseComponentAttachParent.call(this)
+      BlockAttachParent.call(this)
 
   removeNode: ->
     if this.node == this.tagNode
-      BaseComponentRemoveNode.call(this)
+      BlockRemoveNode.call(this)
 
   isHidden: -> this.hidden

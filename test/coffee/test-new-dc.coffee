@@ -30,3 +30,7 @@ describe "test-base-component", ->
     it 'dc.react should be an backend', ->
       dr = dc.react()
       expect(dr).to.be.instanceof(dc.React)
+      {div} = dr
+      comp = div({}, ['hello'])
+      expect(comp).to.be.instanceof(dc.ReactBlock)
+      comp.mount('#demo2')

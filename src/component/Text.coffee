@@ -1,4 +1,4 @@
-import BaseComponent from './BaseComponent'
+import Block from './Block'
 {funcString, newLine, value, dynamic} = require 'dc-util'
 {domField, domValue} = require '../dom-util'
 
@@ -9,7 +9,7 @@ if 'textContent' of document.documentElement
 else
   hasTextContent = false
 
-export default module.exports = class Text extends BaseComponent
+export default module.exports = class Text extends Block
 
   isText: true
 
