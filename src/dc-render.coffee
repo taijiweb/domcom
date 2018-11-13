@@ -113,23 +113,25 @@ dc.stopRenderWhen = (component, event, components) ->
     delete component.eventUpdateConfig[event]
   return
 
-dc.invalidate = ->
-  dc.valid = false
+dc.rootComponentMap = {}
+dc.blockMap = {}
+dc.activeBlockMap = {}
 
-dc.invalidateContent = (component) ->
-  dc.valid = false
-  dc.rootComponentMap[component.dcid] = component
-  return
+dc.update = ->
+  dc.activeBlockMap = {}
+  for _, component of dc.rootComponentMap
+    block = component.getBlock()
+    dc.activeBlockMap[block.dcid] = block
+  dc.refresh()
 
-dc.invalidateAttach = (child) ->
+###
+  refresh all the root blocks(including those should be disappearing from dom tree)
+  used by dc.update
+  should not be called directly
+###
+dc.refresh = ->
+  for dcid, block of dc.blockMap
+    if !dc.activeBlockMap[dcid]
+      block = false
+    block.refreshDom()
 
-dc.propagateChildNextNode = (child, nextNode) ->
-
-dc.linkNextNode = (child, oldNode, nextNode) ->
-
-dc.removingChildren = {}
-dc.clean = ->
-  for _, component of dc.removingChildren
-    component.removeDom()
-  dc.removingChildren = {}
-  return

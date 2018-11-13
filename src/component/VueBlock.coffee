@@ -8,8 +8,8 @@ import Image from '../image/Image'
 
 createVueElement = (h, item, index) ->
   if isObject item
-    item = h(item.tagNameOrVueComponent, item.props, item.children)
-#    item.key = item && item.props && item.props.key || index
+    children = item.children.map (child, i) -> createVueElement(h, child, index)
+    item = h(item.tagNameOrVueComponent, item.props, children)
   else
     item
   return item
@@ -27,7 +27,6 @@ class VueProxy
       data,
       render:((h) ->
         {tagNameOrVueComponent, props, children} = proxy.block.image || proxy.block
-        debugger
         children = children.map (child, index) ->
           createVueElement(h, child, index)
         h(tagNameOrVueComponent, props, children))
@@ -36,7 +35,6 @@ class VueProxy
 
   update: ->
     this.data.key++
-    this.vueInstance.$forceUpdate()
     return
 
 

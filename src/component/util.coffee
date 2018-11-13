@@ -5,7 +5,7 @@ import React, {Component} from 'React'
 module.exports = exports = {}
 
 exports.getImage = (item) ->
-  if isComponent item
+  if isComponent(item) && item.getImage
     return item.getImage()
   else
     return item

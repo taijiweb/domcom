@@ -18,6 +18,13 @@ export default module.exports = dc = (template, model) ->
   return comp
 
 ###
+  every times any component is updated, dc.verno++; all of the block which verno is less than dc.verno should be hided.
+###
+dc.dcid = 0
+dc.verno = 0
+dc.blockMap = {}
+
+###
   # 创建部件并设置其数据模型
 ###
 dc.data = (model) ->

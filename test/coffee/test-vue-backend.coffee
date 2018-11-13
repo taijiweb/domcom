@@ -29,7 +29,7 @@ describe "test vue back end", ->
     it 'should mount embedded vue div block', ->
       dr = dc.vue()
       {div} = dr
-      comp = div({}, div({key:1}, 'hello'))
+      comp = div({}, div({key:1}, div({key:1}, 'hello')))
       expect(comp).to.be.instanceof(dc.VueBlock)
       comp.mount('#demo2')
       comp.update()
@@ -60,7 +60,7 @@ describe "test vue back end", ->
       comp.showing = false
       comp.update()
 
-    iit 'should mount and update vue mvc + if_ div block 2', ->
+    it 'should mount and update vue mvc + if_ div block 2', ->
       dr = dc.react()
       {div} = dr
       expect(dr).to.be.instanceof(dc.React)

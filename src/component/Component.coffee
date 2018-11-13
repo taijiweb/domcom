@@ -14,6 +14,7 @@ import dc from '../dc'
 export default module.exports = class Component extends Emitter
   constructor: (template, model) ->
     super()
+    this.dcid = dc.dcid++;
     this.view = null
     this.model = null
     this.backend = null
@@ -45,8 +46,9 @@ export default module.exports = class Component extends Emitter
       * dc清理：移除不应该继续在Dom中存在的Dom Node
   ###
   update: ->
+    dc.verno++
     this.render()
-    dc.clean()
+    dc.refresh()
     return this
 
   ###
@@ -57,7 +59,12 @@ export default module.exports = class Component extends Emitter
       * 更新dom
   ###
   render: ->
+    oldBlock = this.block
     block = this.getBlock()
+    if block != oldBlock
+      oldBlock.active = false
+      oldBlock.refresh()
+    block.active = true
     block.refresh()
     return this
 
@@ -106,6 +113,7 @@ export default module.exports = class Component extends Emitter
   ###
   mount: (mountNode, beforeNode, forceRender) ->
     this.emit('willMount')
+    dc.verno++
     this._prepareMount(mountNode, beforeNode)
     this.render(forceRender)
     this.emit('didMount')

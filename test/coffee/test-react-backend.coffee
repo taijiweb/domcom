@@ -26,14 +26,15 @@ describe "test react back end", ->
       expect(comp).to.be.instanceof(dc.ReactBlock)
       comp.mount('#demo2')
 
-    it 'should mount embedded react div block', ->
+    iit 'should mount embedded react div block', ->
+      debugger
       dr = dc.react()
       expect(dr).to.be.instanceof(dc.React)
       {div} = dr
-      comp = div({}, [div({key:1}, ['hello'])])
+      comp = div({}, div({key:1}, div({key:1}, 'hello')))
       expect(comp).to.be.instanceof(dc.ReactBlock)
       comp.mount('#demo2')
-      comp.update()
+      dc.update()
 
     it 'should mount react mvc + div block', ->
       dr = dc.react()
@@ -46,7 +47,6 @@ describe "test react back end", ->
       comp.mount('#demo2')
       comp.message = 'hello mvc 2'
       comp.showing = false
-      2
       comp.update()
 
     it 'should mount and update react mvc + if_ div block', ->
