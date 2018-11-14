@@ -16,7 +16,6 @@ export default module.exports = class TranComponent extends Component
 
   getBlock: ->
     content = this.getContent()
-    block.verno = dc.verno
     this.block = block = content.getBlock()
     dc.blockMap[block.dcid] = block
     block.hoder = this

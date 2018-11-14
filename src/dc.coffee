@@ -21,7 +21,6 @@ export default module.exports = dc = (template, model) ->
   every times any component is updated, dc.verno++; all of the block which verno is less than dc.verno should be hided.
 ###
 dc.dcid = 0
-dc.verno = 0
 dc.blockMap = {}
 
 ###

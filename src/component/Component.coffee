@@ -46,7 +46,6 @@ export default module.exports = class Component extends Emitter
       * dc清理：移除不应该继续在Dom中存在的Dom Node
   ###
   update: ->
-    dc.verno++
     this.render()
     dc.refresh()
     return this
@@ -61,9 +60,13 @@ export default module.exports = class Component extends Emitter
   render: ->
     oldBlock = this.block
     block = this.getBlock()
-    if block != oldBlock
+    if oldBlock && block != oldBlock
       oldBlock.active = false
       oldBlock.refresh()
+      node = oldBlock.node
+      node.parentNode.removeChild(node)
+      if block.node
+        this.parentNode.insertBefore(block.node, this.nextNode)
     block.active = true
     block.refresh()
     return this

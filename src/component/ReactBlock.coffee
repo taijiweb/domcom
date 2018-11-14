@@ -7,7 +7,7 @@ import ReactDom from 'react-dom'
 import Image from '../image/Image'
 
 createReactElement = (item, index) ->
-  if item instanceof ReactBlock
+  if item instanceof ReactBlock || item.tagNameOrReactClass
     children = item.children.map (child, i) -> createReactElement(child, i)
     item = React.createElement(item.tagNameOrReactClass, item.props, children)
 #    item.key = item && item.props && item.props.key || index
@@ -18,16 +18,17 @@ createReactElement = (item, index) ->
 class ReactProxy extends Component
   constructor: ->
     super()
+
+  componentWillMount: ->
     {block, tagNameOrReactClass, props, children} = this.props
+    this.block = block
     block.proxy = this
-    this.state = {tagNameOrReactClass, props, children}
+    this.setState {tagNameOrReactClass, props, children}
     return this
 
   componentDidMount: ->
 
   render: ->
-    if !this.block.active
-      return
     {tagNameOrReactClass, props, children} = this.state
     children = children.map (child, index) ->
       createReactElement(child, index)
@@ -39,6 +40,9 @@ export default module.exports = class ReactBlock extends Block
     super()
     this.mounted = false
     Object.assign(this, {tagNameOrReactClass, props, children})
+    Object.defineProperty this, 'node',
+      get: ->
+        this.proxy.findDomNode()
     return this
 
   getImage: ->
@@ -52,14 +56,17 @@ export default module.exports = class ReactBlock extends Block
     return image
 
   refreshDom: ->
+    if !this.active
+      return
     block = this
     image = this.getImage()
     {tagNameOrReactClass, props, children} = image
     if !this.mounted
+      debugger
       reactElement = React.createElement(ReactProxy, {block, tagNameOrReactClass, props, children})
       ReactDom.render(reactElement, this.parentNode)
       this.mounted = true
     else
-      proxy.setState({tagNameOrReactClass, props, children})
+      this.proxy.setState({tagNameOrReactClass, props, children})
 
 
