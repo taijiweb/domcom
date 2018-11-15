@@ -1,7 +1,11 @@
 {expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
 
+import ReactDom from 'react-dom'
+
 {newDemoNode} = require './helper'
 
+
+{normalizeDomElement} = require '../../src/dom-util'
 {
 Tag, Text, List, txt, list
 p, div, Html, html, if_
@@ -14,9 +18,9 @@ mvc
 
 describe "test react back end", ->
   afterEach ->
-    dc.reset()
+    ReactDom.unmountComponentAtNode(normalizeDomElement('#demo2'))
 
-  describe 'update BaseBlock', ->
+  idescribe 'update BaseBlock', ->
 
     it 'should mount simple react div block', ->
       dr = dc.react()
@@ -63,7 +67,7 @@ describe "test react back end", ->
       debugger
       comp.update()
 
-    iit 'should mount and update react mvc + if_ div block 2', ->
+    it 'should mount and update react mvc + if_ div block 2', ->
       dr = dc.react()
       {div} = dr
       expect(dr).to.be.instanceof(dc.React)

@@ -1,38 +1,12 @@
 import Block from './Block'
 
-import React, {Component} from 'React'
+import React from 'React'
 import ReactDom from 'react-dom'
-{getImage, createReactElement} = require './util'
+{getImage} = require './util'
 
 import Image from '../image/Image'
 
-createReactElement = (item, index) ->
-  if item instanceof ReactBlock || item.tagNameOrReactClass
-    children = item.children.map (child, i) -> createReactElement(child, i)
-    item = React.createElement(item.tagNameOrReactClass, item.props, children)
-#    item.key = item && item.props && item.props.key || index
-  else
-    item
-  return item
-
-class ReactProxy extends Component
-  constructor: ->
-    super()
-
-  componentWillMount: ->
-    {block, tagNameOrReactClass, props, children} = this.props
-    this.block = block
-    block.proxy = this
-    this.setState {tagNameOrReactClass, props, children}
-    return this
-
-  componentDidMount: ->
-
-  render: ->
-    {tagNameOrReactClass, props, children} = this.state
-    children = children.map (child, index) ->
-      createReactElement(child, index)
-    React.createElement(tagNameOrReactClass, props, children)
+import ReactProxy from '../backend/ReactProxy'
 
 export default module.exports = class ReactBlock extends Block
 
@@ -57,6 +31,7 @@ export default module.exports = class ReactBlock extends Block
     image = this.getImage()
     {tagNameOrReactClass, props, children} = image
     if !this.mounted
+      debugger
       reactElement = React.createElement(ReactProxy, {block, tagNameOrReactClass, props, children})
       ReactDom.render(reactElement, this.parentNode)
       this.node =  this.parentNode.childNodes[this.parentNode.childNodes.length - 1]
