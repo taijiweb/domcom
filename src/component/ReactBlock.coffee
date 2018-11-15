@@ -40,9 +40,6 @@ export default module.exports = class ReactBlock extends Block
     super()
     this.mounted = false
     Object.assign(this, {tagNameOrReactClass, props, children})
-    Object.defineProperty this, 'node',
-      get: ->
-        this.proxy.findDomNode()
     return this
 
   getImage: ->
@@ -56,15 +53,13 @@ export default module.exports = class ReactBlock extends Block
     return image
 
   refreshDom: ->
-    if !this.active
-      return
     block = this
     image = this.getImage()
     {tagNameOrReactClass, props, children} = image
     if !this.mounted
-      debugger
       reactElement = React.createElement(ReactProxy, {block, tagNameOrReactClass, props, children})
       ReactDom.render(reactElement, this.parentNode)
+      this.node =  this.parentNode.childNodes[this.parentNode.childNodes.length - 1]
       this.mounted = true
     else
       this.proxy.setState({tagNameOrReactClass, props, children})

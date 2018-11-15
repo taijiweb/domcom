@@ -18,27 +18,6 @@ export default class Block extends Component
   getBlock: ->
     return this
 
-  refresh: ->
-    this.image = this.getImage()
-    this.refreshDom()
-
-  refreshDom: (oldBlock) ->
-    this.renderDom()
-    this.attachParent()
-    this
-
-  renderDom: (oldBlock) ->
-    this.emit('willRenderDom')
-
-    if oldBlock && oldBlock != this
-      oldBlock.markRemovingDom()
-
-    this.renderBlock(oldBlock)
-
-    this.emit('didRenderDom')
-
-    this
-
   renderBlock: (oldBlock) ->
     if oldBlock && oldBlock != this
       this.attachValid = false

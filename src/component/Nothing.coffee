@@ -25,6 +25,8 @@ export default module.exports = class Nothing extends Block
 
     this
 
+  refreshDom: ->
+
   createDom: -> this.node = []
   attachParent:  -> this.node
   attachChildren: -> this.node

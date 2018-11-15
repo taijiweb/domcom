@@ -46,6 +46,7 @@ describe "test react back end", ->
       comp.mount('#demo2')
       comp.message = 'hello mvc 2'
       comp.showing = false
+      debugger
       comp.update()
 
     it 'should mount and update react mvc + if_ div block', ->
@@ -59,16 +60,22 @@ describe "test react back end", ->
       comp.message2 = 'hello mvc 2'
       comp.mount('#demo2')
       comp.showing = false
+      debugger
       comp.update()
 
     iit 'should mount and update react mvc + if_ div block 2', ->
       dr = dc.react()
       {div} = dr
       expect(dr).to.be.instanceof(dc.React)
-      view = () -> if_(this.showing, div(this.message1))
+      view = () -> if_(this.showing, div(this.message1), div(this.message2))
       comp = mvc(view)
       comp.showing = true
       comp.message1 = 'hello mvc 1'
+      comp.message2 = 'hello mvc 2'
       comp.mount('#demo2')
+      comp.showing = false
+      comp.update()
+      comp.showing = true
+      comp.update()
       comp.showing = false
       comp.update()

@@ -1,4 +1,5 @@
 import Emitter from '../Emitter'
+import ReactDom from 'react-dom'
 
 {normalizeDomElement} = require '../dom-util'
 {newDcid, isArray} = require 'dc-util'
@@ -47,7 +48,7 @@ export default module.exports = class Component extends Emitter
   ###
   update: ->
     this.render()
-    dc.refresh()
+#    dc.refresh()
     return this
 
   ###
@@ -61,14 +62,14 @@ export default module.exports = class Component extends Emitter
     oldBlock = this.block
     block = this.getBlock()
     if oldBlock && block != oldBlock
-      oldBlock.active = false
-      oldBlock.refresh()
       node = oldBlock.node
-      node.parentNode.removeChild(node)
+      #call ReactDom.unmountComponentAtNode to empty a container
+      ReactDom.unmountComponentAtNode(this.parentNode)
+      # this is considered under the condition below
+      # this.parentNode have only one child node(i.e. block.node)
       if block.node
-        this.parentNode.insertBefore(block.node, this.nextNode)
-    block.active = true
-    block.refresh()
+        this.parentNode.appendChild(block.node)
+    block.refreshDom()
     return this
 
   ###
@@ -80,44 +81,20 @@ export default module.exports = class Component extends Emitter
     return image
 
   _prepareMount: (mountNode, beforeNode) ->
-    if mountNode && mountNode.component
-      mountNode = mountNode.component
-    else if beforeNode && beforeNode.component
-      console.log(mountNode)
-      console.log(beforeNode)
-      throw new Error('error while mounting: mountNode is not a component, but beforeNode is a component')
-
-    if isComponent(mountNode)
-      if !beforeNode
-        if !mountNode.children
-          console.log(mountNode)
-          throw new Error('error while mounting: mountNode is a component, but is not a Tag or List component')
-        mountNode.pushChild(this)
-      else
-        if !isComponent(beforeNode)
-          beforeNode = beforeNode.component
-          if !beforeNode
-            console.log(beforeNode)
-            throw new Error('error while mounting: can not mount beforeNode')
-        if beforeNode.holder != mountNode || !mountNode.children
-          console.log(mountNode)
-          console.log(beforeNode)
-          throw new Error('both mountNode and beforeNode is component, but mountNode is not the parent of beforeNode')
-        mountNode.insertChildBefore(this, beforeNode)
-    else
-      this.parentNode = normalizeDomElement(mountNode) || this.parentNode || document.body
-      this.nextNode = beforeNode || this.nextNode
-      this.setHolder(dc)
-      this.clearRemoving()
-      dc.rootComponentMap[this.dcid] = this
+    parentNode = normalizeDomElement(mountNode) || document.body
+    if parentNode.childNodes.length
+      dc.error('should not mount to node which is not empty:', mountNode)
+    this.parentNode = parentNode
+    this.setHolder(dc)
+    this.clearRemoving()
+    dc.rootComponentMap[this.dcid] = this
 
   ### if mountNode is given, it should not be the node of any Component
   only use beforeNode if mountNode is given
   ###
-  mount: (mountNode, beforeNode, forceRender) ->
+  mount: (mountNode, forceRender) ->
     this.emit('willMount')
-    dc.verno++
-    this._prepareMount(mountNode, beforeNode)
+    this._prepareMount(mountNode)
     this.render(forceRender)
     this.emit('didMount')
 
