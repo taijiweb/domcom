@@ -40,3 +40,10 @@ export default module.exports = class ReactBlock extends Block
       this.proxy.setState({tagNameOrReactClass, props, children})
 
 
+  unattachNode: ->
+    if this.node
+      #call ReactDom.unmountComponentAtNode to empty a container
+      ReactDom.unmountComponentAtNode(this.parentNode)
+    return this
+
+

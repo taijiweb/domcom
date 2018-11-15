@@ -62,9 +62,7 @@ export default module.exports = class Component extends Emitter
     oldBlock = this.block
     block = this.getBlock()
     if oldBlock && block != oldBlock
-      node = oldBlock.node
-      #call ReactDom.unmountComponentAtNode to empty a container
-      ReactDom.unmountComponentAtNode(this.parentNode)
+      oldBlock.unattach()
       # this is considered under the condition below
       # this.parentNode have only one child node(i.e. block.node)
       if block.node
