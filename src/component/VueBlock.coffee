@@ -5,61 +5,47 @@ import Vue, {Component} from 'vue'
 {isObject} = require 'dc-util'
 
 import Image from '../image/Image'
-
-createVueElement = (h, item, index) ->
-  if isObject item
-    children = item.children.map (child, i) -> createVueElement(h, child, index)
-    item = h(item.tagNameOrVueComponent, item.props, children)
-  else
-    item
-  return item
-
-
-class VueProxy
-  constructor: (block) ->
-    proxy = this
-    this.block = block
-    {tagNameOrVueComponent, props, children} = block
-    key = 0
-    data = {tagNameOrVueComponent, props, children, key}
-    this.data = data
-    this.vueInstance = new Vue({
-      data,
-      render:((h) ->
-        {tagNameOrVueComponent, props, children} = proxy.block.image || proxy.block
-        children = children.map (child, index) ->
-          createVueElement(h, child, index)
-        h(tagNameOrVueComponent, props, children))
-    })
-    return this
-
-  update: ->
-    this.data.key++
-    return
-
+import VueProxy from '../backend/VueProxy'
 
 export default module.exports = class VueBlock extends Block
 
-  constructor: (tagNameOrVueComponent, props, children=[]) ->
+  isVueBlock:true
+
+  constructor: (tagComponent, props, children=[]) ->
     super()
-    Object.assign(this, {tagNameOrVueComponent, props, children})
+    Object.assign(this, {tagComponent, props, children})
     this.proxy = new VueProxy(this)
     return this
 
   getImage: ->
-    this.block = this
+    isVueBlock = true
+    this.block = block = this
     props = {}
     for prop, value of this.props
       props[prop] = getImage(value)
     children = this.children.map (child) -> getImage(child)
-    {tagNameOrVueComponent} = this
-    image = {tagNameOrVueComponent, props, children}
-    return image
+    {tagComponent} = this
+    this.image = {block, isVueBlock, tagComponent, props, children}
+    return this.image
 
   refreshDom: ->
+    this.getImage()
     if !this.mounted
-      this.proxy.vueInstance.$mount(this.parentNode)
+      #workaround for the Vue's weird mounting method(it replace the mounting parantNode with rendering content!!!)
+      # should ensure always only mount to empty parent DOM node
+      node = document.createElement('div')
+      this.parentNode.appendChild(node)
+      this.proxy.mount(node)
+      this.node = this.parentNode.childNodes[0]
       this.mounted = true
     else
-      this.proxy.update()
+      this.proxy.refresh()
+    return
+
+  # unattach DOM node from parentNode
+  unattach: ->
+    if this.node
+      this.parentNode.removeChild(this.node)
+    return
+
 

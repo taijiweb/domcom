@@ -123,6 +123,7 @@ dc.update = ->
     block = component.getBlock()
     dc.activeBlockMap[block.dcid] = block
   dc.refresh()
+  return
 
 ###
   refresh all the root blocks(including those should be disappearing from dom tree)
@@ -131,7 +132,7 @@ dc.update = ->
 ###
 dc.refresh = ->
   for dcid, block of dc.blockMap
-    if !dc.activeBlockMap[dcid]
-      block = false
+    block.active = !!dc.activeBlockMap[dcid]
     block.refreshDom()
+  return
 

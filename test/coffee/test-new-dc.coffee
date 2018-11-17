@@ -1,6 +1,7 @@
 {expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
 
 {newDemoNode} = require './helper'
+{normalizeDomElement} = require '../../src/dom-util'
 
 {
 Tag, Text, List, txt, list
@@ -13,7 +14,16 @@ getters
 
 describe "test-base-component", ->
   afterEach ->
-    dc.reset()
+    demoNode = normalizeDomElement('#demo2')
+    if demoNode.childNodes.length
+      node = demoNode.childNodes[0]
+      demoNode.removeChild(node)
+
+      # tell React do not warn about this
+      demoNode._reactRootContainer = undefined
+      debugger
+    #      ReactDom.unmountComponentAtNode(normalizeDomElement('#demo2'))
+    return
 
   describe 'update BaseBlock', ->
     it 'should dc generate a component', ->

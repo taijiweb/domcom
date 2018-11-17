@@ -1,5 +1,7 @@
 {expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
 
+{normalizeDomElement} = require '../../src/dom-util'
+
 {newDemoNode} = require './helper'
 
 {
@@ -14,9 +16,14 @@ mvc
 
 describe "test vue back end", ->
   afterEach ->
+    # the mounted #demo2 has been modified by Vue mounting,  the id demo2 does not exists anymore
+    demoNode = normalizeDomElement('#demo2')
+    if demoNode.childNodes.length
+      node = demoNode.childNodes[0]
+      demoNode.removeChild(node)
     dc.reset()
 
-  describe 'update BaseBlock', ->
+  describe 'update VueBlock', ->
 
     it 'should mount simple vue div block', ->
       dr = dc.vue()
@@ -44,13 +51,11 @@ describe "test vue back end", ->
       comp.mount('#demo2')
       comp.message = 'hello mvc 2'
       comp.showing = false
-      2
       comp.update()
 
-    it 'should mount and update vue mvc + if_ div block', ->
-      dr = dc.react()
+    it 'should mount and update vue mvc + if_ div block 1', ->
+      dr = dc.vue()
       {div} = dr
-      expect(dr).to.be.instanceof(dc.React)
       view = () -> if_(this.showing, div(this.message1), div(this.message2))
       comp = mvc(view)
       comp.showing = true
@@ -61,9 +66,8 @@ describe "test vue back end", ->
       comp.update()
 
     it 'should mount and update vue mvc + if_ div block 2', ->
-      dr = dc.react()
+      dr = dc.vue()
       {div} = dr
-      expect(dr).to.be.instanceof(dc.React)
       view = () -> if_(this.showing, div(this.message1))
       comp = mvc(view)
       comp.showing = true
@@ -71,3 +75,22 @@ describe "test vue back end", ->
       comp.mount('#demo2')
       comp.showing = false
       comp.update()
+
+
+    it 'should mount and update vue mvc + if_ div block 3', ->
+      dr = dc.vue()
+      {div} = dr
+      view = () -> if_(this.showing, div(this.message1), div(this.message2))
+      comp = mvc(view)
+      comp.showing = true
+      comp.message1 = 'hello mvc 1'
+      comp.message2 = 'hello mvc 2'
+      comp.mount('#demo2')
+      comp.showing = false
+      comp.update()
+      comp.showing = true
+      comp.update()
+      comp.showing = false
+      comp.update()
+
+

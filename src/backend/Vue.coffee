@@ -17,6 +17,6 @@ export default class Vue extends Backend
 
   by: (vueComponent) ->
     return (props, children) ->
-      return new ReactBlock(vueComponent, props, children)
+      return new VueBlock(vueComponent, props, children)
 
 module.exports = Vue

@@ -18,9 +18,19 @@ mvc
 
 describe "test react back end", ->
   afterEach ->
-    ReactDom.unmountComponentAtNode(normalizeDomElement('#demo2'))
+    demoNode = normalizeDomElement('#demo2')
+    if demoNode.childNodes.length
+      node = demoNode.childNodes[0]
+      demoNode.removeChild(node)
 
-  idescribe 'update BaseBlock', ->
+      # tell React do not warn about this
+      demoNode._reactRootContainer = undefined
+      debugger
+#      ReactDom.unmountComponentAtNode(normalizeDomElement('#demo2'))
+    return
+
+
+  describe 'update ReactBlock', ->
 
     it 'should mount simple react div block', ->
       dr = dc.react()
@@ -34,10 +44,11 @@ describe "test react back end", ->
       dr = dc.react()
       expect(dr).to.be.instanceof(dc.React)
       {div} = dr
-      comp = div({}, div({key:1}, div({key:1}, 'hello')))
+      comp = div({}, div({key:1}, 'hello'))
       expect(comp).to.be.instanceof(dc.ReactBlock)
+      debugger
       comp.mount('#demo2')
-      dc.update()
+      comp.update()
 
     it 'should mount react mvc + div block', ->
       dr = dc.react()
@@ -53,7 +64,8 @@ describe "test react back end", ->
       debugger
       comp.update()
 
-    it 'should mount and update react mvc + if_ div block', ->
+
+    it 'should mount and update react mvc + if_ div block 1', ->
       dr = dc.react()
       {div} = dr
       expect(dr).to.be.instanceof(dc.React)
@@ -64,7 +76,6 @@ describe "test react back end", ->
       comp.message2 = 'hello mvc 2'
       comp.mount('#demo2')
       comp.showing = false
-      debugger
       comp.update()
 
     it 'should mount and update react mvc + if_ div block 2', ->

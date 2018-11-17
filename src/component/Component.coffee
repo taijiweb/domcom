@@ -63,10 +63,6 @@ export default module.exports = class Component extends Emitter
     block = this.getBlock()
     if oldBlock && block != oldBlock
       oldBlock.unattach()
-      # this is considered under the condition below
-      # this.parentNode have only one child node(i.e. block.node)
-      if block.node
-        this.parentNode.appendChild(block.node)
     block.refreshDom()
     return this
 
@@ -84,24 +80,25 @@ export default module.exports = class Component extends Emitter
       dc.error('should not mount to node which is not empty:', mountNode)
     this.parentNode = parentNode
     this.setHolder(dc)
-    this.clearRemoving()
     dc.rootComponentMap[this.dcid] = this
+    return
 
   ### if mountNode is given, it should not be the node of any Component
   only use beforeNode if mountNode is given
   ###
-  mount: (mountNode, forceRender) ->
+  mount: (mountNode) ->
     this.emit('willMount')
     this._prepareMount(mountNode)
-    this.render(forceRender)
+    this.render()
     this.emit('didMount')
+    return
 
-  unmount: (forceRender) ->
+  unmount: () ->
     this.emit('willUnmount')
     this.remove()
-    #this.removeNode()
     dc.clean()
     this.emit('didUnmount')
+    return
 
   remove: ->
     holder = this.holder
@@ -117,41 +114,14 @@ export default module.exports = class Component extends Emitter
     this
 
 
-
-  ### 注册部件的事件侦听回掉
-   ## 调用示例
-    comp.on(name, callback, before = false)
-    comp.on(name, callbacks, before = false)
-    comp.on({name: callback, ...}, before = false)
-  ###
-  on: (event, callback) ->
-    return callback
-
-  ### 取消注册部件的事件侦听回掉
-   ## 调用示例
-    comp.off(name, callback)
-    comp.off(name)
-    comp.off(names)
-    comp.off()
-    comp.on({name: callback, ...})
-  ###
-  on: (event, callback) ->
-
-    ### 发送部件事件
-    ###
-  emit: (name) ->
-
-  replace: (oldComponent, forceRender) ->
+  replace: (oldComponent) ->
     if !this.destroyed && this != oldComponent && !oldComponent.removing && !oldComponent.removed
       holder = oldComponent.holder
       if holder && holder != dc
         if holder.isTransformComponent
           dc.error('Should not replace the content of TranComponent')
         else
-          # holder is List or Tag
           holder.replaceChild(oldComponent, this)
-#          holder.render(forceRender)
-#          oldComponent.removeDom()
       else if holder == dc
         this.parentNode = oldComponent.parentNode
         this.nextNode = oldComponent.nextNode
