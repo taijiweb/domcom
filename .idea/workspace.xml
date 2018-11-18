@@ -2,48 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="112ddb60-2a6e-4ff6-b1de-ae8295583a0b" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/react-vue-components/HelloReact.coffee" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/backend/VueWRapper4React.coffee" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/component/block/index.coffee" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/coffee/test-react-in-vue.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Block.coffee" afterPath="$PROJECT_DIR$/src/component/block/Block.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Case.coffee" afterPath="$PROJECT_DIR$/src/component/block/Case.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Cdata.coffee" afterPath="$PROJECT_DIR$/src/component/block/Cdata.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Comment.coffee" afterPath="$PROJECT_DIR$/src/component/block/Comment.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Cond.coffee" afterPath="$PROJECT_DIR$/src/component/block/Cond.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Defer.coffee" afterPath="$PROJECT_DIR$/src/component/block/Defer.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Func.coffee" afterPath="$PROJECT_DIR$/src/component/block/Func.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Html.coffee" afterPath="$PROJECT_DIR$/src/component/block/Html.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/If.coffee" afterPath="$PROJECT_DIR$/src/component/block/If.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/List.coffee" afterPath="$PROJECT_DIR$/src/component/block/List.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/ListMixin.coffee" afterPath="$PROJECT_DIR$/src/component/block/ListMixin.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/MVC.coffee" afterPath="$PROJECT_DIR$/src/component/block/MVC.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Nothing.coffee" afterPath="$PROJECT_DIR$/src/component/block/Nothing.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Pick.coffee" afterPath="$PROJECT_DIR$/src/component/block/Pick.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/ReactBlock.coffee" afterPath="$PROJECT_DIR$/src/component/block/ReactBlock.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Tag.coffee" afterPath="$PROJECT_DIR$/src/component/block/Tag.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/TestComponent.coffee" afterPath="$PROJECT_DIR$/src/component/block/TestBlock.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/Text.coffee" afterPath="$PROJECT_DIR$/src/component/block/Text.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/TranComponent.coffee" afterPath="$PROJECT_DIR$/src/component/block/TranBlock.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/VueBlock.coffee" afterPath="$PROJECT_DIR$/src/component/block/VueBlock.coffee" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/component/route.coffee" afterPath="$PROJECT_DIR$/src/component/block/route.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/component/Component.coffee" afterPath="$PROJECT_DIR$/src/component/Component.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/image/Image.coffee" afterPath="$PROJECT_DIR$/src/image/Image.coffee" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/component/block/Element.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/backend/React.coffee" afterPath="$PROJECT_DIR$/src/backend/React.coffee" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/component/block/ReactBlock.coffee" afterPath="$PROJECT_DIR$/src/component/block/ReactBlock.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/backend/ReactProxy.coffee" afterPath="$PROJECT_DIR$/src/backend/ReactProxy.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/backend/ReactWRapper4Vue.coffee" afterPath="$PROJECT_DIR$/src/backend/ReactWRapper4Vue.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/backend/Vue.coffee" afterPath="$PROJECT_DIR$/src/backend/Vue.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/backend/VueProxy.coffee" afterPath="$PROJECT_DIR$/src/backend/VueProxy.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/property/css-arith.coffee" afterPath="$PROJECT_DIR$/src/property/css-arith.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/property/delegate-event.coffee" afterPath="$PROJECT_DIR$/src/property/delegate-event.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/component/index.coffee" afterPath="$PROJECT_DIR$/src/component/index.coffee" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/backend/index.coffee" afterPath="$PROJECT_DIR$/src/backend/index.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/index.coffee" afterPath="$PROJECT_DIR$/test/coffee/index.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/component/isComponent.coffee" afterPath="$PROJECT_DIR$/src/component/isComponent.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mergeIf.coffee" afterPath="$PROJECT_DIR$/src/mergeIf.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/directive/options.coffee" afterPath="$PROJECT_DIR$/src/directive/options.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tag.coffee" afterPath="$PROJECT_DIR$/src/tag.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-react-backend.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-react-backend.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/component/toComponent.coffee" afterPath="$PROJECT_DIR$/src/component/toComponent.coffee" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-react-in-vue.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-react-in-vue.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="domcom.iws" />
@@ -104,31 +71,61 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="mocha-runner.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/mocha-runner.html">
+      <file leaf-file-name="React.coffee" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/backend/React.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.1666667" vertical-offset="539" max-vertical-offset="1132">
-              <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1080">
+              <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Image.coffee" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/image/Image.coffee">
+      <file leaf-file-name="ReactBlock.coffee" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/component/block/ReactBlock.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.03836317" vertical-offset="0" max-vertical-offset="511">
-              <caret line="1" column="35" selection-start-line="1" selection-start-column="20" selection-end-line="1" selection-end-column="35" />
+            <state vertical-scroll-proportion="-18.88889" vertical-offset="60" max-vertical-offset="1473">
+              <caret line="38" column="52" selection-start-line="37" selection-start-column="6" selection-end-line="38" selection-end-column="52" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Block.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/component/block/Block.coffee">
+      <file leaf-file-name="ReactProxy.coffee" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/backend/ReactProxy.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1846">
-              <caret line="2" column="32" selection-start-line="2" selection-start-column="32" selection-end-line="2" selection-end-column="32" />
+            <state vertical-scroll-proportion="-8.181818" vertical-offset="255" max-vertical-offset="1340">
+              <caret line="47" column="13" selection-start-line="47" selection-start-column="13" selection-end-line="47" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.coffee" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/coffee/index.coffee">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1035">
+              <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test-new-dc.coffee" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/coffee/test-new-dc.coffee">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="1036">
+              <caret line="27" column="33" selection-start-line="27" selection-start-column="33" selection-end-line="27" selection-end-column="33" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Element.coffee" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/component/block/Element.coffee">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.63981044" vertical-offset="510" max-vertical-offset="1833">
+              <caret line="61" column="30" selection-start-line="61" selection-start-column="30" selection-end-line="61" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -160,8 +157,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/test/coffee/test-property.coffee" />
-        <option value="$PROJECT_DIR$/src/component/util.coffee" />
         <option value="$PROJECT_DIR$/test/mocha-runner.html" />
         <option value="$PROJECT_DIR$/src/dc.coffee" />
         <option value="$PROJECT_DIR$/src/component/TranComponent.coffee" />
@@ -169,19 +164,15 @@
         <option value="$PROJECT_DIR$/src/component/Nothing.coffee" />
         <option value="$PROJECT_DIR$/src/dc-render.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/test-vue-backend.coffee" />
-        <option value="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" />
         <option value="$PROJECT_DIR$/src/component/VueBlock.coffee" />
         <option value="$PROJECT_DIR$/test/react-vue-components/HelloVue.coffee" />
         <option value="$PROJECT_DIR$/src/component/Tag.coffee" />
         <option value="$PROJECT_DIR$/src/backend/ReactWRapper4Vue.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/test-react-backend.coffee" />
-        <option value="$PROJECT_DIR$/test/coffee/index.coffee" />
         <option value="$PROJECT_DIR$/src/component/ReactBlock.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/test-vue-in-react.coffee" />
         <option value="$PROJECT_DIR$/src/backend/VueProxy.coffee" />
-        <option value="$PROJECT_DIR$/src/backend/ReactProxy.coffee" />
         <option value="$PROJECT_DIR$/src/backend/VueWRapper4React.coffee" />
-        <option value="$PROJECT_DIR$/test/coffee/test-react-in-vue.coffee" />
         <option value="$PROJECT_DIR$/test/react-vue-components/HelloReact.coffee" />
         <option value="$PROJECT_DIR$/src/component/block/Case.coffee" />
         <option value="$PROJECT_DIR$/src/component/Component.coffee" />
@@ -193,24 +184,30 @@
         <option value="$PROJECT_DIR$/src/component/block/route.coffee" />
         <option value="$PROJECT_DIR$/src/component/isComponent.coffee" />
         <option value="$PROJECT_DIR$/src/component/block/List.coffee" />
-        <option value="$PROJECT_DIR$/src/tag.coffee" />
         <option value="$PROJECT_DIR$/src/component/block/index.coffee" />
         <option value="$PROJECT_DIR$/src/component/block/ListMixin.coffee" />
         <option value="$PROJECT_DIR$/src/component/block/If.coffee" />
         <option value="$PROJECT_DIR$/src/mergeIf.coffee" />
         <option value="$PROJECT_DIR$/src/component/block/VueBlock.coffee" />
-        <option value="$PROJECT_DIR$/src/component/block/ReactBlock.coffee" />
         <option value="$PROJECT_DIR$/src/component/block/Tag.coffee" />
         <option value="$PROJECT_DIR$/src/backend/Vue.coffee" />
         <option value="$PROJECT_DIR$/src/property/delegate-event.coffee" />
         <option value="$PROJECT_DIR$/src/property/css-arith.coffee" />
         <option value="$PROJECT_DIR$/src/directive/options.coffee" />
-        <option value="$PROJECT_DIR$/src/backend/React.coffee" />
         <option value="$PROJECT_DIR$/src/component/toComponent.coffee" />
         <option value="$PROJECT_DIR$/src/component/block/TranBlock.coffee" />
         <option value="$PROJECT_DIR$/src/component/index.coffee" />
         <option value="$PROJECT_DIR$/src/component/block/Block.coffee" />
         <option value="$PROJECT_DIR$/src/image/Image.coffee" />
+        <option value="$PROJECT_DIR$/src/backend/React.coffee" />
+        <option value="$PROJECT_DIR$/src/backend/index.coffee" />
+        <option value="$PROJECT_DIR$/src/tag.coffee" />
+        <option value="$PROJECT_DIR$/test/coffee/test-react-in-vue.coffee" />
+        <option value="$PROJECT_DIR$/test/coffee/index.coffee" />
+        <option value="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" />
+        <option value="$PROJECT_DIR$/src/component/block/ReactBlock.coffee" />
+        <option value="$PROJECT_DIR$/src/backend/ReactProxy.coffee" />
+        <option value="$PROJECT_DIR$/src/component/block/Element.coffee" />
       </list>
     </option>
   </component>
@@ -457,6 +454,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -606,7 +621,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="778" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32994187" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -620,7 +635,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24947146" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3093728" sideWeight="0.47160494" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.39098838" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39098838" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -628,6 +643,27 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
+    <layout-to-restore>
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32994187" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.54651165" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24947146" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3093728" sideWeight="0.52839506" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24947146" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3093728" sideWeight="0.47160494" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39098838" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -655,41 +691,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/backend/Angular.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="705">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/coffee/test-vue-backend.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.148148" vertical-offset="869" max-vertical-offset="2058">
-          <caret line="69" column="16" selection-start-line="69" selection-start-column="16" selection-end-line="69" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/coffee/test-new-dc.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="176" max-vertical-offset="959">
-          <caret line="18" column="6" selection-start-line="18" selection-start-column="6" selection-end-line="18" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dc-render.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.1378788" vertical-offset="1319" max-vertical-offset="2715">
-          <caret line="138" column="0" selection-start-line="138" selection-start-column="0" selection-end-line="138" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/coffee/test-react-backend.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1151" max-vertical-offset="1980">
-          <caret line="96" column="28" selection-start-line="96" selection-start-column="28" selection-end-line="96" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test/react-vue-components/HelloVue.coffee">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.1590909" vertical-offset="0" max-vertical-offset="750">
@@ -701,14 +702,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.27272728" vertical-offset="240" max-vertical-offset="1305">
           <caret line="28" column="5" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/backend/index.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="885">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -729,42 +722,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/coffee/test-react-in-vue.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="250" max-vertical-offset="1320">
-          <caret line="42" column="14" selection-start-line="42" selection-start-column="14" selection-end-line="42" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/backend/VueProxy.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.52272725" vertical-offset="270" max-vertical-offset="1395">
-          <caret line="41" column="15" selection-start-line="41" selection-start-column="15" selection-end-line="41" selection-end-column="15" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/coffee/index.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.045454547" vertical-offset="0" max-vertical-offset="1035">
-          <caret line="2" column="30" selection-start-line="2" selection-start-column="30" selection-end-line="2" selection-end-column="30" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/backend/ReactWRapper4Vue.coffee">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.4090909" vertical-offset="0" max-vertical-offset="1035">
           <caret line="18" column="12" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/backend/ReactProxy.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.13636364" vertical-offset="0" max-vertical-offset="1305">
-          <caret line="6" column="28" selection-start-line="6" selection-start-column="28" selection-end-line="6" selection-end-column="28" />
           <folding />
         </state>
       </provider>
@@ -857,14 +818,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/tag.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1411">
-          <caret line="3" column="35" selection-start-line="3" selection-start-column="35" selection-end-line="3" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/component/block/ListMixin.coffee">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="7216">
@@ -885,14 +838,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2491">
           <caret line="2" column="47" selection-start-line="2" selection-start-column="47" selection-end-line="2" selection-end-column="47" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/component/block/ReactBlock.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1231">
-          <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
           <folding />
         </state>
       </provider>
@@ -937,26 +882,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/backend/React.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="736">
-          <caret line="2" column="43" selection-start-line="2" selection-start-column="43" selection-end-line="2" selection-end-column="43" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/component/toComponent.coffee">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="719">
           <caret line="1" column="28" selection-start-line="1" selection-start-column="28" selection-end-line="1" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dc.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1124">
-          <caret line="6" column="29" selection-start-line="6" selection-start-column="29" selection-end-line="6" selection-end-column="29" />
           <folding />
         </state>
       </provider>
@@ -1009,14 +938,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/component/block/VueBlock.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1141">
-          <caret line="7" column="32" selection-start-line="7" selection-start-column="32" selection-end-line="7" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/component/block/TranBlock.coffee">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2086">
@@ -1033,17 +954,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/mocha-runner.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.1666667" vertical-offset="539" max-vertical-offset="1132">
-          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/component/block/Block.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1846">
+        <state vertical-scroll-proportion="0.045454547" vertical-offset="0" max-vertical-offset="2100">
           <caret line="2" column="32" selection-start-line="2" selection-start-column="32" selection-end-line="2" selection-end-column="32" />
           <folding />
         </state>
@@ -1051,8 +964,136 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/image/Image.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.03836317" vertical-offset="0" max-vertical-offset="511">
-          <caret line="1" column="35" selection-start-line="1" selection-start-column="20" selection-end-line="1" selection-end-column="35" />
+        <state vertical-scroll-proportion="0.20454545" vertical-offset="0" max-vertical-offset="780">
+          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/mocha-runner.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.18710692" vertical-offset="496" max-vertical-offset="1401">
+          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dc.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1124">
+          <caret line="6" column="29" selection-start-line="6" selection-start-column="29" selection-end-line="6" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/domcom.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1275">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/backend/Backend.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1260">
+          <caret line="24" column="23" selection-start-line="24" selection-start-column="23" selection-end-line="24" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/backend/index.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="45" max-vertical-offset="1245">
+          <caret line="40" column="22" selection-start-line="40" selection-start-column="22" selection-end-line="40" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/coffee/test-react-in-vue.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="105" max-vertical-offset="1320">
+          <caret line="36" column="25" selection-start-line="36" selection-start-column="25" selection-end-line="36" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/coffee/test-react-backend.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="2265">
+          <caret line="96" column="28" selection-start-line="96" selection-start-column="28" selection-end-line="96" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/coffee/index.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1035">
+          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/backend/React.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1080">
+          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/coffee/test-new-dc.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="1036">
+          <caret line="27" column="33" selection-start-line="27" selection-start-column="33" selection-end-line="27" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tag.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5681818" vertical-offset="255" max-vertical-offset="1785">
+          <caret line="42" column="49" selection-start-line="42" selection-start-column="49" selection-end-line="42" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/component/block/ReactBlock.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-18.88889" vertical-offset="60" max-vertical-offset="1473">
+          <caret line="38" column="52" selection-start-line="37" selection-start-column="6" selection-end-line="38" selection-end-column="52" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/backend/VueProxy.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7187017" vertical-offset="390" max-vertical-offset="1502">
+          <caret line="49" column="10" selection-start-line="49" selection-start-column="10" selection-end-line="49" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/component/block/VueBlock.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7882535" vertical-offset="210" max-vertical-offset="1532">
+          <caret line="39" column="25" selection-start-line="39" selection-start-column="25" selection-end-line="39" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/backend/ReactProxy.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.181818" vertical-offset="255" max-vertical-offset="1340">
+          <caret line="47" column="13" selection-start-line="47" selection-start-column="13" selection-end-line="47" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/component/block/Element.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.63981044" vertical-offset="510" max-vertical-offset="1833">
+          <caret line="61" column="30" selection-start-line="61" selection-start-column="30" selection-end-line="61" selection-end-column="30" />
           <folding />
         </state>
       </provider>

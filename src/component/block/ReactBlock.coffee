@@ -37,7 +37,7 @@ export default module.exports = class ReactBlock extends Block
       block = this
       reactElement = React.createElement(ReactProxy, {block, tagComponent, props, children})
       ReactDom.render(reactElement, this.parentNode)
-      this.node =  this.parentNode.childNodes[this.parentNode.childNodes.length - 1]
+      this.node =  this.parentNode.childNodes[0]
       this.mounted = true
     else
       if !this.proxy

@@ -14,12 +14,12 @@ createReactElement = (item, index) ->
       props.key = 9999
     debugger
     item = React.createElement(ReactWrapper4Vue, props, children)
-  else if item.tagComponent && item.props  && item.children
+  else if item.tag && item.props  && item.children
     children = item.children.map (child, i) ->
       if child.props && !child.props.key?
         child.props.key = i
       createReactElement(child, i)
-    item = React.createElement(item.tagComponent, item.props, children)
+    item = React.createElement(item.tag, item.props, children)
   else
     item
   return item
@@ -27,18 +27,24 @@ createReactElement = (item, index) ->
 export default module.exports = class ReactProxy extends Component
   constructor: (props) ->
     super(props)
-    {block, tagComponent, props, children} = props
+    {block, tag, props, children} = props
     debugger
     this.block = block
     block.proxy = this
-    this.state = {tagComponent, props, children}
+    this.state = {tag, props, children}
     return 
 
   render: ->
     debugger
-    {tagComponent, props, children} = this.state
+    {tag, props, children} = this.state
     children = children.map (child, index) ->
       createReactElement(child, index)
-    return React.createElement(tagComponent, props, children)
+    return React.createElement(tag, props, children)
+
+  mount: (parentNode) ->
+    reactElement = React.createElement(ReactProxy, this.props)
+    ReactDom.render(reactElement, parentNode)
+
+  refresh: ->
 
 

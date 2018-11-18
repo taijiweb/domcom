@@ -1,10 +1,10 @@
 dc.alwaysRender = true
 
-require('./test-react-in-vue')
-require('./test-vue-in-react')
-
+#require('./test-react-in-vue')
+#require('./test-vue-in-react')
+#
 require('./test-new-dc')
-require('./test-vue-backend')
+#require('./test-vue-backend')
 require('./test-react-backend')
 
 #require('lazy-flow/test-flow')

@@ -6,7 +6,7 @@ import ReactDom from 'react-dom'
 import HelloReact from '../react-vue-components/HelloReact'
 
 {normalizeDomElement} = require '../../src/dom-util'
-{
+{div
 mvc
 } = dc
 
@@ -26,17 +26,17 @@ describe "test react in vue", ->
 
   describe 'update React in Vue', ->
 
-    it 'should mount simple react in vue div block', ->
+    iit 'should mount simple react in vue div block', ->
       this.timeout(2000*10000)
-      dv = dc.vue()
-      expect(dv).to.be.instanceof(dc.Vue)
-      dr = dc.react()
-      comp = dv.div(dr.div({key:0}, 'hello'))
-      expect(comp).to.be.instanceof(dc.VueBlock)
+      dv = dc.vue
+      dr = dc.react
+      blk = div({key:0}, 'hello')
+      drb = dr blk
+      comp = dv div(drb)
       debugger
       comp.mount('#demo')
 
-    iit 'should mount simple react component in vue div block', ->
+    it 'should mount simple react component in vue div block', ->
       dv = dc.vue()
       expect(dv).to.be.instanceof(dc.Vue)
       dr = dc.react()

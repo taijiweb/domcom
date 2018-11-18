@@ -1,6 +1,9 @@
 import Backend from './Backend'
 
 import ReactBlock from '../component/block/ReactBlock'
+
+import Element from '../component/block/Element'
+
 {tagNames} = require '../dom-util'
 {attrsChildren, toTagChildren} = require '../component/util'
 
@@ -18,7 +21,9 @@ export default class React extends Backend
 
   by: (ReactClass) ->
     return (props, children) ->
-      return new ReactBlock(ReactClass, props, children)
+      element = new Element(ReactClass, props, children)
+      element.backend = 'react'
+      return element
 
 module.exports = React
 

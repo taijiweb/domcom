@@ -14,14 +14,14 @@ getters
 
 describe "test-base-component", ->
   afterEach ->
-    demoNode = normalizeDomElement('#demo2')
-    if demoNode.childNodes.length
-      node = demoNode.childNodes[0]
-      demoNode.removeChild(node)
-
-      # tell React do not warn about this
-      demoNode._reactRootContainer = undefined
-      debugger
+#    demoNode = normalizeDomElement('#demo2')
+#    if demoNode.childNodes.length
+#      node = demoNode.childNodes[0]
+#      demoNode.removeChild(node)
+#
+#      # tell React do not warn about this
+#      demoNode._reactRootContainer = undefined
+#      debugger
     #      ReactDom.unmountComponentAtNode(normalizeDomElement('#demo2'))
     return
 
@@ -37,10 +37,8 @@ describe "test-base-component", ->
         return div(div(x), div(y))
       comp = dc.mvc(view, data)
 
-    it 'dc.react should be an backend', ->
-      dr = dc.react()
-      expect(dr).to.be.instanceof(dc.React)
-      {div} = dr
+    iit 'dc.react should be an backend', ->
+      dr = dc.react
       comp = div({}, ['hello'])
-      expect(comp).to.be.instanceof(dc.ReactBlock)
+      debugger
       comp.mount('#demo2')

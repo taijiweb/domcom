@@ -1,7 +1,10 @@
 {isEven} = require 'dc-util'
 
 import isComponent from './component/isComponent'
+
 import Tag from './component/block/Tag'
+import Element from './component/block/Element'
+
 {getBindProp, tagNames} = require './dom-util'
 {isArray, isObject} = require 'dc-util'
 {attrsChildren, toTagChildren, isAttrs} = require './component/util'
@@ -9,13 +12,17 @@ import Tag from './component/block/Tag'
 #export default
 module.exports = exports = {}
 
-tag = (tagName, args...) ->
+exports.tag = tag = (tagName, args...) ->
   [attrs, children] = attrsChildren(args)
-  new Tag(tagName, attrs, toTagChildren(children))
+  new Element(tagName, attrs, toTagChildren(children))
+
+element = (tagName, args...) ->
+  [attrs, children] = attrsChildren(args)
+  new Element(tagName, attrs, toTagChildren(children))
 
 for tagName in tagNames
   do (tagName=tagName) -> exports[tagName] = (args...) ->
-    tag(tagName, args...)
+    element(tagName, args...)
 
 # Because the name 'html' under dc has been used to instantiate Html component
 # So use tagHtml here, instead.
