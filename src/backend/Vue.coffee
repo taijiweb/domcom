@@ -1,5 +1,5 @@
 import Backend from './Backend'
-import VueBlock from '../component/VueBlock'
+import VueBlock from '../component/block/VueBlock'
 {tagNames} = require '../dom-util'
 {attrsChildren, toTagChildren} = require '../component/util'
 

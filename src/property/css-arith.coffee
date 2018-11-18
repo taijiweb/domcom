@@ -1,4 +1,4 @@
-import Tag from '../component/Tag'
+import Tag from '../component/block/Tag'
 
 #export default
 module.exports = exports = {}

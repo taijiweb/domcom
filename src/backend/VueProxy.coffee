@@ -1,7 +1,17 @@
 import Vue from 'vue'
+import VueWrapper4React from './VueWrapper4React'
+import React from 'react'
 
 createVueElement = (h, item, index) ->
-  if item.tagComponent && item.tagComponent  && item.children
+  if !item
+    item = h(item)
+  else if item.isReactBlock
+    debugger
+    props = Object.assign({}, item)
+    if !props.key?
+      props.key = 9999
+    item = h(VueWrapper4React, {props:{props}}, children)
+  else if item.tagComponent && item.tagComponent  && item.children
     children = item.children.map (child, i) -> createVueElement(h, child, index)
     item = h(item.tagComponent, item.props, children)
   else
@@ -26,12 +36,12 @@ export default module.exports = class VueProxy
         {tagComponent, props, children} = image
         children = children.map (child, index) ->
           createVueElement(h, child, index)
+        console.log 'VueProxy.render:', props, children
         h(tagComponent, props, children))
     })
     return this
 
   mount: (node) ->
-    debugger
     this.vueInstance.$mount(node)
     return
 

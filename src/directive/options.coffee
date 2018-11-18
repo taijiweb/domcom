@@ -1,6 +1,6 @@
 {txt} = require '../instantiate'
 {option} = require '../tag'
-import Tag from '../component/Tag'
+import Tag from '../component/block/Tag'
 
 # options directive，used for select tag
 export default module.exports = (items, attrs) -> (comp) ->

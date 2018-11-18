@@ -20,9 +20,9 @@
   *
 ###
 
-import TranComponent from './TranComponent'
-import isComponent from './isComponent'
-import toComponent from './toComponent'
+import TranBlock from './TranBlock'
+import isComponent from '../isComponent'
+import toComponent from '../toComponent'
 {isEven, matchCurvedString} = require 'dc-util'
 
 export default module.exports = route = (routeList..., otherwise, baseIndex) -> _route(routeList, otherwise, baseIndex, 0)
@@ -90,7 +90,7 @@ navigate = (baseIndex) -> (path) ->
 
 route.to = navigate(0)
 
-route.Route = class Route extends TranComponent
+route.Route = class Route extends TranBlock
   constructor: (@routeList, @otherwise, @baseIndex) ->
     super()
 

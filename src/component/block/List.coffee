@@ -2,7 +2,7 @@ import Block from './Block'
 
 {newLine} = require 'dc-util'
 
-import toComponentArray from './toComponentArray'
+import toComponentArray from '../toComponentArray'
 
 {mixin} = require 'dc-util'
 import ListMixin from './ListMixin'

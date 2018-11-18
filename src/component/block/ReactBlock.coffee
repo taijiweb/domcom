@@ -2,11 +2,11 @@ import Block from './Block'
 
 import React from 'react'
 import ReactDom from 'react-dom'
-{getImage} = require './util'
+{getImage} = require '../util'
 
-import Image from '../image/Image'
+import Image from '../../image/Image'
 
-import ReactProxy from '../backend/ReactProxy'
+import ReactProxy from '../../backend/ReactProxy'
 
 export default module.exports = class ReactBlock extends Block
 
@@ -19,13 +19,15 @@ export default module.exports = class ReactBlock extends Block
     return this
 
   getImage: ->
-    this.block = this
+    block = this
+    this.block = block
+    isReactBlock = true
     props = {}
     for prop, value of this.props
       props[prop] = getImage(value)
     children = this.children.map (child) -> getImage(child)
     {tagComponent} = this
-    image = {tagComponent, props, children}
+    image = {block, isReactBlock, tagComponent, props, children}
     return image
 
   refreshDom: ->

@@ -3,7 +3,7 @@ import Text from './Text'
 
 {funcString, newLine} = require 'dc-util'
 
-{domValue} = require '../dom-util'
+{domValue} = require '../../dom-util'
 
 export default module.exports = class Cdata extends Text
   constructor: (text) ->

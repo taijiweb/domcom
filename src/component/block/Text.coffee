@@ -1,8 +1,8 @@
 import Block from './Block'
 {funcString, newLine, value, dynamic} = require 'dc-util'
-{domField, domValue} = require '../dom-util'
+{domField, domValue} = require '../../dom-util'
 
-{setText} = require '../property/attrs'
+{setText} = require '../../property/attrs'
 
 if 'textContent' of document.documentElement
   hasTextContent = true

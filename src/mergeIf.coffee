@@ -1,6 +1,6 @@
-import Tag from './component/Tag'
-import List from './component/List'
-import Nothing from './component/Nothing'
+import Tag from './component/block/Tag'
+import List from './component/block/List'
+import Nothing from './component/block/Nothing'
 
 {domEventHandlerFromArray} = require './property/events'
 
@@ -17,7 +17,7 @@ module.exports = exports
 # and check test is a function
 module.exports = exports = mergeIf = (test, then_, else_, recursive) ->
 
-  If = require('./component/If')
+  If = require('./component/block/If')
 
   if then_==else_
     return then_

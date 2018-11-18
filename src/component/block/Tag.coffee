@@ -1,13 +1,13 @@
-import dc from '../dc'
-{domField, domValue} = require '../dom-util'
-import classFn from '../property/classFn'
-{styleFrom} = require('../property/style')
-{attrToPropName} = require('../property/attrs')
-{domEventHandler, addEventListenerMap, addHandlerToCallbackArray} = require('../property/events')
+import dc from '../../dc'
+{domField, domValue} = require '../../dom-util'
+import classFn from '../../property/classFn'
+{styleFrom} = require('../../property/style')
+{attrToPropName} = require('../../property/attrs')
+{domEventHandler, addEventListenerMap, addHandlerToCallbackArray} = require('../../property/events')
 import Block from './Block'
 {funcString, newLine, cloneObject} = require('dc-util')
 {flow, react} = require('lazy-flow')
-import toComponentArray from './toComponentArray'
+import toComponentArray from '../toComponentArray'
 {binaryInsert} = require('dc-util')
 {createElement, cacheElement}  = require('dc-util/element-pool')
 
@@ -437,7 +437,7 @@ export default module.exports = class Tag extends Block
 
     {props} = this
     for prop, value of props
-      alue = domValue(value, this)
+      value = domValue(value, this)
       node[prop] = value
 
     {style} = this

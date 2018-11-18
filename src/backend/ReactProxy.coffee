@@ -9,10 +9,10 @@ createReactElement = (item, index) ->
   if !item
     item = React.createElement(item)
   else if item.isVueBlock
-    debugger
     props = Object.assign({}, item.props, {block:item.block, children:item.children})
     if !props.key?
       props.key = 9999
+    debugger
     item = React.createElement(ReactWrapper4Vue, props, children)
   else if item.tagComponent && item.props  && item.children
     children = item.children.map (child, i) ->
@@ -25,16 +25,14 @@ createReactElement = (item, index) ->
   return item
 
 export default module.exports = class ReactProxy extends Component
-  constructor: ->
-    super()
-    # here this.props is undefined, tested!!!
-
-  componentWillMount: ->
-    {block, tagComponent, props, children} = this.props
+  constructor: (props) ->
+    super(props)
+    {block, tagComponent, props, children} = props
+    debugger
     this.block = block
     block.proxy = this
-    this.setState {tagComponent, props, children}
-    return
+    this.state = {tagComponent, props, children}
+    return 
 
   render: ->
     debugger

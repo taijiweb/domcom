@@ -63,7 +63,8 @@ export default module.exports = class Component extends Emitter
     block = this.getBlock()
     if oldBlock && block != oldBlock
       oldBlock.unattach()
-    block.refreshDom()
+    if block
+      block.refreshDom()
     return this
 
   ###
@@ -110,7 +111,7 @@ export default module.exports = class Component extends Emitter
     else if holder && holder.children
       holder.removeChild(this)
     else if holder
-      dc.error('Should not remove the content of TranComponent')
+      dc.error('Should not remove the content of TranBlock')
     this
 
 
@@ -119,7 +120,7 @@ export default module.exports = class Component extends Emitter
       holder = oldComponent.holder
       if holder && holder != dc
         if holder.isTransformComponent
-          dc.error('Should not replace the content of TranComponent')
+          dc.error('Should not replace the content of TranBlock')
         else
           holder.replaceChild(oldComponent, this)
       else if holder == dc

@@ -1,7 +1,7 @@
 import Tag from './Tag'
 {funcString, newLine, mixin} = require 'dc-util'
-{domValue, domField} = require '../dom-util'
-{setText} = require '../property/attrs'
+{domValue, domField} = require '../../dom-util'
+{setText} = require '../../property/attrs'
 {createElement} = require 'dc-util/element-pool'
 
 # !!! Warning:

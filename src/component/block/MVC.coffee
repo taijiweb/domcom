@@ -1,7 +1,7 @@
-import toComponent from './toComponent'
-import TranComponent from './TranComponent'
+import toComponent from '../toComponent'
+import TranBlock from './TranBlock'
 
-export default module.exports = class MVC extends TranComponent
+export default module.exports = class MVC extends TranBlock
   constructor: (view, model) ->
     super()
     this._view = view

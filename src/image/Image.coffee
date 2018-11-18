@@ -1,5 +1,6 @@
 import Emitter from '../Emitter'
-import Block from '../component/Block'
+Block = require '../component/block/Block'
+
 export default class Image extends Block
 
   constructor: (block, tagNameOrClass, props, children) ->

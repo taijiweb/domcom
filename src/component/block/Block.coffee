@@ -1,13 +1,13 @@
-import Component from './Component'
+import Component from '../Component'
 
-export default class Block extends Component
+export default module.exports = class Block extends Component
 
   constructor: ->
     super()
     this.isBlock = true
     this.removing = false
     # the line below is moved from ListMixin
-    # because the removing Component of TranComponent will be added to TranComponent.content
+    # because the removing Component of TranBlock will be added to TranBlock.content
     this.baseComponent = this
 
   getImage: ->

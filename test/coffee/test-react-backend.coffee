@@ -54,7 +54,11 @@ describe "test react back end", ->
       dr = dc.react()
       {div} = dr
       expect(dr).to.be.instanceof(dc.React)
-      view = () -> if_(this.showing, div(this.message))
+      view = () ->
+        if this.showing
+          return div(this.message)
+        else
+          return null
       comp = mvc(view)
       comp.showing = true
       comp.message = 'hello mvc'
@@ -69,7 +73,11 @@ describe "test react back end", ->
       dr = dc.react()
       {div} = dr
       expect(dr).to.be.instanceof(dc.React)
-      view = () -> if_(this.showing, div(this.message1), div(this.message2))
+      view = () ->
+        if this.showing
+          div(this.message1)
+        else
+          div(this.message2)
       comp = mvc(view)
       comp.showing = true
       comp.message1 = 'hello mvc 1'
@@ -82,7 +90,11 @@ describe "test react back end", ->
       dr = dc.react()
       {div} = dr
       expect(dr).to.be.instanceof(dc.React)
-      view = () -> if_(this.showing, div(this.message1), div(this.message2))
+      view = () ->
+        if this.showing
+          div(this.message1)
+        else
+          div(this.message2)
       comp = mvc(view)
       comp.showing = true
       comp.message1 = 'hello mvc 1'

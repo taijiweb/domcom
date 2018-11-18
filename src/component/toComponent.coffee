@@ -1,6 +1,6 @@
 import isComponent from './isComponent'
-import Nothing from './Nothing'
-import Text from './Text'
+import Nothing from './block/Nothing'
+import Text from './block/Text'
 {react} = require 'lazy-flow'
 
 export default module.exports = toComponent = (item) ->
@@ -9,13 +9,13 @@ export default module.exports = toComponent = (item) ->
   else if typeof item == 'function' then new Text(item)
 
   else if item instanceof Array
-    List = require('./List') # avoid loop require
+    List = require('./block/List') # avoid loop require
     new List(for e in item then toComponent(e))
 
   else if !item? then new Nothing()
 
   else if item.then && item.catch
-    Func = require('./Func') # avoid loop require
+    Func = require('./block/Func') # avoid loop require
     component = new Func react -> component.promiseResult
 
     item

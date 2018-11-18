@@ -1,7 +1,7 @@
 {isEven} = require 'dc-util'
 
 import isComponent from './component/isComponent'
-import Tag from './component/Tag'
+import Tag from './component/block/Tag'
 {getBindProp, tagNames} = require './dom-util'
 {isArray, isObject} = require 'dc-util'
 {attrsChildren, toTagChildren, isAttrs} = require './component/util'

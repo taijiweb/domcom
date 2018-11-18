@@ -1,4 +1,4 @@
-import Tag from '../component/Tag'
+import Tag from '../component/block/Tag'
 
 # delegate to component.prefix_XXX method
 delegateToMethodHandler = (prefix = 'do_') ->

@@ -1,11 +1,11 @@
 import Block from './Block'
 
 import Vue, {Component} from 'vue'
-{getImage, createReactElement} = require './util'
+{getImage, createReactElement} = require './../util'
 {isObject} = require 'dc-util'
 
-import Image from '../image/Image'
-import VueProxy from '../backend/VueProxy'
+import Image from '../../image/Image'
+import VueProxy from '../../backend/VueProxy'
 
 export default module.exports = class VueBlock extends Block
 

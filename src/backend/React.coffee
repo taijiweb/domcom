@@ -1,6 +1,6 @@
 import Backend from './Backend'
 
-import ReactBlock from '../component/ReactBlock'
+import ReactBlock from '../component/block/ReactBlock'
 {tagNames} = require '../dom-util'
 {attrsChildren, toTagChildren} = require '../component/util'
 

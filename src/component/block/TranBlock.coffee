@@ -1,6 +1,6 @@
-import Component from './Component'
+import Component from '../Component'
 
-export default module.exports = class TranComponent extends Component
+export default module.exports = class TranBlock extends Component
 
   isTranComponent: true
 
@@ -23,7 +23,7 @@ export default module.exports = class TranComponent extends Component
     return block
 
   getContent: ->
-    # as an abstract base class, TranComponent does not know how to getContent
+    # as an abstract base class, TranBlock does not know how to getContent
     # should be overrided by sub class to give a concrete getContent method
 
   refreshDom: (oldBlock) ->

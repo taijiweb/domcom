@@ -1,9 +1,9 @@
-import toComponent from './toComponent'
-import TranComponent from './TranComponent'
+import toComponent from '../toComponent'
+import TranBlock from './TranBlock'
 {foreach, funcString, newLine, intersect} = require 'dc-util'
 {renew} = require 'lazy-flow'
 
-export default module.exports = class Case extends TranComponent
+export default module.exports = class Case extends TranBlock
   constructor: (test, @map, else_, forceCase=false) ->
     super(test)
 

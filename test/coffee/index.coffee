@@ -1,5 +1,6 @@
 dc.alwaysRender = true
 
+require('./test-react-in-vue')
 require('./test-vue-in-react')
 
 require('./test-new-dc')

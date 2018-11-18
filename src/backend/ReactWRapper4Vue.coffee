@@ -18,8 +18,9 @@ export default module.exports = class ReactWrapper4Vue extends Component
 
   render: ->
     debugger
+    key = 1000
     ref = (el) =>
       debugger
       this.vueProxy.mount(el)
       return
-    return React.createElement('div', {ref, key:1000}, [])
+    return React.createElement('div', {ref, key}, [])

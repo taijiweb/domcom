@@ -1,12 +1,12 @@
-import toComponent from './toComponent'
-import TranComponent from './TranComponent'
+import toComponent from '../toComponent'
+import TranBlock from './TranBlock'
 {funcString, newLine, intersect} = require 'dc-util'
 {renew} = require 'lazy-flow'
-import mergeIf from '../mergeIf'
+import mergeIf from '../../mergeIf'
 
 ObjectDefineProperty = Object.defineProperty
 
-export default module.exports = class If extends TranComponent
+export default module.exports = class If extends TranBlock
   constructor: (test, then_, else_, merge, recursive, forceIf=false) ->
     if then_ == else_
       return toComponent then_

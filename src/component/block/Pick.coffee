@@ -1,10 +1,10 @@
-import toComponent from './toComponent'
+import toComponent from '../toComponent'
 
-import TranComponent from './TranComponent'
+import TranBlock from './TranBlock'
 
 {newLine} = require 'dc-util'
 
-export default module.exports = class Pick extends TranComponent
+export default module.exports = class Pick extends TranBlock
   constructor: (@host, field, initialContent) ->
 
     super()
