@@ -33,14 +33,12 @@ describe "test react in vue", ->
       blk = div({key:0}, 'hello')
       drb = dr blk
       comp = dv div(drb)
-      debugger
       comp.mount('#demo')
 
     it 'should mount simple react component in vue div block', ->
       dv = dc.vue()
       expect(dv).to.be.instanceof(dc.Vue)
       dr = dc.react()
-      debugger
       comp = dv.div(dr.by(HelloReact)({who:'nsy'}))
       expect(comp).to.be.instanceof(dc.VueBlock)
       comp.mount('#demo')

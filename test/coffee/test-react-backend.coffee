@@ -25,7 +25,6 @@ describe "test react back end", ->
 
       # tell React do not warn about this
       demoNode._reactRootContainer = undefined
-      debugger
 #      ReactDom.unmountComponentAtNode(normalizeDomElement('#demo2'))
     return
 
@@ -46,7 +45,6 @@ describe "test react back end", ->
       {div} = dr
       comp = div({}, div({key:1}, 'hello'))
       expect(comp).to.be.instanceof(dc.ReactBlock)
-      debugger
       comp.mount('#demo2')
       comp.update()
 

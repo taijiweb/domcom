@@ -6,7 +6,6 @@ createVueElement = (h, item, index) ->
   if !item
     item = h(item)
   else if item.isReactBlock
-    debugger
     props = Object.assign({}, item)
     if !props.key?
       props.key = 9999
@@ -31,7 +30,6 @@ export default module.exports = class VueProxy
     #Always create fresh vnode data objects in each render!
       data: this.data,
       render:((h) ->
-        debugger
         image = proxy.block.getImage()
         {tagComponent, props, children} = image
         children = children.map (child, index) ->
@@ -41,10 +39,18 @@ export default module.exports = class VueProxy
     })
     return this
 
-  mount: (node) ->
-    this.vueInstance.$mount(node)
+  mount: (parentNode) ->
+    this.vueInstance.$mount(parentNode)
+    this.node = this.parentNode.childNodes[0]
     return
 
   refresh: ->
     this.data.key++
     return
+
+  unattach: ->
+    if this.node
+      #call ReactDom.unmountComponentAtNode to empty a container
+      this.parentNode.removeChild(this.node)
+    return
+

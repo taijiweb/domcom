@@ -1,12 +1,9 @@
 import Block from './Block'
 import React from 'react'
-import ReactDom from 'react-dom'
 
-debugger
 import ReactProxy from '../../backend/ReactProxy'
+import VueProxy from '../../backend/VueProxy'
 
-
-debugger
 {getImage} = require '../util'
 
 ###
@@ -28,6 +25,7 @@ export default module.exports = class Element extends Block
 
     this.mounted = false
     Object.assign(this, {tag, props, children})
+#    this.proxy = this.makeProxy(this)
     return this
 
   setBackend: (backend) ->
@@ -42,6 +40,13 @@ export default module.exports = class Element extends Block
       if child instanceof Element
         child.setBackend backend
     return this
+
+  # h is a function to createElement
+  render: (h) ->
+    children = children.map(child) ->
+      h(child)
+    h(this.tag, this.props, children)
+
 
   getImage: ->
     block = this
@@ -59,23 +64,13 @@ export default module.exports = class Element extends Block
     this.image = this.getImage()
     {tag, props, children} = this.image
     if !this.mounted
-      Proxy = makeProxy(block)
-      proxy = new Proxy(this)
-      reactElement = React.createElement(ReactProxy, this.image)
-      ReactDom.render(reactElement, this.parentNode)
-      this.node =  this.parentNode.childNodes[this.parentNode.childNodes.length - 1]
+      this.proxy.mount(this.parentNode)
+      this.node =  this.proxy.node
       this.mounted = true
     else
-      if !this.proxy
-        debugger
-      this.proxy.setState({tag, props, children})
+      this.proxy.refresh()
     return
 
-
   unattach: ->
-    if this.node
-      #call ReactDom.unmountComponentAtNode to empty a container
-      this.parentNode.removeChild(this.node)
-      # make React happy, stop warning about this
-      this.parentNode._reactRootContainer = undefined
+    this.proxy.unattach()
     return

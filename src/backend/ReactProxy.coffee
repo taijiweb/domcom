@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import ReactDom from 'react-dom'
 
 import ReactWrapper4Vue from './ReactWrapper4Vue'
 
@@ -12,7 +13,6 @@ createReactElement = (item, index) ->
     props = Object.assign({}, item.props, {block:item.block, children:item.children})
     if !props.key?
       props.key = 9999
-    debugger
     item = React.createElement(ReactWrapper4Vue, props, children)
   else if item.tag && item.props  && item.children
     children = item.children.map (child, i) ->
@@ -26,25 +26,59 @@ createReactElement = (item, index) ->
 
 export default module.exports = class ReactProxy extends Component
   constructor: (props) ->
+    console.log('ReactProxy.constructor 1')
     super(props)
-    {block, tag, props, children} = props
-    debugger
-    this.block = block
-    block.proxy = this
-    this.state = {tag, props, children}
-    return 
+    {component} = props
+    console.log('ReactProxy.constructor 2')
+    this.component = component
+    component.proxy = this
+    console.log('ReactProxy.constructor 3', component)
+    return
+
+  componentWillMount: ->
+    console.log('ReactProxy.componentWillMount')
+
+  renderItem: (item, props, children) ->
+    h = this.renderItem
+    if props
+      return React.createElement(item, props, children)
+    else
+      item.render(h)
 
   render: ->
-    debugger
-    {tag, props, children} = this.state
-    children = children.map (child, index) ->
-      createReactElement(child, index)
-    return React.createElement(tag, props, children)
+    console.log('ReactProxy.render 1')
+
+    {component} = this
+    view = component.getView()
+    console.log('ReactProxy.render 2', component.render)
+    h = this.renderItem
+    if component.render
+      return component.render(h, view)
+    console.log('ReactProxy.render 3')
+    return null
 
   mount: (parentNode) ->
-    reactElement = React.createElement(ReactProxy, this.props)
+    console.log('ReactProxy.mount')
+    this.parentNode = parentNode
+    reactElement = React.createElement(ReactProxy, {component:this.component})
     ReactDom.render(reactElement, parentNode)
+    this.node = this.parentNode.childNodes[0]
+    return
 
   refresh: ->
+    image = this.block.getImage()
+    {tag, props, children} = image
+    this.setState({tag, props, children})
+    return
+
+  unattach: ->
+    if this.node
+      #call ReactDom.unmountComponentAtNode to empty a container
+      this.parentNode.removeChild(this.node)
+      # make React happy, stop warning about this
+      this.parentNode._reactRootContainer = undefined
+    return
+
+
 
 

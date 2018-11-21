@@ -9,11 +9,9 @@ component =
     return {}
 
   render: (h) ->
-    debugger
     h('div', { ref: 'react' })
 
   mounted: () ->
-    debugger
     reactElement = React.createElement(ReactProxy, this.props, ['haha vue wrapper 4 vue'])
     ReactDOM.render(reactElement, this.$refs.react)
 

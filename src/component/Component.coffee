@@ -1,8 +1,11 @@
 import Emitter from '../Emitter'
 import ReactDom from 'react-dom'
+import React from 'react'
+
+import ReactProxy from '../backend/ReactProxy'
 
 {normalizeDomElement} = require '../dom-util'
-{newDcid, isArray} = require 'dc-util'
+{newDcid, isArray, isObject} = require 'dc-util'
 {flow} = require 'lazy-flow'
 flowBind = flow.bind
 import isComponent from './isComponent'
@@ -10,15 +13,21 @@ import dc from '../dc'
 
 ###
   所有部件的基类
-
+  @params config: the config object for the component, it can have the fileds below
+    model can be the real value of data or a function to generate the model data
+    data: the data of the component
+    view: the view object or a function to generate the view
+    render: a function to generate the virtual dom or dom(by React.createElement or Vue.createElement)
 ###
 export default module.exports = class Component extends Emitter
-  constructor: (template, model) ->
+  constructor: (config) ->
     super()
     this.dcid = dc.dcid++;
     this.view = null
     this.model = null
     this.backend = null
+    Object.assign(this, config)
+    return
 
   ###
     设置部件模版 this.view
@@ -47,7 +56,7 @@ export default module.exports = class Component extends Emitter
       * dc清理：移除不应该继续在Dom中存在的Dom Node
   ###
   update: ->
-    this.render()
+    this.proxy.render()
 #    dc.refresh()
     return this
 
@@ -57,15 +66,17 @@ export default module.exports = class Component extends Emitter
       * 计算即时数据映像
       * 计算vdom
       * 更新dom
+    big change: componet.render will be called by component.proxy and  so it should be provided in sub class or its instance
   ###
-  render: ->
-    oldBlock = this.block
-    block = this.getBlock()
-    if oldBlock && block != oldBlock
-      oldBlock.unattach()
-    if block
-      block.refreshDom()
-    return this
+#  render: ->
+#    dc.error('big change: componet.render will be called by component.proxy and  so it should be provided in sub class or its instance')
+#    oldBlock = this.block
+#    block = this.getBlock()
+#    if oldBlock && block != oldBlock
+#      oldBlock.unattach()
+#    if block
+#      block.refreshDom()
+#    return this
 
   ###
     根据部件数据模型this.model计算即时数据映像this.data
@@ -84,14 +95,45 @@ export default module.exports = class Component extends Emitter
     dc.rootComponentMap[this.dcid] = this
     return
 
+  getData: ->
+    data = this.data || {}
+    if !isObject(data)
+      dc.error('if provided, Component.data should be an object')
+    if this.model
+      model = this.model(dc.store) || {}
+    return Object.assign({}, data, model)
+
+  getView: ->
+    data = this.getData()
+    if this.view
+      if typeof this.view == 'function'
+        view = this.view(data)
+      else
+        view = this.view
+      return view
+
   ### if mountNode is given, it should not be the node of any Component
   only use beforeNode if mountNode is given
   ###
   mount: (mountNode) ->
     this.emit('willMount')
     this._prepareMount(mountNode)
-    this.render()
+#    proxy = this.makeProxy(this.parentNode
+    console.log('Component.mount before React.createElement ReactProxy  element')
+    reactElement = React.createElement(ReactProxy, {component:this})
+    console.log('Component.mount before ReactDom.render ReactProxy  element')
+    console.log(reactElement, this.parentNode)
+    ReactDom.render(reactElement, this.parentNode)
+#    proxy.mount(this.parentNode )
     this.emit('didMount')
+    return
+
+  makeProxy: ->
+    backend = this.backend || 'react'
+    if backend == 'react'
+      return new ReactProxy({component:this})
+    else if backend == 'vue'
+      return new VueProxy(this)
     return
 
   unmount: () ->
@@ -157,7 +199,7 @@ export default module.exports = class Component extends Emitter
     if this.node
       this.node.component = null
       this.node = null
-    this.Block = null
+    this.block = null
     this.parentNode = null
 
   getPrevComponent: ->
@@ -213,6 +255,3 @@ export default module.exports = class Component extends Emitter
     for event of srcListeners
       srcListeners[event] && myListeners[event] = srcListeners[event].splice()
     this
-
-import dcEventMixin from '../dc-event'
-Object.assign(Component.prototype, dcEventMixin)

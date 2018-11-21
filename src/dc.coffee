@@ -8,13 +8,14 @@ import Component from './component/Component'
 # as the dc framework namespace
 # hold convinent getter, setter and method, etc...
 # @params template: the template for the component
-# @params model: the model for the component data
-  # model can be the real value of data
-  # can be a functioin to generate the data
-  # can also be an instance of class Model
+# @params config: the config object for the component, it can have the fileds below
+    model can be the real value of data or a function to generate the model data
+    data: the data of the component
+    view: the view object or a function to generate the view
+    render: a function to generate the virtual dom or dom(by React.createElement or Vue.createElement)
 ###
-export default module.exports = dc = (template, model) ->
-  comp = new Component(template, model)
+export default module.exports = dc = (config) ->
+  comp = new Component(config)
   return comp
 
 ###

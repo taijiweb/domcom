@@ -8,7 +8,6 @@ export default module.exports = class ReactWrapper4Vue extends Component
   # here this.props is undefined, tested!!!
 
   componentWillMount: ->
-    debugger
     {block, tagComponent, props, children} = this.props
     this.block = block
     proxy = new VueProxy(block)
@@ -17,10 +16,8 @@ export default module.exports = class ReactWrapper4Vue extends Component
     return
 
   render: ->
-    debugger
     key = 1000
     ref = (el) =>
-      debugger
       this.vueProxy.mount(el)
       return
     return React.createElement('div', {ref, key}, [])

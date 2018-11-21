@@ -20,7 +20,6 @@ describe "test vue in react", ->
 
       # tell React do not warn about this
       demoNode._reactRootContainer = undefined
-      debugger
     return
 
 
@@ -39,7 +38,6 @@ describe "test vue in react", ->
       dr = dc.react()
       expect(dr).to.be.instanceof(dc.React)
       dv = dc.vue()
-      debugger
       comp = dr.div(dv.by(HelloVue)({props:{who:'nsy'}}))
       expect(comp).to.be.instanceof(dc.ReactBlock)
       comp.mount('#demo')

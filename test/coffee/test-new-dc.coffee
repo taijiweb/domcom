@@ -37,8 +37,14 @@ describe "test-base-component", ->
         return div(div(x), div(y))
       comp = dc.mvc(view, data)
 
-    iit 'dc.react should be an backend', ->
-      dr = dc.react
-      comp = div({}, ['hello'])
-      debugger
+    iit 'config.render should work', ->
+      render = (h) ->
+        h('div', {}, 'hello domcom mvc')
+      comp = dc({render})
+      comp.mount('#demo2')
+
+    it 'config.view should work', ->
+      view = ->
+        el('div', {}, 'hello domcom mvc')
+      comp = dc({view})
       comp.mount('#demo2')

@@ -41,8 +41,7 @@ export default module.exports = class ReactBlock extends Block
       this.mounted = true
     else
       if !this.proxy
-        debugger
-      this.proxy.setState({tagComponent, props, children})
+        this.proxy.setState({tagComponent, props, children})
     return
 
 
