@@ -1,8 +1,62 @@
+classname = require('classname')
+
+camelCase = require('camelcase')
+
+{styleFrom} = require('../../src/property/style')
+
 var dupStr, globalDcid, hasOwn, isArray,
   __slice = [].slice;
 
 //export default
 let exports = module.exports = {}
+
+exports.isReactClass = (item) => {
+
+}
+
+exports.normalizeReactProps = normalizeReactProps = props => {
+
+  for (let key in props) {
+    let value = props[key];
+    if (value === undefined) {
+      delete props[key];
+    } else if (key = 'classes' || 'className'){
+      delete prope[key];
+      props.className = classname(value);
+    } else if (key == 'css' || 'style') {
+      styles = styleFrom(value);
+      normalizeReactProps(styles);
+      delete props[key];
+      props.style = styles;
+    } else {
+      key = camelCase(key);
+      props[key] = value;
+    }
+  }
+  return props;
+}
+
+exports.parseTagString = (str) =>{
+  let list = str.split('#');
+  let id, tag, tag_classes, classes
+  if (list.length === 2) {
+    id = list[1];
+    tag_classes = list[0];
+  } else {
+    tag_classes = str;
+    list = tag_classes.split('.');
+  }
+  if (list.length > 1) {
+    tag = list[0] || 'div'; // ".btn"
+    classes = list.slice(1);
+  } else {
+    tag = tag_classes;
+    classes = [];
+  }
+  return [tag, classes, id];
+}
+
+
 
 exports.isArray = isArray = function(item) {
   return Object.prototype.toString.call(item) === '[object Array]';
@@ -10,6 +64,10 @@ exports.isArray = isArray = function(item) {
 
 exports.isObject = function(item) {
   return typeof item === 'object' && item !== null;
+};
+
+exports.isMap = function(item) {
+  return typeof item === 'object' && item !== null && Object.prototype.toString.call(item) !== '[object Array]';
 };
 
 exports.cloneObject = function(obj) {
