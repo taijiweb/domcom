@@ -6,8 +6,6 @@ import ReactProxy from '../backend/ReactProxy'
 
 {normalizeDomElement} = require '../dom-util'
 {newDcid, isArray, isObject} = require 'dc-util'
-{flow} = require 'lazy-flow'
-flowBind = flow.bind
 import isComponent from './isComponent'
 import dc from '../dc'
 
@@ -88,8 +86,6 @@ export default module.exports = class Component extends Emitter
     if parentNode.childNodes.length
       dc.error('should not mount to node which is not empty:', mountNode)
     this.parentNode = parentNode
-    this.setHolder(dc)
-    dc.rootComponentMap[this.dcid] = this
     return
 
   getData: ->

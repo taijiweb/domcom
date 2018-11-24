@@ -38,14 +38,14 @@ describe "some simple tests", ->
         return ['div', ['div', x], ['div', y]]
       comp = dc {data, view}
 
-    it 'config.view should work', ->
+    it 'config.view should work 1', ->
       view = -> ['div', {}, 'hello domcom mvc']
       comp = dc({view})
       comp.mount('#demo')
       node = document.querySelector('#demo')
       expect(node.innerHTML).to.equal '<div>hello domcom mvc</div>'
 
-    it 'config.view should work', ->
+    it 'config.view should work 2', ->
       view = ['div', 'hello domcom mvc']
       comp = dc({view})
       comp.mount('#demo')

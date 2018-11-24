@@ -48,10 +48,7 @@ exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
       alias:
         "gulp-task-helper": path.resolve(__dirname, '../packages/gulp-task-helper/')
         "bdd-test-helper": path.resolve(__dirname, '../packages/bdd-test-helper/')
-        "dc-util": path.resolve(__dirname, '../packages/dc-util/')
-        "lazy-flow": path.resolve(__dirname, '../packages/lazy-flow/')
-        "lazy-flow-at": path.resolve(__dirname, '../packages/lazy-flow-at/')
-        "dc-watch-list": path.resolve(__dirname, '../packages/dc-watch-list/')
+        "dc-util": path.resolve(__dirname, '../src/dc-util/')
 
     plugins: plugins
  

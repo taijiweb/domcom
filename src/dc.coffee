@@ -1,5 +1,3 @@
-import DomNode from './DomNode'
-{addEventListener} = require './dom-util'
 import Component from './component/Component'
 
 ###
