@@ -13,10 +13,8 @@ isComponent
 getters
 } = dc
 
-debugger
-
 describe "some simple tests", ->
-  afterEach ->
+  beforeEach ->
     demoNode = normalizeDomElement('#demo')
     if demoNode.childNodes.length
       node = demoNode.childNodes[0]

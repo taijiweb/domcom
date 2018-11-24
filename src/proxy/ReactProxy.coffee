@@ -17,8 +17,6 @@ export default module.exports = class ReactProxy extends Component
     component.proxy = this
     return
 
-  componentWillMount: ->
-
   renderNormalized: (item, props, children) =>
     if !item?
       return null
@@ -44,29 +42,5 @@ export default module.exports = class ReactProxy extends Component
     view = component.getView()
     reactElement = this.renderItem(view)
     return reactElement
-
-  mount: (parentNode) ->
-    console.log('ReactProxy.mount')
-    this.parentNode = parentNode
-    reactElement = React.createElement(ReactProxy, {component:this.component})
-    ReactDom.render(reactElement, parentNode)
-    this.node = this.parentNode.childNodes[0]
-    return
-
-  refresh: ->
-    image = this.block.getImage()
-    {tag, props, children} = image
-    this.setState({tag, props, children})
-    return
-
-  unattach: ->
-    if this.node
-      #call ReactDom.unmountComponentAtNode to empty a container
-      this.parentNode.removeChild(this.node)
-      # make React happy, stop warning about this
-      this.parentNode._reactRootContainer = undefined
-    return
-
-
 
 

@@ -4,7 +4,6 @@ import ReactDom from 'react-dom'
 
 {newDemoNode} = require './helper'
 
-debugger
 {normalizeDomElement} = require '../../src/dom-util'
 {
 Tag, Text, List, txt, list
@@ -15,8 +14,8 @@ isComponent
 getters
 } = dc
 
-describe "test react back end", ->
-  afterEach ->
+describe "test react proxy", ->
+  beforeEach ->
     demoNode = normalizeDomElement('#demo2')
 
     if demoNode.childNodes.length
@@ -48,18 +47,17 @@ describe "test react back end", ->
           return ['div', data.message]
         else
           return null
-      comp = dc {view}
+      comp = dc {data, view}
       data.showing = true
-      comp.message = 'hello dc'
+      data.message = 'hello dc'
       debugger
       comp.mount('#demo2')
-      comp.message = 'hello dc 2'
       data.showing = false
       comp.update()
 
 
-    it 'should mount and update react dc + if_ div block 1', ->
-      data = {showing:true, message: 'hello dc 1'}
+    it 'should mount and update react dc + if-else div block 1', ->
+      data = {showing:true, message1: 'hello dc 1', message2: 'hello dc 2'}
       view = (data) ->
         if data.showing
           ['div', data.message1]
@@ -67,8 +65,6 @@ describe "test react back end", ->
           ['div', data.message2]
       comp = dc {data, view}
       data.showing = true
-      data.message1 = 'hello dc 1'
-      data.message2 = 'hello dc 2'
       debugger
       comp.mount('#demo2')
       data.showing = false

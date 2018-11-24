@@ -4,5 +4,5 @@ dc.alwaysRender = true
 #require('./test-vue-in-react')
 #
 require('./test-new-dc')
-require('./test-react-backend')
+require('./test-react-proxy')
 #require('./test-vue-backend')
