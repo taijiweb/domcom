@@ -20,7 +20,6 @@ describe "test react in vue", ->
 #
 #      # tell React do not warn about this
 #      demoNode._reactRootContainer = undefined
-#      debugger
     return
 
 

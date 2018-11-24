@@ -1,6 +1,6 @@
 {isComponent} = require '../component/isComponent'
 {extendEventValue} = require './events'
-import classFn from './classFn'
+import classname from './classname'
 {styleFrom} = require './style'
 {domField} = require '../dom-util'
 

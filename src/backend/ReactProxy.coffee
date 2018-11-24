@@ -3,7 +3,7 @@ import ReactDom from 'react-dom'
 
 import ReactWrapper4Vue from './ReactWrapper4Vue'
 
-{isArray, isMap, parseTagString, normalizeReactProps} = require 'dc-util'
+{isArray, isMap, parseTagString, normalizeReactProps, normalizeItem} = require 'dc-util'
 
 import isComponent from '../component/isComponent'
 
@@ -43,37 +43,16 @@ export default module.exports = class ReactProxy extends Component
     console.log('ReactProxy.componentWillMount')
 
   renderItem: (item, props, children) =>
-    h = this.renderItem
-    debugger
-    if props
-      return React.createElement(item, props, children)
-    else if typeof item == 'string'
-      return item
-    else if isComponent(item)
-      return item.renderContent()
-    else if isArray(item)
-      i = 0
-      it = item[i]
-      if typeof it== 'string'
-        [tag, classes, id] = parseTagString(item[i])
-        i++
-      else if isReactClass(it)
-        tag = it
-        i++
-      else if isComponent(it) || isArray(it)
-        tag = 'div'
-        props = {}
-        children = item.map((child) -> h(child))
-        return React.createElement(tag, props, children)
-      if isMap(item[i])
-        tag = tag || 'div'
-        props = Object.assign({classes, id}, item[i])
-        i++
-      else
-        props = {classes, id}
-      children = item[i...].map((child) -> h(child))
-      props = normalizeReactProps(props)
+    if typeof item != 'string'
+      [tag, props, children] = item
+      children = children.map (child) => this.renderItem(child)
       return React.createElement(tag, props, children)
+    else
+      return item
+
+  renderView: (item, props, children) =>
+    item = normalizeItem(item)
+    return this.renderItem(item)
 
   render: ->
     console.log('ReactProxy.render 1')
@@ -85,12 +64,12 @@ export default module.exports = class ReactProxy extends Component
     if component.render
       return component.render(h, view)
     else
-      this.renderItem(component.view)
+      debugger
+      return this.renderView(component.view)
     console.log('ReactProxy.render 3')
     return null
 
   mount: (parentNode) ->
-    debugger
     console.log('ReactProxy.mount')
     this.parentNode = parentNode
     reactElement = React.createElement(ReactProxy, {component:this.component})

@@ -63,7 +63,6 @@ describe "test react back end", ->
       comp.mount('#demo2')
       comp.message = 'hello mvc 2'
       comp.showing = false
-      debugger
       comp.update()
 
 

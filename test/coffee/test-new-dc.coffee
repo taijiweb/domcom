@@ -2,6 +2,7 @@
 
 {newDemoNode} = require './helper'
 {normalizeDomElement} = require '../../src/dom-util'
+{normalizeItem} = require 'dc-util'
 
 {
 Tag, Text, List, txt, list
@@ -21,7 +22,6 @@ describe "test-base-component", ->
 #
 #      # tell React do not warn about this
 #      demoNode._reactRootContainer = undefined
-#      debugger
     #      ReactDom.unmountComponentAtNode(normalizeDomElement('#demo2'))
     return
 
@@ -47,3 +47,10 @@ describe "test-base-component", ->
       view = ['div', 'hello domcom mvc']
       comp = dc({view})
       comp.mount('#demo2')
+
+    it 'proxy.normalizeItem should work', ->
+      view = ['div', 'hello domcom mvc']
+      comp = dc({view})
+      item = normalizeItem(comp.view)
+      s = JSON.stringify(item)
+      expect(s).to.equal '["div",{"className":{}},["hello domcom mvc"]]'

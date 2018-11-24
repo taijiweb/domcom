@@ -1,6 +1,6 @@
 import dc from '../../dc'
 {domField, domValue} = require '../../dom-util'
-import classFn from '../../property/classFn'
+import classname from '../../property/classname'
 {styleFrom} = require('../../property/style')
 {attrToPropName} = require('../../property/attrs')
 {domEventHandler, addEventListenerMap, addHandlerToCallbackArray} = require('../../property/events')
