@@ -1,9 +1,52 @@
 camelCase = require('camelcase')
-styleFrom = require('../../src/property/style').styleFrom
 
 export default exports = module.exports = {}
 
+exports.styleFrom = styleFrom = (items...) ->
+  result = {}
+  for item in items
+    if typeof item == 'string'
+      item = item.trim()
+      if !item
+        continue
+      defs = item.split(/\s*;\s*/)
+      for def in defs
+        if !def
+          continue
+        [key, value] = def.split /\s*:\s*/
+        if !key || !value
+          dc.error 'format error in css rules: empty key'
+        else if !value
+          dc.error 'format error in css rules: empty value'
+        key  = camelCase key
+        result[key] = value
+    else if isMap item
+      for key, value of item
+        key = camelCase key
+        result[key] = value
+  return result
+
+exports.classname = classname = (items...) ->
+  classMap = {}
+  for item in items
+    if !item
+      continue
+    else if typeof item == 'string'
+      names = item.trim().split(/(?:\s*,\s*)|s+/)
+      for name in names
+        classMap[name] = 1
+    else if isArray item
+      for name in item
+        classMap[name] = 1
+    else if isObject item
+      for name, value of item
+        classMap[name] = 1
+
+  return classMap
+
 exports.isReactClass = (item) ->
+  # investigated on both CreateClass and ES6 extends react.Component
+  item && item.prototype && item.prototype.isReactComponent
 
 exports.normalizeItem = normalizeItem = (item, props, children) ->
   if props
@@ -16,8 +59,8 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
     i = 0
     it = item[i]
     if typeof it== 'string'
-      [tag, classes, id] = parseTagString(item[i])
-      classes = dc.classname(classes)
+      [tag, classes, id, css, inputType] = parseTagString(item[i])
+      classes = classname(classes)
       i++
     else if isReactClass(it)
       tag = it
@@ -27,85 +70,89 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
       props = {}
       children = item.map((child) -> h(child))
       return [tag, props, children]
-    if isMap(item[i])
+    it = item[i]
+    if isMap(it)
       tag = tag || 'div'
-      props = Object.assign({classes, id}, item[i])
+      props = Object.assign({id}, item[i])
+      delete props.classes
+      props.className = classname(classes, it.classes || it.className)
+      delete props.css
+      props.style = styleFrom(css, it.css || it.style)
       i++
     else
-      props = {classes, id}
+      props = {className:classes, id, style:styleFrom(css)}
+    if inputType
+      props.type = inputType
     children = item[i...].map((child) -> normalizeItem(child))
     props = normalizeReactProps(props)
-    return [tag, props, children]
+    return [tag || 'div', props, children]
 
 exports.normalizeReactProps = normalizeReactProps = (props) ->
-  key = undefined
   for key of props
-    `key = key`
+    
     value = props[key]
     if value == undefined
       delete props[key]
-    else if key = 'classes' or 'className'
+    else if key == 'className'
       delete props[key]
-      props.className = dc.classname(value)
-    else if key == 'css' or 'style'
-      styles = styleFrom(value)
-      normalizeReactProps styles
-      delete props[key]
-      props.style = styles
+      classMap = classname(value)
+      classes = Object.keys(classMap).join(' ')
+      if classes
+        props.className = classes
+    else if key == 'style'
+      if !Object.keys(value).length
+        delete props.style
     else
       key = camelCase(key)
       props[key] = value
   props
 
-exports.parseTagString = parseTagString = (str) ->
-  list = str.split('#')
-  id = undefined
-  tag = undefined
-  tag_classes = undefined
-  classes = undefined
-  if list.length == 2
-    id = list[1]
-    tag_classes = list[0]
-  else
-    tag_classes = str
-    list = tag_classes.split('.')
-  if list.length > 1
-    tag = list[0] or 'div'
-    # ".btn"
-    classes = list.slice(1)
-  else
-    tag = tag_classes
-    classes = []
-  [
-    tag
-    classes
-    id
-  ]
+inputTypes = {}
 
-exports.isArray =
+for type in 'text checkbox radio date email tel number password'.split(' ')
+  inputTypes[type] = 1
+
+# tag.class#id##css
+exports.parseTagString = parseTagString = (str) ->
+  str = str.trim()
+  list = str.split('##')
+  if list.length == 2
+    css = list[1].trim()
+    str = list[0].trim()
+  list = str.split('#')
+  if list.length == 2
+    id = list[1].trim()
+    str = list[0].trim()
+  list = str.split('.')
+  if list.length > 1
+    tag = list[0]
+    classes = classname list.slice(1)
+  else
+    tag = str
+    classes = []
+  if inputTypes[tag]
+    inputType = tag
+    tag = 'input'
+  [tag || 'div', classes, id, css, inputType]
+
+exports.isArray = isArray =
 isArray = (item) ->
   Object::toString.call(item) == '[object Array]'
 
-exports.isObject = (item) ->
+exports.isObject = isObject = (item) ->
   typeof item == 'object' and item != null
 
 exports.isMap = isMap = (item) ->
   typeof item == 'object' and item != null and Object::toString.call(item) != '[object Array]'
 
 exports.cloneObject = (obj) ->
-  key = undefined
-  result = undefined
   result = {}
   for key of obj
-    `key = key`
+    
     result[key] = obj[key]
   result
 
 exports.pairListDict = ->
-  i = undefined
-  keyValuePairs = undefined
-  len = undefined
-  result = undefined
   keyValuePairs = if 1 <= arguments.length then __slice.call(arguments, 0) else []
   if keyValuePairs.length == 1
     keyValuePairs = keyValuePairs[0]
@@ -118,8 +165,6 @@ exports.pairListDict = ->
   result
 
 dupStr = (str, n) ->
-  i = undefined
-  s = undefined
   s = ''
   i = 0
   while i++ < n
@@ -133,8 +178,6 @@ exports.newLine = (str, indent, addNewLine) ->
     str
 
 exports.funcString = (fn) ->
-  e = undefined
-  s = undefined
   if typeof fn != 'function'
     if fn == null
       return 'null'
@@ -175,8 +218,6 @@ exports.isEven = (n) ->
   n == 0
 
 exports.matchCurvedString = (str, i) ->
-  ch = undefined
-  level = undefined
   if str[i] != '('
     return
   level = 0
@@ -194,18 +235,9 @@ exports.matchCurvedString = (str, i) ->
   return
 
 exports.intersect = (maps) ->
-  isMember = undefined
-  key = undefined
-  m = undefined
-  m2 = undefined
-  result = undefined
-  _i = undefined
-  _len = undefined
-  _ref = undefined
   result = {}
   m = maps[0]
   for key of m
-    `key = key`
     isMember = true
     _ref = maps.slice(1)
     _i = 0
@@ -220,17 +252,11 @@ exports.intersect = (maps) ->
   result
 
 exports.substractSet = (whole, unit) ->
-  key = undefined
   for key of unit
-    `key = key`
     delete whole[key]
   whole
 
 exports.binarySearch = (item, items) ->
-  end = undefined
-  index = undefined
-  length = undefined
-  start = undefined
   length = items.length
   if !length
     return 0
@@ -261,10 +287,6 @@ exports.binarySearch = (item, items) ->
   return
 
 exports.binaryInsert = (item, items) ->
-  end = undefined
-  index = undefined
-  length = undefined
-  start = undefined
   length = items.length
   if !length
     items[0] = item
@@ -306,12 +328,6 @@ exports.binaryInsert = (item, items) ->
   return
 
 exports.foreach = (items, callback) ->
-  i = undefined
-  item = undefined
-  key = undefined
-  result = undefined
-  _i = undefined
-  _len = undefined
   if !items
     return
   if isArray(items)
@@ -325,7 +341,7 @@ exports.foreach = (items, callback) ->
   else
     result = {}
     for key of items
-      `key = key`
+      
       item = items[key]
       result[key] = callback(item, key)
   result
@@ -333,10 +349,8 @@ exports.foreach = (items, callback) ->
 hasOwn = Object.hasOwnProperty
 
 exports.mixin = (proto, mix) ->
-  key = undefined
-  value = undefined
   for key of mix
-    `key = key`
+    
     value = mix[key]
     if hasOwn.call(proto, key)
       i = ++_i
@@ -346,17 +360,6 @@ exports.mixin = (proto, mix) ->
   proto
 
 exports.makeReactMap = (description) ->
-  field = undefined
-  item = undefined
-  items = undefined
-  pair = undefined
-  reactField = undefined
-  result = undefined
-  _i = undefined
-  _j = undefined
-  _len = undefined
-  _len1 = undefined
-  _ref = undefined
   result = {}
   items = description.split(/\s*,\s*/)
   _i = 0

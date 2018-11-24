@@ -3,71 +3,47 @@ import ReactDom from 'react-dom'
 
 import ReactWrapper4Vue from './ReactWrapper4Vue'
 
+createReactClass = require('create-react-class');
+
 {isArray, isMap, parseTagString, normalizeReactProps, normalizeItem} = require 'dc-util'
 
 import isComponent from '../component/isComponent'
 
-createReactElement = (item, index) ->
-  # must require here to prevent loop dependency
-  # ReactBlock = require '../component/ReactBlock'
-  # instanceof check is replaced by below
-  if !item
-    item = React.createElement(item)
-  else if item.isVueBlock
-    props = Object.assign({}, item.props, {block:item.block, children:item.children})
-    if !props.key?
-      props.key = 9999
-    item = React.createElement(ReactWrapper4Vue, props, children)
-  else if item.tag && item.props  && item.children
-    children = item.children.map (child, i) ->
-      if child.props && !child.props.key?
-        child.props.key = i
-      createReactElement(child, i)
-    item = React.createElement(item.tag, item.props, children)
-  else
-    item
-  return item
-
 export default module.exports = class ReactProxy extends Component
   constructor: (props) ->
-    console.log('ReactProxy.constructor 1')
     super(props)
     {component} = props
-    console.log('ReactProxy.constructor 2')
     this.component = component
     component.proxy = this
-    console.log('ReactProxy.constructor 3', component)
     return
 
   componentWillMount: ->
-    console.log('ReactProxy.componentWillMount')
 
-  renderItem: (item, props, children) =>
-    if typeof item != 'string'
+  renderNormalized: (item, props, children) =>
+    if !item?
+      return null
+    else if typeof item != 'string'
       [tag, props, children] = item
-      children = children.map (child) => this.renderItem(child)
+      children = children.map (child) => this.renderNormalized(child)
+      if !children.length
+        children = null
       return React.createElement(tag, props, children)
     else
       return item
 
-  renderView: (item, props, children) =>
-    item = normalizeItem(item)
-    return this.renderItem(item)
+  renderItem: (item, props, children) =>
+    if !props
+      item = normalizeItem(item)
+      return this.renderNormalized(item)
+    else
+      el = normalizeItem [item, props, children...]
+      return this.renderNormalized(el)
 
   render: ->
-    console.log('ReactProxy.render 1')
-
     {component} = this
     view = component.getView()
-    console.log('ReactProxy.render 2', component.render)
-    h = this.renderItem
-    if component.render
-      return component.render(h, view)
-    else
-      debugger
-      return this.renderView(component.view)
-    console.log('ReactProxy.render 3')
-    return null
+    reactElement = this.renderItem(view)
+    return reactElement
 
   mount: (parentNode) ->
     console.log('ReactProxy.mount')

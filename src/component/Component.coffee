@@ -14,17 +14,15 @@ import dc from '../dc'
 ###
   所有部件的基类
   @params config: the config object for the component, it can have the fileds below
-    model can be the real value of data or a function to generate the model data
-    data: the data of the component
+    data: the real data of the component or a function to generate the data
     view: the view object or a function to generate the view
-    render: a function to generate the virtual dom or dom(by React.createElement or Vue.createElement)
 ###
 export default module.exports = class Component extends Emitter
   constructor: (config) ->
     super()
     this.dcid = dc.dcid++;
+    this.data = null
     this.view = null
-    this.model = null
     this.backend = null
     Object.assign(this, config)
     return
@@ -56,8 +54,7 @@ export default module.exports = class Component extends Emitter
       * dc清理：移除不应该继续在Dom中存在的Dom Node
   ###
   update: ->
-    this.proxy.render()
-#    dc.refresh()
+    this.proxy.setState(this.getData())
     return this
 
   ###
@@ -97,17 +94,16 @@ export default module.exports = class Component extends Emitter
 
   getData: ->
     data = this.data || {}
-    if !isObject(data)
-      dc.error('if provided, Component.data should be an object')
-    if this.model
+    if typeof this.model == 'funxction'
       model = this.model(dc.store) || {}
-    return Object.assign({}, data, model)
+    else model = this.model
+    return [data, model]
 
   getView: ->
-    data = this.getData()
+    [data, model] = this.getData()
     if this.view
       if typeof this.view == 'function'
-        view = this.view(data)
+        view = this.view(data, model)
       else
         view = this.view
       return view
@@ -118,22 +114,9 @@ export default module.exports = class Component extends Emitter
   mount: (mountNode) ->
     this.emit('willMount')
     this._prepareMount(mountNode)
-#    proxy = this.makeProxy(this.parentNode
-    console.log('Component.mount before React.createElement ReactProxy  element')
     reactElement = React.createElement(ReactProxy, {component:this})
-    console.log('Component.mount before ReactDom.render ReactProxy  element')
-    console.log(reactElement, this.parentNode)
     ReactDom.render(reactElement, this.parentNode)
-#    proxy.mount(this.parentNode )
     this.emit('didMount')
-    return
-
-  makeProxy: ->
-    backend = this.backend || 'react'
-    if backend == 'react'
-      return new ReactProxy({component:this})
-    else if backend == 'vue'
-      return new VueProxy(this)
     return
 
   unmount: () ->

@@ -28,6 +28,7 @@
     "url": "git://github.com/taijiweb/domcom.git"
   },
   "dependencies": {
+    "create-react-class": "^15.6.3",
     "lazy-flow-at": "0.0.2",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
