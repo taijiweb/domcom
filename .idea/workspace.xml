@@ -2,84 +2,50 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="112ddb60-2a6e-4ff6-b1de-ae8295583a0b" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/DomNode.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/backend/Angular.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/backend/Backend.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/backend/Html.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/backend/React.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/backend/Vue.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/backend/index.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Block.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Case.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Cdata.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Comment.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Cond.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Defer.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Element.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Func.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Html.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/If.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/List.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/ListMixin.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/MVC.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Nothing.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Pick.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/ReactBlock.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Tag.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/TestBlock.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/Text.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/TranBlock.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/VueBlock.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/index.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/block/route.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/readme.md" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/toComponent.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/toComponentArray.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/component/util.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/dc-event.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/dc-render.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/directive/bind.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/directive/index.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/directive/model.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/directive/options.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/directive/show-hide.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/each.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/image/Image.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/index.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/instantiate.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/mergeIf.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/property/attrs.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/property/classname.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/property/css-arith.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/property/delegate-event.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/property/events.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/property/index.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/property/style.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/tag.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/jquery.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/jquery2.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-base-component.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-component.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-dc.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-directive.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-event.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-for-demo.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-group.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-merge-if.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-property.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-ref-clone.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-route.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-singleton.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-toString.coffee" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/packages/dc-util/index.coffee" afterPath="$PROJECT_DIR$/src/dc-util.coffee" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/demo.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/domcom.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/test.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/todomvc.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/.gitattributes" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/.npmignore" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/LICENSE" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/NullableTagMixin.coffee" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/NullableTagMixin.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/README.md" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/addon.coffee" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/addon.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/element-pool.coffee" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/element-pool.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/gulpfile.coffee" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/package.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/test-addon.coffee" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/test-addon.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-util/test-util.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-watch-list/.gitattributes" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-watch-list/.npmignore" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-watch-list/LICENSE" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-watch-list/README.md" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-watch-list/gulpfile.coffee" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-watch-list/index.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/dc-watch-list/package.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow-at/.gitattributes" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow-at/.npmignore" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow-at/LICENSE" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow-at/README.md" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow-at/gulpfile.coffee" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow-at/index.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow-at/package.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow-at/test-at.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow/.gitattributes" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow/.npmignore" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow/LICENSE" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow/README.md" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow/addon.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow/gulpfile.coffee" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow/index.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow/package.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/packages/lazy-flow/test-flow.js" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/component/Component.coffee" afterPath="$PROJECT_DIR$/src/component/Component.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/dc.coffee" afterPath="$PROJECT_DIR$/src/dc.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/domcom.coffee" afterPath="$PROJECT_DIR$/src/domcom.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/component/index.coffee" afterPath="$PROJECT_DIR$/src/component/index.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/index.coffee" afterPath="$PROJECT_DIR$/test/coffee/index.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/component/isComponent.coffee" afterPath="$PROJECT_DIR$/src/component/isComponent.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts-coffee/webpack-config.coffee" afterPath="$PROJECT_DIR$/scripts-coffee/webpack-config.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="domcom.iws" />
@@ -139,93 +105,7 @@
     <favorites_list name="domcom" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="test-new-dc.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/coffee/test-new-dc.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2265">
-              <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-              <folding>
-                <marker date="1543056882000" expanded="true" signature="2663:2675" placeholder="..." />
-                <marker date="1543056882000" expanded="true" signature="2986:3010" placeholder="..." />
-                <marker date="1543056882000" expanded="true" signature="3324:3349" placeholder="..." />
-                <marker date="1543056882000" expanded="true" signature="3657:3682" placeholder="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="webpack-config.coffee" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/scripts-coffee/webpack-config.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.16483517" vertical-offset="705" max-vertical-offset="1744">
-              <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="isComponent.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/component/isComponent.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="375">
-              <caret line="4" column="38" selection-start-line="4" selection-start-column="38" selection-end-line="4" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ReactProxy.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/backend/ReactProxy.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1395">
-              <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/component/index.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="409">
-              <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="dc.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/dc.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="574">
-              <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Component.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/component/Component.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-15.111111" vertical-offset="957" max-vertical-offset="4173">
-              <caret line="91" column="26" selection-start-line="91" selection-start-column="26" selection-end-line="91" selection-end-column="26" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/coffee/index.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="326">
-              <caret line="7" column="10" selection-start-line="7" selection-start-column="10" selection-end-line="7" selection-end-column="10" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -299,9 +179,9 @@
         <option value="$PROJECT_DIR$/src/component/index.coffee" />
         <option value="$PROJECT_DIR$/src/domcom.coffee" />
         <option value="$PROJECT_DIR$/src/component/isComponent.coffee" />
-        <option value="$PROJECT_DIR$/src/component/Component.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" />
         <option value="$PROJECT_DIR$/scripts-coffee/webpack-config.coffee" />
+        <option value="$PROJECT_DIR$/src/component/Component.coffee" />
       </list>
     </option>
   </component>
@@ -420,7 +300,57 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="scripts-coffee" />
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="coffee" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="component" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -435,6 +365,38 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="packages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="demo" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="domcom" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="demo" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="coffee" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -588,7 +550,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="778" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32994187" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -601,8 +563,8 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24947146" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3093728" sideWeight="0.46203905" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.43023255" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3093728" sideWeight="0.46203905" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.43023255" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -621,15 +583,15 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24947146" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3093728" sideWeight="0.53586495" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3093728" sideWeight="0.53796095" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24947146" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3093728" sideWeight="0.46413502" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.56104654" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3093728" sideWeight="0.46203905" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.43023255" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -716,14 +678,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/coffee/test-react-backend.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.21327014" vertical-offset="0" max-vertical-offset="2013">
-          <caret line="9" column="26" selection-start-line="9" selection-start-column="26" selection-end-line="9" selection-end-column="26" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/dc-util.coffee">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.57030016" vertical-offset="524" max-vertical-offset="6348">
@@ -744,30 +698,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="523">
           <caret line="7" column="10" selection-start-line="7" selection-start-column="10" selection-end-line="7" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dc.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="574">
-          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/component/index.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="409">
-          <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/component/Component.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.111111" vertical-offset="957" max-vertical-offset="4173">
-          <caret line="91" column="26" selection-start-line="91" selection-start-column="26" selection-end-line="91" selection-end-column="26" />
           <folding />
         </state>
       </provider>
@@ -796,39 +726,119 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/component/isComponent.coffee">
+    <entry file="file://$PROJECT_DIR$/scripts-coffee/webpack-config.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="375">
-          <caret line="4" column="38" selection-start-line="4" selection-start-column="38" selection-end-line="4" selection-end-column="38" />
+        <state vertical-scroll-proportion="0.4318182" vertical-offset="705" max-vertical-offset="2040">
+          <caret line="66" column="38" selection-start-line="66" selection-start-column="38" selection-end-line="66" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/backend/ReactProxy.coffee">
+    <entry file="file://$PROJECT_DIR$/src/component/isComponent.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1395">
-          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.09090909" vertical-offset="0" max-vertical-offset="705">
+          <caret line="4" column="38" selection-start-line="4" selection-start-column="38" selection-end-line="4" selection-end-column="38" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/coffee/test-new-dc.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2265">
+        <state vertical-scroll-proportion="0.11363637" vertical-offset="0" max-vertical-offset="2265">
           <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
           <folding>
-            <marker date="1543056882000" expanded="true" signature="2663:2675" placeholder="..." />
-            <marker date="1543056882000" expanded="true" signature="2986:3010" placeholder="..." />
-            <marker date="1543056882000" expanded="true" signature="3324:3349" placeholder="..." />
-            <marker date="1543056882000" expanded="true" signature="3657:3682" placeholder="..." />
+            <marker date="1543056882000" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1543056882000" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1543056882000" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1543056882000" expanded="true" signature="-1:-1" placeholder="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts-coffee/webpack-config.coffee">
+    <entry file="file://$PROJECT_DIR$/src/backend/ReactProxy.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.16483517" vertical-offset="705" max-vertical-offset="1744">
-          <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.18181819" vertical-offset="0" max-vertical-offset="1725">
+          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/component/index.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.09090909" vertical-offset="0" max-vertical-offset="705">
+          <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo/coffee/demo-choose-web-framework.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.29545453" vertical-offset="0" max-vertical-offset="1665">
+          <caret line="13" column="16" selection-start-line="13" selection-start-column="16" selection-end-line="13" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/coffee/test-react-backend.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3409091" vertical-offset="90" max-vertical-offset="2040">
+          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="26" selection-end-column="46" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/component/Component.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.11363637" vertical-offset="285" max-vertical-offset="1800">
+          <caret line="24" column="11" selection-start-line="24" selection-start-column="11" selection-end-line="24" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo/coffee/demo-each.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.20454545" vertical-offset="15" max-vertical-offset="1515">
+          <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo/coffee/demo-controls.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.25" vertical-offset="0" max-vertical-offset="810">
+          <caret line="11" column="53" selection-start-line="11" selection-start-column="53" selection-end-line="11" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo/coffee/demo-counter.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3181818" vertical-offset="0" max-vertical-offset="855">
+          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo/coffee/util.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.29545453" vertical-offset="0" max-vertical-offset="1335">
+          <caret line="13" column="17" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/demo/coffee/index.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1110">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dc.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3409091" vertical-offset="0" max-vertical-offset="870">
+          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
           <folding />
         </state>
       </provider>
