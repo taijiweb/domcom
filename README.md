@@ -16,23 +16,18 @@
     `<script src="http://cdn.jsdelivr.net/domcom/x.y.z/domcom.min.js"/>`
 
 ## Features
-* declarative composable components with reactive function
+* simple API:  
 
-* only render the invalidated components and refresh the really changed dom nodes with better automatic update status checking
+        component = dc({data, view});
+        component.mount(parentNode);
+        component.update()  
 
-* decouple with model and controller completely
+* use plain array tree as view language, long live js, byebye JSX
 
-* simple but powerful route
-
-* convenient support for promise
-
-* never pollute the dom because of the framework itself
-
-* good browser compatiblity, even with IE 6, 7, 8
-
-* no dependencies, no polyfill, no immutable data, no companion libraries is necessary
-
-* no necessary to use any template language
+* MVC pattern( data/view/Component), byebye flux/redux  
+  data is the model, Component is just the controller
+ 
+* render to dom by react( maybe  add other proxy, e.g. Vue, in the future)
 
 ## Samples
 There is [some  samples](https://github.com/taijiweb/domcom/tree/master/demo), and a [todoMVC implementation](https://github.com/taijiweb/domcom/tree/master/demo/todomvc).
@@ -41,61 +36,37 @@ The code below give a taste of domcom:
 
 In javascript:
 
-    // Although it's not necessary, 
-    // but I recommend to use some tool like babel to support ES6, especially destructive syntax
+    const demoSum = function() {
+    
+          const data = { a: 1, b: 2 }
 
-    const {list, text, p, flow, see} = dc
+          const view = data => {
+               let props1 = {
+                    value: data.a,
+                    onchange(event) {
+                        data.a = event.target.value*1
+                        comp.update()
+                    } // ES 6
+                },
+                props2 = {
+                    value: data.b,
+                    onchange(event, node) {
+                        data.a = event.target.value*1
+                        comp.update();
+                    };
+                }
 
-    // otherwise you need write the the code like below, it's not an ideal method:
-    // var demoSum, flow, list, p, see, text;​
-    // list = dc.list, text = dc.text, p = dc.p, flow = dc.flow, see = dc.see;
-    ​
-    demoSum = function() {
-      var a, b, comp, p1, t1, t2;
-
-      a$ = see(1);
-      b$ = see(2);
-
-      comp = list((t1 = text({
-        value: a$,
-        onchange(event, node) { return a$(node.value * 1); } // ES 6
-
-        // onchange: function(event, node) { return a$(node.value * 1) } // ES5
-
-      })), (t2 = text({
-        value: b$,
-        onchange(event, node) { return b$(node.value * 1); } // ES 6
-
-        // onchange: function(event, node) { return b$(node.value * 1);}  // ES5
-
-      })), p1 = p(flow.add(a$, b$)));
-
-      p1.renderWhen([t1, t2], 'change');
-
-      return comp.mount();
-    };
-    ​
+              return ['div',
+                        ['text', props],
+                        ['text', props],
+                        ['p', data.a, data.b]
+                     ]
+          }
+          const comp = dc)({data, view})
+          comp.mount('#demo')
+    }   ​
     demoSum();
-​
-In coffee-script(recommended):
-
-    {list, text, p, flow, see} = dc
-
-    demoSum = ->
-
-        a$ = see 1; b$ = see 2
-
-        comp = list \
-            (t1 = text value: a$, onchange: (event, node) -> a$ node.value*1),
-            (t2 = text value: b$, onchange: (event, node) -> b$ node.value*1),
-            p1 = p flow.add a$, b$
-
-        p1.renderWhen [t1, t2], 'change'
-
-        comp.mount()
-
-    demoSum()
-
+    
 ## LICENSE
 MIT, see [LICENSE](https://github.com/taijiweb/domcom/blob/master/LICENSE)
 ok.

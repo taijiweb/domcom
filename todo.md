@@ -1,11 +1,14 @@
 ### todo
-component in view 11.25
+test material-ui in domcom 11.25
 self controled component, e.g. dialog.open(), dialog.close() 11.25
-test material-ui in domcom
+dc.update: update all mounted component 11.25
+test antd in domcom 11.25
+documents 11.25
 VueProxy 11.25
 
 ### done
 ####new design
+test material-ui in domcom 11.25-11.25 started with simple button
 component in view 11.25-11.25 tested
 test classname with false value 11.25-11.25 tested
 multiple props in on  list element 11.25-11.25 tested

@@ -27,6 +27,7 @@ exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
         {
           test: /\.js$/,
           loader: 'babel-loader',
+          exclude: /(node_modules|bower_compontents)/,
           options: {presets: ['env']}
         },
         {

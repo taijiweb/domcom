@@ -1,4 +1,6 @@
 dc.alwaysRender = true
+require('./test-material-ui')
+require('./test-antd')
 
 #require('./test-react-in-vue')
 #require('./test-vue-in-react')

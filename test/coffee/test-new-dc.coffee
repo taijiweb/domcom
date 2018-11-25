@@ -15,37 +15,6 @@ describe "some simple tests", ->
       demoNode._reactRootContainer = undefined
     return
 
-  describe 'mount embedded dc components', ->
-    it 'should mount  embedded component', ->
-      data = {message:"I'm embedded"}
-      view = (data) -> ['div', data.message]
-      embedded = dc({data, view, needProxy:true})
-      comp = dc({view:embedded})
-      debugger
-      comp.mount('#demo')
-      data.message = "new embedded message"
-      comp.update()
-
-    it 'should mount the same embedded component', ->
-      data = {message:"I'm embedded"}
-      view = (data) -> ['div', data.message]
-      embedded = dc({data, view})
-      comp = dc({view:['div', embedded, embedded]})
-      debugger
-      comp.mount('#demo')
-      data.message = "new embedded message"
-      comp.update()
-
-    it 'should mount the same proxiedembedded component', ->
-      data = {message:"I'm embedded"}
-      view = (data) -> ['div', data.message]
-      embedded = dc({data, view, needProxy:true})
-      comp = dc({view:['div', embedded, embedded]})
-      debugger
-      comp.mount('#demo')
-      data.message = "new embedded message"
-      comp.update()
-
   describe 'mount simple dc components', ->
     it 'should dc generate a component', ->
       comp = dc()
@@ -181,3 +150,36 @@ describe "some simple tests", ->
       comp.mount('#demo')
       node = document.querySelector('#demo')
       expect(node.innerHTML).to.equal '<input class="btn" id="button1" type="password" style="width: 200px; color: red;">'
+
+
+  describe 'mount embedded dc components', ->
+    it 'should mount  embedded component', ->
+      data = {message:"I'm embedded"}
+      view = (data) -> ['div', data.message]
+      embedded = dc({data, view, needProxy:true})
+      comp = dc({view:embedded})
+      debugger
+      comp.mount('#demo')
+      data.message = "new embedded message"
+      comp.update()
+
+    it 'should mount the same embedded component', ->
+      data = {message:"I'm embedded"}
+      view = (data) -> ['div', data.message]
+      embedded = dc({data, view})
+      comp = dc({view:['div', embedded, embedded]})
+      debugger
+      comp.mount('#demo')
+      data.message = "new embedded message"
+      comp.update()
+
+    it 'should mount the same proxiedembedded component', ->
+      data = {message:"I'm embedded"}
+      view = (data) -> ['div', data.message]
+      embedded = dc({data, view, needProxy:true})
+      comp = dc({view:['div', embedded, embedded]})
+      debugger
+      comp.mount('#demo')
+      data.message = "new embedded message"
+      comp.update()
+

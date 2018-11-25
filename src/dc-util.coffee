@@ -41,7 +41,8 @@ exports.classname = classname = (items...) ->
 
   return classMap
 
-exports.isReactClass = (item) ->
+exports.isReactClass = isReactClass = (item) ->
+exports.isReactClass = isReactClass = (item) ->
   # investigated on both CreateClass and ES6 extends react.Component
   item && item.prototype && item.prototype.isReactComponent
 
@@ -66,6 +67,11 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
     else if isReactClass(it)
       tag = it
       i++
+      it = item[i]
+      if typeof it == 'string' && it
+        if it.match /^\.|^#/
+          [_, classes, id, css, inputType] = parseTagString(item[i])
+          i++
     else if isComponent(it) || isArray(it)
       tag = 'div'
       props = {}
