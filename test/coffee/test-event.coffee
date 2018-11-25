@@ -4,11 +4,7 @@
 {normalizeItem} = require 'dc-util'
 {isComponent} = dc
 
-import Chip from '@material-ui/core/Chip'
-
-import { Button } from 'antd'
-
-describe "test-antd", ->
+describe "test events", ->
   beforeEach ->
     demoNode = normalizeDomElement('#demo')
     if demoNode.childNodes.length
@@ -19,14 +15,13 @@ describe "test-antd", ->
       demoNode._reactRootContainer = undefined
     return
 
-  describe 'mount some material-ui dc components', ->
-     it 'simple Button', ->
-      view =  ['div'
-        [Button, {type:"primary"},'Default'],
-        [Button, 'Default'],
-        [Button, {type:"dashed"},'dashed'],
-        [Button, {type:"danger"},'danger']
-      ]
-
-      comp = dc {view}
-      comp.mount('#demo')
+  it 'should process onClick', ->
+    data = {message:"click me!"}
+    onClick = ->
+      data.message = "you clicked!"
+      dc.update()
+    view = (data) -> ['div', {onClick}, data.message]
+    embedded = dc({data, view, needProxy:true})
+    comp = dc({view:embedded})
+    debugger
+    comp.mount('#demo')

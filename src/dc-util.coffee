@@ -63,6 +63,7 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
     if typeof it== 'string'
       [tag, classes, id, css, inputType] = parseTagString(item[i])
       classes = classname(classes)
+      css = styleFrom(css)
       i++
     else if isReactClass(it)
       tag = it
@@ -71,15 +72,17 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
       if typeof it == 'string' && it
         if it.match /^\.|^#/
           [_, classes, id, css, inputType] = parseTagString(item[i])
+          classes = classname(classes)
+          css = styleFrom(css)
           i++
-    else if isComponent(it) || isArray(it)
+          it = item[i]
+    else if dc.isComponent(it) || isArray(it)
       tag = 'div'
       props = {}
       children = item.map((child) -> h(child))
       return [tag, props, children]
     props = null
     it = item[i]
-    debugger
     while isMap(it)
       props = Object.assign({id}, it)
       tag = tag || it.tag || 'div'
@@ -97,26 +100,29 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
     if inputType
       props.type = inputType
     children = item[i...].map((child) -> normalizeItem(child))
-    debugger
-    props = normalizeReactProps(props)
-    debugger
+    props = normalizeReactProps(props, typeof tag == 'string')
     return [tag || 'div', props, children]
 
-exports.normalizeReactProps = normalizeReactProps = (props) ->
+exports.normalizeReactProps = normalizeReactProps = (props, camel = true) ->
   for key of props
     value = props[key]
-    delete props[key]
-    key = camelCase(key)
+    if camel
+      delete props[key]
+      key = camelCase(key)
     if value == undefined
       delete props[key]
     else if key == 'className'
       classMap = classname(value)
       if classes = Object.keys(classMap).filter((key) -> classMap[key]).join(' ')
         props.className = classes
+      else
+        delete props.className
     else if key == 'style'
       if Object.keys(value).length
         props.style = camelCaseProps value
-    else
+      else
+        delete props.style
+    else if camel
       props[key] = value
   props
 

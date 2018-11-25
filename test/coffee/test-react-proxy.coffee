@@ -22,9 +22,7 @@ describe "test react proxy", ->
       node = demoNode.childNodes[0]
       demoNode.removeChild(node)
 
-      # tell React do not warn about this
-      demoNode._reactRootContainer = undefined
-#      ReactDom.unmountComponentAtNode(normalizeDomElement('#demo2'))
+    # tell React do not warn about this
     demoNode._reactRootContainer = undefined
     return
 

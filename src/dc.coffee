@@ -14,3 +14,12 @@ import Component from './component/Component'
 export default module.exports = dc = (config) ->
   comp = new Component(config)
   return comp
+
+dc.dcid = 0
+
+dc.mountMap = {}
+
+dc.update = ->
+  for key, comp of dc.mountMap
+    comp.update()
+  return

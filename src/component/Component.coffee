@@ -18,6 +18,7 @@ d = {}
 export default module.exports = class Component extends Emitter
   constructor: (config) ->
     super()
+    this.dcid = dc.dcid++
     Object.assign(this, config)
     return
 
@@ -33,6 +34,7 @@ export default module.exports = class Component extends Emitter
   mount: (mountNode) ->
     this.emit('willMount')
     this._prepareMount(mountNode)
+    dc.mountMap[this.dcid] = this
     reactElement = React.createElement(ReactProxy, {component:this})
     ReactDom.render(reactElement, this.parentNode)
     this.emit('didMount')
@@ -76,5 +78,8 @@ export default module.exports = class Component extends Emitter
       parentNode.removeChild(node)
     #tell React do not warn about this
     parentNode._reactRootContainer = undefined
+    this.proxy.component = null
+    this.proxy = null
+    delete dc.mountMap[this.dcid]
     this.emit('didUnmount')
     return

@@ -4,15 +4,18 @@
 {normalizeItem} = require 'dc-util'
 {isComponent} = dc
 
-describe "some simple tests", ->
+import Button from '@material-ui/core/Button'
+
+
+describe "test-new-dc", ->
   beforeEach ->
     demoNode = normalizeDomElement('#demo')
     if demoNode.childNodes.length
       node = demoNode.childNodes[0]
       demoNode.removeChild(node)
 
-      # tell React do not warn about this
-      demoNode._reactRootContainer = undefined
+    # tell React do not warn about this
+    demoNode._reactRootContainer = undefined
     return
 
   describe 'mount simple dc components', ->
@@ -78,6 +81,7 @@ describe "some simple tests", ->
       red = 'red'
       view = ['div##width:100;', {css:"height:200px"}, {'background-color':red}, 'hello domcom mvc']
       comp = dc({view})
+      debugger
       item = normalizeItem(comp.view)
       s = JSON.stringify(item)
       expect(s).to.equal '["div",{"backgroundColor":"red","style":{"width":"100","height":"200px"}},["hello domcom mvc"]]'
@@ -99,6 +103,17 @@ describe "some simple tests", ->
       item = normalizeItem(comp.view)
       s = JSON.stringify(item)
       expect(s).to.equal '["div",{"backgroundColor":"red","style":{"width":"100"}},["hello domcom mvc"]]'
+
+    it 'tagstr follow ReactClass', ->
+      red = 'red'
+      active = false
+      view = [Button, '##width:100;', {classes:{active}}, {'background-color':red}, 'hello domcom mvc']
+      comp = dc({view})
+      debugger
+      item = normalizeItem(comp.view)
+      s = JSON.stringify(item[1...])
+      # will not camelcase in props  in ReactClass element
+      expect(s).to.equal '[{"background-color":"red","style":{"width":"100"}},["hello domcom mvc"]]'
 
     it 'should work  on view function', ->
       view = (data) -> ['div', 'hello', data]
@@ -151,7 +166,6 @@ describe "some simple tests", ->
       node = document.querySelector('#demo')
       expect(node.innerHTML).to.equal '<input class="btn" id="button1" type="password" style="width: 200px; color: red;">'
 
-
   describe 'mount embedded dc components', ->
     it 'should mount  embedded component', ->
       data = {message:"I'm embedded"}
@@ -173,13 +187,17 @@ describe "some simple tests", ->
       data.message = "new embedded message"
       comp.update()
 
-    it 'should mount the same proxiedembedded component', ->
-      data = {message:"I'm embedded"}
-      view = (data) -> ['div', data.message]
+    it 'should mount the same proxied embedded component', ->
+      data = {show1:true, message1:"I'm embedded 1", message2:"I'm embedded 2"}
+      view = (data) ->
+        if data.show1
+          ['div', data.message1]
+        else
+          ['div', data.message2]
       embedded = dc({data, view, needProxy:true})
       comp = dc({view:['div', embedded, embedded]})
       debugger
       comp.mount('#demo')
-      data.message = "new embedded message"
+      data.show1 = false
       comp.update()
 
