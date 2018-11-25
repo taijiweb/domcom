@@ -79,7 +79,7 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
     else if dc.isComponent(it) || isArray(it)
       tag = 'div'
       props = {}
-      children = item.map((child) -> h(child))
+      children = item.map((child) -> normalizeItem(child))
       return [tag, props, children]
     props = null
     it = item[i]

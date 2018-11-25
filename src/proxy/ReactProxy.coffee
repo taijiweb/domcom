@@ -25,6 +25,7 @@ export default module.exports = class ReactProxy extends Component
       children = children.map (child) => this.renderNormalized(child)
       if !children.length
         children = null
+      console.log('renderNormalized children:', children)
       return React.createElement(tag, props, children)
     else
       return item

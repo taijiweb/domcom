@@ -14,6 +14,17 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import Dialog from '@material-ui/core/Dialog'
 import Typography from '@material-ui/core/Typography'
 import blue from '@material-ui/core/colors/blue'
+import PersonIcon from '@material-ui/icons/Person'
+import AddIcon from '@material-ui/icons/Add'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close'
+import Divider from '@material-ui/core/Divider'
+import Slide from '@material-ui/core/Slide'
+
+import React from 'react'
+
 
 describe "test-material-ui", ->
   beforeEach ->
@@ -40,28 +51,67 @@ describe "test-material-ui", ->
     it 'test a dialog', ->
       debugger
       data = {
-        emails:[],
+        emails:['x1@y.z', 'x2@y.z', 'x3@y.z'],
         open:true,
-        handleListItemClick: ->
-          alert 'handleListItemClick'
+        handleListItemClick: (message)->
+          alert 'handleListItemClick: ' + message
           data.open = false
           dc.update()
         handleClose: ->
           data.open = false
           dc.update()
-          alert 'handleClose'
       }
       view = (data) ->
         [Dialog, {onClose:data.handleClose, 'aria-labelledby':"simple-dialog-title", open:data.open, className:''},
             [DialogTitle, "#simple-dialog-title", {key:dc.dcid++}, "Set backup account"],
-            ['div',
+            ['div', {key:dc.dcid++}
               [List,{className:'', key:dc.dcid++}
                 data.emails.map((email) =>
                   [ListItem, {button:true, onClick:(() => data.handleListItemClick(email)), key:email, className:''},
-                    [ListItemText, {primary:email, className:'', key:email}]
+                  #[ListItemAvatar, [Avatar, [PersonIcon]]],
+                  [ListItemText, {primary:email, className:'', key:email}, email]
                   ]),
-               [ListItem, {button:true, key:dc.dcid++, onClick:() => data.handleListItemClick('addAccount')}]]]]
-
-
+               [ListItem, {button:true, key:dc.dcid++, onClick:() => data.handleListItemClick('addAccount')}, 'add account']]]]
       comp = dc({data, view})
       comp.mount('#demo')
+
+
+  iit 'test a dialog 2', ->
+    Transition = (props) ->
+      debugger
+      React.createElement(Slide, {direction:"up", props...})
+    debugger
+    data =
+      emails: ['x1@y.z', 'x2@y.z', 'x3@y.z'],
+      open:true,
+      handleListItemClick: (message)->
+        alert 'handleListItemClick: ' + message
+        data.open = false
+        dc.update()
+
+      handleClickOpen: ->
+        data.open = true
+        dc.update()
+
+      close: ->
+        data.open = false
+        dc.update()
+
+    view = (data) ->
+      ['div',
+        [Button, {onClick:data.handleClickOpen}, "Open full-screen dialog"],
+          [Dialog, {fullScreen:true, open:data.open, onClose:data.close, TransitionComponent:Transition},
+            [AppBar, '.appBar',
+              [Toolbar,
+                [IconButton, {color:"inherit", onClick:data.close, 'aria-label':"Close"}, [CloseIcon]],
+                [Typography, {variant:"h6", color:"inherit", className:'.flex'}, 'Sound']
+                [Button, {color:"inherit",  onClick:data.close}, "save"]
+              ]],
+            [List,
+              [ListItem, {button:true},
+                [ListItemText, {primary:"Phone ringtone", secondary:"Titania"}]],
+              [Divider]
+              [ListItem, {button:true},
+                [ListItemText, {primary:"Default notification ringtone", secondary:"Tethys"}]]]]]
+    comp = dc({data, view})
+    comp.mount('#demo')

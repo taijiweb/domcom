@@ -7,7 +7,7 @@ VueProxy 11.25
 
 ### done
 ####new design
-test event in domcom 11.25-11.25 add one tests
+test event in domcom 11.25-11.25 add one test
 test antd in domcom 11.25-11.25 started with simple button
 test material-ui in domcom 11.25-11.25 started with simple button
 component in view 11.25-11.25 tested

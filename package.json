@@ -28,6 +28,7 @@
     "url": "git://github.com/taijiweb/domcom.git"
   },
   "dependencies": {
+    "@material-ui/icons": "^3.0.1",
     "create-react-class": "^15.6.3",
     "lazy-flow-at": "0.0.2",
     "react": "^16.6.1",

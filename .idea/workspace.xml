@@ -2,16 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="112ddb60-2a6e-4ff6-b1de-ae8295583a0b" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/coffee/test-event.coffee" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/samples/components-samples.md" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/component/Component.coffee" afterPath="$PROJECT_DIR$/src/component/Component.coffee" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/proxy/ReactProxy.coffee" afterPath="$PROJECT_DIR$/src/proxy/ReactProxy.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/dc-util.coffee" afterPath="$PROJECT_DIR$/src/dc-util.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/dc.coffee" afterPath="$PROJECT_DIR$/src/dc.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/index.coffee" afterPath="$PROJECT_DIR$/test/coffee/index.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-antd.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-antd.coffee" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-material-ui.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-material-ui.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-react-proxy.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-react-proxy.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/todo.md" afterPath="$PROJECT_DIR$/todo.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -73,50 +68,50 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="test-material-ui.coffee" pinned="false" current-in-tab="false">
+      <file leaf-file-name="test-material-ui.coffee" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/coffee/test-material-ui.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-13.888889" vertical-offset="0" max-vertical-offset="1608">
-              <caret line="25" column="44" selection-start-line="24" selection-start-column="4" selection-end-line="25" selection-end-column="44" />
+            <state vertical-scroll-proportion="0.7258065" vertical-offset="1290" max-vertical-offset="2345">
+              <caret line="116" column="23" selection-start-line="116" selection-start-column="23" selection-end-line="116" selection-end-column="23" />
               <folding>
-                <marker date="1543134727000" expanded="true" signature="1992:2396" placeholder="..." />
-                <marker date="1543134727000" expanded="true" signature="2027:2381" placeholder="..." />
-                <marker date="1543134727000" expanded="true" signature="2027:2396" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="2440:2910" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="2475:2895" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="2475:2910" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="3607:4337" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="3725:4033" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="3749:4029" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="3840:3851" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="3935:3942" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="4010:4015" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="4053:4337" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="4093:4133" placeholder="..." />
+                <marker date="1543146959000" expanded="true" signature="4093:4173" placeholder="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test-new-dc.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/coffee/test-new-dc.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.444445" vertical-offset="0" max-vertical-offset="3663">
-              <caret line="17" column="44" selection-start-line="16" selection-start-column="4" selection-end-line="17" selection-end-column="44" />
-              <folding>
-                <marker date="1543134707000" expanded="true" signature="5539:5551" placeholder="..." />
-                <marker date="1543134707000" expanded="true" signature="5862:5886" placeholder="..." />
-                <marker date="1543134707000" expanded="true" signature="6200:6225" placeholder="..." />
-                <marker date="1543134707000" expanded="true" signature="6533:6558" placeholder="..." />
-              </folding>
+      <file leaf-file-name="todo.md" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/todo.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
+            <state split_layout="FIRST">
+              <first_editor vertical-scroll-proportion="0.5215232" vertical-offset="0" max-vertical-offset="1339">
+                <caret line="21" column="30" selection-start-line="21" selection-start-column="30" selection-end-line="21" selection-end-column="30" />
+                <folding />
+              </first_editor>
+              <second_editor />
             </state>
+          </provider>
+          <provider editor-type-id="MultiMarkdownFxPreviewEditor">
+            <state />
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test-react-proxy.coffee" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/test/coffee/test-react-proxy.coffee">
+      <file leaf-file-name="ReactProxy.coffee" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/proxy/ReactProxy.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4318182" vertical-offset="105" max-vertical-offset="1950">
-              <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test-event.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/coffee/test-event.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="1035">
-              <caret line="17" column="19" selection-start-line="17" selection-start-column="19" selection-end-line="17" selection-end-column="19" />
+            <state vertical-scroll-proportion="-11.666667" vertical-offset="75" max-vertical-offset="1368">
+              <caret line="26" column="23" selection-start-line="26" selection-start-column="23" selection-end-line="26" selection-end-column="23" />
               <folding />
             </state>
           </provider>
@@ -127,46 +122,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="795">
               <caret line="10" column="30" selection-start-line="10" selection-start-column="30" selection-end-line="10" selection-end-column="30" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test-antd.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/coffee/test-antd.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1110">
-              <caret line="10" column="19" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="19" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Component.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/component/Component.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-17.25926" vertical-offset="779" max-vertical-offset="1893">
-              <caret line="83" column="27" selection-start-line="83" selection-start-column="27" selection-end-line="83" selection-end-column="27" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="dc-util.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/dc-util.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.407408" vertical-offset="1444" max-vertical-offset="6753">
-              <caret line="115" column="58" selection-start-line="115" selection-start-column="58" selection-end-line="115" selection-end-column="58" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ReactProxy.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/proxy/ReactProxy.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="1380">
-              <caret line="31" column="40" selection-start-line="31" selection-start-column="40" selection-end-line="31" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -236,19 +191,19 @@
         <option value="$PROJECT_DIR$/src/domcom.coffee" />
         <option value="$PROJECT_DIR$/src/component/isComponent.coffee" />
         <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/src/proxy/ReactProxy.coffee" />
         <option value="$PROJECT_DIR$/scripts-coffee/webpack-config.coffee" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/test/coffee/index.coffee" />
-        <option value="$PROJECT_DIR$/todo.md" />
         <option value="$PROJECT_DIR$/src/dc.coffee" />
         <option value="$PROJECT_DIR$/src/component/Component.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/test-event.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/test-antd.coffee" />
-        <option value="$PROJECT_DIR$/src/dc-util.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" />
-        <option value="$PROJECT_DIR$/test/coffee/test-material-ui.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/test-react-proxy.coffee" />
+        <option value="$PROJECT_DIR$/src/dc-util.coffee" />
+        <option value="$PROJECT_DIR$/src/proxy/ReactProxy.coffee" />
+        <option value="$PROJECT_DIR$/todo.md" />
+        <option value="$PROJECT_DIR$/test/coffee/test-material-ui.coffee" />
       </list>
     </option>
   </component>
@@ -354,88 +309,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="coffee" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="proxy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="component" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -616,8 +489,8 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24947146" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24031007" sideWeight="0.4610895" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4244186" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24031007" sideWeight="0.4610895" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.34302327" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -834,20 +707,6 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/todo.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
-        <state split_layout="FIRST">
-          <first_editor vertical-scroll-proportion="0.22350994" vertical-offset="0" max-vertical-offset="1354">
-            <caret line="9" column="46" selection-start-line="9" selection-start-column="46" selection-end-line="9" selection-end-column="46" />
-            <folding />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/dc.coffee">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1005">
@@ -856,26 +715,63 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/component/Component.coffee">
+    <entry file="file://$PROJECT_DIR$/test/coffee/test-vue-backend.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.25926" vertical-offset="779" max-vertical-offset="1893">
-          <caret line="83" column="27" selection-start-line="83" selection-start-column="27" selection-end-line="83" selection-end-column="27" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2085">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/proxy/ReactProxy.coffee">
+    <entry file="file://$PROJECT_DIR$/test/coffee/test-react-proxy.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="1380">
-          <caret line="31" column="40" selection-start-line="31" selection-start-column="40" selection-end-line="31" selection-end-column="40" />
+        <state vertical-scroll-proportion="-0.8863636" vertical-offset="870" max-vertical-offset="1950">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/coffee/test-new-dc.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4028436" vertical-offset="0" max-vertical-offset="3663">
+          <caret line="17" column="44" selection-start-line="16" selection-start-column="4" selection-end-line="17" selection-end-column="44" />
+          <folding>
+            <marker date="1543134707000" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1543134707000" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1543134707000" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1543134707000" expanded="true" signature="-1:-1" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/coffee/test-event.coffee">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="1035">
-          <caret line="17" column="19" selection-start-line="17" selection-start-column="19" selection-end-line="17" selection-end-column="19" />
+          <caret line="22" column="53" selection-start-line="22" selection-start-column="53" selection-end-line="22" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/coffee/test-antd.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.22727273" vertical-offset="0" max-vertical-offset="1110">
+          <caret line="10" column="19" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/component/Component.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5939968" vertical-offset="779" max-vertical-offset="1893">
+          <caret line="77" column="34" selection-start-line="77" selection-start-column="34" selection-end-line="77" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dc-util.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-15.037037" vertical-offset="764" max-vertical-offset="6753">
+          <caret line="78" column="45" selection-start-line="78" selection-start-column="45" selection-end-line="78" selection-end-column="45" />
           <folding />
         </state>
       </provider>
@@ -888,60 +784,46 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/coffee/test-antd.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1110">
-          <caret line="10" column="19" selection-start-line="10" selection-start-column="19" selection-end-line="10" selection-end-column="19" />
-          <folding />
+    <entry file="file://$PROJECT_DIR$/todo.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
+        <state split_layout="FIRST">
+          <first_editor vertical-scroll-proportion="0.5215232" vertical-offset="0" max-vertical-offset="1339">
+            <caret line="21" column="30" selection-start-line="21" selection-start-column="30" selection-end-line="21" selection-end-column="30" />
+            <folding />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
+      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
+        <state />
+      </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/dc-util.coffee">
+    <entry file="file://$PROJECT_DIR$/src/proxy/ReactProxy.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.407408" vertical-offset="1444" max-vertical-offset="6753">
-          <caret line="115" column="58" selection-start-line="115" selection-start-column="58" selection-end-line="115" selection-end-column="58" />
+        <state vertical-scroll-proportion="-11.666667" vertical-offset="75" max-vertical-offset="1368">
+          <caret line="26" column="23" selection-start-line="26" selection-start-column="23" selection-end-line="26" selection-end-column="23" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/coffee/test-material-ui.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.888889" vertical-offset="0" max-vertical-offset="1608">
-          <caret line="25" column="44" selection-start-line="24" selection-start-column="4" selection-end-line="25" selection-end-column="44" />
+        <state vertical-scroll-proportion="0.7258065" vertical-offset="1290" max-vertical-offset="2345">
+          <caret line="116" column="23" selection-start-line="116" selection-start-column="23" selection-end-line="116" selection-end-column="23" />
           <folding>
-            <marker date="1543134727000" expanded="true" signature="1992:2396" placeholder="..." />
-            <marker date="1543134727000" expanded="true" signature="2027:2381" placeholder="..." />
-            <marker date="1543134727000" expanded="true" signature="2027:2396" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="2440:2910" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="2475:2895" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="2475:2910" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="3607:4337" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="3725:4033" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="3749:4029" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="3840:3851" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="3935:3942" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="4010:4015" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="4053:4337" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="4093:4133" placeholder="..." />
+            <marker date="1543146959000" expanded="true" signature="4093:4173" placeholder="..." />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/coffee/test-vue-backend.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2085">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/coffee/test-new-dc.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.444445" vertical-offset="0" max-vertical-offset="3663">
-          <caret line="17" column="44" selection-start-line="16" selection-start-column="4" selection-end-line="17" selection-end-column="44" />
-          <folding>
-            <marker date="1543134707000" expanded="true" signature="5539:5551" placeholder="..." />
-            <marker date="1543134707000" expanded="true" signature="5862:5886" placeholder="..." />
-            <marker date="1543134707000" expanded="true" signature="6200:6225" placeholder="..." />
-            <marker date="1543134707000" expanded="true" signature="6533:6558" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/test/coffee/test-react-proxy.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4318182" vertical-offset="105" max-vertical-offset="1950">
-          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
