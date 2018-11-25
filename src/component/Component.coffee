@@ -43,6 +43,8 @@ export default module.exports = class Component extends Emitter
     this.proxy.setState({})
     return this
 
+  makeProxyViewItem: ->
+    [ReactProxy, {component:this}, []]
 
   _prepareMount: (mountNode) ->
     parentNode = normalizeDomElement(mountNode) || document.body

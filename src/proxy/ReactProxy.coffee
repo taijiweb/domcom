@@ -39,8 +39,11 @@ export default module.exports = class ReactProxy extends Component
 
   render: ->
     {component} = this
-    view = component.getView()
-    reactElement = this.renderItem(view)
+    try
+      view = component.getView()
+      reactElement = this.renderItem(view)
+    catch err
+      dc.error "catched error in ReactProxy.render:#{err}"
     return reactElement
 
 

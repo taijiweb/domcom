@@ -21,9 +21,7 @@ exports.styleFrom = styleFrom = (items...) ->
         key  = camelCase key
         result[key] = value
     else if isMap item
-      for key, value of item
-        key = camelCase key
-        result[key] = value
+      Object.assign result, item
   return result
 
 exports.classname = classname = (items...) ->
@@ -39,8 +37,7 @@ exports.classname = classname = (items...) ->
       for name in item
         classMap[name] = 1
     else if isObject item
-      for name, value of item
-        classMap[name] = 1
+      Object.assign(classMap, item)
 
   return classMap
 
@@ -54,7 +51,11 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
   else if typeof item == 'string'
     return item
   else if dc.isComponent(item)
-    return item.renderContent()
+    if item.needProxy
+      return item.makeProxyViewItem()
+    else
+      item = item.getView()
+      return normalizeItem item
   else if isArray(item)
     i = 0
     it = item[i]
@@ -70,42 +71,56 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
       props = {}
       children = item.map((child) -> h(child))
       return [tag, props, children]
+    props = null
     it = item[i]
-    if isMap(it)
-      tag = tag || 'div'
-      props = Object.assign({id}, item[i])
+    debugger
+    while isMap(it)
+      props = Object.assign({id}, it)
+      tag = tag || it.tag || 'div'
+      delete props.tag
+      classes = classname(classes, it.classes, it.className)
       delete props.classes
-      props.className = classname(classes, it.classes || it.className)
+      props.className = classes
+      css = styleFrom(css, it.css, it.style)
       delete props.css
-      props.style = styleFrom(css, it.css || it.style)
+      props.style = css
       i++
-    else
+      it = item[i]
+    if !props
       props = {className:classes, id, style:styleFrom(css)}
     if inputType
       props.type = inputType
     children = item[i...].map((child) -> normalizeItem(child))
+    debugger
     props = normalizeReactProps(props)
+    debugger
     return [tag || 'div', props, children]
 
 exports.normalizeReactProps = normalizeReactProps = (props) ->
   for key of props
-    
     value = props[key]
+    delete props[key]
+    key = camelCase(key)
     if value == undefined
       delete props[key]
     else if key == 'className'
-      delete props[key]
       classMap = classname(value)
-      classes = Object.keys(classMap).join(' ')
-      if classes
+      if classes = Object.keys(classMap).filter((key) -> classMap[key]).join(' ')
         props.className = classes
     else if key == 'style'
-      if !Object.keys(value).length
-        delete props.style
+      if Object.keys(value).length
+        props.style = camelCaseProps value
     else
-      key = camelCase(key)
       props[key] = value
   props
+
+exports.camelCaseProps = camelCaseProps = (props) ->
+  result = {}
+  for key of props
+    value = props[key]
+    key = camelCase key
+    result[key] = value
+  result
 
 inputTypes = {}
 
@@ -143,7 +158,7 @@ exports.isObject = isObject = (item) ->
   typeof item == 'object' and item != null
 
 exports.isMap = isMap = (item) ->
-  typeof item == 'object' and item != null and Object::toString.call(item) != '[object Array]'
+  typeof item == 'object' and item != null && item.constructor == Object
 
 exports.cloneObject = (obj) ->
   result = {}

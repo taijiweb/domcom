@@ -1,7 +1,24 @@
 ### todo
-* more utilties for flow, to help convert normaling function to reactive, reduce appended computation in reactive function, or directly invalidate the component while changing
+component in view 11.25
+self controled component, e.g. dialog.open(), dialog.close() 11.25
+test material-ui in domcom
+VueProxy 11.25
 
-#### done
+### done
+####new design
+component in view 11.25-11.25 tested
+test classname with false value 11.25-11.25 tested
+multiple props in on  list element 11.25-11.25 tested
+class in both head string and props 11.2-11.25 tested
+style in both head string and props 11.25-11.25 tested
+
+data:Component.getData()
+view:Component.getView
+[] (embedded list） style  view
+ReactProxy.render(), renderItem, dcutil normalizeItem
+
+----------------------------------------------------------
+old design
 * separate the code for updating dom and attach/detach dom
 * flatten the render hierarchy, skip the call to inactive component level
 * delegation to events
