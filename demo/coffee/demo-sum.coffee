@@ -1,16 +1,27 @@
-{see, flow, list, text, p} = dc
+demoSum = () ->
 
-demoSum = ->
-  a = see 1, parseFloat; b = see 2, parseFloat
-  comp = list(t1=text({value: a, onchange:-> a(this.node.value)}), t2=text({value: b, onchange:-> b(this.node.value)}), p1 = p(flow.add a, b))
-  #comp = list(t1=text({$model: a}), t2=text({$model:b}), p1 = p(flow.add a, b))
-#  comp = list(t1=text(a), t2=text(b), p1 = p(flow.add a, b))
-  comp.renderWhen([t1, t2], 'change')
+  data = { a: 1, b: 2 }
 
-export default  demoSum = ->
-  a = see 1; b = see 2
-  list(
-    (t1 = text value: a, onchange: (-> a this.node.value*1)),
-    (t2 = text value: b, onchange: (-> b this.node.value*1)),
-    p1 = p flow.add a, b
-  ).renderWhen([t1, t2], 'change')
+  view = data ->
+    props1 =
+      value: data.a,
+      onChange:(event) ->
+        data.a = event.target.value*1
+        comp.update()
+
+    props2 =
+      value: data.b,
+      onChange:(event) ->
+        data.a = event.target.value*1
+        comp.update()
+
+    return ['div',
+            ['text', props1],
+            ['text', props2],
+            ['p', data.a + data.b]
+          ]
+
+  comp = dc({data, view})
+  comp.mount('#demo')
+    ​
+demoSum()

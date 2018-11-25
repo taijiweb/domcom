@@ -36,34 +36,34 @@ The code below give a taste of domcom:
 
 In javascript:
 
-    const demoSum = function() {
+    const demoSum = () => {
     
-          const data = { a: 1, b: 2 }
+          const data = { a: 1, b: 2 };
 
           const view = data => {
                let props1 = {
                     value: data.a,
-                    onchange(event) {
+                    onChange(event) {
                         data.a = event.target.value*1
                         comp.update()
-                    } // ES 6
-                },
+                    }
+                };
                 props2 = {
                     value: data.b,
-                    onchange(event, node) {
+                    onChange(event) {
                         data.a = event.target.value*1
                         comp.update();
                     };
-                }
+                };
 
               return ['div',
-                        ['text', props],
-                        ['text', props],
-                        ['p', data.a, data.b]
-                     ]
-          }
-          const comp = dc)({data, view})
-          comp.mount('#demo')
+                        ['text', props1],
+                        ['text', props2],
+                        ['p', data.a + data.b]
+                     ];
+          };
+          const comp = dc({data, view});
+          comp.mount('#demo');
     }   ​
     demoSum();
     
