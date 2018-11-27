@@ -1,11 +1,7 @@
 import React, {Component} from 'react'
 import ReactDom from 'react-dom'
 
-import ReactWrapper4Vue from './ReactWrapper4Vue'
-
-createReactClass = require('create-react-class');
-
-{isArray, isMap, parseTagString, normalizeReactProps, normalizeItem} = require 'dc-util'
+{normalizeItem} = require 'dc-util'
 
 import isComponent from '../component/isComponent'
 
@@ -20,15 +16,15 @@ export default module.exports = class ReactProxy extends Component
   renderNormalized: (item, props, children) =>
     if !item?
       return null
-    else if typeof item != 'string'
+    else if typeof item == 'string'
+      return item
+    else
       [tag, props, children] = item
       children = children.map (child) => this.renderNormalized(child)
       if !children.length
         children = null
       console.log('renderNormalized children:', children)
       return React.createElement(tag, props, children)
-    else
-      return item
 
   renderItem: (item, props, children) =>
     if !props

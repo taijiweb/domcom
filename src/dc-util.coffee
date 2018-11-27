@@ -46,10 +46,58 @@ exports.isReactClass = isReactClass = (item) ->
   # investigated on both CreateClass and ES6 extends react.Component
   item && item.prototype && item.prototype.isReactComponent
 
-exports.normalizeItem = normalizeItem = (item, props, children) ->
-  if props
-    return React.createElement(item, props, children)
-  else if typeof item == 'string'
+normalizeArrayViewItem = (item) ->
+  i = 0
+  it = item[i]
+  if dc.isComponent(it) || isArray(it)
+    tag = 'div'
+    props = {}
+    children = item.map((child) -> normalizeItem(child))
+    return [tag, props, children]
+  else if typeof it== 'string'
+    [tag, classes, id, css, inputType] = parseTagString(item[i])
+    classes = classname(classes)
+    css = styleFrom(css)
+    i++
+  else if isReactClass(it)
+    tag = it
+    i++
+    it = item[i]
+    if typeof it == 'string' && it
+      if it.match /^\.|^#/
+        [_, classes, id, css, inputType] = parseTagString(item[i])
+        classes = classname(classes)
+        css = styleFrom(css)
+        i++
+        it = item[i]
+  else if typeof it == 'function'
+    x = it(item[1...]...)
+    return normalizeItem x
+  # props and children
+  props = null
+  it = item[i]
+  while isMap(it)
+    props = Object.assign({id}, it)
+    tag = tag || it.tag || 'div'
+    delete props.tag
+    classes = classname(classes, it.classes, it.className)
+    delete props.classes
+    props.className = classes
+    css = styleFrom(css, it.css, it.style)
+    delete props.css
+    props.style = css
+    i++
+    it = item[i]
+  if !props
+    props = {className:classes, id, style:styleFrom(css)}
+  if inputType
+    props.type = inputType
+  children = item[i...].map((child) -> normalizeItem(child))
+  props = normalizeReactProps(props, typeof tag == 'string')
+  return [tag || 'div', props, children]
+
+exports.normalizeItem = normalizeItem = (item) ->
+  if typeof item == 'string'
     return item
   else if dc.isComponent(item)
     if item.needProxy
@@ -58,54 +106,12 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
       item = item.getView()
       return normalizeItem item
   else if isArray(item)
-    i = 0
-    it = item[i]
-    if dc.isComponent(it) || isArray(it)
-      tag = 'div'
-      props = {}
-      children = item.map((child) -> normalizeItem(child))
-      return [tag, props, children]
-    else if typeof it== 'string'
-      [tag, classes, id, css, inputType] = parseTagString(item[i])
-      classes = classname(classes)
-      css = styleFrom(css)
-      i++
-    else if isReactClass(it)
-      tag = it
-      i++
-      it = item[i]
-      if typeof it == 'string' && it
-        if it.match /^\.|^#/
-          [_, classes, id, css, inputType] = parseTagString(item[i])
-          classes = classname(classes)
-          css = styleFrom(css)
-          i++
-          it = item[i]
-    else if typeof it == 'function'
-      x = it.apply(item[1...])
-      return normalizeItem x
-    # props and children
-    props = null
-    it = item[i]
-    while isMap(it)
-      props = Object.assign({id}, it)
-      tag = tag || it.tag || 'div'
-      delete props.tag
-      classes = classname(classes, it.classes, it.className)
-      delete props.classes
-      props.className = classes
-      css = styleFrom(css, it.css, it.style)
-      delete props.css
-      props.style = css
-      i++
-      it = item[i]
-    if !props
-      props = {className:classes, id, style:styleFrom(css)}
-    if inputType
-      props.type = inputType
-    children = item[i...].map((child) -> normalizeItem(child))
-    props = normalizeReactProps(props, typeof tag == 'string')
-    return [tag || 'div', props, children]
+    return normalizeArrayViewItem(item)
+  else if item?
+    return ''+item
+  else
+    return null
+
 
 exports.normalizeReactProps = normalizeReactProps = (props, camel = true) ->
   for key of props

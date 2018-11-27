@@ -76,7 +76,7 @@ describe "test-material-ui", ->
       comp.mount('#demo')
 
 
-  iit 'test a dialog 2', ->
+  it 'test a dialog 2', ->
     Transition = (props) ->
       debugger
       React.createElement(Slide, {direction:"up", props...})

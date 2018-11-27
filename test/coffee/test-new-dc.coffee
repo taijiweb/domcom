@@ -204,3 +204,14 @@ describe "test-new-dc", ->
       data.show1 = false
       comp.update()
 
+    it 'should process rebol style function call in view item', ->
+      if_ = (test, then_, else_) ->
+        if test
+          then_
+        else
+          else_
+      debugger
+      item = normalizeItem [if_, 0, 1, 2]
+
+      expect(item).to.equal '2'
+
