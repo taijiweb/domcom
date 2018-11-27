@@ -69,4 +69,3 @@ In javascript:
     
 ## LICENSE
 MIT, see [LICENSE](https://github.com/taijiweb/domcom/blob/master/LICENSE)
-ok.

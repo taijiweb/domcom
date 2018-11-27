@@ -19,7 +19,18 @@ export default module.exports = class Component extends Emitter
   constructor: (config) ->
     super()
     this.dcid = dc.dcid++
-    Object.assign(this, config)
+    illegals = []
+    for own key, value of config
+      debugger
+      if this[key] != undefined
+        illegals.push key
+    if illegals.length
+      dc.error "illegal key in config: #{illegals.join(', ')}, they are used by dc.Component itself!"
+    for own key, value of config
+      if typeof value == 'function'
+        this[key] = value.bind(this)
+      else
+        this[key] = value
     return
 
   ###

@@ -23,6 +23,9 @@ describe "test-new-dc", ->
       comp = dc()
       expect(isComponent(comp)).to.be.true
 
+    it ' dc should check fields', ->
+      expect(-> dc {dcid:'should error'}).to.throw dc.DomcomError
+
     it 'simple data view', ->
       data = {x:1, y:2}
       view = (data) ->

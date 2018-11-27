@@ -1,7 +1,6 @@
 demoSum = () ->
 
   data = { a: 1, b: 2 }
-
   view = data ->
     props1 =
       value: data.a,
@@ -11,7 +10,7 @@ demoSum = () ->
 
     props2 =
       value: data.b,
-      onChange:(event) ->
+      onChange: (event) ->
         data.a = event.target.value*1
         comp.update()
 
@@ -23,5 +22,5 @@ demoSum = () ->
 
   comp = dc({data, view})
   comp.mount('#demo')
-    ​
+
 demoSum()

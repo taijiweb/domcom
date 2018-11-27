@@ -60,7 +60,12 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
   else if isArray(item)
     i = 0
     it = item[i]
-    if typeof it== 'string'
+    if dc.isComponent(it) || isArray(it)
+      tag = 'div'
+      props = {}
+      children = item.map((child) -> normalizeItem(child))
+      return [tag, props, children]
+    else if typeof it== 'string'
       [tag, classes, id, css, inputType] = parseTagString(item[i])
       classes = classname(classes)
       css = styleFrom(css)
@@ -76,11 +81,10 @@ exports.normalizeItem = normalizeItem = (item, props, children) ->
           css = styleFrom(css)
           i++
           it = item[i]
-    else if dc.isComponent(it) || isArray(it)
-      tag = 'div'
-      props = {}
-      children = item.map((child) -> normalizeItem(child))
-      return [tag, props, children]
+    else if typeof it == 'function'
+      x = it.apply(item[1...])
+      return normalizeItem x
+    # props and children
     props = null
     it = item[i]
     while isMap(it)
