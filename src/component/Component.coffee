@@ -2,7 +2,7 @@ import Emitter from '../Emitter'
 
 {newDcid, isArray, isObject, normalizeDomElement} = require 'dc-util'
 import isComponent from './isComponent'
-import dc from '../dc'
+import dc from '../domcom'
 d = {}
 ###
   部件基类

@@ -1,6 +1,7 @@
 ### todo
-decouple dc and dc-proxy 11.27
-go on remoivng unused code 11.27
+check only one instance of the component in th dom tree.
+ this is a harder problem than it seems to be!!!
+Component.extend, Component.copy 11.28
 test material-ui in domcom 11.25
 self controled component, e.g. dialog.open(), dialog.close() 11.25
 test antd in domcom 11.25
@@ -9,6 +10,8 @@ VueProxy 11.25
 
 ### done
 ####new design
+go on removing unused code 11.27-11.28
+decouple dc and dc-proxy 11.27--11.28
 binds function in config field 11.27-11.27
 check the fields in config, do not conflict with Component' prototype 11.27-11.27
 test event in domcom 11.25-11.25 add one test

@@ -2,25 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="112ddb60-2a6e-4ff6-b1de-ae8295583a0b" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/proxy/react-proxy.coffee" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/dom-util.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/proxy/ReactProxy.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-react-in-vue.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-vue-backend.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/coffee/test-vue-in-react.coffee" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/test/makeDomComponentTest.coffee" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/dc.coffee" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/component/Component.coffee" afterPath="$PROJECT_DIR$/src/component/Component.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts-coffee/gulp-tasks/build-tasks.coffee" afterPath="$PROJECT_DIR$/scripts-coffee/gulp-tasks/build-tasks.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/dc-error.coffee" afterPath="$PROJECT_DIR$/src/dc-error.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/dc-util.coffee" afterPath="$PROJECT_DIR$/src/dc-util.coffee" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/domcom.coffee" afterPath="$PROJECT_DIR$/src/domcom.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/index.coffee" afterPath="$PROJECT_DIR$/test/coffee/index.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-antd.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-antd.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-event.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-event.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-material-ui.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-material-ui.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-new-dc.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/coffee/test-react-proxy.coffee" afterPath="$PROJECT_DIR$/test/coffee/test-react-proxy.coffee" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts-coffee/gulp-tasks/typescript.coffee" afterPath="$PROJECT_DIR$/scripts-coffee/gulp-tasks/typescript.coffee" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/todo.md" afterPath="$PROJECT_DIR$/todo.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="domcom.iws" />
@@ -81,21 +67,47 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="domcom.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/domcom.coffee">
+      <file leaf-file-name="react-proxy.coffee" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/proxy/react-proxy.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="900">
-              <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="525" max-vertical-offset="1350">
+              <caret line="45" column="60" selection-start-line="45" selection-start-column="60" selection-end-line="45" selection-end-column="60" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Emitter.coffee" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/Emitter.coffee">
+      <file leaf-file-name="todo.md" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/todo.md">
+          <provider editor-type-id="MultiMarkdownFxPreviewEditor">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
+            <state split_layout="FIRST">
+              <first_editor vertical-scroll-proportion="0.37251654" vertical-offset="0" max-vertical-offset="1444">
+                <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
+                <folding />
+              </first_editor>
+              <second_editor />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="dc-util.coffee" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/dc-util.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5341246" vertical-offset="0" max-vertical-offset="1537">
-              <caret line="12" column="15" selection-start-line="12" selection-start-column="15" selection-end-line="12" selection-end-column="15" />
+            <state vertical-scroll-proportion="0.70454544" vertical-offset="1200" max-vertical-offset="3390">
+              <caret line="111" column="6" selection-start-line="111" selection-start-column="6" selection-end-line="111" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="domcom.coffee" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/domcom.coffee">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="937">
+              <caret line="35" column="48" selection-start-line="35" selection-start-column="48" selection-end-line="35" selection-end-column="48" />
               <folding />
             </state>
           </provider>
@@ -104,68 +116,8 @@
       <file leaf-file-name="Component.coffee" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/component/Component.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="1845">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1845">
               <caret line="19" column="31" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="dc-util.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/dc-util.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="3465">
-              <caret line="70" column="34" selection-start-line="70" selection-start-column="34" selection-end-line="70" selection-end-column="34" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="index.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/component/index.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="705">
-              <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="isComponent.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/component/isComponent.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="705">
-              <caret line="4" column="46" selection-start-line="4" selection-start-column="46" selection-end-line="4" selection-end-column="46" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="react-proxy.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/proxy/react-proxy.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1350">
-              <caret line="45" column="60" selection-start-line="45" selection-start-column="60" selection-end-line="45" selection-end-column="60" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="dc.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/dc.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1005">
-              <caret line="24" column="8" selection-start-line="24" selection-start-column="8" selection-end-line="24" selection-end-column="8" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="dc-error.coffee" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/dc-error.coffee">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1395">
-              <caret line="50" column="22" selection-start-line="50" selection-start-column="22" selection-end-line="50" selection-end-column="22" />
               <folding />
             </state>
           </provider>
@@ -229,8 +181,6 @@
         <option value="$PROJECT_DIR$/src/component/isComponent.coffee" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/scripts-coffee/webpack-config.coffee" />
-        <option value="$PROJECT_DIR$/src/dc.coffee" />
-        <option value="$PROJECT_DIR$/todo.md" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/demo/coffee/demo-sum.coffee" />
         <option value="$PROJECT_DIR$/src/proxy/ReactProxy.coffee" />
@@ -238,7 +188,6 @@
         <option value="$PROJECT_DIR$/scripts-coffee/gulp-tasks/typescript.coffee" />
         <option value="$PROJECT_DIR$/src/proxy/react-proxy.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/index.coffee" />
-        <option value="$PROJECT_DIR$/src/component/Component.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/test-antd.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/test-event.coffee" />
         <option value="$PROJECT_DIR$/test/coffee/test-material-ui.coffee" />
@@ -246,8 +195,11 @@
         <option value="$PROJECT_DIR$/test/coffee/test-react-proxy.coffee" />
         <option value="$PROJECT_DIR$/src/dom-util.coffee" />
         <option value="$PROJECT_DIR$/src/dc-error.coffee" />
-        <option value="$PROJECT_DIR$/src/dc-util.coffee" />
+        <option value="$PROJECT_DIR$/todo.md" />
+        <option value="$PROJECT_DIR$/src/dc.coffee" />
         <option value="$PROJECT_DIR$/src/domcom.coffee" />
+        <option value="$PROJECT_DIR$/src/component/Component.coffee" />
+        <option value="$PROJECT_DIR$/src/dc-util.coffee" />
       </list>
     </option>
   </component>
@@ -381,24 +333,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="domcom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="proxy" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -626,7 +560,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24947146" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24031007" sideWeight="0.45753425" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.46947673" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.46947673" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -880,20 +814,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/todo.md">
-      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
-        <state split_layout="FIRST">
-          <first_editor vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="840">
-            <caret line="0" column="8" selection-start-line="0" selection-start-column="8" selection-end-line="0" selection-end-column="8" />
-            <folding />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts-coffee/gulp-tasks/build-tasks.coffee">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="382">
@@ -979,17 +899,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/component/Component.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="1845">
-          <caret line="19" column="31" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/component/index.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="705">
+        <state vertical-scroll-proportion="0.09090909" vertical-offset="0" max-vertical-offset="705">
           <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
           <folding />
         </state>
@@ -997,56 +909,70 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/component/isComponent.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="705">
+        <state vertical-scroll-proportion="0.09090909" vertical-offset="0" max-vertical-offset="705">
           <caret line="4" column="46" selection-start-line="4" selection-start-column="46" selection-end-line="4" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/proxy/react-proxy.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1350">
-          <caret line="45" column="60" selection-start-line="45" selection-start-column="60" selection-end-line="45" selection-end-column="60" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dc.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1005">
-          <caret line="24" column="8" selection-start-line="24" selection-start-column="8" selection-end-line="24" selection-end-column="8" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/dc-error.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1395">
+        <state vertical-scroll-proportion="1.1363636" vertical-offset="0" max-vertical-offset="1395">
           <caret line="50" column="22" selection-start-line="50" selection-start-column="22" selection-end-line="50" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dc-util.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="3465">
-          <caret line="70" column="34" selection-start-line="70" selection-start-column="34" selection-end-line="70" selection-end-column="34" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/domcom.coffee">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="900">
-          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Emitter.coffee">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5341246" vertical-offset="0" max-vertical-offset="1537">
-          <caret line="12" column="15" selection-start-line="12" selection-start-column="15" selection-end-line="12" selection-end-column="15" />
+        <state vertical-scroll-proportion="0.3181818" vertical-offset="0" max-vertical-offset="1860">
+          <caret line="14" column="66" selection-start-line="14" selection-start-column="66" selection-end-line="14" selection-end-column="66" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/proxy/react-proxy.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="525" max-vertical-offset="1350">
+          <caret line="45" column="60" selection-start-line="45" selection-start-column="60" selection-end-line="45" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/todo.md">
+      <provider editor-type-id="MultiMarkdownFxPreviewEditor">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="split-provider[text-editor;MultiMarkdownPreviewEditor]">
+        <state split_layout="FIRST">
+          <first_editor vertical-scroll-proportion="0.37251654" vertical-offset="0" max-vertical-offset="1444">
+            <caret line="15" column="17" selection-start-line="15" selection-start-column="17" selection-end-line="15" selection-end-column="17" />
+            <folding />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/domcom.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="937">
+          <caret line="35" column="48" selection-start-line="35" selection-start-column="48" selection-end-line="35" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/component/Component.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1845">
+          <caret line="19" column="31" selection-start-line="19" selection-start-column="31" selection-end-line="19" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dc-util.coffee">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.70454544" vertical-offset="1200" max-vertical-offset="3390">
+          <caret line="111" column="6" selection-start-line="111" selection-start-column="6" selection-end-line="111" selection-end-column="6" />
           <folding />
         </state>
       </provider>

@@ -47,7 +47,6 @@ exports.classname = classname = (items...) ->
   return classMap
 
 exports.isReactClass = isReactClass = (item) ->
-exports.isReactClass = isReactClass = (item) ->
   # investigated on both CreateClass and ES6 extends react.Component
   item && item.prototype && item.prototype.isReactComponent
 
@@ -105,11 +104,7 @@ exports.normalizeItem = normalizeItem = (item) ->
   if typeof item == 'string'
     return item
   else if dc.isComponent(item)
-    if item.needProxy
-      return item.makeProxyViewItem()
-    else
-      item = item.getView()
-      return normalizeItem item
+    return item.makeProxyViewItem()
   else if isArray(item)
     return normalizeArrayViewItem(item)
   else if item?
