@@ -1,8 +1,11 @@
 {expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
 
-{normalizeDomElement} = require '../../src/dom-util'
-{normalizeItem} = require 'dc-util'
+{normalizeItem, normalizeDomElement} = require 'dc-util'
 {isComponent} = dc
+
+import React, {Component} from 'react'
+import ReactDom from 'react-dom'
+dc.addReactProxy React, ReactDom, Component
 
 import Button from '@material-ui/core/Button'
 
@@ -84,7 +87,6 @@ describe "test-new-dc", ->
       red = 'red'
       view = ['div##width:100;', {css:"height:200px"}, {'background-color':red}, 'hello domcom mvc']
       comp = dc({view})
-      debugger
       item = normalizeItem(comp.view)
       s = JSON.stringify(item)
       expect(s).to.equal '["div",{"backgroundColor":"red","style":{"width":"100","height":"200px"}},["hello domcom mvc"]]'
@@ -112,7 +114,6 @@ describe "test-new-dc", ->
       active = false
       view = [Button, '##width:100;', {classes:{active}}, {'background-color':red}, 'hello domcom mvc']
       comp = dc({view})
-      debugger
       item = normalizeItem(comp.view)
       s = JSON.stringify(item[1...])
       # will not camelcase in props  in ReactClass element
@@ -175,7 +176,6 @@ describe "test-new-dc", ->
       view = (data) -> ['div', data.message]
       embedded = dc({data, view, needProxy:true})
       comp = dc({view:embedded})
-      debugger
       comp.mount('#demo')
       data.message = "new embedded message"
       comp.update()
@@ -185,7 +185,6 @@ describe "test-new-dc", ->
       view = (data) -> ['div', data.message]
       embedded = dc({data, view})
       comp = dc({view:['div', embedded, embedded]})
-      debugger
       comp.mount('#demo')
       data.message = "new embedded message"
       comp.update()
@@ -199,7 +198,6 @@ describe "test-new-dc", ->
           ['div', data.message2]
       embedded = dc({data, view, needProxy:true})
       comp = dc({view:['div', embedded, embedded]})
-      debugger
       comp.mount('#demo')
       data.show1 = false
       comp.update()
@@ -210,7 +208,6 @@ describe "test-new-dc", ->
           then_
         else
           else_
-      debugger
       item = normalizeItem [if_, 0, 1, 2]
 
       expect(item).to.equal '2'

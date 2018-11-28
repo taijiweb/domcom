@@ -1,8 +1,12 @@
 {expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
 
-{normalizeDomElement} = require '../../src/dom-util'
-{normalizeItem} = require 'dc-util'
+{normalizeItem, normalizeDomElement} = require 'dc-util'
 {isComponent} = dc
+
+import React, {Component} from 'react'
+import ReactDom from 'react-dom'
+dc.addReactProxy React, ReactDom, Component
+
 
 import Button from '@material-ui/core/Button'
 import Avatar from '@material-ui/core/Avatar'
@@ -22,8 +26,6 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Divider from '@material-ui/core/Divider'
 import Slide from '@material-ui/core/Slide'
-
-import React from 'react'
 
 
 describe "test-material-ui", ->
@@ -49,7 +51,6 @@ describe "test-material-ui", ->
        comp.mount('#demo')
 
     it 'test a dialog', ->
-      debugger
       data = {
         emails:['x1@y.z', 'x2@y.z', 'x3@y.z'],
         open:true,
@@ -78,9 +79,7 @@ describe "test-material-ui", ->
 
   it 'test a dialog 2', ->
     Transition = (props) ->
-      debugger
       React.createElement(Slide, {direction:"up", props...})
-    debugger
     data =
       emails: ['x1@y.z', 'x2@y.z', 'x3@y.z'],
       open:true,

@@ -18,8 +18,8 @@ task 'typescript', (cb) ->
 #  combineStream.end -> logTime('finish compiling typescript')
 
 #  combineStream
-  console.log('starting typescript')
   if (shell.exec('tsc ./**/*.ts').code != 0)
     shell.echo('Error: typescript compile failed')
     shell.exit(1)
-  else console.log('finish typescript')
+  else
+    console.log('finish typescript')

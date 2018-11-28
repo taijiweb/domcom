@@ -5,13 +5,11 @@ if typeof window != 'undefined'
 
 Object.assign(dc,
   require('dc-util'),
-  require('./dom-util'),
-
-  # components
   require('./component'),
-
   require('./dc-error')
 )
+
+dc.addReactProxy = require './proxy/react-proxy'
 
 export default module.exports = dc
 

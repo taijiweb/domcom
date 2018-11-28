@@ -8,14 +8,14 @@ module.exports = exports = {}
 
 stacktraceMessage = (message, stackIndex = 1) ->
   if message
-    if !dcError.prodution
+    if !dc.prodution
       console.log(message)
     message += ':\n'
   else
     message = ""
 
   error = new Error()
-  if !dcError.prodution
+  if !dc.prodution
     console.log(error)
   stacklist = error.stack.split('\n').slice(3)
 
@@ -44,22 +44,8 @@ exports.DomcomError = class DomcomError extends Error
     else
       this.message
 
-exports.error = dcError = (message, component) ->
+exports.error = (message, component) ->
   message = stacktraceMessage(message, 2)
   throw new DomcomError(message, component)
-
-exports.onerror = (message, component) ->
-  if message instanceof DomcomError
-    console.log(message)
-    throw new Error(message.message)
-  else if message instanceof Error
-    throw message
-  else
-    if component
-      console.log(component)
-      console.log(message)
-    else
-      console.log(message)
-    throw new Error(message + ':\n' + stacktraceMessage())
 
 export default exports

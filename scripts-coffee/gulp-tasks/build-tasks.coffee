@@ -1,7 +1,6 @@
 gulp = require 'gulp'
 
 watchcb = ->
-    console.log('gulp is watching coffee...')
     gulp.watch([
         './src/**/*.coffee',
         './scripts-coffee/**/*.coffee', 

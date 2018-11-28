@@ -1,19 +1,15 @@
 import Emitter from '../Emitter'
-import ReactDom from 'react-dom'
-import React from 'react'
 
-import ReactProxy from '../proxy/ReactProxy'
-
-{normalizeDomElement} = require '../dom-util'
-{newDcid, isArray, isObject} = require 'dc-util'
+{newDcid, isArray, isObject, normalizeDomElement} = require 'dc-util'
 import isComponent from './isComponent'
 import dc from '../dc'
 d = {}
 ###
-  所有部件的基类
+  部件基类
   @params config: the config object for the component, it can have the fileds below
     data: the real data of the component or a function to generate the data
     view: the view object or a function to generate the view
+    any other fields that do not conflict with component itself
 ###
 export default module.exports = class Component extends Emitter
   constructor: (config) ->
@@ -21,34 +17,22 @@ export default module.exports = class Component extends Emitter
     this.dcid = dc.dcid++
     illegals = []
     for own key, value of config
-      debugger
       if this[key] != undefined
         illegals.push key
     if illegals.length
       dc.error "illegal key in config: #{illegals.join(', ')}, they are used by dc.Component itself!"
-    for own key, value of config
-      if typeof value == 'function'
-        this[key] = value.bind(this)
-      else
-        this[key] = value
+    Object.assign this, config
     return
 
-  ###
-    ## 更新部件
-    * 基本步骤
-      * 渲染部件
-      * dc清理：移除不应该继续在Dom中存在的Dom Node
-  ###
-  ### if mountNode is given, it should not be the node of any Component
-  only use beforeNode if mountNode is given
+  ### mountNode should not be the node of any Component
   ###
   mount: (mountNode) ->
-    this.emit('willMount')
+    this.emit('mounting')
     this._prepareMount(mountNode)
     dc.mountMap[this.dcid] = this
-    reactElement = React.createElement(ReactProxy, {component:this})
-    ReactDom.render(reactElement, this.parentNode)
-    this.emit('didMount')
+    reactElement = dc.React.createElement(dc.ReactProxy, {component:this})
+    dc.ReactDom.render(reactElement, this.parentNode)
+    this.emit('mounted')
     return
 
   update: ->
@@ -57,7 +41,7 @@ export default module.exports = class Component extends Emitter
     return this
 
   makeProxyViewItem: ->
-    [ReactProxy, {component:this}, []]
+    [dc.ReactProxy, {component:this}, []]
 
   _prepareMount: (mountNode) ->
     parentNode = normalizeDomElement(mountNode) || document.body
@@ -82,7 +66,7 @@ export default module.exports = class Component extends Emitter
       return view
 
   unmount: () ->
-    this.emit('willUnmount')
+    this.emit('mounting')
     {parentNode} = this
     if parentNode.childNodes.length
       node = parentNode.childNodes[0]
@@ -92,5 +76,5 @@ export default module.exports = class Component extends Emitter
     this.proxy.component = null
     this.proxy = null
     delete dc.mountMap[this.dcid]
-    this.emit('didUnmount')
+    this.emit('unmounted')
     return

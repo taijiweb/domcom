@@ -1,8 +1,11 @@
 {expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
 
-{normalizeDomElement} = require '../../src/dom-util'
-{normalizeItem} = require 'dc-util'
+{normalizeItem, normalizeDomElement} = require 'dc-util'
 {isComponent} = dc
+
+import React, {Component} from 'react'
+import ReactDom from 'react-dom'
+dc.addReactProxy React, ReactDom, Component
 
 import Chip from '@material-ui/core/Chip'
 

@@ -1,18 +1,14 @@
 {expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
 
+import React, {Component} from 'react'
 import ReactDom from 'react-dom'
+
+dc.addReactProxy React, ReactDom, Component
 
 {newDemoNode} = require './helper'
 
-{normalizeDomElement} = require '../../src/dom-util'
-{
-Tag, Text, List, txt, list
-p, div, Html, html, if_
-classFn, styleFrom,
-Nothing
-isComponent
-getters
-} = dc
+{normalizeDomElement} = require 'dc-util'
+
 
 describe "test react proxy", ->
   beforeEach ->
@@ -48,7 +44,6 @@ describe "test react proxy", ->
       comp = dc {data, view}
       data.showing = true
       data.message = 'hello dc'
-      debugger
       comp.mount('#demo2')
       data.showing = false
       comp.update()
@@ -63,10 +58,8 @@ describe "test react proxy", ->
           ['div', data.message2]
       comp = dc {data, view}
       data.showing = true
-      debugger
       comp.mount('#demo2')
       data.showing = false
-      debugger
       comp.update()
 
     it 'should mount and update react dc + if_ div block 2', ->
