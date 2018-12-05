@@ -2,6 +2,11 @@ camelCase = require('camelcase')
 
 export default exports = module.exports = {}
 
+dcid = 0
+
+exports.newDcid = ->
+  return dcid++
+
 exports.normalizeDomElement = (domElement) ->
   if typeof domElement == 'string'
     domElement = document.querySelector(domElement)
@@ -53,7 +58,7 @@ exports.isReactClass = isReactClass = (item) ->
 normalizeArrayViewItem = (item) ->
   i = 0
   it = item[i]
-  if dc.isComponent(it) || isArray(it)
+  if it instanceof dc.Component || isArray(it)
     tag = 'div'
     props = {}
     children = item.map((child) -> normalizeItem(child))
@@ -103,7 +108,7 @@ normalizeArrayViewItem = (item) ->
 exports.normalizeItem = normalizeItem = (item) ->
   if typeof item == 'string'
     return item
-  else if dc.isComponent(item)
+  else if item instanceof dc.Component
     return item.makeProxyViewItem()
   else if isArray(item)
     return normalizeArrayViewItem(item)

@@ -1,6 +1,6 @@
-{runDemo, demoMap} = require './util'
+dc.addReactProxy window.React, window.ReactDOM, window.React.Component
 
-dc.alwaysRender = true
+{runDemo, demoMap} = require './util'
 
 window.onload = ->
 #  comp = accordion()

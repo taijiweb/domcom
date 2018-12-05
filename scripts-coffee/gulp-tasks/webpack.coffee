@@ -28,12 +28,13 @@ webpackDistribute = (mode) ->
          options: {}
        })
   ]
-  runWebPack(domcomEntry, '[name].js', {mode,path:'../dist', pathinfo:true, libraryTarget:'umd', library:'dc', plugins})
-  runWebPack('./test/coffee/index', 'test.js', {mode,path:'../dist', pathinfo:true, plugins})
-  runWebPack('./demo/coffee/index', 'demo.js', {mode,path:'../dist', pathinfo:true, plugins})
-  runWebPack('./demo/coffee/todomvc', 'todomvc.js', {mode,path:'../dist', pathinfo:true, plugins})
-  if mode=='dist'
-    plugins.push new webpack.optimize.UglifyJsPlugin({minimize: true})
+  runWebPack(domcomEntry, '[name].js', {mode:'development',path:'../dist', pathinfo:true, libraryTarget:'umd', library:'dc', plugins})
+  runWebPack('./test/coffee/index', 'test.js', {mode:'development',path:'../dist', pathinfo:true, plugins})
+  runWebPack('./demo/coffee/index', 'demo.js', {mode:'development',path:'../dist', pathinfo:true, plugins})
+  runWebPack('./demo/coffee/todomvc', 'todomvc.js', {mode:'development',path:'../dist', pathinfo:true, plugins})
+  if mode=='production'
+    # webpack.optimize.UglifyJsPlugin has been removed, please use config.optimization.minimize instead.
+    # plugins.push new webpack.optimize.UglifyJsPlugin({minimize: true})
     runWebPack(domcomEntry, '[name].min.js', {mode,path:'../dist', pathinfo:false, libraryTarget:'umd', library:'dc', plugins})
 
 gulp.task 'webpack-dist', () -> webpackDistribute('production')

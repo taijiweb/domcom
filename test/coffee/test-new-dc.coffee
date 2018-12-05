@@ -1,7 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
 
 {normalizeItem, normalizeDomElement} = require 'dc-util'
-{isComponent} = dc
 
 import React, {Component} from 'react'
 import ReactDom from 'react-dom'
@@ -24,7 +23,8 @@ describe "test-new-dc", ->
   describe 'mount simple dc components', ->
     it 'should dc generate a component', ->
       comp = dc()
-      expect(isComponent(comp)).to.be.true
+      debugger
+      expect(comp instanceof dc.Component).to.be.true
 
     it ' dc should check fields', ->
       expect(-> dc {dcid:'should error'}).to.throw dc.DomcomError
@@ -185,9 +185,9 @@ describe "test-new-dc", ->
       view = (data) -> ['div', data.message]
       embedded = dc({data, view})
       comp = dc({view:['div', embedded, embedded]})
-      comp.mount('#demo')
+      expect(-> comp.mount('#demo')).to.throw()
       data.message = "new embedded message"
-      comp.update()
+#      comp.update()
 
     it 'should mount the same proxied embedded component', ->
       data = {show1:true, message1:"I'm embedded 1", message2:"I'm embedded 2"}
@@ -198,9 +198,9 @@ describe "test-new-dc", ->
           ['div', data.message2]
       embedded = dc({data, view, needProxy:true})
       comp = dc({view:['div', embedded, embedded]})
-      comp.mount('#demo')
+      expect(-> comp.mount('#demo')).to.throw()
       data.show1 = false
-      comp.update()
+#      comp.update()
 
     it 'should process rebol style function call in view item', ->
       if_ = (test, then_, else_) ->

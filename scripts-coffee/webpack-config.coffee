@@ -48,10 +48,11 @@ exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
       extensions: ['.js', '.coffee']
       alias:
         "gulp-task-helper": path.resolve(__dirname, '../packages/gulp-task-helper/')
-        "bdd-test-helper": path.resolve(__dirname, '../packages/bdd-test-helper/')
         "dc-util": path.resolve(__dirname, '../src/dc-util/')
 
     plugins: plugins
+    optimization:
+      minimize: options.mode == 'production'
  
   if makingServer
     config.devServer =

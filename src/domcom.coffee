@@ -1,4 +1,4 @@
-import Component from './component/Component'
+import Component from './Component'
 
 ###
 # a utility to do almost everything
@@ -27,13 +27,12 @@ dc.update = ->
 if typeof window != 'undefined'
   window.dc = dc
 
+dc.Component = require('./Component')
 Object.assign(dc,
-  require('./component'),
   require('./dc-error')
   require('dc-util'),
 )
-
-dc.addReactProxy = require './proxy/react-proxy'
+dc.addReactProxy = require './react-proxy'
 
 export default module.exports = dc
 

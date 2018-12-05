@@ -1,9 +1,6 @@
-import Emitter from '../Emitter'
+import Emitter from './Emitter'
 
 {newDcid, isArray, isObject, normalizeDomElement} = require 'dc-util'
-import isComponent from './isComponent'
-import dc from '../domcom'
-d = {}
 ###
   部件基类
   @params config: the config object for the component, it can have the fileds below
@@ -12,16 +9,24 @@ d = {}
     any other fields that do not conflict with component itself
 ###
 export default module.exports = class Component extends Emitter
-  constructor: (config) ->
+  constructor: (config, copying = false) ->
     super()
-    this.dcid = dc.dcid++
+    this.dcid = newDcid()
+    this.base = null
+    this.reactElement = null
+    this.node = null
     illegals = []
-    for own key, value of config
-      if this[key] != undefined
-        illegals.push key
-    if illegals.length
-      dc.error "illegal key in config: #{illegals.join(', ')}, they are used by dc.Component itself!"
+    if !copying
+      for own key, value of config
+        if this[key] != undefined
+          illegals.push key
+      if illegals.length
+        dc.error "illegal key in config: #{illegals.join(', ')}, they are used by dc.Component itself!"
     Object.assign this, config
+    ref = (node) =>
+      this.node = node
+      return
+    this.reactElement = dc.React.createElement(dc.ReactProxy, {component:this, ref})
     return
 
   ### mountNode should not be the node of any Component
@@ -30,8 +35,7 @@ export default module.exports = class Component extends Emitter
     this.emit('mounting')
     this._prepareMount(mountNode)
     dc.mountMap[this.dcid] = this
-    reactElement = dc.React.createElement(dc.ReactProxy, {component:this})
-    dc.ReactDom.render(reactElement, this.parentNode)
+    dc.ReactDom.render(this.reactElement, this.parentNode)
     this.emit('mounted')
     return
 

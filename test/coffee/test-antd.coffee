@@ -1,7 +1,6 @@
 {expect, iit, idescribe, nit, ndescribe} = require 'bdd-test-helper'
 
 {normalizeItem, normalizeDomElement} = require 'dc-util'
-{isComponent} = dc
 
 import React, {Component} from 'react'
 import ReactDom from 'react-dom'
