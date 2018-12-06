@@ -23,6 +23,6 @@ describe "test events", ->
       data.message = "you clicked!"
       dc.update()
     view = (data) -> ['div', {onClick}, data.message]
-    embedded = dc({data, view, needProxy:true})
+    embedded = dc({data, view})
     comp = dc({view:embedded})
     comp.mount('#demo')

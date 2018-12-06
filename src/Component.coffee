@@ -9,25 +9,40 @@ import Emitter from './Emitter'
     any other fields that do not conflict with component itself
 ###
 export default module.exports = class Component extends Emitter
-  constructor: (config, copying = false) ->
+  constructor: (config) ->
     super()
     this.dcid = newDcid()
     this.base = null
     this.reactElement = null
     this.node = null
     illegals = []
-    if !copying
-      for own key, value of config
-        if this[key] != undefined
-          illegals.push key
-      if illegals.length
-        dc.error "illegal key in config: #{illegals.join(', ')}, they are used by dc.Component itself!"
+    for own key, value of config
+      if this[key] != undefined
+        illegals.push key
+    if illegals.length
+      dc.error "illegal key in config: #{illegals.join(', ')}, they are used by dc.Component itself!"
     Object.assign this, config
-    ref = (node) =>
-      this.node = node
-      return
-    this.reactElement = dc.React.createElement(dc.ReactProxy, {component:this, ref})
+    this.reactElement = dc.React.createElement(dc.ReactProxy, {component:this})
     return
+
+  copy: ->
+    comp = new Component({})
+    Object.assign comp, this
+    comp.dcid = newDcid()
+    comp.reactElement = dc.React.createElement(dc.ReactProxy, {component:comp})
+    return comp
+
+  extend: (config) ->
+    comp = new Component({})
+    for own key, value of config
+      if comp[key] != undefined
+        illegals.push key
+    if illegals.length
+      dc.error "illegal key in config: #{illegals.join(', ')}, they are used by dc.Component itself!"
+    Object.assign comp, this, config
+    comp.reactElement = dc.React.createElement(dc.ReactProxy, {component:comp})
+    return comp
+
 
   ### mountNode should not be the node of any Component
   ###

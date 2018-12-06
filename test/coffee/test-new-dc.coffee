@@ -174,33 +174,40 @@ describe "test-new-dc", ->
     it 'should mount  embedded component', ->
       data = {message:"I'm embedded"}
       view = (data) -> ['div', data.message]
-      embedded = dc({data, view, needProxy:true})
+      embedded = dc({data, view})
       comp = dc({view:embedded})
       comp.mount('#demo')
       data.message = "new embedded message"
       comp.update()
 
     it 'should mount the same embedded component', ->
-      data = {message:"I'm embedded"}
+      data = {message:"I am embedded"}
       view = (data) -> ['div', data.message]
       embedded = dc({data, view})
-      comp = dc({view:['div', embedded, embedded]})
-      expect(-> comp.mount('#demo')).to.throw()
+      embedded2 = embedded.copy()
+      comp = dc({view:['div', embedded, embedded2]})
+      comp.mount('#demo')
+      console.log('should mount the same embedded component', comp.node)
+      expect(comp.node.innerHTML).to.equal '<div>I am embedded</div><div>I am embedded</div>'
       data.message = "new embedded message"
-#      comp.update()
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '<div>new embedded message</div><div>new embedded message</div>'
 
     it 'should mount the same proxied embedded component', ->
-      data = {show1:true, message1:"I'm embedded 1", message2:"I'm embedded 2"}
+      data = {show1:true, message1:"I am embedded 1", message2:"I am embedded 2"}
       view = (data) ->
         if data.show1
           ['div', data.message1]
         else
           ['div', data.message2]
-      embedded = dc({data, view, needProxy:true})
-      comp = dc({view:['div', embedded, embedded]})
-      expect(-> comp.mount('#demo')).to.throw()
+      embedded = dc({data, view})
+      comp = dc({view:['div', embedded, embedded.copy()]})
+      comp.mount('#demo')
+      expect(embedded.node.innerHTML).to.equal 'I am embedded 1'
+      expect(comp.node.innerHTML).to.equal '<div>I am embedded 1</div><div>I am embedded 1</div>'
       data.show1 = false
-#      comp.update()
+      comp.update()
+      expect(comp.node.innerHTML).to.equal '<div>I am embedded 2</div><div>I am embedded 2</div>'
 
     it 'should process rebol style function call in view item', ->
       if_ = (test, then_, else_) ->

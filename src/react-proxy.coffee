@@ -24,6 +24,7 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
       this.component.mounted = true
       return
     componentDidMount: ->
+      this.component.node = ReactDom.findDOMNode(this)
       this.component.emit 'mounted'
       return
     componentWillUnmount: ->
