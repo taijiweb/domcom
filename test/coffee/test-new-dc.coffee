@@ -23,7 +23,6 @@ describe "test-new-dc", ->
   describe 'mount simple dc components', ->
     it 'should dc generate a component', ->
       comp = dc()
-      debugger
       expect(comp instanceof dc.Component).to.be.true
 
     it ' dc should check fields', ->
@@ -207,10 +206,8 @@ describe "test-new-dc", ->
       data = {message:"I am embedded"}
       view = (data) -> ['div', data.message]
       embedded = dc({data, view})
-      debugger
       embedded.watch()
       embedded2 = embedded.copy()
-      debugger
       embedded2.watch()
       comp = dc({view:['div', embedded, embedded2]})
       comp.mount('#demo')

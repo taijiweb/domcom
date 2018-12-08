@@ -31,6 +31,7 @@ dc.Component = require('./Component')
 Object.assign(dc,
   require('./dc-error')
   require('dc-util'),
+  require('./dc-directive'),
 )
 dc.addReactProxy = require './react-proxy'
 

@@ -47,6 +47,11 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
       else if dc.React.isValidElement(item)
         return item
       else
+        if directives = item[1]['#']
+          delete item[1]['#']
+          for directive in directives
+            func = directive[0]
+            item = func.call(this.component, item, directive[1...]...)
         [tag, props, children] = item
         children = children.map (child) => this.renderNormalized(child)
         if !children.length
@@ -58,6 +63,7 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
 
     renderItem: (item) =>
       item = normalizeItem(item)
+      debugger
       return this.renderNormalized(item)
 
     render: ->

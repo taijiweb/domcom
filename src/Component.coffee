@@ -110,7 +110,7 @@ export default module.exports = class Component extends Emitter
 
   getData: ->
     if typeof this.data == 'function'
-      return this.data()
+      return this.data.call(this, dc.store)
     else
       return this.data
 
@@ -118,7 +118,7 @@ export default module.exports = class Component extends Emitter
     data = this.getData()
     if this.view
       if typeof this.view == 'function'
-        view = this.view(data)
+        view = this.view.call(this, data)
       else
         view = this.view
       return view
