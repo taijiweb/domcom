@@ -1,5 +1,4 @@
 # todo
-dc-directive 12.8
 test material-ui in domcom 11.25
 self controled component, e.g. dialog.open(), dialog.close() 11.25
 test antd in domcom 11.25
@@ -8,6 +7,7 @@ VueProxy 11.25
 
 ### done
 ####new design
+dc-directive 12.8-12.8
 watch component and it's data 12.8-12.8
 check only one instance of the component in th dom tree.  11.28-12.8
 Component.extend, Component.copy 11.28-12.8

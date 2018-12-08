@@ -20,13 +20,13 @@ describe "test-directive", ->
     return
 
   describe 'model directive', ->
-    iit 'should process model directive', ->
+    it 'should process model directive', ->
       view = ->
         ['div', ['text', {'#':[[dc.model, 'message']]}], ['p', this.message]]
       comp = dc({view, message:'hello'})
       comp.mount('#demo')
 
-    iit 'should process view event without model directive', ->
+    it 'should process view event without model directive', ->
       view = () ->
         onChange = (event) =>
           comp.message = event.target.value

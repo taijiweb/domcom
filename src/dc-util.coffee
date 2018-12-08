@@ -2,89 +2,17 @@ camelCase = require('camelcase')
 
 export default exports = module.exports = {}
 
-dcid = 0
-
-exports.newDcid = ->
-  return dcid++
-
-
-exports.watchField = (data, prop, comp) ->
-  closure = ->
-    value = data[prop]
-    Object.defineProperty data, prop, {
-      get: -> value
-      set:(v) ->
-        value = v
-        comp.update()
-    }
-    return
-  closure()
-  return
-
-exports.watchDataField = (data, prop, comp) ->
-
-  closure = ->
-    value = data[prop]
-    Object.defineProperty data, prop, {
-      get: -> value
-      set:(v) ->
-        if v != value
-          value = v
-          for comp in data.watchingComponents
-            comp.update()
-        return v
-    }
-    return
-  closure()
-  return
-
-exports.normalizeDomElement = (domElement) ->
-  if typeof domElement == 'string'
-    domElement = document.querySelector(domElement)
-  domElement
-
-exports.styleFrom = styleFrom = (items...) ->
-  result = {}
-  for item in items
-    if typeof item == 'string'
-      item = item.trim()
-      if !item
-        continue
-      defs = item.split(/\s*;\s*/)
-      for def in defs
-        if !def
-          continue
-        [key, value] = def.split /\s*:\s*/
-        if !key || !value
-          dc.error 'format error in css rules: empty key'
-        else if !value
-          dc.error 'format error in css rules: empty value'
-        key  = camelCase key
-        result[key] = value
-    else if isMap item
-      Object.assign result, item
-  return result
-
-exports.classname = classname = (items...) ->
-  classMap = {}
-  for item in items
-    if !item
-      continue
-    else if typeof item == 'string'
-      names = item.trim().split(/(?:\s*,\s*)|s+/)
-      for name in names
-        classMap[name] = 1
-    else if isArray item
-      for name in item
-        classMap[name] = 1
-    else if isObject item
-      Object.assign(classMap, item)
-
-  return classMap
-
-exports.isReactClass = isReactClass = (item) ->
-  # investigated on both CreateClass and ES6 extends react.Component
-  item && item.prototype && item.prototype.isReactComponent
+exports.normalizeItem = normalizeItem = (item) ->
+  if typeof item == 'string'
+    return item
+  else if item instanceof dc.Component
+    return item.reactElement
+  else if isArray(item)
+    return normalizeArrayViewItem(item)
+  else if item?
+    return ''+item
+  else
+    return null
 
 normalizeArrayViewItem = (item) ->
   i = 0
@@ -136,20 +64,7 @@ normalizeArrayViewItem = (item) ->
   props = normalizeReactProps(props, typeof tag == 'string')
   return [tag || 'div', props, children]
 
-exports.normalizeItem = normalizeItem = (item) ->
-  if typeof item == 'string'
-    return item
-  else if item instanceof dc.Component
-    return item.reactElement
-  else if isArray(item)
-    return normalizeArrayViewItem(item)
-  else if item?
-    return ''+item
-  else
-    return null
-
-
-exports.normalizeReactProps = normalizeReactProps = (props, camel = true) ->
+normalizeReactProps = (props, camel = true) ->
   for key of props
     value = props[key]
     if camel
@@ -172,7 +87,7 @@ exports.normalizeReactProps = normalizeReactProps = (props, camel = true) ->
       props[key] = value
   props
 
-exports.camelCaseProps = camelCaseProps = (props) ->
+camelCaseProps = (props) ->
   result = {}
   for key of props
     value = props[key]
@@ -186,7 +101,7 @@ for type in 'text checkbox radio date email tel number password'.split(' ')
   inputTypes[type] = 1
 
 # tag.class#id##css
-exports.parseTagString = parseTagString = (str) ->
+parseTagString = (str) ->
   str = str.trim()
   list = str.split('##')
   if list.length == 2
@@ -208,6 +123,83 @@ exports.parseTagString = parseTagString = (str) ->
     tag = 'input'
   [tag || 'div', classes, id, css, inputType]
 
+styleFrom = (items...) ->
+  result = {}
+  for item in items
+    if typeof item == 'string'
+      item = item.trim()
+      if !item
+        continue
+      defs = item.split(/\s*;\s*/)
+      for def in defs
+        if !def
+          continue
+        [key, value] = def.split /\s*:\s*/
+        if !key || !value
+          dc.error 'format error in css rules: empty key'
+        else if !value
+          dc.error 'format error in css rules: empty value'
+        key  = camelCase key
+        result[key] = value
+    else if isMap item
+      Object.assign result, item
+  return result
+
+classname = (items...) ->
+  classMap = {}
+  for item in items
+    if !item
+      continue
+    else if typeof item == 'string'
+      names = item.trim().split(/(?:\s*,\s*)|s+/)
+      for name in names
+        classMap[name] = 1
+    else if isArray item
+      for name in item
+        classMap[name] = 1
+    else if isObject item
+      Object.assign(classMap, item)
+
+  return classMap
+
+isReactClass = (item) ->
+  # investigated on both CreateClass and ES6 extends react.Component
+  item && item.prototype && item.prototype.isReactComponent
+
+
+exports.watchField = (data, prop, comp) ->
+  closure = ->
+    value = data[prop]
+    Object.defineProperty data, prop, {
+      get: -> value
+      set:(v) ->
+        value = v
+        comp.update()
+    }
+    return
+  closure()
+  return
+
+exports.watchDataField = (data, prop, comp) ->
+  do ->
+    value = data[prop]
+    Object.defineProperty data, prop, {
+      get: -> value
+      set:(v) ->
+        if v != value
+          value = v
+          for comp in data.watchingComponents
+            comp.update()
+        return v
+    }
+    return
+  return
+
+exports.normalizeDomElement = (domElement) ->
+  if typeof domElement == 'string'
+    domElement = document.querySelector(domElement)
+  domElement
+
 exports.isArray = isArray =
 isArray = (item) ->
   Object::toString.call(item) == '[object Array]'
@@ -217,3 +209,7 @@ exports.isObject = isObject = (item) ->
 
 exports.isMap = isMap = (item) ->
   typeof item == 'object' and item != null && item.constructor == Object
+
+dcid = 0
+exports.newDcid = ->
+  return dcid++
