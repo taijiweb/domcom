@@ -7,6 +7,37 @@ dcid = 0
 exports.newDcid = ->
   return dcid++
 
+
+exports.watchField = (data, prop, comp) ->
+  closure = ->
+    value = data[prop]
+    Object.defineProperty data, prop, {
+      get: -> value
+      set:(v) ->
+        value = v
+        comp.update()
+    }
+    return
+  closure()
+  return
+
+exports.watchDataField = (data, prop, comp) ->
+
+  closure = ->
+    value = data[prop]
+    Object.defineProperty data, prop, {
+      get: -> value
+      set:(v) ->
+        if v != value
+          value = v
+          for comp in data.watchingComponents
+            comp.update()
+        return v
+    }
+    return
+  closure()
+  return
+
 exports.normalizeDomElement = (domElement) ->
   if typeof domElement == 'string'
     domElement = document.querySelector(domElement)
@@ -109,7 +140,7 @@ exports.normalizeItem = normalizeItem = (item) ->
   if typeof item == 'string'
     return item
   else if item instanceof dc.Component
-    return item.makeProxyViewItem()
+    return item.reactElement
   else if isArray(item)
     return normalizeArrayViewItem(item)
   else if item?

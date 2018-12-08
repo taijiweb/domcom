@@ -23,17 +23,20 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
       this.component.emit 'mounting'
       this.component.mounted = true
       return
+
     componentDidMount: ->
       this.component.node = ReactDom.findDOMNode(this)
       this.component.emit 'mounted'
+
       return
+
     componentWillUnmount: ->
       this.component.emit 'unmounting'
       this.component.mounted = false
+      this.component.node = null
       return
 
     componentDidCatch: (error) ->
-      debugger
       dc.error(error)
 
     renderNormalized: (item) =>

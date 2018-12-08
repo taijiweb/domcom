@@ -171,29 +171,55 @@ describe "test-new-dc", ->
       expect(node.innerHTML).to.equal '<input class="btn" id="button1" type="password" style="width: 200px; color: red;">'
 
   describe 'mount embedded dc components', ->
-    it 'should mount  embedded component', ->
-      data = {message:"I'm embedded"}
+    it 'should mount  embedded component and auto watch it', ->
+      data = {message:"I am embedded"}
       view = (data) -> ['div', data.message]
       embedded = dc({data, view})
       comp = dc({view:embedded})
       comp.mount('#demo')
+      expect(comp.node.innerHTML).to.equal 'I am embedded'
       data.message = "new embedded message"
       comp.update()
+      expect(comp.node.innerHTML).to.equal "new embedded message"
 
-    it 'should mount the same embedded component', ->
+    it 'embedded component will not auto update if stop watching it', ->
       data = {message:"I am embedded"}
       view = (data) -> ['div', data.message]
       embedded = dc({data, view})
+      embedded.stopWatch()
+      comp = dc({view:embedded})
+      comp.mount('#demo')
+      expect(comp.node.innerHTML).to.equal 'I am embedded'
+      data.message = "new embedded message"
+      comp.update()
+      expect(comp.node.innerHTML).to.equal "I am embedded"
+
+    it 'should NOT mount the same one component in different places', ->
+      data = {message:"I am embedded"}
+      view = (data) -> ['div', data.message]
+      embedded = dc({data, view})
+      comp = dc({view:['div', embedded, embedded]})
+      window.onerror = (error) ->
+        throw error
+      expect(-> comp.mount('#demo')).to.throw()
+
+    it 'should mount the embedded component copy', ->
+      data = {message:"I am embedded"}
+      view = (data) -> ['div', data.message]
+      embedded = dc({data, view})
+      debugger
+      embedded.watch()
       embedded2 = embedded.copy()
+      debugger
+      embedded2.watch()
       comp = dc({view:['div', embedded, embedded2]})
       comp.mount('#demo')
       console.log('should mount the same embedded component', comp.node)
       expect(comp.node.innerHTML).to.equal '<div>I am embedded</div><div>I am embedded</div>'
       data.message = "new embedded message"
-      comp.update()
       expect(comp.node.innerHTML).to.equal '<div>new embedded message</div><div>new embedded message</div>'
 
-    it 'should mount the same proxied embedded component', ->
+    it 'should mount the embedded component copy 2', ->
       data = {show1:true, message1:"I am embedded 1", message2:"I am embedded 2"}
       view = (data) ->
         if data.show1
@@ -201,12 +227,13 @@ describe "test-new-dc", ->
         else
           ['div', data.message2]
       embedded = dc({data, view})
-      comp = dc({view:['div', embedded, embedded.copy()]})
+      embedded.watch()
+      embedded2 = embedded.copy().watch()
+      comp = dc({view:['div', embedded, embedded2]})
       comp.mount('#demo')
       expect(embedded.node.innerHTML).to.equal 'I am embedded 1'
       expect(comp.node.innerHTML).to.equal '<div>I am embedded 1</div><div>I am embedded 1</div>'
       data.show1 = false
-      comp.update()
       expect(comp.node.innerHTML).to.equal '<div>I am embedded 2</div><div>I am embedded 2</div>'
 
     it 'should process rebol style function call in view item', ->
