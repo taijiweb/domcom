@@ -1,25 +1,16 @@
-{list,
-text, div, p, see, flow} = dc
+export default  module.exports = ->
+  view = (data) ->
+    if this.display
+      display = 'block'
+    else
+      display = 'none'
+    onClick = () =>
+      this.display = !this.display
 
-toggle = flow.toggle
-
-export default  ->
-  x = see true
-  comp = list(
-    div({ onclick: ->
-        toggle(x)
-        comp.render()
-      }, 'show/hide by changing style.display'
-    ),
-    p({
-      class:{},
-      style:{ display: ->
-        if x()
-          'block'
-        else
-          'none'
-      }
-    }, 'asdfdfs')
-  )
-  #comp.mount()
+    ['div',
+      ['div', { onClick}, 'click to show or hide by changing style.display'],
+      ['p', { style:{display}}, 'this is the controlled content']
+    ]
+  comp = dc({view, display:true})
+  return comp
 

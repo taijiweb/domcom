@@ -1,7 +1,7 @@
-demoSum = () ->
+export default module.exports = () ->
 
   data = { a: 1, b: 2 }
-  view = data ->
+  view = (data) ->
     props1 =
       value: data.a,
       onChange:(event) ->
@@ -11,7 +11,7 @@ demoSum = () ->
     props2 =
       value: data.b,
       onChange: (event) ->
-        data.a = event.target.value*1
+        data.b = event.target.value*1
         comp.update()
 
     return ['div',
@@ -21,6 +21,3 @@ demoSum = () ->
           ]
 
   comp = dc({data, view})
-  comp.mount('#demo')
-
-demoSum()

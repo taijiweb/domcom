@@ -1,10 +1,7 @@
 # domcom demo
-{select, see, if_, case_, list, func, each, div, p} = dc
-
-dc.directive $options: dc.$options,  $model: dc.$model
 
 {eachDemo1, eachDemo2, eachDemo3, eachDemo4} = require './demo-each'
-chooseFramework from'./demo-choose-web-framework'
+import chooseFramework from './demo-choose-web-framework'
 
 {demoEachPush, demoIfEach, demoModelOnMultipleInput} = require './demo-debug'
 
@@ -35,10 +32,12 @@ exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem) ->
       componentsMap[key] = comp()
     else
       componentsMap[key] = comp
-  comp = list(demoSelect = select($options: [Object.keys(demoMap)], $model:currentItem),
-    div case_(currentItem, componentsMap, else_=componentsMap[initItem])
-  )
-  comp.renderWhen(demoSelect, 'change')
+  view = (data) ->
+    ['div',
+       demoSelect = ['select', {'#':[[dc.options, Object.keys(demoMap)], [dc.model, currentItem]]}],
+       ['div', [case_, currentItem, componentsMap, componentsMap[initItem]]]]
+
+  comp = dc({view})
 
 exports.runDemo = (demoMap, initItem, element) ->
   comp = makeDemoComponent(demoMap, initItem)

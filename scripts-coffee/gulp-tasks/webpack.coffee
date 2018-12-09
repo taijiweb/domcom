@@ -47,5 +47,5 @@ gulp.task 'wpserver', ->
   ]
   makeWebpackDevServer(["webpack/hot/dev-server", './src/domcom'], 'domcom.js', {port:8083, inline:true, plugins:webServerPlugins})
   makeWebpackDevServer(["webpack/hot/dev-server", './test/coffee/index'], 'test.js', {port:8088, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './demo/coffee/index'], 'demo.js', {port:8089, plugins:webServerPlugins})
+  makeWebpackDevServer(["webpack/hot/dev-server", './demo/coffee/index'], 'demo.js', {port:8084, plugins:webServerPlugins})
   makeWebpackDevServer(["webpack/hot/dev-server", './demo/coffee/todomvc'], 'todomvc.js', {port:8090, plugins:webServerPlugins})

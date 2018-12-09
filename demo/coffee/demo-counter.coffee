@@ -1,14 +1,31 @@
-{txt, p, see} = dc
+export default  module.exports = ->
+  timer = null
 
-export default  ->
-  counter$ = see(counter = 0)
-  p(txt(counter$))
-    .on 'willAttach', ->
-      count = ->
-        counter$(counter++)
-        if counter==1001
-          clearInterval countHandle
+  view = ->
+    comp = this
+    start = =>
+      startCounter()
+      return
+    stop = =>
+      stopCounter()
+    reset = =>
+      stopCounter()
+      comp.count = 0
 
-      countHandle = setInterval count, 1
+    ['div', {onClick: -> clearInterval countHandle},
+      ['p', this.count],
+      ['p', {onClick: stop}, 'stop'],
+      ['p', {onClick: reset}, 'reset'],
+      ['p', {onClick: start}, 'start']
+    ]
+  comp = dc({view, count:0})
+  startCounter = ->
+    timer = setInterval (-> comp.count++), 1
+    return
 
-    .renderWhen(setInterval, 16, {clear: -> counter >= 1000})
+  startCounter()
+
+  stopCounter = ->
+    clearInterval timer
+
+  return comp

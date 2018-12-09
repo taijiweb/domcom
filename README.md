@@ -51,7 +51,7 @@ In javascript:
                 props2 = {
                     value: data.b,
                     onChange(event) {
-                        data.a = event.target.value*1
+                        data.b = event.target.value*1
                         comp.update();
                     };
                 };

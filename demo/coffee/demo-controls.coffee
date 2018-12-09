@@ -1,12 +1,3 @@
-{list,
-a, checkbox, text, p
-bindings} = dc
-
-
-export default  ->
-  {a$} = bindings({a: 1})
-  checkboxes = list(cbx1=checkbox(a$), cbx2=checkbox(a$))
-  texts = list((text1=text(a$)), (text2=text(a$)))
-  a$(6)
-  list(checkboxes, texts)
-    .renderWhen([cbx1, cbx2, text1, text2], 'change')
+export default module.exports = ->
+  view = ['div', ['checkbox','a'], ['text', 'a'],['checkbox', 'b'], ['text', 'b']]
+  return dc({view, a:true, b:true})

@@ -1,5 +1,7 @@
 {normalizeItem} = require 'dc-util'
 
+
+key = 0
 ###
 addReactProxy should be attached to dc and called like below:
   dc.addReactProxy(React, ReactDom, ReactComponent)
@@ -21,12 +23,12 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
       if this.component.mounted
         dc.error 'component should be mounted under only one place'
       this.component.emit 'mounting'
-      this.component.mounted = true
       return
 
     componentDidMount: ->
       this.component.node = ReactDom.findDOMNode(this)
       this.component.emit 'mounted'
+      this.component.mounted = true
 
       return
 
@@ -49,10 +51,25 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
       else
         if directives = item[1]['#']
           delete item[1]['#']
-          for directive in directives
-            func = directive[0]
-            item = func.call(this.component, item, directive[1...]...)
+          i = 0
+          while i < directives.length
+            func = directives[i]
+            options = directives[i+1]
+            item = func.call(this.component, item, options)
+            i += 2
         [tag, props, children] = item
+        if tag == 'input'
+          if children.length > 1
+            dc.error 'input element should not have multiple children'
+          else if children.length == 1
+            if typeof children[0] != 'string'
+              dc.error 'the child of input is used as model field, it should be a string'
+            item = dc.model.call(this.component, item, children[0])
+            props = item[1]
+            children = []
+
+        if !props.key
+          props.key = key++
         children = children.map (child) => this.renderNormalized(child)
         if !children.length
           children = null
@@ -63,7 +80,6 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
 
     renderItem: (item) =>
       item = normalizeItem(item)
-      debugger
       return this.renderNormalized(item)
 
     render: ->

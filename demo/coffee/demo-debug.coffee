@@ -1,34 +1,28 @@
-{see, if_, list, each, div, p, text, duplex} = dc
-
-#export default
 exports = {}
 
 exports.demoEachPush = ->
-  lst = [1, 2]
-  comp = list each(lst, (item) -> p item), 'some other thing'
+  list = [1, 2]
+  view = ['div', ['div', this.list.map((item) => ['p', item])], 'some other thing']
+  comp = dc({view, list})
   comp.mount()
   lst.push 3
-  comp.render()
+  comp.update()
 
 exports.demoIfEach = ->
-  showingEach$ = see true
-  lst4 = [1, 2]
-  comp = if_ showingEach$, each(lst4, (item) -> div item)
+  view = ->
+    if this.showing
+      this.list.map (item) -> ['div', {}, item]
+    else
+      null
+  comp = {view, list:[1, 2]}
   comp.mount()
-  showingEach$ false
-  comp.render()
-  dc.clean()
-  showingEach$ true
-  comp.render()
-  dc.clean()
+  comp.showing = false
+  comp.showing = true
+  comp
 
 exports.demoModelOnMultipleInput =  ->
-  a = {}
-  #a_x$ = duplex(a, 'x')
-  text1 = text($model:duplex(a, 'x'))
-  text2 = text($model:duplex(a, 'x'))
-  list(text1, text2)
-    .renderWhen([text1, text2], 'change')
-    .mount()
+  view = ->
+    ['div', ['text', {'#':[[dc.model,'x']]}], ['text', {'#':[[dc.model,'x']]}]]
+  comp = dc({view, x:'input some text'})
 
 export default exports

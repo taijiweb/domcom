@@ -88,7 +88,6 @@ export default module.exports = class Component extends Emitter
     return comp
 
   mount: (mountNode) ->
-    this.emit('mounting')
     this._prepareMount(mountNode)
     dc.mountMap[this.dcid] = this
     dc.ReactDom.render(this.reactElement, this.parentNode)

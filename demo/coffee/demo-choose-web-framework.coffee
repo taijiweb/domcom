@@ -32,7 +32,7 @@
     items,
     div "You perfer ", choice, "."
 
-export default  ->
+export default  module.exports = ->
   firstLetter$ = see 'd',  (x) -> x.toLowerCase()
   comp = null
   prompt = label 'Please choose: '

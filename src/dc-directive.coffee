@@ -1,13 +1,22 @@
 export default exports = module.exports = {}
 
-exports.model = (item, field, event='onChange') ->
+
+modelProps = {
+  'checkbox': 'checked'
+}
+exports.model = (item, options) ->
   [tag, props, children] = item
   comp = this
+  if typeof options == 'string'
+    field = options
+  else if options
+    field = options.field
+    event = options.event || 'onChange'
+    prop = options.prop
   props = Object.assign {}, props
-  props.value = comp[field]
+  prop = prop || modelProps[props.type] || 'value'
+  props[prop] = comp[field]
   console.log 'model:', comp[field]
-  props[event] = (event) =>
-    console.log('onChange', comp[field], event.target.value)
-    comp[field] = event.target.value
-    debugger
+  props[event || 'onChange'] = (event) =>
+    comp[field] = event.target[prop]
   return [tag, props, children]
