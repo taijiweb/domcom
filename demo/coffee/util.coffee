@@ -1,6 +1,6 @@
 # domcom demo
 
-{eachDemo1, eachDemo2, eachDemo3, eachDemo4} = require './demo-each'
+eachDemo = require './demo-each'
 import chooseFramework from './demo-choose-web-framework'
 
 {demoEachPush, demoIfEach, demoModelOnMultipleInput} = require './demo-debug'
@@ -9,20 +9,15 @@ import chooseFramework from './demo-choose-web-framework'
 exports = {}
 
 exports.demoMap =
-  'choose web framework':chooseFramework
-  "show hide":  require('./demo-show-hide')
+  'choose web framework':chooseFramework,
+  "show hide":  require('./demo-show-hide'),
   counter:  require('./demo-counter')
-  event:  require('./demo-event')
-  controls:  require('./demo-controls')
-  if:  require('./demo-if-component')
-  each1:  eachDemo1
-  each2:  eachDemo2
-  each3:  eachDemo3
-  each4:  eachDemo4
-  'switch 1 2 3 4':  require('./demo-switch-1-2-3-4')
-  sum:  require('./demo-sum')
+  event:  require('./demo-event'),
+  controls:  require('./demo-controls'),
+  'function lead item':  require('./demo-function-lead-item'),
+  eachDemo,
+  sum:  require('./demo-sum'),
   'text model':  require('./demo-text-model')
-  'mount/unmount':  require('./demo-mount-unmount')
 
 exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem) ->
   currentItem = see initItem

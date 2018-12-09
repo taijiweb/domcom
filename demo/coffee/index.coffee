@@ -3,7 +3,7 @@ dc.addReactProxy window.React, window.ReactDOM, window.React.Component
 #{runDemo, demoMap} = require './util'
 
 window.onload = ->
-  demo = require('./demo-text-model')
+  demo = require('./demo-each')
   comp = demo()
   comp.mount('#demo')
 #  comp = demoMap["show hide"]()
