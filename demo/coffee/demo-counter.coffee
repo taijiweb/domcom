@@ -12,15 +12,15 @@ export default  module.exports = ->
       stopCounter()
       comp.count = 0
 
-    ['div', {onClick: -> clearInterval countHandle},
+    ['div',
       ['p', this.count],
-      ['p', {onClick: stop}, 'stop'],
-      ['p', {onClick: reset}, 'reset'],
-      ['p', {onClick: start}, 'start']
+      ['p', {onClick: stop, keepid:1}, 'stop'],
+      ['p', {onClick: reset, keepid:2}, 'reset'],
+      ['p', {onClick: start, keepid:3}, 'start']
     ]
   comp = dc({view, count:0})
   startCounter = ->
-    timer = setInterval (-> comp.count++), 1
+    timer = setInterval (-> comp.count++), 300
     return
 
   startCounter()

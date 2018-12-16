@@ -1,3 +1,4 @@
+import Emitter from './Emitter'
 import Component from './Component'
 
 ###
@@ -15,9 +16,22 @@ dc = (config) ->
   comp = new Component(config)
   return comp
 
+dc.on = Emitter::on
+dc.off = Emitter::off
+dc.emit = Emitter::emit
+
+dc.focusNodeMap = {}
+
+dc.on 'updated', ->
+  console.log('dc.focusid: ', dc.focusid, dc.focusNode)
+  if dc.focusNode
+    dc.focusNode.focus()
+  return
+
 dc.dcid = 0
 
 dc.mountMap = {}
+dc.keepReactElementMap = {}
 
 dc.update = ->
   for key, comp of dc.mountMap
@@ -31,8 +45,9 @@ dc.Component = require('./Component')
 Object.assign(dc,
   require('./dc-error')
   require('dc-util'),
-  require('./dc-directive'),
 )
+dc.directives = {}
+Object.assign dc.directives, require('./dc-directive')
 dc.addReactProxy = require './react-proxy'
 
 export default module.exports = dc

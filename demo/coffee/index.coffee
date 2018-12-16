@@ -1,11 +1,12 @@
 dc.addReactProxy window.React, window.ReactDOM, window.React.Component
 
-#{runDemo, demoMap} = require './util'
+{runDemo, demoMap} = require './util'
 
 window.onload = ->
-  demo = require('./demo-each')
-  comp = demo()
-  comp.mount('#demo')
+#  demo = require('./demo-text-model')
+#  comp = demo()
+#  comp.mount('#demo')
+#  return
 #  comp = demoMap["show hide"]()
 #  comp = demoMap["counter"]()
 #  comp = demoMap["dialog"]()
@@ -29,4 +30,4 @@ window.onload = ->
 #  demoIfEach()
 #  demoModelOnMultipleInput()
 
-#  runDemo(demoMap, 'choose web framework')
+  runDemo(demoMap, 'choose web framework', '#demo')

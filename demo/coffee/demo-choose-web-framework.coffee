@@ -1,68 +1,26 @@
-`let dc = global.dc`
-{flow, see, case_, each, every, func, list, div, label, text} = global.dc
-
-->
-  firstLetter$ = see 'd',  (x) -> x.toLowerCase()
-  comp = null
-  prompt = label 'Please choose: '
-  prefered = text(
-    {
-      onchange: ->
-        comp.render()
-        dc.clean()
-    },
-    firstLetter$
-  )
-
-  frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember']
-#  items =  for item in frameworks then div "#{item[0]}. #{item}"  # (1)
-#  items = list items
-
-#  items = each frameworks, (item) -> div "#{item[0]}. #{item}" # (2)
-
-  items = every frameworks, (item) -> div "#{item[0]}. #{item}"  #(3)
-
-  caseMap = {}
-  for item in frameworks
-    caseMap[item[0]] = item
-  choice =  case_ firstLetter$, caseMap, 'some other things'
-
-  comp = list \
-    prompt, prefered,
-    items,
-    div "You perfer ", choice, "."
-
 export default  module.exports = ->
-  firstLetter$ = see 'd',  (x) -> x.toLowerCase()
-  comp = null
-  prompt = label 'Please choose: '
-  prefered = text {onchange: -> comp.render()}, firstLetter$
+  onBlur = (event) ->
+    comp.otherFramework = event.target.value
+    comp.update()
+    comp.textNode.focus();
+    console.log('comp.textNode: ', comp.textNode);
+    return
 
   frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember']
-  items = each frameworks, (item) -> div "#{item[0]}. #{item}"
+  view = ->
+    currentFrameWorks = frameworks.concat([comp.otherFramework || 'other'])
+    frameworkLiItems = currentFrameWorks.map((item) ->
+      onClick = ->
+        comp.choice = item
+      ['li', {onClick}, "#{item}"])
+    ['div',
+     ['label', 'Please choose: '],
+     ['ol', {}, frameworkLiItems...],
+     ['div', "You perfer ", comp.choice, "."]
+     ['label', 'add some others: '],
+     ['text', {onBlur, value:comp.otherFramework, key:'other-framework', ref:((el) -> comp.textNode = el), keepid:1}]
+    ]
 
-  prompt2 = label 'add some others: '
-  added = text(
-    {
-      onchange: (event, node) ->
-        newFramework = node.value
-        frameworks.push newFramework
-        firstLetter$ newFramework[0]
-        comp.render()
-        dc.clean()
-    }
-  )
+  comp = dc({view, choice:'Domcom'})
 
-  choice = func flow firstLetter$, ->
-    firstLetter = firstLetter$()
-    for item in frameworks
-      if item[0].toLowerCase()==firstLetter
-        return item
-    'some other things'
-
-  comp = list \
-    prompt, prefered,
-    prompt2, added,
-    items,
-    div "You perfer ", choice, "."
 
