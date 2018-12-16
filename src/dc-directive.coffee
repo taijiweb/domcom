@@ -17,7 +17,6 @@ exports.$model = (item, options) ->
   props = Object.assign {}, props
   prop = prop || modelProps[props.type] || 'value'
   props[prop] = comp[field]
-  console.log 'model:', comp[field]
   props[event || 'onChange'] = (event) =>
     comp[field] = event.target[prop]
   return [tag, props, children]
@@ -34,7 +33,6 @@ exports.$output = (item, options) ->
     event = options.event || 'onChange'
     prop = options.prop
   props = Object.assign {}, props
-  console.log 'model:', comp[field]
   props[event || 'onChange'] = (event) =>
     comp[field] = event.target[prop]
   return [tag, props, children]

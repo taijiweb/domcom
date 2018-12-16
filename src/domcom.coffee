@@ -23,7 +23,6 @@ dc.emit = Emitter::emit
 dc.focusNodeMap = {}
 
 dc.on 'updated', ->
-  console.log('dc.focusid: ', dc.focusid, dc.focusNode)
   if dc.focusNode
     dc.focusNode.focus()
   return

@@ -211,7 +211,6 @@ describe "test-new-dc", ->
       embedded2.watch()
       comp = dc({view:['div', embedded, embedded2]})
       comp.mount('#demo')
-      console.log('should mount the same embedded component', comp.node)
       expect(comp.node.innerHTML).to.equal '<div>I am embedded</div><div>I am embedded</div>'
       data.message = "new embedded message"
       expect(comp.node.innerHTML).to.equal '<div>new embedded message</div><div>new embedded message</div>'

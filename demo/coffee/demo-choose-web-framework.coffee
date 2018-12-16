@@ -2,8 +2,7 @@ export default  module.exports = ->
   onBlur = (event) ->
     comp.otherFramework = event.target.value
     comp.update()
-    comp.textNode.focus();
-    console.log('comp.textNode: ', comp.textNode);
+    comp.textNode.focus()
     return
 
   frameworks = ['Domcom', 'jQuery', 'Angular', 'React', 'Backbone', 'Ember']

@@ -47,7 +47,6 @@ toggleCompleted = (todo) ->
   app.update()
 
 markAll = ->
-  console.log('markAll')
   if allChecked() then completed = false
   else completed = true
 
@@ -73,7 +72,7 @@ removeTodo = (todo) ->
   app.update()
 
 revertEdits = (todo) ->
-  todos[todos.indexOf(todo)] = originalTodo
+  todos[todos.indexOf(todo)] = editingTodo = originalTodo
   app.update()
 
 clearCompletedTodos = ->
@@ -93,60 +92,88 @@ clearCompletedTodos = ->
 #######################################################################################################################
 # view
 
-onBlur = (event) ->
-  node = event.target
-  value = node.value
-  editingTodo.title = value
-  if !value
-    return
-  else
-    todos.push(editingTodo)
-    editingTodo = {title:'', completed:false}
-    save todos
-    app.update()
-    return
+
 todoHeader = ->
+  onKeyUp = (event) ->
+    console.log('onBlur todos: ', todos)
+    keyCode = event.keyCode || event.which
+    if keyCode==27
+      editingTodo = {title: '', completed:false}
+    else if keyCode == 13
+      editingTodo.title = value = event.target.value
+      if !value
+        return
+      else
+        todos.push(editingTodo)
+        editingTodo = {title:'', completed:false}
+        save todos
+    app.update()
+  onBlur = (event) ->
+    console.log('onBlur todos: ', todos)
+    debugger
+    node = event.target
+    value = node.value
+    editingTodo.title = value
+    if !value
+      return
+    else
+      todos.push(editingTodo)
+      editingTodo = {title:'', completed:false}
+      save todos
+      app.update()
+      return
   onChange = (event) ->
     node = event.target
     value = node.value
-    console.log('edit todo title:', node, node.value);
     editingTodo.title = value
     app.update()
     return
 
   ['header#header',{key:1}
     ['h1', "todos"]
-    ['form#todo-form',
-     ['text#new-todo', {value:editingTodo.title, onChange, onBlur, key:2}]
-    ]
+    ['text#new-todo', {value:editingTodo.title, onChange, onBlur, onKeyUp, key:2, focusid:1}]
+
   ]
 
 
 todoEditArea = ->
   todos = getTodos()
-#  console.log('todos: ', todos)
 
   todoItems =  todos.map (todo, index) ->
-    onChange = ((event) -> todo.title = event.target.value)
+    onChange = (event) ->
+      todo.title = event.target.value
+      app.update()
     onBlur = (event) ->
       todo.title = event.target.value
-      save(todos); editingTodo = {}
+      save(todos)
+      editingTodo = {}
       app.update();
     onFocus = ->
       todo = editingTodo
-    onKeyUp = onEscapeFn(-> revertEdits(todo))
+    onKeyUp = (event) ->
+      keyCode = event.keyCode || event.which
+      if keyCode==27
+        todos[todos.indexOf(todo)] = editingTodo = originalTodo
+      else if keyCode == 13
+        save(todos)
+        editingTodo = {title:'', completed:false}
+      app.update()
     onToggle = ->
-      console.log('checkbox.toggle onChange')
-      debugger
       toggleCompleted(todo)
-      return
-    ['li', {className: { completed: todo.completed, editing: todo==editingTodo, key:5}},
+    if_ = (x, y, z) ->
+      if x
+        y
+      else
+        z
+    ['li', {className: { completed: todo.completed, editing: todo==editingTodo, key:5},onDoubleClick:( -> editTodo(todo) )},
       ['div#view',
-        ['checkbox.toggle', {checked: todo.completed, onChange:onToggle, key:7+index}],
-        ['label', {onDoubleClick:( -> editTodo(todo) )}, todo.title],
-        ['button.destroy', {onClick:(-> removeTodo(todo))}]]
-      ['form', {onClick: -> save todos },
-        ['text.edit', { trim:'false', value:todo.title, onBlur, onChange, onFocus, onKeyUp}]]]
+        ['checkbox.toggle', {checked: todo.completed, onChange:onToggle, key:1000+index}],
+        [if_, todo!=editingTodo,
+         ['label', todo.title],
+         ['text.edit', { trim:'false', value:todo.title, onBlur, onChange, onFocus, onKeyUp, focusid:100+index}]]
+        ['button.destroy##float:right', {onClick:(-> removeTodo(todo))}, 'x']]]
+
+
 
   ['section#main',
     ['checkbox.toggle#toggle-all', { key:6, checked: !!allChecked(), onChange: markAll, onClick: -> 'click toggle all'}]
@@ -162,7 +189,7 @@ todoEditArea = ->
     ['button#clear-completed', {onClick: clearCompletedTodos, $show: !!completedCount()},
       "Clear completed: "+completedCount()]]
 
-todoFooter = ['footer#info', {key:2},
+todoFooter = ['footer#info', {key:100},
   ['p', "Double-click to edit a todo"]
   ['p', 'Created by ',
     ['a', {href:"http://github.com/taijiweb/domcom"},
