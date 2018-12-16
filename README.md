@@ -30,7 +30,7 @@
 * render to dom by react( maybe  add other proxy, e.g. Vue, in the future)
 
 ## Samples
-There is [some  samples](https://github.com/taijiweb/domcom/tree/master/demo), and a [todoMVC implementation](https://github.com/taijiweb/domcom/tree/master/demo/js/todomvc.js).
+There is [some  samples](https://github.com/taijiweb/domcom/tree/master/demo), and a [todoMVC implementation](https://github.com/taijiweb/domcom/tree/master/demo/coffee/todomvc.coffee).
 
 The code below give a taste of domcom:
 

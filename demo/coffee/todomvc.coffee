@@ -170,10 +170,10 @@ todoEditArea = ->
 
 
   ['section#main',
-    ['checkbox.toggle#toggle-all', { key:6, checked: !!allChecked(), onChange: markAll, onClick: -> 'click toggle all'}]
-    ['label', {htmlFor: "toggle-all"},  "Mark all as complete"]
+    ['checkbox.toggle#toggle-all', { key:6, checked: !!allChecked(), onChange: markAll}]
+    ['label##display:inline-block;', {htmlFor: "toggle-all"},  "Mark all as complete"]
     ["ul#todo-list", todoItems...],
-    ["footer#footer", {$show:todos.length},
+    ["footer#footer", {$show:!!todos.length},
       ["span#todo-count", ['strong',remainingCount()],   pluralize(remainingCount(), ' item'),  ' left'],
       ["ul#filters",
         ['li', ['a', {className: {selected: viewStatusHash != 'active' && viewStatusHash != 'completed'}, href: "#/all"}, "All"]]

@@ -304,14 +304,11 @@ todoEditArea = function() {
       {
         key: 6,
         checked: !!allChecked(),
-        onChange: markAll,
-        onClick: function() {
-          return 'click toggle all';
-        }
+        onChange: markAll
       }
     ],
     [
-      'label',
+      'label##display:inline-block;',
       {
         htmlFor: "toggle-all"
       },
@@ -322,7 +319,7 @@ todoEditArea = function() {
     [
       "footer#footer",
       {
-        $show: todos.length
+        $show: !!todos.length
       },
       ["span#todo-count",
       ['strong',
