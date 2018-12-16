@@ -1,4 +1,4 @@
-var allChecked, app, clearCompletedTodos, completedCount, editTodo, editingTodo, markAll, onEscapeFn, originalTodo, pluralize, remainingCount, removeTodo, revertEdits, reverted, saving, todoEditArea, todoFooter, todoHeader, toggleCompleted, view, viewStatusHash;
+var allChecked, app, clearCompletedTodos, completedCount, editTodo, editingTodo, markAll, originalTodo, pluralize, remainingCount, removeTodo, reverted, saving, todoEditArea, todoFooter, todoHeader, toggleCompleted, view, viewStatusHash;
 
 dc.addReactProxy(window.React, window.ReactDOM, window.React.Component);
 
@@ -62,14 +62,6 @@ allChecked = function() {
   return !remainingCount();
 };
 
-onEscapeFn = function(fn) {
-  return function(event) {
-    if (event.keyCode === 27 || event.which === 27) {
-      return fn();
-    }
-  };
-};
-
 pluralize = function(test, item) {
   if (test > 1) {
     return item + 's';
@@ -116,11 +108,6 @@ removeTodo = function(todo) {
   index = todos.indexOf(todo);
   todos.splice(index, 1);
   save(todos);
-  return app.update();
-};
-
-revertEdits = function(todo) {
-  todos[todos.indexOf(todo)] = editingTodo = originalTodo;
   return app.update();
 };
 

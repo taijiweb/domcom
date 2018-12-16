@@ -33,8 +33,6 @@ remainingCount = -> todos.filter((todo) -> !todo.completed).length
 completedCount = -> todos.length - remainingCount()
 allChecked = -> !remainingCount()
 
-onEscapeFn = (fn) -> (event) -> if event.keyCode==27 || event.which==27  then fn()
-
 pluralize = (test, item) ->
   if test>1
     item+'s'
@@ -69,10 +67,6 @@ removeTodo = (todo) ->
   index = todos.indexOf todo
   todos.splice index, 1
   save todos
-  app.update()
-
-revertEdits = (todo) ->
-  todos[todos.indexOf(todo)] = editingTodo = originalTodo
   app.update()
 
 clearCompletedTodos = ->

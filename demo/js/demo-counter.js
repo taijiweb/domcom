@@ -22,7 +22,7 @@ export default module.exports = function() {
         'p',
         {
           onClick: stop,
-          keepid: 1
+          keepid: 101
         },
         'stop'
       ],
@@ -30,7 +30,7 @@ export default module.exports = function() {
         'p',
         {
           onClick: reset,
-          keepid: 2
+          keepid: 102
         },
         'reset'
       ],
@@ -38,7 +38,7 @@ export default module.exports = function() {
         'p',
         {
           onClick: start,
-          keepid: 3
+          keepid: 103
         },
         'start'
       ]

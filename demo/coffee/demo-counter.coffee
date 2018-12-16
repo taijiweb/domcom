@@ -14,9 +14,9 @@ export default  module.exports = ->
 
     ['div',
       ['p', this.count],
-      ['p', {onClick: stop, keepid:1}, 'stop'],
-      ['p', {onClick: reset, keepid:2}, 'reset'],
-      ['p', {onClick: start, keepid:3}, 'start']
+      ['p', {onClick: stop, keepid:101}, 'stop'],
+      ['p', {onClick: reset, keepid:102}, 'reset'],
+      ['p', {onClick: start, keepid:103}, 'start']
     ]
   comp = dc({view, count:0})
   startCounter = ->
