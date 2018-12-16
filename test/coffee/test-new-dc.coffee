@@ -179,6 +179,7 @@ describe "test-new-dc", ->
       expect(comp.node.innerHTML).to.equal 'I am embedded'
       data.message = "new embedded message"
       comp.update()
+      debugger
       expect(comp.node.innerHTML).to.equal "new embedded message"
 
     it 'embedded component will not auto update if stop watching it', ->

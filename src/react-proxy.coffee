@@ -20,13 +20,13 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
       return
 
     componentWillMount: ->
-      if this.component.mounted
-        dc.error 'component should be mounted under only one place'
       this.component.emit 'mounting'
       return
 
     componentDidMount: ->
       this.component.node = ReactDom.findDOMNode(this)
+      if this.component.mounted
+        dc.error 'component should be mounted under only one place'
       this.component.emit 'mounted'
       dc.emit 'mounted'
       this.component.mounted = true
@@ -49,6 +49,7 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
       return
 
     componentDidUpdate: (prevProps, prevState) ->
+      this.component.node = ReactDom.findDOMNode(this)
       this.component.emit 'updated'
       dc.emit 'updated'
       return
