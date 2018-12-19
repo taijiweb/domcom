@@ -80,11 +80,11 @@ export default module.exports = class Component extends Emitter
 
   extend: (config) ->
     comp = new Component({})
+    component.base = this
     comp.checkConfig config
     Object.assign comp, this, config
     comp.init()
     comp.config = Object.assign {}, this.config, config
-    comp.watch()
     return comp
 
   mount: (mountNode) ->

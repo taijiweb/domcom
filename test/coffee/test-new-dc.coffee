@@ -186,9 +186,9 @@ describe "test-new-dc", ->
       data = {message:"I am embedded"}
       view = (data) -> ['div', data.message]
       embedded = dc({data, view})
-      embedded.stopWatch()
       comp = dc({view:embedded})
       comp.mount('#demo')
+      embedded.stopWatch()
       expect(comp.node.innerHTML).to.equal 'I am embedded'
       data.message = "new embedded message"
       comp.update()

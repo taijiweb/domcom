@@ -132,7 +132,6 @@ todoHeader = ->
 
 todoEditArea = ->
   todos = getTodos()
-
   todoItems =  todos.map (todo, index) ->
     onChange = (event) ->
       todo.title = event.target.value
@@ -166,8 +165,6 @@ todoEditArea = ->
          ['label', todo.title],
          ['text.edit', { trim:'false', value:todo.title, onBlur, onChange, onFocus, onKeyUp, focusid:100+index}]]
         ['button.destroy##float:right', {onClick:(-> removeTodo(todo))}, 'x']]]
-
-
 
   ['section#main',
     ['checkbox.toggle#toggle-all', { key:6, checked: !!allChecked(), onChange: markAll}]

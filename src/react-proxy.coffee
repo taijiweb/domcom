@@ -25,6 +25,7 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
 
     componentDidMount: ->
       this.component.node = ReactDom.findDOMNode(this)
+      this.component.watch()
       if this.component.mounted
         dc.error 'component should be mounted under only one place'
       this.component.emit 'mounted'

@@ -319,11 +319,11 @@ describe("test-new-dc", function() {
         return ['div', data.message];
       };
       embedded = dc({data, view});
-      embedded.stopWatch();
       comp = dc({
         view: embedded
       });
       comp.mount('#demo');
+      embedded.stopWatch();
       expect(comp.node.innerHTML).to.equal('I am embedded');
       data.message = "new embedded message";
       comp.update();
