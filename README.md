@@ -10,10 +10,29 @@
 ## download and install
 
     npm install --save domcom
+    
+useDomcom in  page by script tag，add React andReactDom  at first
 
-  or use the cdn provided by jsdelivr.net (replace "x.y.z" with the real version number):
+        <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+        
+or
 
-    `<script src="http://cdn.jsdelivr.net/domcom/x.y.z/domcom.min.js"/>`
+        <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+        
+and then add script tag for Domcom itself:
+
+        <script src="path/to/domcom.js"></script> 
+        <script src="path/to/domcom.min.js"></script>  
+
+  or use the cdn provided by unpg or jsdelivr:
+
+    
+        https://unpkg.com/domcom@0.8.1/dist/domcom.js  
+        https://unpkg.com/domcom@0.8.1/dist/domcom.min.js  
+        https://cdn.jsdelivr.net/npm/domcom@0.8.1/dist/domcom.js  
+        https://cdn.jsdelivr.net/npm/domcom@0.8.1/dist/domcom.min.js
 
 ## Features
 * simple API:  

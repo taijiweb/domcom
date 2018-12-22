@@ -12,13 +12,28 @@
       http://cdn.jsdelivr.net/domcom/x.y.z/domcom.min.js
       
 ### 在页面中设置Domcom
+先要添加React和ReactDom链接。
+
+        <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+        
+或
+
+        <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+        
   根据开发和应用需要从安装或下载的文件夹中选择domcom/dist/下的适当文件，向html页面添加script标签：  
   > 开发版本：`<script src="path/to/domcom.js"/>`  
   > 产品版本：`<script src="path/to/domcom.min.js"/>`
 
-  如果使用cdn.jsdelivr.net提供的cdn链接， 则应该添加如下的script标签(替换x.y.z为实际版本号）
+  如果使用cdn链接， 则应该添加如下的script标签
 
-  > `<script src="http://cdn.jsdelivr.net/domcom/x.y.z/domcom.min.js"/>`
+  >
+        https://unpkg.com/domcom@0.8.1/dist/domcom.js  
+        https://unpkg.com/domcom@0.8.1/dist/domcom.min.js  
+        https://cdn.jsdelivr.net/npm/domcom@0.8.1/dist/domcom.js  
+        https://cdn.jsdelivr.net/npm/domcom@0.8.1/dist/domcom.min.js
+
 
   在domcom的script标签之后添加自己的js脚本：
 
