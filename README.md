@@ -53,38 +53,31 @@ There is [some  samples](https://github.com/taijiweb/domcom/tree/master/demo), a
 
 The code below give a taste of domcom:
 
-In javascript:
+      const data = { a: 1, b: 2 };
+      const view = data => {
+        let props1 = {
+          value: data.a,
+          onChange(event) {
+             data.a = event.target.value*1
+             comp.update()
+          }
+        };
+        props2 = {
+          value: data.b,
+          onChange(event) {
+            data.b = event.target.value*1
+            comp.update();
+         };
+        };
+        return ['div',
+                  ['text', props1],
+                  ['text', props2],
+                  ['p', data.a + data.b]
+               ];
+      };
+      const comp = dc({data, view});
+      comp.mount('#demo');
 
-    const demoSum = () => {
-    
-          const data = { a: 1, b: 2 };
-
-          const view = data => {
-               let props1 = {
-                    value: data.a,
-                    onChange(event) {
-                        data.a = event.target.value*1
-                        comp.update()
-                    }
-                };
-                props2 = {
-                    value: data.b,
-                    onChange(event) {
-                        data.b = event.target.value*1
-                        comp.update();
-                    };
-                };
-
-              return ['div',
-                        ['text', props1],
-                        ['text', props2],
-                        ['p', data.a + data.b]
-                     ];
-          };
-          const comp = dc({data, view});
-          comp.mount('#demo');
-    }   ​
-    demoSum();
     
 ## LICENSE
 MIT, see [LICENSE](https://github.com/taijiweb/domcom/blob/master/LICENSE)
