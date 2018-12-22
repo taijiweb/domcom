@@ -7,7 +7,6 @@ app
 build
 
 public
-dist
 
 .idea
 .tmp

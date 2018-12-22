@@ -1,6 +1,6 @@
 {
   "name": "domcom",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "dom component",
   "keywords": [
     "domcom",
@@ -83,5 +83,6 @@
   "scripts": {
     "dev": "gulp",
     "dist": "gulp dist"
-  }
+  },
+  "jsdelivr": "dist/domcom.min.js"
 }
