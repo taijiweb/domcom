@@ -14,4 +14,4 @@ gulp.task 'js', (callback) -> runSequence 'clean', 'coffee', callback
 
 gulp.task 'dev', (callback) -> runSequence 'clean', 'webpack-server', watchcb
 
-gulp.task 'dist', (callback) -> runSequence 'clean', 'coffee','webpack-dist', callback
+gulp.task 'dist', (callback) -> runSequence 'clean','webpack-dist', callback # , 'coffee'

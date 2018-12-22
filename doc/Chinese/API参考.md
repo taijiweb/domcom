@@ -27,17 +27,7 @@
 ### 导入和引用domcom提供的api
 在浏览器环境下，添加domcom的`<script>`标签后，dc会成为全局变量，即window.dc。
 
-#### coffee-script
-
-或者象这样：
-
-    dc.see(1);
-	dc.div({}, "hello")
-    dc.if_(x, "hello",  "hi")
-
-这类写法显然不是很理想。还是建议尽量采用Coffee-script或者ES6的语法。
-
-domcom的API有意设计得非常简练。即使在ES5下编写domcom程序，虽然稍显繁琐，其简洁优雅程度依然可以胜过用JSX编写的reactJS。
+domcom的API有意设计得非常简练。即使在ES5下编写domcom程序，其简洁优雅程度依然可以胜过用JSX编写的reactJS。
 
 ***********************************************************
 
@@ -113,45 +103,6 @@ Domcom用部件管理dom节点，部件是框架的最核心概念。每个部�
   停止上述watch机制。停止watch后可以通过直接调用component.update()手动控制部件更新。
 
 
-##### 模块： domcom/src/dc
-
-##### 方法
-
-* dc
-
-  > `dc(element: DomSelector|Node|[Node]|NodeList, options={})`
-
-  从Dom节点或选择器所查询到的Dom节点产生DomNode类的实例
-
-    `dc(document)`
-    `dc("#demo")`
-    `dc(".some-class")`
-
-
-* dc.directives
-  注册一条或多条指令。关于指令以及此方法的详细说明请参考后面“指令”一节的专门描述。
-
-
-* dc.ready
-
-#### styleFrom
-  > `styleFrom(value`
-  value: 形如"stylePropName:value; ..."的style字符串,   
-  或: 形如"stylePropName:value"的项的数组, 可包含空白字符,   
-  或: 形如[stylePropName, value]的项的数组
-
-***********************************************************
-
-#### util工具函数
-
-##### 模块： domcom/src/util
-
-Domcom实现的这组util工具函数主要提供给框架代码使用，并非出于提供一组通用性的工具函数的目的。用户程序请视情况使用。
-
-##### isArray
-  判断任何项是不是数组类型。  
-  > `isArray(item:Any)`
-
 
 ### Domcom指令
 
@@ -160,40 +111,12 @@ Domcom实现的这组util工具函数主要提供给框架代码使用，并非�
  指令只允许用在Tag部件上。指令的使用方法是：  
    `tag({ ..., $directiveName: directiveArguments, ...}, ...)` 
     
- 在执行Tag部件的初始化期间处理Tag的属性集的时候，如果遇到以`$`字符开头的属性，domcom认为这是一个指令，会查找预先注册的指令集，如果找到该指令的指令处理函数生成器，则以directiveArguments作为参数调用该生成器，然后用该调用返回的指令处理函数来处理该部件。如果没有注册该指令，domcom将认为是一个错误。
+ 在执行Tag部件的初始化期间处理Tag的属性集的时候，如果遇到以`$`字符开头的属性，domcom认为这是一个指令，会查找预先注册的指令集，如果找到该指令的指令处理函数，则以directiveArguments作为参数调用该函数。如果没有注册该指令，domcom将认为是一个错误。
 
-#### 注册指令
-  domcom中使用任何指令前必须显式地注册。注册方法有两种。可以批量注册    
-  >  `dc.directives({$directiveName:generator:DirectiveHandlerGenerator ... })`
-  
-  或者注册单个指令
-
-  >  `dc.directives($directiveName:String, generator:DirectiveHandlerGenerator)`
-  
-  其中，DirectiveHandlerGenerator表示指令处理函数生成器，是个返回指令处理函数的函数。其类型如下
-  
-  >  `(args...) -> DirectiveHandler`
-  
-  DirectiveHandler表示指令处理函数，它接受部件参数，对该部件进行处理，并返回该部件，其类型如下：
-
-  >  `(component) -> component` 
 
 #### 内建指令
 
   Domcom预定义了一组内建指令。
-
-##### 文件夹路径：src/directives/
-
-##### 说明
-
-在上述文件夹定义了一组内建指令，也就是说定义了一组函数，这组函数可以充当指令处理函数生成器。可以通过如下代码注册所有内置指令:
-
-    dc.directives(dc.builtinDirectives)
-
-也可以单个地注册需要使用的指令, 例如：
-
-    {$model} = dc
-    dc.directives({$model:$model})
 
 ##### $model指令
 

@@ -65,6 +65,9 @@ normalizeArrayViewItem = (item) ->
   return [tag || 'div', props, children]
 
 normalizeReactProps = (props, camel = true) ->
+  if props.dontCamel
+    camel = false
+    delete props.dontCamel
   for key of props
     value = props[key]
     if camel
