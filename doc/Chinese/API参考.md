@@ -29,10 +29,10 @@
   如果使用cdn链接， 则应该添加如下的script标签
 
   >
-        https://unpkg.com/domcom@0.8.1/dist/domcom.js  
-        https://unpkg.com/domcom@0.8.1/dist/domcom.min.js  
-        https://cdn.jsdelivr.net/npm/domcom@0.8.1/dist/domcom.js  
-        https://cdn.jsdelivr.net/npm/domcom@0.8.1/dist/domcom.min.js
+        https://unpkg.com/domcom@0.8.4/dist/domcom.js
+        https://unpkg.com/domcom@0.8.4/dist/domcom.min.js
+        https://cdn.jsdelivr.net/npm/domcom@0.8.4/dist/domcom.js
+        https://cdn.jsdelivr.net/npm/domcom@0.8.4/dist/domcom.min.js
 
 
   在domcom的script标签之后添加自己的js脚本：

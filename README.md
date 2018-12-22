@@ -29,10 +29,10 @@ and then add script tag for Domcom itself:
   or use the cdn provided by unpg or jsdelivr:
 
     
-        https://unpkg.com/domcom@0.8.1/dist/domcom.js  
-        https://unpkg.com/domcom@0.8.1/dist/domcom.min.js  
-        https://cdn.jsdelivr.net/npm/domcom@0.8.1/dist/domcom.js  
-        https://cdn.jsdelivr.net/npm/domcom@0.8.1/dist/domcom.min.js
+        https://unpkg.com/domcom/dist/domcom.js  
+        https://unpkg.com/domcom/dist/domcom.min.js  
+        https://cdn.jsdelivr.net/npm/domcom/dist/domcom.js  
+        https://cdn.jsdelivr.net/npm/domcom/dist/domcom.min.js
 
 ## Features
 * simple API:  
