@@ -33,9 +33,23 @@ There are [some description about the types given in this document](https://gith
 
   download from github releases: [Github releases](https://github.com/taijiweb/domcom/releases)
 
-  use the cdn: use this cdn link(thanks to cdn.jsdelivr.net):
+  use the cdn, thanks to unpgk.com and cdn.jsdelivr.net):
+  
+First add the React and ReactDom links.
 
-    http://cdn.jsdelivr.net/domcom/x.y.z/domcom.min.js
+        <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+        
+or
+
+        <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+and then add Domcom itself:
+
+        Https://unpkg.com/domcom@0.8.4/dist/domcom.js
+        Https://unpkg.com/domcom@0.8.4/dist/domcom.min.js
+        Https://cdn.jsdelivr.net/npm/domcom@0.8.4/dist/domcom.js
+        Https://cdn.jsdelivr.net/npm/domcom@0.8.4/dist/domcom.min.js
 
 ### refer domcom in html pages
 
