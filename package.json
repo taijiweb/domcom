@@ -30,11 +30,9 @@
   "dependencies": {
     "@material-ui/icons": "^3.0.1",
     "create-react-class": "^15.6.3",
-    "lazy-flow-at": "0.0.2",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
-    "vue": "^2.5.17"
-  },
+    },
   "devDependencies": {
     "@babel/core": "^7.0",
     "@babel/preset-env": "^7.1.0",
