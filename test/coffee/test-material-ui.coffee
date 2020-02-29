@@ -39,17 +39,17 @@ describe "test-material-ui", ->
     return
 
   describe 'mount some material-ui dc components', ->
-     it 'simple material-ui Button', ->
-       view =  ['div'
+    it 'simple material-ui Button', ->
+      view =  ['div'
         [Button, {variant:"contained", color:"primary"},'primary'],
         [Button, 'Default'],
         [Button, {variant:"dashed", color:"secondary", disabled:true},'secondary'],
         [Button, {variant:"danger", color:"danger"},'danger']
-       ]
-       comp = dc {view}
-       comp.mount('#demo')
+      ]
+      comp = dc {view}
+      comp.mount('#demo')
 
-    iit 'test a dialog', ->
+    it 'test a dialog', ->
       window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true
       data = {
         emails:['x1@y.z', 'x2@y.z', 'x3@y.z'],
@@ -64,9 +64,9 @@ describe "test-material-ui", ->
       }
       view = (data) ->
         [Dialog, {onClose:data.handleClose, 'aria-labelledby':"simple-dialog-title", open:data.open, className:''},
-            [DialogTitle, "#simple-dialog-title", {key:dc.dcid++}, "Set backup account"],
-            ['div', {key:dc.dcid++}
-              [List,{className:'', key:dc.dcid++}
+            [DialogTitle, "#simple-dialog-title", {key:++dc.dcid}, "Set backup account"],
+            ['div', {key:++dc.dcid}
+              [List,{className:'', key:++dc.dcid}
                 data.emails.map((email) =>
                   [ListItem, {button:true, onClick:(() => data.handleListItemClick(email)), key:email, className:''},
                   #[ListItemAvatar, [Avatar, [PersonIcon]]],
