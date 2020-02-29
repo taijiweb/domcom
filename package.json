@@ -31,7 +31,7 @@
     "@material-ui/icons": "^3.0.1",
     "create-react-class": "^15.6.3",
     "react": "^16.6.1",
-    "react-dom": "^16.6.1",
+    "react-dom": "^16.6.1"
     },
   "devDependencies": {
     "@babel/core": "^7.0",
@@ -45,10 +45,7 @@
     "bdd-test-helper": "latest",
     "chai": "~1.9.1",
     "coffee-loader": "0.9.0",
-    "coffee-script": "^1.12.7",
     "coffeescript": "^2.3.2",
-    "dc-util": "latest",
-    "dc-watch-list": "latest",
     "del": "^2.0.2",
     "extend": "latest",
     "gulp": "~3.9.0",

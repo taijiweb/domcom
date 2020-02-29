@@ -49,7 +49,8 @@ describe "test-material-ui", ->
        comp = dc {view}
        comp.mount('#demo')
 
-    it 'test a dialog', ->
+    iit 'test a dialog', ->
+      window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true
       data = {
         emails:['x1@y.z', 'x2@y.z', 'x3@y.z'],
         open:true,
@@ -71,7 +72,7 @@ describe "test-material-ui", ->
                   #[ListItemAvatar, [Avatar, [PersonIcon]]],
                   [ListItemText, {primary:email, className:'', key:email}, email]
                   ]),
-               [ListItem, {button:true, key:dc.dcid++, onClick:() => data.handleListItemClick('addAccount')}, 'add account']]]]
+                [ListItem, {button:true, key:dc.dcid++, onClick:() => data.handleListItemClick('addAccount')}, 'add account']]]]
       comp = dc({data, view})
       comp.mount('#demo')
 
