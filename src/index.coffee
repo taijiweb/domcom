@@ -48,7 +48,7 @@ Object.assign(dc,
 dc.directives = {}
 Object.assign dc.directives, require('./dc-directive')
 dc.addReactProxy = require './react-proxy'
-
+window.dc = dc
 export default module.exports = dc
 
 

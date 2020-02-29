@@ -179,7 +179,6 @@ describe "test-new-dc", ->
       expect(comp.node.innerHTML).to.equal 'I am embedded'
       data.message = "new embedded message"
       comp.update()
-      debugger
       expect(comp.node.innerHTML).to.equal "new embedded message"
 
     it 'embedded component will not auto update if stop watching it', ->
@@ -194,7 +193,11 @@ describe "test-new-dc", ->
       comp.update()
       expect(comp.node.innerHTML).to.equal "I am embedded"
 
-    it 'should NOT mount the same one component in different places', ->
+    xit 'should NOT mount the same one component in different places', ->
+      # this test will result 9 errors in devtools console:
+      # unique keys warnings 
+      # Uncaught Error: component should be mounted under only one place
+      # the above should be the expected behaviour.
       data = {message:"I am embedded"}
       view = (data) -> ['div', data.message]
       embedded = dc({data, view})
@@ -203,7 +206,7 @@ describe "test-new-dc", ->
         throw error
       expect(-> comp.mount('#demo')).to.throw()
 
-    it 'should mount the embedded component copy', ->
+    iit 'should mount the embedded component copy', ->
       data = {message:"I am embedded"}
       view = (data) -> ['div', data.message]
       embedded = dc({data, view})
@@ -216,7 +219,7 @@ describe "test-new-dc", ->
       data.message = "new embedded message"
       expect(comp.node.innerHTML).to.equal '<div>new embedded message</div><div>new embedded message</div>'
 
-    it 'should mount the embedded component copy 2', ->
+    nit 'should mount the embedded component copy 2', ->
       data = {show1:true, message1:"I am embedded 1", message2:"I am embedded 2"}
       view = (data) ->
         if data.show1
@@ -233,7 +236,7 @@ describe "test-new-dc", ->
       data.show1 = false
       expect(comp.node.innerHTML).to.equal '<div>I am embedded 2</div><div>I am embedded 2</div>'
 
-    it 'should process rebol style function call in view item', ->
+    nit 'should process rebol style function call in view item', ->
       if_ = (test, then_, else_) ->
         if test
           then_

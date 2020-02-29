@@ -55,12 +55,13 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
       dc.emit 'updated'
       return
 
-    renderNormalized: (item) =>
+    renderNormalized: (item, index) =>
       if !item?
         return null
       else if typeof item == 'string'
         return item
       else if dc.React.isValidElement(item)
+        # item.key = item.key || index
         return item
       else
         props = Object.assign({}, item[1])
@@ -81,7 +82,7 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
             children = []
 
         if !props.key
-          props.key = globalKey++
+          props.key = index
 
         if (focusid = props.focusid)?
           ref = props.ref
@@ -101,17 +102,18 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
             dc.focusid = null
             return
 
-        children = children.map (child) => this.renderNormalized(child)
+        children = children.map (child, index) => this.renderNormalized(child, index)
         if !children.length
           children = null
         else if children.length == 1
           if props.useSingleChildren
+            delete props.useSingleChildren
             children = children[0]
         if keepid = props.keepid
+          delete props.keepid
           if reactElement = dc.keepReactElementMap[keepid]
             return reactElement
           else
-            delete props.keepid
             reactElement = React.createElement(tag, props, children)
             dc.keepReactElementMap[keepid] = reactElement
             return reactElement

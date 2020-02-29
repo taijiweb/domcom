@@ -49,6 +49,7 @@ exports.makeConfig = makeConfig = (entry, filename, options={}, makingServer) ->
       alias:
         "gulp-task-helper": path.resolve(__dirname, '../packages/gulp-task-helper/')
         "dc-util": path.resolve(__dirname, '../src/dc-util/')
+        'domcom': path.resolve(__dirname, '../src/')
 
     plugins: plugins
     optimization:

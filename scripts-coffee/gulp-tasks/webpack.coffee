@@ -24,9 +24,9 @@ runWebPack = (entry, filename, options) ->
 
 webpackDistribute = (mode) ->
   plugins = [new webpack.NoEmitOnErrorsPlugin(),
-        new webpack.LoaderOptionsPlugin({
-         options: {}
-       })
+    new webpack.LoaderOptionsPlugin({
+      options: {}
+    })
   ]
   runWebPack(domcomEntry, '[name].js', {mode:'development',path:'../dist', pathinfo:true, libraryTarget:'umd', library:'dc', plugins})
   runWebPack('./test/coffee/index', 'test.js', {mode:'development',path:'../dist', pathinfo:true, plugins})
@@ -45,7 +45,7 @@ gulp.task 'wpserver', ->
     new webpack.HotModuleReplacementPlugin()
     new webpack.NoEmitOnErrorsPlugin()
   ]
-  makeWebpackDevServer(["webpack/hot/dev-server", './src/domcom'], 'domcom.js', {port:8083, inline:true, plugins:webServerPlugins})
   makeWebpackDevServer(["webpack/hot/dev-server", './test/coffee/index'], 'test.js', {port:8088, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './demo/coffee/index'], 'demo.js', {port:8084, plugins:webServerPlugins})
-  makeWebpackDevServer(["webpack/hot/dev-server", './demo/coffee/todomvc'], 'todomvc.js', {port:8090, plugins:webServerPlugins})
+  # makeWebpackDevServer(["webpack/hot/dev-server", './src/domcom'], 'domcom.js', {port:8083, inline:true, plugins:webServerPlugins})
+  # makeWebpackDevServer(["webpack/hot/dev-server", './demo/coffee/index'], 'demo.js', {port:8084, plugins:webServerPlugins})
+  # makeWebpackDevServer(["webpack/hot/dev-server", './demo/coffee/todomvc'], 'todomvc.js', {port:8090, plugins:webServerPlugins})
