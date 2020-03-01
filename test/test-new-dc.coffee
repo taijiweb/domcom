@@ -245,3 +245,18 @@ describe "test-new-dc", ->
 
       expect(item).to.equal '2'
 
+    iit 'should update embedded sub components', ->
+      view = ->
+        @selected
+      comp = dc {view}
+      view = ->
+        ['div', 'comp1']
+      comp1 = dc {view}
+      view = ->
+        ['div', 'comp2']
+      comp2 = dc {view}
+      comp.selected = comp1
+      comp.mount('#demo')
+      comp.selected = comp2
+      console.log('comps: ', comp, comp1, comp2)
+      comp.update()

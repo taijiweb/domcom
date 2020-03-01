@@ -1,6 +1,8 @@
 import Emitter from './Emitter'
 
 {newDcid, isArray, isObject, normalizeDomElement, watchField, watchDataField, isMap} = require 'dc-util'
+
+updateKey = 1
 ###
   部件基类
   @params config: the config object for the component, it can have the fileds below
@@ -33,6 +35,7 @@ export default module.exports = class Component extends Emitter
       props = {component:this, key}
     else
       props = {component:this}
+    props.key = props.key || this.dcid
     this.reactElement = dc.React.createElement(dc.ReactProxy, props)
     return this.reactElement
 
@@ -105,6 +108,7 @@ export default module.exports = class Component extends Emitter
     return
 
   update: ->
+    console.log(' component.update:', this)
     if this.mounted
       # any object to trigger the update
       this.proxy.setState({})

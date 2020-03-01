@@ -22,10 +22,13 @@ export default  module.exports = ->
   startCounter = ->
     timer = setInterval (-> comp.count++), 300
     return
-
-  startCounter()
-
   stopCounter = ->
     clearInterval timer
+  
+  comp.on 'mounted', ->
+    startCounter()
+  comp.on 'unmounting', ->
+    stopCounter()
 
+  
   return comp

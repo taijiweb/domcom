@@ -23,6 +23,7 @@ exports.makeDemoComponent = makeDemoComponent = (demoMap, initItem) ->
       componentsMap[key] = comp()
     else
       componentsMap[key] = comp
+  console.log(' componentsMap: ', componentsMap)
   view = ->
     ['div',
         ['select', {$options:Object.keys(demoMap), $model:'select'}],
