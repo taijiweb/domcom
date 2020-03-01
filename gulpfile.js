@@ -7,7 +7,7 @@ gulp = require('gulp');
 ref = 'clean coffee rename typescript remove webpack build-tasks'.split(/\s+/);
 for (i = 0, len = ref.length; i < len; i++) {
   tsk = ref[i];
-  require('./scripts-coffee/gulp-tasks/' + tsk);
+  require('./scripts/tasks/' + tsk);
 }
 
 gulp.task('default', ['wpserver']);
