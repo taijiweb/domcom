@@ -22,7 +22,7 @@ describe "test-antd", ->
     return
 
   describe 'mount some material-ui dc components', ->
-     it 'simple Button', ->
+    it 'simple Button', ->
       view =  ['div'
         [Button, {type:"primary"},'Default'],
         [Button, 'Default'],

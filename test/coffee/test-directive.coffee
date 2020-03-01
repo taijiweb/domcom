@@ -19,10 +19,22 @@ describe "test-directive", ->
     demoNode._reactRootContainer = undefined
     return
 
-  describe 'model directive', ->
+  describe 'model directive 1', ->
     it 'should process model directive', ->
       view = ->
-        ['div', ['text', {'#':[[dc.model, 'message']]}], ['p', this.message]]
+        [['text', {$model:'message'}], ['p', @message]]
+      comp = dc({view, message:'hello'})
+      comp.mount('#demo')
+
+    it 'should process model directive 2', ->
+      view = ->
+        ['div', ['text', {$model:'message'}], ['p', this.message]]
+      comp = dc({view, message:'hello'})
+      comp.mount('#demo')
+
+    it 'should process model directive 3', ->
+      view = ->
+        ['div', ['text', 'message'], ['p', this.message]]
       comp = dc({view, message:'hello'})
       comp.mount('#demo')
 

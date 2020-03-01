@@ -24,8 +24,17 @@ export default module.exports = class Component extends Emitter
     this.reactElement = null
     this.node = null
     this.mounted = false
-    this.reactElement = dc.React.createElement(dc.ReactProxy, {component:this})
     return
+
+  getReactElement: (key) ->
+    if this.reactElement
+      return this.reactElement
+    if key?
+      props = {component:this, key}
+    else
+      props = {component:this}
+    this.reactElement = dc.React.createElement(dc.ReactProxy, props)
+    return this.reactElement
 
   checkConfig: (config) ->
     illegals = []
@@ -90,7 +99,8 @@ export default module.exports = class Component extends Emitter
   mount: (mountNode) ->
     this._prepareMount(mountNode)
     dc.mountMap[this.dcid] = this
-    dc.ReactDom.render(this.reactElement, this.parentNode)
+    reactElement = this.getReactElement()
+    dc.ReactDom.render(reactElement, this.parentNode)
     this.emit('mounted')
     return
 
@@ -121,7 +131,6 @@ export default module.exports = class Component extends Emitter
       else
         view = this.view
       return view
-
   unmount: () ->
     this.emit('unmounting')
     {parentNode} = this

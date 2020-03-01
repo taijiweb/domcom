@@ -26,6 +26,7 @@ import CloseIcon from '@material-ui/icons/Close'
 import Divider from '@material-ui/core/Divider'
 import Slide from '@material-ui/core/Slide'
 
+window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true
 
 describe "test-material-ui", ->
   beforeEach ->
@@ -41,16 +42,15 @@ describe "test-material-ui", ->
   describe 'mount some material-ui dc components', ->
     it 'simple material-ui Button', ->
       view =  ['div'
-        [Button, {variant:"contained", color:"primary"},'primary'],
+        [Button, {variant:"text", color:"primary"},'primary'],
         [Button, 'Default'],
-        [Button, {variant:"dashed", color:"secondary", disabled:true},'secondary'],
-        [Button, {variant:"danger", color:"danger"},'danger']
+        [Button, {variant:"outlined", color:"secondary", disabled:true},'secondary'],
+        [Button, {variant:"contained", color:"inherit"},'danger']
       ]
       comp = dc {view}
       comp.mount('#demo')
 
     it 'test a dialog', ->
-      window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true
       data = {
         emails:['x1@y.z', 'x2@y.z', 'x3@y.z'],
         open:true,

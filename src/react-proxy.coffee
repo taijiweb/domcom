@@ -71,12 +71,12 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
             delete item[1][key]
             item = directive.call(this.component, item, value)
         [tag, props, children] = item
-        if tag == 'input'
+        if tag == 'input' || tag == 'textarea'
           if children.length > 1
-            dc.error 'input element should not have multiple children'
+            dc.error "#{tag} element should not have multiple children"
           else if children.length == 1
             if typeof children[0] != 'string'
-              dc.error 'the child of input is used as model field, it should be a string'
+              dc.error 'the child of #{tag} is used as model field, it should be a string'
             item = dc.directives.$model.call(this.component, item, children[0])
             props = item[1]
             children = []

@@ -2,11 +2,11 @@ camelCase = require('camelcase')
 
 export default exports = module.exports = {}
 
-exports.normalizeItem = normalizeItem = (item) ->
+exports.normalizeItem = normalizeItem = (item, index) ->
   if typeof item == 'string'
     return item
   else if item instanceof dc.Component
-    return item.reactElement
+    return item.getReactElement(index)
   else if isArray(item)
     return normalizeArrayViewItem(item)
   else if item?
@@ -20,7 +20,7 @@ normalizeArrayViewItem = (item) ->
   if it instanceof dc.Component || isArray(it)
     tag = 'div'
     props = {}
-    children = item.map((child) -> normalizeItem(child))
+    children = item.map((child, index) -> normalizeItem(child, index))
     return [tag, props, children]
   else if typeof it== 'string'
     [tag, classes, id, css, inputType] = parseTagString(item[i])
@@ -60,7 +60,7 @@ normalizeArrayViewItem = (item) ->
     props = {className:classes, id, style:styleFrom(css)}
   if inputType
     props.type = inputType
-  children = item[i...].map((child) -> normalizeItem(child))
+  children = item[i...].map((child, index) -> normalizeItem(child, index))
   props = normalizeReactProps(props, typeof tag == 'string')
   return [tag || 'div', props, children]
 
