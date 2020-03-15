@@ -108,7 +108,6 @@ export default module.exports = class Component extends Emitter
     return
 
   update: ->
-    console.log(' component.update:', this)
     if this.mounted
       # any object to trigger the update
       this.proxy.setState({})

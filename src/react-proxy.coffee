@@ -19,13 +19,11 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
       component.proxy = this
       return
 
-    componentWillMount: ->
-      console.log(' componentWillMount:', this.component)
+    UNSAFE_componentWillMount: ->
       this.component.emit 'mounting'
       return
 
     componentDidMount: ->
-      console.log(' componentDidMount:', this.component)
       this.component.node = ReactDom.findDOMNode(this)
       this.component.watch()
       if this.component.mounted
@@ -46,7 +44,7 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
     componentDidCatch: (error) ->
       dc.error(error)
 
-    componentWillUpdate: (prevProps, prevState) ->
+    UNSAFE_componentWillUpdate: (prevProps, prevState) ->
       dc.emit 'updating'
       this.component.emit 'updating'
       return
@@ -58,7 +56,6 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
       return
 
     renderNormalized: (item, index) =>
-      console.log(' renderNormalized: item, index:', item, index)
       if !item?
         return null
       else if typeof item == 'string'
@@ -132,7 +129,5 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
       if component.dcid == 1
         debugger
       view = component.getView()
-      console.log(' react-proxy.render view:', view)
       reactElement = this.renderItem(view)
-      console.log(' react-proxy.render reactElement:', reactElement)
       return reactElement

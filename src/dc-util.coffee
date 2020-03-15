@@ -64,6 +64,7 @@ normalizeArrayViewItem = (item) ->
   props = normalizeReactProps(props, typeof tag == 'string')
   return [tag || 'div', props, children]
 
+dontCamelCaseReactProps = ['dangerouslySetInnerHTML', 'aria-hidden']
 normalizeReactProps = (props, camel = true) ->
   if props.dontCamel
     camel = false
@@ -72,7 +73,8 @@ normalizeReactProps = (props, camel = true) ->
     value = props[key]
     if camel
       delete props[key]
-      key = camelCase(key)
+      if !dontCamelCaseReactProps.includes(key)
+        key = camelCase key
     if value == undefined
       delete props[key]
     else if key == 'className'
@@ -83,21 +85,21 @@ normalizeReactProps = (props, camel = true) ->
         delete props.className
     else if key == 'style'
       if Object.keys(value).length
-        props.style = camelCaseProps value
+        props.style = camelCaseStyle value
       else
         delete props.style
     else if camel
       props[key] = value
   props
 
-camelCaseProps = (props) ->
+camelCaseStyle = (style) ->
   result = {}
-  for key of props
-    value = props[key]
-    key = camelCase key
+  for key of style
+    value = style[key]
+    if !(key.startsWith('MozOsx') || key.startsWith('Webkit'))
+      key = camelCase key
     result[key] = value
   result
-
 inputTypes = {}
 
 for type in 'text checkbox radio date email tel number password'.split(' ')
@@ -154,7 +156,7 @@ classname = (items...) ->
     if !item
       continue
     else if typeof item == 'string'
-      names = item.trim().split(/(?:\s*,\s*)|s+/)
+      names = item.trim().split(/(?:\s*,\s*)|\s+/)
       for name in names
         classMap[name] = 1
     else if isArray item
