@@ -61,7 +61,7 @@
     "gulp-typescript": "^5.0.0-alpha.3",
     "gulp-util": "~3.0.1",
     "lazy-flow": "latest",
-    "minimist": "1.1.0",
+    "minimist": "1.2.3",
     "mocha": "1.14.0",
     "rimraf": "^2.6.2",
     "run-sequence": "~1.0.2",
