@@ -217,4 +217,4 @@ exports.isMap = isMap = (item) ->
 
 dcid = 0
 exports.newDcid = ->
-  return dcid++
+  return 'dcid-' + dcid++

@@ -126,8 +126,6 @@ export default module.exports = addReactProxy = (React, ReactDom, ReactComponent
 
     render: ->
       {component} = this
-      if component.dcid == 1
-        debugger
       view = component.getView()
       reactElement = this.renderItem(view)
       return reactElement
